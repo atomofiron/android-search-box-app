@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.atomofiron.regextool.MainActivity">
+    <item
+        android:id="@+id/help"
+        android:orderInCategory="100"
+        android:title="@string/action_help"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_help"
+        />
+    <item
+        android:id="@+id/settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_settings"
+        />
+</menu>
