@@ -1,10 +1,6 @@
 package ru.atomofiron.regextool;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -12,321 +8,186 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.FrameLayout;
 
-import java.io.File;
-import java.util.jar.Manifest;
-import java.util.regex.Pattern;
+import ru.atomofiron.regextool.Fragments.MainFragment;
+import ru.atomofiron.regextool.Fragments.ResultsFragment;
+import ru.atomofiron.regextool.Utils.Permissions;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+		implements NavigationView.OnNavigationItemSelectedListener, I.SnackListener, MainFragment.OnResultListener {
 
-    FloatingActionButton fab;
-    EditText regexText;
-    CheckBox caseBox;
-    CheckBox filesBox;
-    CheckBox simpleBox;
-    ListView listView;
+	private FragmentManager fragmentManager;
+	private MainFragment mainFragment;
+	private FloatingActionButton fab;
+	private DrawerLayout drawer;
+	private AlertDialog helpDialog = null;
+	private AlertDialog pathDialog = null;
 
-    ListAdapter listAdapter;
-    AlertDialog alertDialog;
-    Receiver dirReceiver;
-    SharedPreferences sp;
-    AlertDialog helpDialog;
-    boolean needShowResults=true;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setTheme(R.style.AppTheme);
+		setContentView(R.layout.activity_main);
 
-    //private final ActivityCheckout checkout = Checkout.forActivity(this, App.get().getCheckout());
+		if (Permissions.checkPerm(this, I.REQUEST_FOR_INIT))
+			init();
+	}
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+	private void init() {
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
-        fab = (FloatingActionButton)findViewById(R.id.fab);
-        if (fab != null) fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (checkPerm(I.REQUEST_FOR_SELECT))
-                    select();
-            }
-        });
-        sp = getSharedPreferences(I.PREFS,MODE_PRIVATE);
-        if (sp.getString(I.STORAGE_PATH,"").isEmpty()) sp.edit().putString(I.STORAGE_PATH, Environment.getExternalStorageDirectory().getAbsolutePath()).apply();
+		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+				this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+		drawer.setDrawerListener(toggle);
+		toggle.syncState();
 
-        regexText = (EditText)findViewById(R.id.regex_text);
-        caseBox = (CheckBox)findViewById(R.id.case_senc);
-        filesBox = (CheckBox)findViewById(R.id.in_files);
-        simpleBox = (CheckBox)findViewById(R.id.simple_search);
-        listAdapter = new ListAdapter(this);
-        listAdapter.absolutePaths = true;
-        listAdapter.checkable = true;
-        listView = (ListView)findViewById(R.id.listview);
-        listView.setAdapter(listAdapter);
-        Listner listener = new Listner();
-        findViewById(R.id.in_files).setOnClickListener(listener);
-        listView.setOnItemLongClickListener(listener);
-        listView.setOnItemClickListener(listener);
-        findViewById(R.id.go).setOnClickListener(listener);
-        findViewById(R.id.slash).setOnClickListener(listener);
-        findViewById(R.id.box).setOnClickListener(listener);
-        findViewById(R.id.nobox).setOnClickListener(listener);
-        findViewById(R.id.dot).setOnClickListener(listener);
-        findViewById(R.id.star).setOnClickListener(listener);
-        findViewById(R.id.dash).setOnClickListener(listener);
-        findViewById(R.id.roof).setOnClickListener(listener);
-        findViewById(R.id.buck).setOnClickListener(listener);
-        dirReceiver = new Receiver();
-        registerReceiver(dirReceiver, new IntentFilter(I.toMainActivity));
-        helpDialog = new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.action_help))
-                        .setMessage(getString(R.string.help))
-                        .setNegativeButton("Ok", null)
-                        .create();
-        if (sp.getBoolean(I.PREF_FIRST_START,true)) {
-            helpDialog.show();
-            sp.edit().putBoolean(I.PREF_FIRST_START,false).apply();
-        }
+		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+		navigationView.setNavigationItemSelectedListener(this);
 
 
-        /*Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
-        serviceIntent.setPackage("com.android.vending");
-        bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);*/
+		fab = (FloatingActionButton)findViewById(R.id.fab);
+		fab.setVisibility(View.GONE);
 
-        /*checkout.start();
-        // you only need this if this activity starts purchase process
-        checkout.createPurchaseFlow(new PurchaseListewner());
-        // you only need this if this activity needs information about purchases/SKUs
-        Inventory inventory = checkout.loadInventory();
-        inventory.whenLoaded(new Inventory.Listener() {
-            @Override
-            public void onLoaded(@NonNull Inventory.Products products) {
-                I.Log("onLoaded(): "+products.toString());
-            }
-        });*/
-        /*app = (App) getApplication();
-        mTracker = app.getDefaultTracker();
-        mTracker.setScreenName("ReGeX tOoL");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());*/
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        I.Log("onActivityResult(): ");
-        switch (resultCode) {
-            case I.OK:
-                listAdapter.addFile(new File(data.getStringExtra("path")));
-                break;
-            case I.NO_OK:
-                break;
-            default:
-                break;
-        }
-    }
+		mainFragment = new MainFragment();
+		mainFragment.setSnackListener(this);
+		mainFragment.setOnResultListener(this);
+		mainFragment.mainActivity = this; // да, всё оч плохо
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
-        return true;
-    }
+		fragmentManager = getSupportFragmentManager();
+		setFragment(mainFragment, false);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.help:
-                helpDialog.show();
-                break;
-            case R.id.settings:
-                final String path = sp.getString(I.STORAGE_PATH,"/");
-                final EditText et = new EditText(this);
-                et.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                et.setText(path);
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.set_path))
-                        .setView(et)
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String newPath = et.getText().toString();
-                                if (!newPath.equals(path) && !newPath.isEmpty()) sp.edit().putString(I.STORAGE_PATH,newPath).apply();
-                                dialog.cancel();}
-                        })
-                        .setNeutralButton(getString(R.string.reset), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                et.setText(Environment.getExternalStorageDirectory().getAbsolutePath());}
-                        })
-                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();}
-                        })
-                        .setCancelable(true)
-                        .create().show();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+		SharedPreferences sp = I.SP(this);
+		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
+			helpDialog.show();
+			sp.edit().putBoolean(I.PREF_FIRST_START, false).apply();
+		}
+	}
 
-    class Listner implements View.OnClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener { // упс, listEner
-        boolean box=false;
-        boolean nobox=false; // пусть так, я не хочу ((Button)v).getText().toString().equals()...
-        @Override
-        public void onClick(View v) {
-            I.Log("onClick()");
-            String symbol;
-            switch (v.getId()) {
-                case R.id.go:
-                    needShowResults=true;
-                    String regex = regexText.getText().toString();
-                    if (!simpleBox.isChecked())
-                        try { Pattern.compile(regex);
-                        } catch (Exception ignored) {
-                            I.Snack(fab,getString(R.string.bad_ex),false);
-                            return;
-                        }
-                    if (regexText.getText().length()>0 && checkPerm(I.REQUEST_FOR_SEARCH)) checkList();
-                    return;
-                case R.id.box:
-                    if (box) {
-                        symbol="]";
-                        ((Button)v).setText("[");
-                    } else {
-                        symbol="[";
-                        ((Button)v).setText("]");
-                    }
-                    box=!box;
-                    break;
-                case R.id.nobox:
-                    if (nobox) {
-                        symbol="}";
-                        ((Button)v).setText("{");
-                    } else {
-                        symbol="{";
-                        ((Button)v).setText("}");
-                    }
-                    nobox=!nobox;
-                    break;
-                default:
-                    String s = ((Button)v).getText().toString();
-                    if (s==null || s.length()!=1) return; // ну мало ли
-                    symbol = s;
-                    break;
-            }
-            regexText.getText().insert(regexText.getSelectionStart(),symbol);
-        }
-        @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            listAdapter.remove(position);
-            return false;
-        }
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            I.Log("MainActivity(): onItemClick()");
-            listAdapter.onItemClick(position); }
-    }
-    void checkList() {
-        if (listAdapter.getCount()==0) {
-            new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.warning))
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {search();}
-                    })
-                    .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {dialog.dismiss();}
-                    })
-                    .create().show();
-        } else search();
-    }
+	private void setFragment(Fragment fragment, boolean back) {
+		FragmentTransaction transaction = fragmentManager.beginTransaction().replace(R.id.container, fragment);
+		if (back)
+			transaction.addToBackStack("results");
+		transaction.commit();
+	}
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0]==PackageManager.PERMISSION_GRANTED)
-            if (requestCode==I.REQUEST_FOR_SEARCH) checkList();
-            else select();
-    }
+	@Override
+	public void onBackPressed() {
+		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+		if (drawer.isDrawerOpen(GravityCompat.START))
+			drawer.closeDrawer(GravityCompat.START);
+		else
+			super.onBackPressed();
+	}
 
-    void select() {
-        startActivityForResult(new Intent(this,SelectActivity.class), I.OK);
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_main, menu);
+		return true;
+	}
 
-    boolean checkPerm(int code) {
-        if (I.granted(this,I.RES_PERM)) return true;
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE))
-                new AlertDialog.Builder(this)
-                        ///
-                        .create().show();
-            requestPermissions(new String[]{I.RES_PERM}, code);
-        }
-        else I.Snack(fab, getString(R.string.storage_err), false);
-        return false;
-    }
-    void search() {
-        alertDialog = new AlertDialog.Builder(this)
-                .setView(R.layout.searching)
-                .setCancelable(false)
-                .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        needShowResults=false;
-                        getBaseContext().stopService(new Intent(getBaseContext(),SearchService.class));
-                    }
-                })
-                .setNegativeButton(R.string.stop, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        getBaseContext().stopService(new Intent(getBaseContext(),SearchService.class));
-                    }
-                })
-                .create();
-        alertDialog.show();
-        startService(new Intent(this,SearchService.class)
-                .putExtra(I.CASE_SENSE, caseBox.isChecked())
-                .putExtra(I.SEARCH_LIST,listAdapter.getPathArray())
-                .putExtra(I.REGEX, regexText.getText().toString())
-                .putExtra(I.SEARCH_IN_FILES, filesBox.isChecked())
-                .putExtra(I.SEARCH_SIMPLE, simpleBox.isChecked()));
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.help:
+				if (helpDialog == null)
+					helpDialog = new AlertDialog.Builder(this)
+							.setTitle(getString(R.string.action_help))
+							.setMessage(getString(R.string.help))
+							.setNegativeButton("Ok", null)
+							.create();
 
-    class Receiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int i = intent.getIntExtra(I.SEARCH_CODE,I.SEARCH_ERROR);
-            I.Log("onReceive(): "+i);
-            alertDialog.cancel();
-            switch (i) {
-                case I.SEARCH_ERROR:
-                    I.Snack(fab,getString(R.string.error),false);
-                    break;
-                case I.SEARCH_NOTHING:
-                    if (needShowResults) I.Snack(fab,getString(R.string.nothing),false);
-                    break;
-                default:
-                    if (needShowResults) {
-                        I.Toast(context,getString(R.string.results,i),0);
-                        startActivity(new Intent(context,ResultsActivity.class).putExtras(intent.getExtras()));
-                    }
-                    break;
-            }
-        }
-    }
+				helpDialog.show();
+				break;
+			case R.id.settings:
+				if (pathDialog == null) {
+					final SharedPreferences sp = I.SP(this);
+					final String path = sp.getString(I.STORAGE_PATH, "/");
+					final EditText et = new EditText(this);
+					et.setText(path);
+					pathDialog = new AlertDialog.Builder(this)
+							.setTitle(getString(R.string.def_path))
+							.setView(et)
+							.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									String newPath = et.getText().toString();
+									if (!newPath.equals(path) && !newPath.isEmpty())
+										sp.edit().putString(I.STORAGE_PATH, newPath).apply();
+									dialog.cancel();
+								}
+							})
+							.setNeutralButton(getString(R.string.reset), new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									et.setText(Environment.getExternalStorageDirectory().getAbsolutePath());
+								}
+							})
+							.setNegativeButton(getString(R.string.cancel), null)
+							.setCancelable(true).create();
+				}
+				pathDialog.show();
+				break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(dirReceiver);
-        stopService(new Intent(this,SearchService.class));
-    }
+	@SuppressWarnings("StatementWithEmptyBody")
+	@Override
+	public boolean onNavigationItemSelected(MenuItem item) {
+		drawer.closeDrawer(GravityCompat.START);
+		return true;
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+			switch (requestCode) {
+				case I.REQUEST_FOR_INIT:
+					init(); break;
+				case I.REQUEST_FOR_SEARCH:
+					mainFragment.search(); break;
+			}
+		} else
+			Permissions.checkPerm(this, I.REQUEST_FOR_INIT);
+	}
+
+	@Override
+	public void Snack(String str) {
+		Snackbar.make(fab, str, Snackbar.LENGTH_LONG).show();
+	}
+	public void Snack(int id) {
+		Snackbar.make(fab, getString(id), Snackbar.LENGTH_LONG).show();
+	}
+
+	public void onSnack(String str, String action) {
+		Snackbar.make(fab, str, Snackbar.LENGTH_LONG)
+				.setAction(action, null).show();
+	}
+
+
+	@Override
+	public void onResult(Bundle bundle) {
+		ResultsFragment fragment = ResultsFragment.newInstance(bundle);
+		fragment.setSnackListener(this);
+		setFragment(fragment, true);
+	}
 }

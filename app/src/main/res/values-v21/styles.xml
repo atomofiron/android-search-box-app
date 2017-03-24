@@ -1,9 +1,30 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-    </style>
+	<style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+		<item name="android:theme">@style/AppTheme.Material</item>
+		<item name="android:windowBackground">@color/windowBackground</item>
+	</style>
+	<style name="AppTheme.Light" parent="Theme.AppCompat.NoActionBar">
+		<item name="android:theme">@style/AppTheme.Material.Light</item>
+		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
+	</style>
+
+	<style name="AppTheme.Material" parent="android:Theme.Material">
+		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
+		<item name="android:colorPrimary">@color/colorPrimary</item>
+		<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="android:colorAccent">@color/colorAccent</item>
+		<item name="android:theme">@style/BaseThemeDark</item>
+	</style>
+	<style name="AppTheme.Material.Light" parent="android:Theme.Material.Light">
+		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
+		<item name="android:colorPrimary">@color/colorPrimaryL</item>
+		<item name="android:colorPrimaryDark">@color/colorPrimaryDarkL</item>
+		<item name="android:colorAccent">@color/colorAccentL</item>
+		<item name="android:theme">@style/BaseThemeLight</item>
+	</style>
+
+
+
+
 </resources>

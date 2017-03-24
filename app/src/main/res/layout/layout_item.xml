@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,23 +14,33 @@
         android:paddingTop="@dimen/item_icon_padding"
         android:paddingBottom="@dimen/item_icon_padding"
         />
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/counter"
+		android:text="31"
+		android:background="@drawable/counter_bg"
+		android:textColor="#ffffffff"
+		android:layout_margin="4dp"
+		android:paddingLeft="2dp"
+		android:paddingRight="2dp"
+		android:visibility="gone"
+		/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/text"
+        android:id="@+id/title"
         android:layout_weight="1"
-        android:textColor="#000"
         android:singleLine="true"
-        android:ellipsize="start"
+        android:ellipsize="middle"
     />
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/checkbox"
         android:layout_weight="0"
-        android:checked="true"
+        android:checked="false"
         android:visibility="gone"
-        android:clickable="false"
         android:focusable="false"
         />
 

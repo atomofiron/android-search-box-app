@@ -1,27 +1,37 @@
 <resources>
-    <string name="app_name">Regex Tool</string>
-    <string name="action_help">Help</string>
-    <string name="action_settings">Settings</string>
-    <string name="activity_results">Results</string>
-    <string name="activity_select">Choose the directory</string>
+	<string name="app_name">Regex Tool</string>
+	<string name="action_help">Help</string>
+	<string name="action_settings">Settings</string>
+	<string name="activity_results">Results</string>
+	<string name="activity_select">Choose the directory</string>
 
-    <string name="case_sens">Case sensitivity</string>
-    <string name="where">Where to look:</string>
-    <string name="storage_err">Error accessing memory</string>
-    <string name="searching">Search…</string>
-    <string name="error">Error(</string>
-    <string name="nothing">Nothing found</string>
-    <string name="warning">You have not selected any directory. The search will be made around the root section</string>
-    <string name="cancel">Cancel</string>
-    <string name="stop">Stop</string>
-    <string name="no_activity">You have no application able to open a file of this type</string>
-    <string name="help">The list on the search screen:\nLong press to delete the record.\n\nOn the selection screen of the directory:\nShort press - go, long to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
-    <string name="results">Your search returned %d results</string>
-    <string name="find">Find</string>
-    <string name="in_files">Look in files</string>
-    <string name="need_pro">Coming soon ;)</string>
-    <string name="bad_ex">Incorrect regular expression</string>
-    <string name="set_path">Root directory</string>
-    <string name="reset">Reset</string>
-    <string name="simple_search">Simple searh (no regex)</string>
+	<string name="case_sens">Case sensitivity</string>
+	<string name="where">Where to look:</string>
+	<string name="storage_err">Error accessing memory</string>
+	<string name="searching">Search…</string>
+	<string name="error">Error(</string>
+	<string name="nothing">Nothing found</string>
+	<string name="warning">You have not selected any directory. The search will be made around the root section</string>
+	<string name="cancel">Cancel</string>
+	<string name="stop">Stop</string>
+	<string name="no_activity">You have no application able to open a file of this type</string>
+	<string name="help">The list on the search screen:\nLong press to delete the record.\n\nOn the selection screen of the directory:\nShort press - go, long to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
+	<string name="results">Your search returned %d results</string>
+	<string name="find">Find</string>
+	<string name="in_files">Look in files</string>
+	<string name="regex">Use regexp</string>
+	<string name="need_pro">Coming soon ;)</string>
+	<string name="bad_ex">Incorrect regular expression</string>
+	<string name="def_path">Default directory</string>
+	<string name="reset">Reset</string>
+	<string name="title_activity_main2">Main2Activity</string>
+
+	<string name="navigation_drawer_open">Open navigation drawer</string>
+	<string name="navigation_drawer_close">Close navigation drawer</string>
+
+	<!-- TODO: Remove or change this placeholder text -->
+	<string name="hello_blank_fragment">Hello blank fragment</string>
+	<string name="selected">Selected</string>
+	<string name="provider">Provider</string>
+	<string name="no_checked">You didn\'t choose any directory!</string>
 </resources>

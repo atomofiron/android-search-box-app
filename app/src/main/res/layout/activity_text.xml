@@ -24,7 +24,6 @@
             android:id="@+id/text"
             android:textIsSelectable="true"
             android:scrollbars="vertical"
-            android:textColor="#000"
             android:paddingBottom="64dp"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             />
@@ -51,7 +50,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/counter"
             android:text="0/0"
-            android:background="#fff"
+            android:background="?android:windowBackground"
             />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_next"

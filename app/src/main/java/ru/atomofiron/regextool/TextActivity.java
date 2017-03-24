@@ -27,7 +27,7 @@ public class TextActivity extends AppCompatActivity {
     NestedScrollView scrollView;
     TextView textView;
 
-    Listner listener;
+    Listener listener;
     TextActivity context;
 
     int[] counts;
@@ -46,14 +46,15 @@ public class TextActivity extends AppCompatActivity {
         textView = (TextView)findViewById(R.id.text);
         scrollView = (NestedScrollView)findViewById(R.id.scroll_text);
 
-        String[] counts_ = getIntent().getStringExtra(I.RESULT_LINE_COUNTS).split(" ");
-        count = counts_.length;
-        counter.setText("0/"+count);
+        String[] curCounts = getIntent().getStringExtra(I.RESULT_LINE_COUNTS).split(" ");
+        count = curCounts.length;
+        counter.setText(String.format("0/%d", count));
         counts = new int[count];
-        for (int i=0;i<counts_.length;i++) counts[i]=Integer.parseInt(counts_[i]);
+        for (int i = 0; i < curCounts.length; i++)
+            counts[i]=Integer.parseInt(curCounts[i]);
         final String target = getIntent().getStringExtra(I.TARGET);
 
-        listener = new Listner();
+        listener = new Listener();
         fabPrev = (FloatingActionButton) findViewById(R.id.fab_prev);
         fabNext = (FloatingActionButton) findViewById(R.id.fab_next);
         fabPrev.setOnClickListener(listener);
@@ -70,30 +71,33 @@ public class TextActivity extends AppCompatActivity {
                     InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
                     BufferedReader br = new BufferedReader(isr);
                     String line;
-                    int line_n=0;
-                    int target_n=0;
+                    int line_n = 0;
+                    int target_n = 0;
                     while ((line = br.readLine()) != null) {
                         line_n++;
                         if (isTarget(line_n)) {
                             I.Log("isTarget(k)");
                             int start = line.indexOf(target);
-                            int end = start+target.length();
-                            if (start==-1) {
+                            int end = start + target.length();
+                            if (start == -1) {
                                 start = 0;
-                                end = line.length()-1; // ???          -1          ???
+                                end = line.length() - 1; // ???          -1          ???
                             }
-                            start+=exitText.length();
-                            end+=exitText.length();
+                            start += exitText.length();
+                            end += exitText.length();
                             //int offset = (line_n+"_").length();
-                            pares[target_n*2]=start;//+offset;
-                            pares[target_n*2+1]=end;//+offset;
+                            pares[target_n*2] = start;//+offset;
+                            pares[target_n*2+1] = end;//+offset;
                             target_n++;
                         }
-                        exitText+=/*line_n+"_"+*/line+"\n";
+                        exitText += /*line_n+"_"+*/line+"\n";
                     }
-                } catch (Exception e) {I.Log(e.toString());}
+                } catch (Exception e) { I.Log(e.toString()); }
+
                 final Spannable spanRange = new SpannableString(exitText);
-                for (int i=0;i<count;i++) spanRange.setSpan(new BackgroundColorSpan(Color.argb(128,0,128,0)), pares[i*2], pares[i*2+1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                for (int i = 0; i < count; i++)
+                	spanRange.setSpan(new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
+							pares[i*2], pares[i*2+1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 context.runOnUiThread(new Runnable() {
                     @Override
@@ -109,33 +113,32 @@ public class TextActivity extends AppCompatActivity {
 
     }
 
-    boolean isTarget(int k) {
-        for (int t : counts) if (t==k) return true;
+    private boolean isTarget(int k) {
+        for (int t : counts)
+        	if (t == k)
+        		return true;
         return false;
     }
-    class Listner implements View.OnClickListener/*, NestedScrollView.OnScrollChangeListener*/ { // упс, listEner
+    private class Listener implements View.OnClickListener/*, NestedScrollView.OnScrollChangeListener*/ {
         @Override
         public void onClick(View v) {
-            I.Log("onClick()");
-            I.Log("curPos="+curPos+" count="+count);
+            I.Log("onClick() "+curPos+" count="+count);
             switch (v.getId()) {
                 case R.id.fab_prev:
-                    if (curPos<2) return;
                     curPos--;
+					if (curPos < 0)
+						curPos = count - 1;
                     break;
                 case R.id.fab_next:
-                    if (curPos>=count) return;
-                    curPos++;
-                    break;
-                default:
+					curPos++;
+					if (curPos == count)
+						curPos = 0;
                     break;
             }
             Layout layout = textView.getLayout();
-            I.Log("curPos-1)*2="+((curPos-1)*2));
-            I.Log("pares[(curPos-1)*2]="+pares[(curPos-1)*2]);
             //scrollView.scrollTo(0, layout.getLineTop(counts[curPos-1]));//layout.getLineForOffset(startPos)));
-            scrollView.scrollTo(0, layout.getLineTop(layout.getLineForOffset(pares[(curPos-1)*2])));
-            counter.setText(curPos+"/"+count);
+            scrollView.scrollTo(0, layout.getLineTop(layout.getLineForOffset(pares[curPos*2])));
+            counter.setText(String.format("%1$d/%2$d", (curPos+1), count));
         }
 
         /*
