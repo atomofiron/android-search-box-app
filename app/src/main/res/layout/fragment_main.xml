@@ -15,7 +15,7 @@
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
-		<EditText
+		<ru.atomofiron.regextool.CustomViews.RegexText
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:id="@+id/regex_text"

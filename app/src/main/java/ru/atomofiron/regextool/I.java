@@ -38,12 +38,14 @@ public class I {
 	public static final String SELECTED_LIST = "SELECTED_LIST";
     public static final String RES_PERM = "android.permission.WRITE_EXTERNAL_STORAGE";
 
+    public static final String PREF_DARK_THEME = "android.permission.WRITE_EXTERNAL_STORAGE";
+
     public static void Log(String message) {
         Log.e("atomofiron", message);
     }
 
     public static void Toast(Context context, String message, int time) {
-        Toast.makeText(context,message,time).show();
+        Toast.makeText(context, message, time).show();
     }
     public static void Snack(View fab, String message, boolean lengthLong) {
         Snackbar.make(fab, message, lengthLong?Snackbar.LENGTH_LONG:Snackbar.LENGTH_SHORT).show();

@@ -34,4 +34,6 @@
 	<string name="selected">Selected</string>
 	<string name="provider">Provider</string>
 	<string name="no_checked">You didn\'t choose any directory!</string>
+	<string name="theme">Theme</string>
+	<string name="need_restart">Restart required</string>
 </resources>

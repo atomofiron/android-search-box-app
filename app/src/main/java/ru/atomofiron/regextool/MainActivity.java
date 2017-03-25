@@ -23,7 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Fragments.ResultsFragment;
@@ -38,11 +38,13 @@ public class MainActivity extends AppCompatActivity
 	private DrawerLayout drawer;
 	private AlertDialog helpDialog = null;
 	private AlertDialog pathDialog = null;
+	private SharedPreferences sp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setTheme(R.style.AppTheme);
+		sp = I.SP(this);
+		setTheme(sp.getBoolean(I.PREF_DARK_THEME, false) ? R.style.AppTheme : R.style.AppTheme_Light);
 		setContentView(R.layout.activity_main);
 
 		if (Permissions.checkPerm(this, I.REQUEST_FOR_INIT))
@@ -100,6 +102,8 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_main, menu);
+		menu.findItem(R.id.theme).setIcon(sp.getBoolean(I.PREF_DARK_THEME, false) ?
+				R.drawable.ic_light : R.drawable.ic_dark);
 		return true;
 	}
 
@@ -116,9 +120,14 @@ public class MainActivity extends AppCompatActivity
 
 				helpDialog.show();
 				break;
+			case R.id.theme:
+				boolean value = !sp.getBoolean(I.PREF_DARK_THEME, false);
+				sp.edit().putBoolean(I.PREF_DARK_THEME, value).apply();
+				item.setIcon(value ? R.drawable.ic_light : R.drawable.ic_dark);
+				I.Toast(this, getString(R.string.need_restart), Toast.LENGTH_SHORT);
+				break;
 			case R.id.settings:
 				if (pathDialog == null) {
-					final SharedPreferences sp = I.SP(this);
 					final String path = sp.getString(I.STORAGE_PATH, "/");
 					final EditText et = new EditText(this);
 					et.setText(path);
