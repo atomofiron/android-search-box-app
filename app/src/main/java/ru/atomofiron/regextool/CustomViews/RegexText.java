@@ -47,8 +47,11 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		if (!need)
 			return;
 		need = false;
-		if (deleted == '[' || deleted == '{' || deleted == '(')
-			s.replace(start, start+1, "");
+		if ((deleted == '[' || deleted == '{' || deleted == '(') && s.length() > start)
+			switch (s.charAt(start)) {
+				case ']': case '}': case ')':
+					s.replace(start, start+1, "");
+			}
 		else if (count == 1) {
 			int pos = start+1;
 			char c = s.charAt(start);
