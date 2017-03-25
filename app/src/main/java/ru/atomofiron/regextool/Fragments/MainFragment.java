@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import ru.atomofiron.regextool.Adapters.FilesAdapter;
 import ru.atomofiron.regextool.Adapters.ListAdapter;
 import ru.atomofiron.regextool.Adapters.ViewPagerAdapter;
+import ru.atomofiron.regextool.CustomViews.RegexText;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.MainActivity;
 import ru.atomofiron.regextool.R;
@@ -47,7 +48,7 @@ public class MainFragment extends Fragment {
 	private Activity ac;
 	private View rootView;
 
-	private EditText regexText;
+	private RegexText regexText;
 	private ToggleButton caseToggle;
 	private ToggleButton infilesToggle;
 	private ToggleButton regexToggle;
@@ -81,14 +82,13 @@ public class MainFragment extends Fragment {
 			sp.edit().putString(I.STORAGE_PATH,
 							Environment.getExternalStorageDirectory().getAbsolutePath()).apply();
 
-		regexText = (EditText)rootView.findViewById(R.id.regex_text);
-		regexText.addTextChangedListener(new RegexWatcher());
+		regexText = (RegexText)rootView.findViewById(R.id.regex_text);
 		caseToggle = (ToggleButton)rootView.findViewById(R.id.case_senc);
 		infilesToggle = (ToggleButton)rootView.findViewById(R.id.in_files);
 		regexToggle = (ToggleButton)rootView.findViewById(R.id.simple_search);
 		regexToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				checkPatternValid();
+				regexText.checkPatternValid(isChecked);
 			}
 		});
 
@@ -194,19 +194,6 @@ public class MainFragment extends Fragment {
 				.putExtra(I.SEARCH_REGEX, regexToggle.isChecked()));
 	}
 
-	private void checkPatternValid() {
-		if (regexToggle.isChecked())
-			try {
-				Pattern.compile(regexText.getText().toString());
-				regexText.getBackground().clearColorFilter();
-			} catch (Exception ignored) {
-				regexText.getBackground().setColorFilter(
-						getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
-			}
-		else
-			regexText.getBackground().clearColorFilter();
-	}
-
 	public void setSnackListener(I.SnackListener listener) {
 		snackListener = listener;
 	}
@@ -257,19 +244,13 @@ public class MainFragment extends Fragment {
 					if (regex.length() > 0 && Permissions.checkPerm(mainActivity, I.REQUEST_FOR_SEARCH))
 						checkListForSearch();
 					return;
-				case R.id.box:
-					symbol = "[]";
-					break;
-				case R.id.nobox:
-					symbol = "{}";
-					break;
 				default:
 					symbol = ((Button)v).getText().toString();
 					break;
 			}
 			int start = regexText.getSelectionStart();
 			regexText.getText().insert(start, symbol);
-			regexText.setSelection(start, start);
+			regexText.setSelection(start+1, start+1);
 		}
 	}
 
@@ -295,33 +276,6 @@ public class MainFragment extends Fragment {
 					}
 					break;
 			}
-		}
-	}
-
-	private class RegexWatcher implements TextWatcher {
-
-		private boolean need = true;
-		private int start = 0;
-		private int before = 0;
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			this.start = start;
-			this.before = before;
-		}
-		@Override
-		public void afterTextChanged(Editable s) {
-			if (!need)
-				return;
-			if (before == 1 && s.length() > start &&
-					(s.charAt(start) == ']' || s.charAt(start) == '}')) {
-				need = false;
-				s.replace(start, start+1, "");
-				need = true;
-			}
-
-			checkPatternValid();
 		}
 	}
 }
