@@ -176,7 +176,7 @@ public class SearchService extends IntentService {
                 .setContentText(getString(R.string.searching))
                 .setContentIntent(pintent)
                 .setAutoCancel(true)
-                .setSmallIcon(R.mipmap.ic_launcher);
+                .setSmallIcon(R.drawable.ic);
         Notification notif;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
         	notif = builder.build();
