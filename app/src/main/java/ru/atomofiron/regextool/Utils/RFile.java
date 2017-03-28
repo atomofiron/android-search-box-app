@@ -1,13 +1,15 @@
 package ru.atomofiron.regextool.Utils;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URI;
+import java.nio.charset.Charset;
 
 import ru.atomofiron.regextool.I;
 
@@ -53,43 +55,57 @@ public class RFile extends File {
 		if (canRead() || !isDirectory() || !useRoot)
 			return super.list();
 
-		String result = "";
-		Process exec = null;
-		InputStream execIn = null;
-		OutputStream execOs = null;
-
-		try {
-			exec = Runtime.getRuntime().exec("su");
-			execIn = exec.getInputStream();
-			execOs = exec.getOutputStream();
-			DataOutputStream dos = new DataOutputStream(execOs);
-
-			dos.writeBytes(String.format("ls -A -1 %s\n", getAbsolutePath()));
-			dos.flush();
-			dos.close();
-
-			result = inputStream2String(execIn, "utf-8");
-		} catch (Exception e) {
-			I.Log(e.toString());
-		} finally {
-			try {
-				if (execIn != null) execIn.close();
-				if (execOs != null) execOs.close();
-				if (exec != null) exec.destroy();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return result.split("\n");
+		return Cmd.exec(String.format("ls -A -1 %s\n", getAbsolutePath())).split("\n");
 	}
 
-	private static String inputStream2String(InputStream in, String encoding) throws Exception  {
-		StringBuilder out = new StringBuilder();
-		InputStreamReader isr = new InputStreamReader(in, encoding);
-		char[] b = new char[1024];
-		int n;
-		while ((n = isr.read(b)) !=  -1) {
-			String s = new String(b, 0, n);
-			out.append(s);
+	public String readFile(Context co, OnReadLineListener listener) {
+		if (listener == null)
+			return null;
+
+		File file = this;
+		boolean needDelete = false;
+		if (!canRead() && useRoot) {
+			String newPath = String.format("%1$s/%2$s", co.getFilesDir().getAbsolutePath(), getName());
+			if (Cmd.easyExec(String.format("cp -F %1$s %2$s", getAbsolutePath(), newPath)) == 0) {
+				if (Cmd.easyExec(String.format("chmod 0777 %s", newPath)) != 0)
+					Cmd.easyExec(String.format("rm %s", newPath));
+				else {
+					file = new File(newPath);
+					needDelete = true;
+				}
+			}
 		}
-		return out.toString();
+		String result = "";
+
+		InputStream fis = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		try {
+			fis = new FileInputStream(file);
+			isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+			br = new BufferedReader(isr);
+			String line;
+			while ((line = br.readLine()) != null) {
+				I.Log("line = "+line);
+				listener.onReadLine(line);
+			}
+		} catch (Exception e) {
+			I.Log(e.toString());
+			result = e.toString();
+		} finally {
+			try {
+				if (br != null) br.close();
+				if (isr != null) isr.close();
+				if (fis != null) fis.close();
+			} catch (Exception ignored) {}
+		}
+		if (needDelete)
+			file.delete();
+		I.Log("result: "+result);
+		return result;
+	}
+
+	public interface OnReadLineListener {
+		public void onReadLine(String line);
 	}
 }

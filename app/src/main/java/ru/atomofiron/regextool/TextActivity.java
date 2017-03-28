@@ -18,6 +18,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+
+import ru.atomofiron.regextool.Utils.RFile;
 
 public class TextActivity extends AppCompatActivity {
 
@@ -28,19 +31,21 @@ public class TextActivity extends AppCompatActivity {
     TextView textView;
 
     Listener listener;
-    TextActivity context;
+    TextActivity co;
 
     int[] counts;
     int count;
     int[] pares;
     int curPos = 0;
     boolean ready = false;
+	private int target_n;
+	private int length;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text);
-        context = this;
+        co = this;
 
         counter = (TextView)findViewById(R.id.counter);
         textView = (TextView)findViewById(R.id.text);
@@ -64,9 +69,32 @@ public class TextActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String exitText = "";
+				final ArrayList<String> lines = new ArrayList<>();
                 pares = new int[count*2];
-                try {
+				target_n = 0;
+				length = 0;
+				RFile file = new RFile(getIntent().getStringExtra(I.RESULT_PATH));
+				file.useRoot = I.SP(co).getBoolean(I.PREF_USE_ROOT, false);
+				file.readFile(co, new RFile.OnReadLineListener() {
+					public void onReadLine(String line) {
+						lines.add(String.format("%s\n", line));
+						if (isTarget(lines.size())) {
+							int start = line.indexOf(target);
+							int end = start + target.length();
+							if (start == -1) {
+								start = 0;
+								end = line.length() - 1; // ???          -1          ???
+							}
+							start += length;
+							end += length;
+							pares[target_n*2] = start;
+							pares[target_n*2+1] = end;
+							target_n++;
+						}
+						length += line.length() + 1;
+					}
+				});
+                /*try {
                     InputStream fis = new FileInputStream(new File(getIntent().getStringExtra(I.RESULT_PATH)));
                     InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
                     BufferedReader br = new BufferedReader(isr);
@@ -90,19 +118,22 @@ public class TextActivity extends AppCompatActivity {
                             pares[target_n*2+1] = end;//+offset;
                             target_n++;
                         }
-                        exitText += /*line_n+"_"+*/line+"\n";
+                        exitText += line+"\n";
                     }
                 } catch (Exception e) {
 					I.Log(e.toString());
 					exitText = e.toString();
-                }
+                }*/
 
-                final Spannable spanRange = new SpannableString(exitText);
+				StringBuilder sb = new StringBuilder("");
+				for (String line : lines)
+					sb.append(line);
+                final Spannable spanRange = new SpannableString(sb.toString());
                 for (int i = 0; i < count; i++)
                 	spanRange.setSpan(new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
 							pares[i*2], pares[i*2+1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                context.runOnUiThread(new Runnable() {
+                co.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         textView.setText(spanRange);

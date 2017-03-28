@@ -3,6 +3,7 @@ package ru.atomofiron.regextool;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.atomofiron.regextool.Utils.Cmd;
 import ru.atomofiron.regextool.Utils.RFile;
 
 public class SearchService extends IntentService {
@@ -37,11 +39,13 @@ public class SearchService extends IntentService {
     int maxSize = 1024*1024;
     String target;
 	private SharedPreferences sp;
+	private boolean useRoot;
 
     @Override
     protected void onHandleIntent(Intent intent) {
         I.Log("onHandleIntent()");
 		sp = I.SP(getBaseContext());
+		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
         target = intent.getStringExtra(I.REGEX);
         caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
         if (!caseSense)
@@ -53,6 +57,8 @@ public class SearchService extends IntentService {
         regex = intent.getBooleanExtra(I.SEARCH_REGEX, false);
 
         startForeground();
+		for (File file : getBaseContext().getFilesDir().listFiles())
+			file.delete();
         maxSize = I.SP(getBaseContext()).getInt(I.MAX_SIZE, maxSize);
         try {
             for (File file : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
@@ -71,7 +77,6 @@ public class SearchService extends IntentService {
     }
     File[] Strings2RFiles(ArrayList<String> stringsList) {
         int n = stringsList.size();
-		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
 		RFile[] filesList = new RFile[n];
         for (int i = 0; i < n; i++) {
 			filesList[i] = new RFile(stringsList.get(i));
@@ -106,12 +111,25 @@ public class SearchService extends IntentService {
 				int k = 0;
 				int lineCount = 0;
 				String lineCounts = "";
-				try {
+				try { // todo реализовать с RFile.readFile()
+					boolean needDelete = false;
+					String realPath = file.getAbsolutePath();
+					if (!file.canRead() && useRoot) {
+						String newPath = String.format("%1$s/%2$s", getBaseContext().getFilesDir().getAbsolutePath(), file.getName());
+						if (Cmd.easyExec(String.format("cp -F %1$s %2$s", file.getAbsolutePath(), newPath)) == 0) {
+							if (Cmd.easyExec(String.format("chmod 0777 %s", newPath)) != 0)
+								Cmd.easyExec(String.format("rm %s", newPath));
+							else {
+								file = new File(newPath);
+								needDelete = true;
+							}
+						}
+					}
 					InputStream fis = new FileInputStream(file);
 					InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 					BufferedReader br = new BufferedReader(isr);
 					boolean end = true;
-					while (!end || (line = br.readLine()) != null) { // хитрая конструкция
+					while (!end || (line = br.readLine()) != null) { // хитрая конструкция // ебать я пооняял... да я ж чёртов гений
 						lineCount++;
 						end = true; // оно тут нужно!
 						if (!caseSense)
@@ -150,10 +168,12 @@ public class SearchService extends IntentService {
 						}
 					}
 					if (k > 0) {
-						resultsList.add(file.getAbsolutePath());
+						resultsList.add(realPath);
 						resultsListLines.add(String.valueOf(k)); // исправить нормально
 						arrayOfPositions.add(lineCounts);
 					}
+					if (needDelete)
+						file.delete();
 				} catch (Exception e) {I.Log(e.toString());}
             } else
 				I.Log("FORMAT: "+str);

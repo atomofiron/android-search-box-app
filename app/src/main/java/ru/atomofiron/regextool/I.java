@@ -89,29 +89,4 @@ public class I {
         public void Snack(String str);
     }
 
-    public static boolean trySu() {
-        int code = -1;
-        Process exec = null;
-        OutputStream execOs = null;
-
-        try {
-            exec = Runtime.getRuntime().exec("su");
-            execOs = exec.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(execOs);
-
-            dos.writeBytes("su\n");
-            dos.flush();
-
-            dos.close();
-            code = exec.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (execOs != null) execOs.close();
-                if (exec != null) exec.destroy();
-            } catch (Exception ignored) {}
-        }
-        return code == 0;
-    }
 }

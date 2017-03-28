@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Fragments.ResultsFragment;
+import ru.atomofiron.regextool.Utils.Cmd;
 import ru.atomofiron.regextool.Utils.Permissions;
 
 public class MainActivity extends AppCompatActivity
@@ -169,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 				pathDialog.show();
 				break;
 			case R.id.use_root:
-				boolean useRoot = !sp.getBoolean(I.PREF_USE_ROOT, false) && I.trySu();
+				boolean useRoot = !sp.getBoolean(I.PREF_USE_ROOT, false) && Cmd.easyExec("su") == 0;
 				sp.edit().putBoolean(I.PREF_USE_ROOT, useRoot).apply();
 				updateUseRootIcon();
 				break;
