@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
 		SharedPreferences sp = I.SP(this);
 		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
-			helpDialog.show();
+			showHelp();
 			sp.edit().putBoolean(I.PREF_FIRST_START, false).apply();
 		}
 	}
@@ -125,14 +125,7 @@ public class MainActivity extends AppCompatActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.help:
-				if (helpDialog == null)
-					helpDialog = new AlertDialog.Builder(this)
-							.setTitle(getString(R.string.action_help))
-							.setMessage(getString(R.string.help))
-							.setNegativeButton("Ok", null)
-							.create();
-
-				helpDialog.show();
+				showHelp();
 				break;
 			case R.id.theme:
 				boolean value = !sp.getBoolean(I.PREF_DARK_THEME, false);
@@ -141,32 +134,7 @@ public class MainActivity extends AppCompatActivity
 				I.Toast(this, getString(R.string.need_restart), Toast.LENGTH_SHORT);
 				break;
 			case R.id.def_path:
-				if (pathDialog == null) {
-					final String path = sp.getString(I.STORAGE_PATH, "/");
-					final EditText et = new EditText(this);
-					et.setText(path);
-					pathDialog = new AlertDialog.Builder(this)
-							.setTitle(getString(R.string.def_path))
-							.setView(et)
-							.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									String newPath = et.getText().toString();
-									if (!newPath.equals(path) && !newPath.isEmpty())
-										sp.edit().putString(I.STORAGE_PATH, newPath).apply();
-									dialog.cancel();
-								}
-							})
-							.setNeutralButton(getString(R.string.reset), new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									et.setText(Environment.getExternalStorageDirectory().getAbsolutePath());
-								}
-							})
-							.setNegativeButton(getString(R.string.cancel), null)
-							.setCancelable(true).create();
-				}
-				pathDialog.show();
+				showConfig();
 				break;
 			case R.id.use_root:
 				boolean useRoot = !sp.getBoolean(I.PREF_USE_ROOT, false) && Cmd.easyExec("su") == 0;
@@ -175,6 +143,46 @@ public class MainActivity extends AppCompatActivity
 				break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void showHelp() {
+		if (helpDialog == null)
+			helpDialog = new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.action_help))
+					.setMessage(getString(R.string.help))
+					.setNegativeButton("Ok", null)
+					.create();
+
+		helpDialog.show();
+	}
+
+	private void showConfig() {
+		if (pathDialog == null) {
+			final String path = sp.getString(I.STORAGE_PATH, "/");
+			final EditText et = new EditText(this);
+			et.setText(path);
+			pathDialog = new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.def_path))
+					.setView(et)
+					.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							String newPath = et.getText().toString();
+							if (!newPath.equals(path) && !newPath.isEmpty())
+								sp.edit().putString(I.STORAGE_PATH, newPath).apply();
+							dialog.cancel();
+						}
+					})
+					.setNeutralButton(getString(R.string.reset), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							et.setText(Environment.getExternalStorageDirectory().getAbsolutePath());
+						}
+					})
+					.setNegativeButton(getString(R.string.cancel), null)
+					.setCancelable(true).create();
+		}
+		pathDialog.show();
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")

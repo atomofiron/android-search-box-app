@@ -137,6 +137,8 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 			}
 			if (checkable)
 				holder.check.setOnCheckedChangeListener(this);
+			else
+				holder.check.setVisibility(View.GONE);
             myView.setTag(holder);
         } else holder = (ViewHolder) myView.getTag();
 

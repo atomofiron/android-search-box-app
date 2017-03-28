@@ -97,7 +97,7 @@ public class MainFragment extends Fragment {
 							Environment.getExternalStorageDirectory().getAbsolutePath()).apply();
 
 		regexText = (RegexText)rootView.findViewById(R.id.regex_text);
-		caseToggle = (CheckBox)rootView.findViewById(R.id.case_senc);
+		caseToggle = (CheckBox)rootView.findViewById(R.id.case_sense);
 		infilesToggle = (CheckBox)rootView.findViewById(R.id.in_files);
 		regexToggle = (CheckBox)rootView.findViewById(R.id.simple_search);
 		regexToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
