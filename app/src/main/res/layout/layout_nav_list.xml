@@ -3,11 +3,10 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:gravity="bottom"
+	android:layout_height="match_parent"
+	android:background="#11ff0000"
 	android:orientation="vertical"
-	android:paddingTop="32dp"
-	android:theme="@style/ThemeOverlay.AppCompat.Dark">
+	android:paddingTop="32dp">
 
 	<TextView
 		android:layout_width="match_parent"
@@ -19,6 +18,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:id="@+id/history_list"
+		android:background="#1100ff00"
 		/>
 
 </LinearLayout>

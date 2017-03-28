@@ -157,10 +157,8 @@ public class MainFragment extends Fragment {
 			historyArray = new ArrayList<>();
 		else
 			historyArray = new ArrayList<>(set);
-		historyList = (ListView) ((NavigationView)mainActivity.findViewById(R.id.nav_view))
-				.getHeaderView(0).findViewById(R.id.history_list);
+		historyList = (ListView) mainActivity.findViewById(R.id.history_list);
 
-		// todo fix history list (one item visible now)
 		historyList.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, historyArray));
 		historyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
