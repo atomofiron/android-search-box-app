@@ -262,6 +262,7 @@ public class MainFragment extends Fragment {
 					needShowResults = true;
 					String regex = regexText.getText().toString();
 
+					historyArray.remove(regex);
 					historyArray.add(0, regex);
 					((ArrayAdapter)historyList.getAdapter()).notifyDataSetChanged();
 					sp.edit().putStringSet(I.PREF_HISTORY, new HashSet<>(historyArray)).apply();
