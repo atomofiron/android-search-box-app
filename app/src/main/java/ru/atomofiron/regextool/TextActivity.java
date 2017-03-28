@@ -43,6 +43,7 @@ public class TextActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		setTheme(I.SP(this).getBoolean(I.PREF_DARK_THEME, false) ? R.style.AppTheme : R.style.AppTheme_Light);
         setContentView(R.layout.activity_text);
         co = this;
 
