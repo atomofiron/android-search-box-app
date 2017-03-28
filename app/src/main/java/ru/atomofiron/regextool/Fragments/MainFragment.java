@@ -11,7 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -74,13 +74,22 @@ public class MainFragment extends Fragment {
 	public MainFragment() {}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
-		if (rootView == null)
-			rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		ac = getActivity();
 		sp = I.SP(ac);
+
+		dirReceiver = new Receiver();
+		ac.registerReceiver(dirReceiver, new IntentFilter(I.toMainActivity));
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		if (rootView != null)
+			return rootView;
+
+		rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 		if (sp.getString(I.STORAGE_PATH, null) == null)
 			sp.edit().putString(I.STORAGE_PATH,
@@ -106,8 +115,6 @@ public class MainFragment extends Fragment {
 		rootView.findViewById(R.id.dash).setOnClickListener(listener);
 		rootView.findViewById(R.id.roof).setOnClickListener(listener);
 		rootView.findViewById(R.id.buck).setOnClickListener(listener);
-		dirReceiver = new Receiver();
-		ac.registerReceiver(dirReceiver, new IntentFilter(I.toMainActivity));
 
 		viewPager = (ViewPager)rootView.findViewById(R.id.view_pager);
 		ArrayList<View> viewList = new ArrayList<>();
