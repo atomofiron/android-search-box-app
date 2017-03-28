@@ -5,8 +5,6 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:paddingLeft="@dimen/activity_horizontal_margin"
-	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	tools:context="ru.atomofiron.regextool.MainActivity"
@@ -14,7 +12,9 @@
 
 	<RelativeLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/activity_horizontal_margin"
+		android:layout_marginRight="@dimen/activity_horizontal_margin">
 		<ru.atomofiron.regextool.CustomViews.RegexText
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -39,6 +39,8 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/btn_pane"
 		android:orientation="horizontal"
+		android:layout_marginLeft="@dimen/activity_horizontal_margin"
+		android:layout_marginRight="@dimen/activity_horizontal_margin"
 		>
 		<Button
 			android:layout_width="0dp"
@@ -111,21 +113,21 @@
 		android:orientation="horizontal">
 		<CheckBox
 			android:layout_weight="1"
-			android:layout_width="0dp"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/case_sense"
 			android:text="@string/case_sens"
 			/>
 		<CheckBox
 			android:layout_weight="1"
-			android:layout_width="0dp"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/in_files"
 			android:text="@string/in_files"
 			/>
 		<CheckBox
 			android:layout_weight="1"
-			android:layout_width="0dp"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/simple_search"
 			android:text="@string/regex"
@@ -136,11 +138,15 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/tab_layout"
+		android:layout_marginLeft="@dimen/activity_horizontal_margin"
+		android:layout_marginRight="@dimen/activity_horizontal_margin"
 		/>
 	<android.support.v4.view.ViewPager
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:id="@+id/view_pager"
+		android:layout_marginLeft="@dimen/activity_horizontal_margin"
+		android:layout_marginRight="@dimen/activity_horizontal_margin"
 		>
 	</android.support.v4.view.ViewPager>
 </LinearLayout>

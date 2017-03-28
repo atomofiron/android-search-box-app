@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
 		FragmentTransaction transaction = fragmentManager.beginTransaction().replace(R.id.container, fragment);
 		if (back)
 			transaction.addToBackStack("results");
-		transaction.commit();
+		transaction.commitAllowingStateLoss();
 	}
 
 	@Override
