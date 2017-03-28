@@ -102,8 +102,8 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	protected void onStart() {
-		updateUseRootIcon();
 		super.onStart();
+		updateUseRootIcon();
 	}
 
 	@Override
