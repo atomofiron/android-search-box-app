@@ -65,9 +65,7 @@ public class MainActivity extends AppCompatActivity
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
 
-
 		fab = (FloatingActionButton)findViewById(R.id.fab);
-		fab.setVisibility(View.GONE);
 
 		mainFragment = new MainFragment();
 		mainFragment.setSnackListener(this);
