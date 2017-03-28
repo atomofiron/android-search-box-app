@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 
 import java.io.BufferedReader;
@@ -15,6 +16,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import ru.atomofiron.regextool.Utils.RFile;
 
 public class SearchService extends IntentService {
 
@@ -33,10 +36,12 @@ public class SearchService extends IntentService {
     boolean caseSense = false;
     int maxSize = 1024*1024;
     String target;
+	private SharedPreferences sp;
 
     @Override
     protected void onHandleIntent(Intent intent) {
         I.Log("onHandleIntent()");
+		sp = I.SP(getBaseContext());
         target = intent.getStringExtra(I.REGEX);
         caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
         if (!caseSense)
@@ -50,7 +55,7 @@ public class SearchService extends IntentService {
         startForeground();
         maxSize = I.SP(getBaseContext()).getInt(I.MAX_SIZE, maxSize);
         try {
-            for (File file : Strings2Files(intent.getStringArrayListExtra(I.SEARCH_LIST)))
+            for (File file : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
                 if (inFiles)
                 	searchInFiles(file);
 				else
@@ -64,11 +69,14 @@ public class SearchService extends IntentService {
         }
         done = true;
     }
-    File[] Strings2Files(ArrayList<String> stringsList) {
+    File[] Strings2RFiles(ArrayList<String> stringsList) {
         int n = stringsList.size();
-        File[] filesList = new File[n];
-        for (int i = 0; i < n; i++)
-        	filesList[i] = new File(stringsList.get(i));
+		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
+		RFile[] filesList = new RFile[n];
+        for (int i = 0; i < n; i++) {
+			filesList[i] = new RFile(stringsList.get(i));
+			filesList[i].useRoot = useRoot;
+		}
         return filesList;
     }
 

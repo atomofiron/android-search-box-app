@@ -3,7 +3,6 @@ package ru.atomofiron.regextool;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -39,6 +38,7 @@ public class MainActivity extends AppCompatActivity
 	private AlertDialog helpDialog = null;
 	private AlertDialog pathDialog = null;
 	private SharedPreferences sp;
+	private MenuItem useRootItem;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,11 +100,25 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
+	protected void onStart() {
+		updateUseRootIcon();
+		super.onStart();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 		menu.findItem(R.id.theme).setIcon(sp.getBoolean(I.PREF_DARK_THEME, false) ?
 				R.drawable.ic_light : R.drawable.ic_dark);
+		useRootItem = menu.findItem(R.id.use_root);
+		updateUseRootIcon();
 		return true;
+	}
+
+	private void updateUseRootIcon() {
+		if (useRootItem != null)
+			useRootItem.setIcon(sp.getBoolean(I.PREF_USE_ROOT, false) ?
+					R.drawable.hash : R.drawable.hash_dis);
 	}
 
 	@Override
@@ -126,7 +140,7 @@ public class MainActivity extends AppCompatActivity
 				item.setIcon(value ? R.drawable.ic_light : R.drawable.ic_dark);
 				I.Toast(this, getString(R.string.need_restart), Toast.LENGTH_SHORT);
 				break;
-			case R.id.settings:
+			case R.id.def_path:
 				if (pathDialog == null) {
 					final String path = sp.getString(I.STORAGE_PATH, "/");
 					final EditText et = new EditText(this);
@@ -153,6 +167,11 @@ public class MainActivity extends AppCompatActivity
 							.setCancelable(true).create();
 				}
 				pathDialog.show();
+				break;
+			case R.id.use_root:
+				boolean useRoot = !sp.getBoolean(I.PREF_USE_ROOT, false) && I.trySu();
+				sp.edit().putBoolean(I.PREF_USE_ROOT, useRoot).apply();
+				updateUseRootIcon();
 				break;
 		}
 		return super.onOptionsItemSelected(item);

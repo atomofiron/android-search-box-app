@@ -36,4 +36,5 @@
 	<string name="no_checked">You didn\'t choose any directory!</string>
 	<string name="theme">Theme</string>
 	<string name="need_restart">Restart required</string>
+	<string name="use_root">Use root</string>
 </resources>

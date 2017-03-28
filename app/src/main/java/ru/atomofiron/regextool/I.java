@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.DataOutputStream;
+import java.io.OutputStream;
+
 
 public class I {
 
@@ -38,7 +41,8 @@ public class I {
 	public static final String SELECTED_LIST = "SELECTED_LIST";
     public static final String RES_PERM = "android.permission.WRITE_EXTERNAL_STORAGE";
 
-    public static final String PREF_DARK_THEME = "android.permission.WRITE_EXTERNAL_STORAGE";
+    public static final String PREF_DARK_THEME = "PREF_DARK_THEME";
+    public static final String PREF_USE_ROOT = "PREF_USE_ROOT";
 
     public static void Log(String message) {
         Log.e("atomofiron", message);
@@ -83,5 +87,31 @@ public class I {
 
     public interface SnackListener {
         public void Snack(String str);
+    }
+
+    public static boolean trySu() {
+        int code = -1;
+        Process exec = null;
+        OutputStream execOs = null;
+
+        try {
+            exec = Runtime.getRuntime().exec("su");
+            execOs = exec.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(execOs);
+
+            dos.writeBytes("su\n");
+            dos.flush();
+
+            dos.close();
+            code = exec.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (execOs != null) execOs.close();
+                if (exec != null) exec.destroy();
+            } catch (Exception ignored) {}
+        }
+        return code == 0;
     }
 }

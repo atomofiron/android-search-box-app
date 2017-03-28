@@ -24,8 +24,8 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
     private Context co;
 	private SharedPreferences sp;
     private final ArrayList<String> selectedPathsList = new ArrayList<>();
-	private ArrayList<String> countsList = new ArrayList<>();
-	private ArrayList<String> checkedPathsList = new ArrayList<>();
+	private final ArrayList<String> countsList = new ArrayList<>();
+	private final ArrayList<String> checkedPathsList = new ArrayList<>();
 
     public boolean counted = false;
     public boolean checkable = false;
@@ -36,12 +36,15 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 	}
 
 	public void setCountsList(ArrayList<String> countsList) {
-		this.countsList = countsList;
+		this.countsList.clear();
+		if (countsList != null)
+			this.countsList.addAll(countsList);
 	}
 
 	public void setList(ArrayList<String> paths) {
 		selectedPathsList.clear();
-		selectedPathsList.addAll(paths);
+		if (paths != null)
+			selectedPathsList.addAll(paths);
 
 		notifyDataSetChanged();
 	}
@@ -127,7 +130,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
             holder.check = (CheckBox)myView.findViewById(R.id.checkbox);
             holder.check.setVisibility(counted ? View.GONE : View.VISIBLE);
 
-			if (counted) {
+			if (countsList.size() > position) {
 				holder.icon.setVisibility(View.GONE);
 				holder.count.setVisibility(View.VISIBLE);
 				holder.check.setVisibility(View.GONE);
@@ -143,7 +146,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 				R.drawable.ic_folder : R.drawable.ic_file);
         holder.check.setTag(path);
 
-		if (counted)
+		if (countsList.size() > position)
 			holder.count.setText(countsList.get(position));
 		if (checkable)
         	holder.check.setChecked(checkedPathsList.contains(path));

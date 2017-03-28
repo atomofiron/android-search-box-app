@@ -56,9 +56,8 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 			I.Log("resultsList: "+ resultsList.toString());
 
 			listAdapter = new ListAdapter(ac);
-			listAdapter.counted = true;
-			listAdapter.setCountsList(getArguments().getStringArrayList(I.RESULT_LIST_COUNTS));
 			listAdapter.setList(resultsList);
+			listAdapter.setCountsList(getArguments().getStringArrayList(I.RESULT_LIST_COUNTS));
 
 			rootView.setOnItemLongClickListener(this);
 			rootView.setOnItemClickListener(this);
@@ -90,12 +89,13 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		Intent intent = new Intent()
 				.setAction(android.content.Intent.ACTION_VIEW)
 				.setDataAndType(Uri.fromFile(file), name);
+		ArrayList<String> resultLinePositions = getArguments().getStringArrayList(I.RESULT_LIST_LINE_POSITIONS);
 		if (I.isTextFile(format))
 			startActivity(new Intent(ac, TextActivity.class)
 					.putExtra(I.RESULT_PATH, resultsList.get(position))
 					.putExtra(I.TARGET, getArguments().getString(I.TARGET))
-					.putExtra(I.RESULT_LINE_COUNTS,
-							getArguments().getStringArrayList(I.RESULT_LIST_LINE_POSITIONS).get(position)));
+					.putExtra(I.RESULT_LINE_COUNTS, resultLinePositions.size() > 0 ?
+							resultLinePositions.get(position) : "0"));
 		else if (intent.resolveActivity(ac.getPackageManager()) != null)
 			startActivityForResult(intent, 10);
 		else

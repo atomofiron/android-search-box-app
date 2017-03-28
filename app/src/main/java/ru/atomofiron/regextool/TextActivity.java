@@ -33,7 +33,7 @@ public class TextActivity extends AppCompatActivity {
     int[] counts;
     int count;
     int[] pares;
-    int curPos=0;
+    int curPos = 0;
     boolean ready = false;
 
     @Override
@@ -51,7 +51,7 @@ public class TextActivity extends AppCompatActivity {
         counter.setText(String.format("0/%d", count));
         counts = new int[count];
         for (int i = 0; i < curCounts.length; i++)
-            counts[i]=Integer.parseInt(curCounts[i]);
+            counts[i] = Integer.parseInt(curCounts[i]);
         final String target = getIntent().getStringExtra(I.TARGET);
 
         listener = new Listener();
@@ -92,7 +92,10 @@ public class TextActivity extends AppCompatActivity {
                         }
                         exitText += /*line_n+"_"+*/line+"\n";
                     }
-                } catch (Exception e) { I.Log(e.toString()); }
+                } catch (Exception e) {
+					I.Log(e.toString());
+					exitText = e.toString();
+                }
 
                 final Spannable spanRange = new SpannableString(exitText);
                 for (int i = 0; i < count; i++)
