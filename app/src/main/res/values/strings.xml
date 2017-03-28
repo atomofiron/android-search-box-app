@@ -1,12 +1,8 @@
 <resources>
 	<string name="app_name">Regex Finder</string>
 	<string name="action_help">Help</string>
-	<string name="action_settings">Settings</string>
-	<string name="activity_results">Results</string>
-	<string name="activity_select">Choose the directory</string>
 
 	<string name="case_sens">Case sensitivity</string>
-	<string name="where">Where to look:</string>
 	<string name="storage_err">Error accessing memory</string>
 	<string name="searching">Search…</string>
 	<string name="error">Error(</string>
@@ -20,17 +16,9 @@
 	<string name="find">Find</string>
 	<string name="in_files">Look in files</string>
 	<string name="regex">Use regexp</string>
-	<string name="need_pro">Coming soon ;)</string>
 	<string name="bad_ex">Incorrect regular expression</string>
 	<string name="def_path">Default directory</string>
 	<string name="reset">Reset</string>
-	<string name="title_activity_main2">Main2Activity</string>
-
-	<string name="navigation_drawer_open">Open navigation drawer</string>
-	<string name="navigation_drawer_close">Close navigation drawer</string>
-
-	<!-- TODO: Remove or change this placeholder text -->
-	<string name="hello_blank_fragment">Hello blank fragment</string>
 	<string name="selected">Selected</string>
 	<string name="provider">Provider</string>
 	<string name="no_checked">You didn\'t choose any directory!</string>
@@ -38,4 +26,7 @@
 	<string name="need_restart">Restart required</string>
 	<string name="use_root">Use root</string>
 	<string name="history">History</string>
+
+	<string name="navigation_drawer_open">Open navigation drawer</string>
+	<string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

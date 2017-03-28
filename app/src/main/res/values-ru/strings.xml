@@ -1,12 +1,8 @@
 <resources>
     <string name="app_name">Regex Finder</string>
     <string name="action_help">Помощь</string>
-    <string name="action_settings">Настройки</string>
-    <string name="activity_results">Результаты</string>
-    <string name="activity_select">Выберете директорию</string>
 
     <string name="case_sens">Чувствительность к регистру</string>
-    <string name="where">Где искать:</string>
     <string name="storage_err">Ошибка доступа к памяти</string>
     <string name="searching">Поиск…</string>
     <string name="error">Ошибка(</string>
@@ -30,4 +26,7 @@
     <string name="need_restart">Нужен перезапуск</string>
 	<string name="use_root">Использовать root</string>
 	<string name="history">История</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

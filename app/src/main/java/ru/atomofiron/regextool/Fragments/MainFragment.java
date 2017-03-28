@@ -69,7 +69,7 @@ public class MainFragment extends Fragment {
 	private I.SnackListener snackListener = null;
 	private OnResultListener onResultListener = null;
 
-	public MainActivity mainActivity;
+	private MainActivity mainActivity;
 
 	public MainFragment() {}
 
@@ -77,6 +77,7 @@ public class MainFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ac = getActivity();
+		mainActivity = (MainActivity) ac;
 		sp = I.SP(ac);
 
 		dirReceiver = new Receiver();
@@ -255,7 +256,6 @@ public class MainFragment extends Fragment {
 	private class ButtonListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			I.Log("onClick()");
 			String symbol;
 			switch (v.getId()) {
 				case R.id.go:

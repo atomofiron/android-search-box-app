@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity
 		mainFragment = new MainFragment();
 		mainFragment.setSnackListener(this);
 		mainFragment.setOnResultListener(this);
-		mainFragment.mainActivity = this; // да, всё оч плохо
 
 		fragmentManager = getSupportFragmentManager();
 		setFragment(mainFragment, false);
