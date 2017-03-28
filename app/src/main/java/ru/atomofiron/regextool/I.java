@@ -43,6 +43,7 @@ public class I {
 
     public static final String PREF_DARK_THEME = "PREF_DARK_THEME";
     public static final String PREF_USE_ROOT = "PREF_USE_ROOT";
+    public static final String PREF_HISTORY = "PREF_HISTORY";
 
     public static void Log(String message) {
         Log.e("atomofiron", message);

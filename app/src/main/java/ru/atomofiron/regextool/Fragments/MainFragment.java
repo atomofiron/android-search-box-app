@@ -8,28 +8,30 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import ru.atomofiron.regextool.Adapters.FilesAdapter;
@@ -61,6 +63,8 @@ public class MainFragment extends Fragment {
 	private SharedPreferences sp;
 	private boolean needShowResults = true;
 	private ViewPager viewPager;
+	private ListView historyList;
+	private ArrayList<String> historyArray;
 
 	private I.SnackListener snackListener = null;
 	private OnResultListener onResultListener = null;
@@ -146,6 +150,23 @@ public class MainFragment extends Fragment {
 					filesListAdapter.updateSelected();
 			}
 			public void onPageScrollStateChanged(int state) {}
+		});
+
+		Set<String> set = sp.getStringSet(I.PREF_HISTORY, null);
+		if (set == null)
+			historyArray = new ArrayList<>();
+		else
+			historyArray = new ArrayList<>(set);
+		historyList = (ListView) ((NavigationView)mainActivity.findViewById(R.id.nav_view))
+				.getHeaderView(0).findViewById(R.id.history_list);
+
+		// todo fix history list (one item visible now)
+		historyList.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, historyArray));
+		historyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				regexText.setText((String)historyList.getAdapter().getItem(position));
+				((DrawerLayout)mainActivity.findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
+			}
 		});
 
 		return rootView;
@@ -235,6 +256,11 @@ public class MainFragment extends Fragment {
 				case R.id.go:
 					needShowResults = true;
 					String regex = regexText.getText().toString();
+
+					historyArray.add(0, regex);
+					((ArrayAdapter)historyList.getAdapter()).notifyDataSetChanged();
+					sp.edit().putStringSet(I.PREF_HISTORY, new HashSet<>(historyArray)).apply();
+
 					if (!regexToggle.isChecked())
 						try { Pattern.compile(regex);
 						} catch (Exception ignored) {
