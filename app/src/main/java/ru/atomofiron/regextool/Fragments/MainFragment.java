@@ -24,9 +24,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.ToggleButton;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,9 +51,9 @@ public class MainFragment extends Fragment {
 	private View rootView;
 
 	private RegexText regexText;
-	private ToggleButton caseToggle;
-	private ToggleButton infilesToggle;
-	private ToggleButton regexToggle;
+	private CheckBox caseToggle;
+	private CheckBox infilesToggle;
+	private CheckBox regexToggle;
 	private ListView selectedListView;
 	private ListView filesListView;
 
@@ -97,9 +97,9 @@ public class MainFragment extends Fragment {
 							Environment.getExternalStorageDirectory().getAbsolutePath()).apply();
 
 		regexText = (RegexText)rootView.findViewById(R.id.regex_text);
-		caseToggle = (ToggleButton)rootView.findViewById(R.id.case_senc);
-		infilesToggle = (ToggleButton)rootView.findViewById(R.id.in_files);
-		regexToggle = (ToggleButton)rootView.findViewById(R.id.simple_search);
+		caseToggle = (CheckBox)rootView.findViewById(R.id.case_senc);
+		infilesToggle = (CheckBox)rootView.findViewById(R.id.in_files);
+		regexToggle = (CheckBox)rootView.findViewById(R.id.simple_search);
 		regexToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				regexText.checkPatternValid(isChecked);

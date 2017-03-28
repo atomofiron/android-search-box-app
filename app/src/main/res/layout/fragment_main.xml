@@ -110,26 +110,23 @@
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
 		android:gravity="center">
-		<ToggleButton
+		<CheckBox
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:drawableBottom="@drawable/ic_case"
 			android:id="@+id/case_senc"
-			android:textSize="0sp"
+			android:text="@string/case_sens"
 			/>
-		<ToggleButton
+		<CheckBox
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:drawableBottom="@drawable/ic_in_file"
 			android:id="@+id/in_files"
-			android:textSize="0sp"
+			android:text="@string/in_files"
 			/>
-		<ToggleButton
+		<CheckBox
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:drawableBottom="@drawable/ic_regex"
 			android:id="@+id/simple_search"
-			android:textSize="0sp"
+			android:text="@string/regex"
 			/>
 	</LinearLayout>
 
