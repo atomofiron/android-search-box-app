@@ -11,7 +11,7 @@
 	<string name="cancel">Cancel</string>
 	<string name="stop">Stop</string>
 	<string name="no_activity">You have no application able to open a file of this type</string>
-	<string name="help">The list on the search screen:\nLong press to delete the record.\n\nOn the selection screen of the directory:\nShort press - go, long to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
+	<string name="help">The list of selected dirs:\nLong press to delete the record, checkbox to use.\n\nOn the selection list of the directory:\nShort press - go, checkbox to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
 	<string name="results">Your search returned %d results</string>
 	<string name="find">Find</string>
 	<string name="in_files">Look in files</string>
