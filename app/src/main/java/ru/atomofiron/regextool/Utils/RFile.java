@@ -85,9 +85,10 @@ public class RFile extends File {
 			isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 			br = new BufferedReader(isr);
 			String line;
+			int n = 0;
 			while ((line = br.readLine()) != null) {
-				I.Log("line = "+line);
-				listener.onReadLine(line);
+				listener.onReadLine(line, n);
+				n++;
 			}
 		} catch (Exception e) {
 			I.Log(e.toString());
@@ -106,6 +107,6 @@ public class RFile extends File {
 	}
 
 	public interface OnReadLineListener {
-		public void onReadLine(String line);
+		public void onReadLine(String line, int lineNum);
 	}
 }

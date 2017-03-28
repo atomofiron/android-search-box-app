@@ -24,7 +24,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
     private Context co;
 	private SharedPreferences sp;
     private final ArrayList<String> selectedPathsList = new ArrayList<>();
-	private final ArrayList<String> countsList = new ArrayList<>();
+	private final ArrayList<Integer> countsList = new ArrayList<>();
 	private final ArrayList<String> checkedPathsList = new ArrayList<>();
 
     public boolean counted = false;
@@ -35,7 +35,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		sp = I.SP(co);
 	}
 
-	public void setCountsList(ArrayList<String> countsList) {
+	public void setCountsList(ArrayList<Integer> countsList) {
 		this.countsList.clear();
 		if (countsList != null)
 			this.countsList.addAll(countsList);
@@ -147,7 +147,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
         holder.check.setTag(path);
 
 		if (countsList.size() > position)
-			holder.count.setText(countsList.get(position));
+			holder.count.setText(String.valueOf(countsList.get(position)));
 		if (checkable)
         	holder.check.setChecked(checkedPathsList.contains(path));
 

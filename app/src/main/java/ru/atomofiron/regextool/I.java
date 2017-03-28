@@ -30,8 +30,7 @@ public class I {
     public static final String SEARCH_LIST = "SEARCH_LIST";
     public static final String RESULT_LIST = "RESULT_LIST";
     public static final String RESULT_LIST_COUNTS = "RESULT_LIST_COUNTS";
-    public static final String RESULT_LINE_COUNTS = "RESULT_LINE_COUNTS";
-    public static final String RESULT_LIST_LINE_POSITIONS = "RESULT_LIST_LINE_POSITIONS";
+    public static final String RESULT_LINE_NUMS = "RESULT_LINE_NUMS";
     public static final String RESULT_PATH = "RESULT_PATH";
     public static final String CASE_SENSE = "CASE_SENSE";
     public static final String REGEX = "REGEX";

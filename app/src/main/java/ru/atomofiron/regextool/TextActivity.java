@@ -12,13 +12,9 @@ import android.text.style.BackgroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ru.atomofiron.regextool.Utils.RFile;
 
@@ -40,6 +36,9 @@ public class TextActivity extends AppCompatActivity {
     boolean ready = false;
 	private int target_n;
 	private int length;
+	private String target;
+	private boolean isRegex;
+	private boolean caseSense;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +50,15 @@ public class TextActivity extends AppCompatActivity {
         textView = (TextView)findViewById(R.id.text);
         scrollView = (NestedScrollView)findViewById(R.id.scroll_text);
 
-        String[] curCounts = getIntent().getStringExtra(I.RESULT_LINE_COUNTS).split(" ");
+		isRegex = getIntent().getBooleanExtra(I.SEARCH_REGEX, false);
+		caseSense = getIntent().getBooleanExtra(I.CASE_SENSE, false);
+        String[] curCounts = getIntent().getStringExtra(I.RESULT_LINE_NUMS).split(" ");
         count = curCounts.length;
         counter.setText(String.format("0/%d", count));
         counts = new int[count];
         for (int i = 0; i < curCounts.length; i++)
             counts[i] = Integer.parseInt(curCounts[i]);
-        final String target = getIntent().getStringExtra(I.TARGET);
+        target = getIntent().getStringExtra(I.TARGET);
 
         listener = new Listener();
         fabPrev = (FloatingActionButton) findViewById(R.id.fab_prev);
@@ -75,18 +76,32 @@ public class TextActivity extends AppCompatActivity {
 				length = 0;
 				RFile file = new RFile(getIntent().getStringExtra(I.RESULT_PATH));
 				file.useRoot = I.SP(co).getBoolean(I.PREF_USE_ROOT, false);
+				final Pattern pattern = caseSense ?
+						Pattern.compile(target) :
+						Pattern.compile(target, Pattern.CASE_INSENSITIVE);
 				file.readFile(co, new RFile.OnReadLineListener() {
-					public void onReadLine(String line) {
+					public void onReadLine(String line, int lineNum) {
 						lines.add(String.format("%s\n", line));
-						if (isTarget(lines.size())) {
-							int start = line.indexOf(target);
-							int end = start + target.length();
-							if (start == -1) {
-								start = 0;
-								end = line.length() - 1; // ???          -1          ???
+						if (isTarget(lineNum)) {
+							int start = length;
+							int end = length;
+
+							if (isRegex) {
+								Matcher m = pattern.matcher(line);
+								if (m.find()) {
+									start += m.start();
+									end += m.end();
+								} else
+									end += line.length();
+							} else {
+								int index = line.indexOf(target) ;
+								if (index != -1) {
+									start += index;
+									end = target.length();
+								} else
+									end += line.length();
 							}
-							start += length;
-							end += length;
+
 							pares[target_n*2] = start;
 							pares[target_n*2+1] = end;
 							target_n++;
@@ -94,36 +109,6 @@ public class TextActivity extends AppCompatActivity {
 						length += line.length() + 1;
 					}
 				});
-                /*try {
-                    InputStream fis = new FileInputStream(new File(getIntent().getStringExtra(I.RESULT_PATH)));
-                    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-                    BufferedReader br = new BufferedReader(isr);
-                    String line;
-                    int line_n = 0;
-                    int target_n = 0;
-                    while ((line = br.readLine()) != null) {
-                        line_n++;
-                        if (isTarget(line_n)) {
-                            I.Log("isTarget(k)");
-                            int start = line.indexOf(target);
-                            int end = start + target.length();
-                            if (start == -1) {
-                                start = 0;
-                                end = line.length() - 1; // ???          -1          ???
-                            }
-                            start += exitText.length();
-                            end += exitText.length();
-                            //int offset = (line_n+"_").length();
-                            pares[target_n*2] = start;//+offset;
-                            pares[target_n*2+1] = end;//+offset;
-                            target_n++;
-                        }
-                        exitText += line+"\n";
-                    }
-                } catch (Exception e) {
-					I.Log(e.toString());
-					exitText = e.toString();
-                }*/
 
 				StringBuilder sb = new StringBuilder("");
 				for (String line : lines)

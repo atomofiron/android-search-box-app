@@ -8,43 +8,39 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ru.atomofiron.regextool.Utils.Cmd;
 import ru.atomofiron.regextool.Utils.RFile;
 
-public class SearchService extends IntentService {
+public class SearchService extends IntentService implements RFile.OnReadLineListener {
 
     public SearchService() {
         super("SearchService");
     }
 
-    ArrayList<String> resultsList = new ArrayList<>();
-    ArrayList<String> resultsListLines = new ArrayList<>();
-    ArrayList<String> arrayOfPositions = new ArrayList<>();
+    ArrayList<String> resultListOfFilePaths = new ArrayList<>();
+    ArrayList<Integer> resultListOfLineCounts = new ArrayList<>();
+    ArrayList<String> resultListOfLineNums = new ArrayList<>();
     Pattern pattern;
 
     boolean done = false; // у меня на Meizu без этого сервис при его закрытии не умирает // это вообще по-русски написано?..
     boolean inFiles = false;
-    boolean regex = false;
+    boolean isRegex = false;
     boolean caseSense = false;
     int maxSize = 1024*1024;
     String target;
 	private SharedPreferences sp;
 	private boolean useRoot;
+	private Context co;
+	private final ArrayList<Integer> lineNums = new ArrayList<>();
 
     @Override
     protected void onHandleIntent(Intent intent) {
         I.Log("onHandleIntent()");
-		sp = I.SP(getBaseContext());
+		co = getBaseContext();
+		sp = I.SP(co);
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
         target = intent.getStringExtra(I.REGEX);
         caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
@@ -54,18 +50,18 @@ public class SearchService extends IntentService {
                 Pattern.compile(target) :
                 Pattern.compile(target, Pattern.CASE_INSENSITIVE);
         inFiles = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
-        regex = intent.getBooleanExtra(I.SEARCH_REGEX, false);
+        isRegex = intent.getBooleanExtra(I.SEARCH_REGEX, false);
 
         startForeground();
-		for (File file : getBaseContext().getFilesDir().listFiles())
+		for (File file : co.getFilesDir().listFiles())
 			file.delete();
-        maxSize = I.SP(getBaseContext()).getInt(I.MAX_SIZE, maxSize);
+        maxSize = I.SP(co).getInt(I.MAX_SIZE, maxSize);
         try {
-            for (File file : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
+            for (RFile rfile : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
                 if (inFiles)
-                	searchInFiles(file);
+                	searchInFiles(rfile);
 				else
-					search(file);
+					search(rfile);
             if (!done)
             	sendResults(I.SEARCH_OK);
         } catch (Exception e) {
@@ -75,7 +71,7 @@ public class SearchService extends IntentService {
         }
         done = true;
     }
-    File[] Strings2RFiles(ArrayList<String> stringsList) {
+    RFile[] Strings2RFiles(ArrayList<String> stringsList) {
         int n = stringsList.size();
 		RFile[] filesList = new RFile[n];
         for (int i = 0; i < n; i++) {
@@ -87,112 +83,61 @@ public class SearchService extends IntentService {
 
     void search(File file) {
         if (pattern.matcher(file.getName()).find())
-        	resultsList.add(file.getAbsolutePath());
+        	resultListOfFilePaths.add(file.getAbsolutePath());
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (file.listFiles() != null && file.listFiles().length > 0)
-                for (File nextfile : files)
-                	search(nextfile);
+                for (File f : files)
+                	search(f);
         }
     }
-    void searchInFiles(File file) {
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (file.listFiles() != null && file.listFiles().length > 0)
-                for (File nextfile : files)
-                	searchInFiles(nextfile);
-        } else if (file.length() < maxSize) {
-            //I.Log("file: "+file.getName());
-            String str = file.getName();
-            str = str.substring(str.lastIndexOf('.')+1);
-            if (I.isTextFile(str)) {
-				//I.Log("look: "+file.getName());
-				String line = "";
-				int k = 0;
-				int lineCount = 0;
-				String lineCounts = "";
-				try { // todo реализовать с RFile.readFile()
-					boolean needDelete = false;
-					String realPath = file.getAbsolutePath();
-					if (!file.canRead() && useRoot) {
-						String newPath = String.format("%1$s/%2$s", getBaseContext().getFilesDir().getAbsolutePath(), file.getName());
-						if (Cmd.easyExec(String.format("cp -F %1$s %2$s", file.getAbsolutePath(), newPath)) == 0) {
-							if (Cmd.easyExec(String.format("chmod 0777 %s", newPath)) != 0)
-								Cmd.easyExec(String.format("rm %s", newPath));
-							else {
-								file = new File(newPath);
-								needDelete = true;
-							}
-						}
-					}
-					InputStream fis = new FileInputStream(file);
-					InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-					BufferedReader br = new BufferedReader(isr);
-					boolean end = true;
-					while (!end || (line = br.readLine()) != null) { // хитрая конструкция // ебать я пооняял... да я ж чёртов гений
-						lineCount++;
-						end = true; // оно тут нужно!
-						if (!caseSense)
-							line = line.toLowerCase();
-						if (!regex) {
-							if (line.contains(target)) {
-								I.Log(" catch: " + line);
-								lineCounts += lineCount + " ";
-								k++;
-								// end = false; // ну эт потом
-							}
-						} else {
-							Matcher m = pattern.matcher(line);
-							if (m.find()) {
-								I.Log(" catch: " + line);
-								if (BuildConfig.DEBUG)
-									try {
-										I.Log("start() = " + m.start());
-										I.Log("regionStart() = " + m.regionStart());
-										I.Log("end() = " + m.end());
-										I.Log("regionEnd() = " + m.regionEnd());
-										I.Log("groupCount() = " + m.groupCount());
-										if (m.groupCount() > 0)
-											I.Log("group(1) = " + m.group(1));
-										else I.Log("group() = " + m.group());
-									} catch (Exception e) {
-										I.Log("group: " + e.toString());
-									}
-								lineCounts += lineCount + " ";
-								k++;
-								if (m.end() != m.regionEnd()) {
-									end = false;
-									line = line.substring(m.end());
-								}
-							}
-						}
-					}
-					if (k > 0) {
-						resultsList.add(realPath);
-						resultsListLines.add(String.valueOf(k)); // исправить нормально
-						arrayOfPositions.add(lineCounts);
-					}
-					if (needDelete)
-						file.delete();
-				} catch (Exception e) {I.Log(e.toString());}
-            } else
-				I.Log("FORMAT: "+str);
+    void searchInFiles(RFile rfile) {
+        if (rfile.isDirectory()) {
+            File[] files = rfile.listFiles();
+            if (files != null)
+                for (File f : files)
+                	searchInFiles((RFile) f);
+        } else if (rfile.length() < maxSize && I.isTextFile(rfile.getName())) {
+			lineNums.clear();
 
+			rfile.readFile(co, this);
+
+			if (lineNums.size() > 0) {
+				resultListOfFilePaths.add(rfile.getAbsolutePath());
+				resultListOfLineCounts.add(lineNums.size());
+
+				StringBuilder lineNums = new StringBuilder("");
+				for (Integer n : this.lineNums)
+					lineNums.append(String.valueOf(n)).append(" ");
+
+				resultListOfLineNums.add(lineNums.toString());
+			}
         }
     }
-
+	@Override
+	public void onReadLine(String line, int lineNum) {
+		if (!caseSense)
+			line = line.toLowerCase();
+		if (!isRegex) {
+			if (line.contains(target))
+				lineNums.add(lineNum);
+		} else if (pattern.matcher(line).find())
+			lineNums.add(lineNum);
+	}
 
     void sendResults(int code) {
-        I.Log("sendResults("+code+") "+resultsList.size()+" "+resultsListLines.size());
+        I.Log("sendResults("+code+") "+ resultListOfFilePaths.size()+" "+ resultListOfLineCounts.size());
         Intent intent = new Intent(I.toMainActivity).putExtra(I.SEARCH_IN_FILES,inFiles);
         if (code == I.SEARCH_OK)
             intent
-                    .putExtra(I.SEARCH_CODE, resultsList.size())
+                    .putExtra(I.SEARCH_CODE, resultListOfFilePaths.size())
+                    .putExtra(I.SEARCH_REGEX, isRegex)
                     .putExtra(I.TARGET, target)
-                    .putExtra(I.RESULT_LIST, resultsList)
-                    .putExtra(I.RESULT_LIST_COUNTS, resultsListLines)
-                    .putExtra(I.RESULT_LIST_LINE_POSITIONS, arrayOfPositions);
-        else intent.putExtra(I.SEARCH_CODE,code);
+                    .putExtra(I.RESULT_LIST, resultListOfFilePaths)
+                    .putExtra(I.RESULT_LIST_COUNTS, resultListOfLineCounts)
+                    .putExtra(I.RESULT_LINE_NUMS, resultListOfLineNums);
+        else
+        	intent.putExtra(I.SEARCH_CODE, code);
         sendBroadcast(intent);
     }
 
