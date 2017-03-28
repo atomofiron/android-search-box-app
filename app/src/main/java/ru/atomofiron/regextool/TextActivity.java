@@ -52,7 +52,7 @@ public class TextActivity extends AppCompatActivity {
 
 		isRegex = getIntent().getBooleanExtra(I.SEARCH_REGEX, false);
 		caseSense = getIntent().getBooleanExtra(I.CASE_SENSE, false);
-        String[] curCounts = getIntent().getStringExtra(I.RESULT_LINE_NUMS).split(" ");
+        String[] curCounts = getIntent().getStringExtra(I.RESULT_LINE_NUMS).split(",");
         count = curCounts.length;
         counter.setText(String.format("0/%d", count));
         counts = new int[count];
@@ -82,31 +82,31 @@ public class TextActivity extends AppCompatActivity {
 				file.readFile(co, new RFile.OnReadLineListener() {
 					public void onReadLine(String line, int lineNum) {
 						lines.add(line);
+						int len = line.length();
 						if (isTarget(lineNum)) {
-							int start = length;
-							int end = length;
 
+							int sumLastSubStrLen = 0;
 							if (isRegex) {
-								Matcher m = pattern.matcher(line);
-								if (m.find()) {
-									start += m.start();
-									end += m.end();
-								} else
-									end += line.length();
+								Matcher m;
+								while ((m = pattern.matcher(line)).find()) {
+									pares[target_n*2] = length + m.start() + sumLastSubStrLen;
+									pares[target_n*2+1] = length + m.end() + sumLastSubStrLen;
+									target_n++;
+									line = line.substring(m.end());
+									sumLastSubStrLen += m.end();
+								}
 							} else {
-								int index = line.indexOf(target) ;
-								if (index != -1) {
-									start += index;
-									end = target.length();
-								} else
-									end += line.length();
+								while (line.contains(target)) {
+									int index = line.indexOf(target);
+									pares[target_n*2] = length + index + sumLastSubStrLen;
+									pares[target_n*2+1] = pares[target_n*2] + target.length();
+									target_n++;
+									line = line.substring(index + target.length());
+									sumLastSubStrLen += index + target.length();
+								}
 							}
-
-							pares[target_n*2] = start;
-							pares[target_n*2+1] = end;
-							target_n++;
 						}
-						length += line.length();
+						length += len;
 					}
 				});
 

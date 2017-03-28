@@ -10,6 +10,7 @@ import android.os.Build;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ru.atomofiron.regextool.Utils.RFile;
@@ -34,7 +35,7 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
 	private SharedPreferences sp;
 	private boolean useRoot;
 	private Context co;
-	private final ArrayList<Integer> lineNums = new ArrayList<>();
+	private String lineNumsStr;
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -98,19 +99,14 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
                 for (File f : files)
                 	searchInFiles((RFile) f);
         } else if (rfile.length() < maxSize && I.isTextFile(rfile.getName())) {
-			lineNums.clear();
+			lineNumsStr = "";
 
 			rfile.readFile(co, this);
 
-			if (lineNums.size() > 0) {
+			if (!lineNumsStr.isEmpty()) {
 				resultListOfFilePaths.add(rfile.getAbsolutePath());
-				resultListOfLineCounts.add(lineNums.size());
-
-				StringBuilder lineNums = new StringBuilder("");
-				for (Integer n : this.lineNums)
-					lineNums.append(String.valueOf(n)).append(" ");
-
-				resultListOfLineNums.add(lineNums.toString());
+				resultListOfLineCounts.add(lineNumsStr.split(",").length);
+				resultListOfLineNums.add(lineNumsStr);
 			}
         }
     }
@@ -118,15 +114,22 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
 	public void onReadLine(String line, int lineNum) {
 		if (!caseSense)
 			line = line.toLowerCase();
-		if (!isRegex) {
-			if (line.contains(target))
-				lineNums.add(lineNum);
-		} else if (pattern.matcher(line).find())
-			lineNums.add(lineNum);
+		if (isRegex) {
+			Matcher m;
+			while ((m = pattern.matcher(line)).find()) {
+				lineNumsStr += String.format("%d,", lineNum);
+				line = line.substring(m.end());
+			}
+		} else {
+			while (line.contains(target)) {
+				lineNumsStr += String.format("%d,", lineNum);
+				line = line.substring(line.indexOf(target) + target.length());
+			}
+		}
 	}
 
     void sendResults(int code) {
-        I.Log("sendResults("+code+") "+ resultListOfFilePaths.size()+" "+ resultListOfLineCounts.size());
+        I.Log("sendResults() "+lineNumsStr);
         Intent intent = new Intent(I.toMainActivity).putExtra(I.SEARCH_IN_FILES,inFiles);
         if (code == I.SEARCH_OK)
             intent
