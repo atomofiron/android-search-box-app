@@ -81,7 +81,7 @@ public class TextActivity extends AppCompatActivity {
 						Pattern.compile(target, Pattern.CASE_INSENSITIVE);
 				file.readFile(co, new RFile.OnReadLineListener() {
 					public void onReadLine(String line, int lineNum) {
-						lines.add(String.format("%s\n", line));
+						lines.add(line);
 						if (isTarget(lineNum)) {
 							int start = length;
 							int end = length;
@@ -106,7 +106,7 @@ public class TextActivity extends AppCompatActivity {
 							pares[target_n*2+1] = end;
 							target_n++;
 						}
-						length += line.length() + 1;
+						length += line.length();
 					}
 				});
 

@@ -87,7 +87,7 @@ public class RFile extends File {
 			String line;
 			int n = 0;
 			while ((line = br.readLine()) != null) {
-				listener.onReadLine(line, n);
+				listener.onReadLine(String.format("%s\n", line), n);
 				n++;
 			}
 		} catch (Exception e) {
