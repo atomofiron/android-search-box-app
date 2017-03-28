@@ -38,7 +38,7 @@ public class I {
     public static final String SEARCH_REGEX = "SEARCH_REGEX";
 	public static final String MAX_SIZE = "MAX_SIZE";
 	public static final String SELECTED_LIST = "SELECTED_LIST";
-    public static final String RES_PERM = "android.permission.WRITE_EXTERNAL_STORAGE";
+    public static final String RES_PERM = "android.permission.READ_EXTERNAL_STORAGE";
 
     public static final String PREF_DARK_THEME = "PREF_DARK_THEME";
     public static final String PREF_USE_ROOT = "PREF_USE_ROOT";
@@ -53,10 +53,6 @@ public class I {
     }
     public static void Snack(View fab, String message, boolean lengthLong) {
         Snackbar.make(fab, message, lengthLong?Snackbar.LENGTH_LONG:Snackbar.LENGTH_SHORT).show();
-    }
-
-    public static Boolean granted(Context context, String permission) {
-        return (context.checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
     }
 
     public static boolean isTextFile(String path) {

@@ -16,17 +16,14 @@ public class Permissions {
 	}
 
 	public static boolean checkPerm(MainActivity ac, int code) {
-		if (I.granted(ac, I.RES_PERM))
+		if (granted(ac, I.RES_PERM))
 			return true;
+
 		if (Build.VERSION.SDK_INT >= 23) {
-			if (ac.shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE))
-				new AlertDialog.Builder(ac)
-						///
-						.create().show();
 			ac.requestPermissions(new String[]{ I.RES_PERM }, code);
-		}
-		else
+		} else
 			ac.Snack(R.string.storage_err);
+
 		return false;
 	}
 }

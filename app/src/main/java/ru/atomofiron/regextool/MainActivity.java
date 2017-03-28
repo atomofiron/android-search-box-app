@@ -195,8 +195,8 @@ public class MainActivity extends AppCompatActivity
 				case I.REQUEST_FOR_SEARCH:
 					mainFragment.search(); break;
 			}
-		} else
-			Permissions.checkPerm(this, I.REQUEST_FOR_INIT);
+		} else if (requestCode == I.REQUEST_FOR_INIT)
+			finish();
 	}
 
 	@Override
