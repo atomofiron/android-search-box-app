@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="orientation_var">
+        <item>Системная</item>
+        <item>Альбомная</item>
+        <item>Портретная</item>
+    </string-array>
+    <string name="orientation_def">Портретная</string>
+</resources>
