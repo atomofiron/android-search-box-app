@@ -22,6 +22,7 @@ public class I {
     public static final String PREF_DARK_THEME = "PREF_DARK_THEME";
     public static final String PREF_USE_ROOT = "PREF_USE_ROOT";
     public static final String PREF_HISTORY = "PREF_HISTORY";
+    public static final String PREF_HISTORY_PINNED = "PREF_HISTORY_PINNED";
 
     public static final int SEARCH_NOTHING = 0;
     public static final int SEARCH_ERROR = -1;

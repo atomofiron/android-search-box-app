@@ -29,11 +29,10 @@ import android.widget.ListView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import ru.atomofiron.regextool.Adapters.FilesAdapter;
+import ru.atomofiron.regextool.Adapters.HistoryAdapter;
 import ru.atomofiron.regextool.Adapters.ListAdapter;
 import ru.atomofiron.regextool.Adapters.ViewPagerAdapter;
 import ru.atomofiron.regextool.CustomViews.RegexText;
@@ -63,7 +62,6 @@ public class MainFragment extends Fragment {
 	private boolean needShowResults = true;
 	private ViewPager viewPager;
 	private ListView historyList;
-	private ArrayList<String> historyArray;
 	private String defPath;
 
 	private I.OnSnackListener onSnackListener = null;
@@ -157,20 +155,13 @@ public class MainFragment extends Fragment {
 			public void onPageScrollStateChanged(int state) {}
 		});
 
-		Set<String> set = sp.getStringSet(I.PREF_HISTORY, null);
-		if (set == null)
-			historyArray = new ArrayList<>();
-		else
-			historyArray = new ArrayList<>(set);
 		historyList = (ListView) mainActivity.findViewById(R.id.history_list);
-
-		historyList.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, historyArray));
-		historyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				regexText.setText((String)historyList.getAdapter().getItem(position));
-				((DrawerLayout)mainActivity.findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
+		historyList.setAdapter(new HistoryAdapter(historyList, new HistoryAdapter.OnItemClickListener() {
+			public void onItemClick(String node) {
+				regexText.setText(node);
+				((DrawerLayout) mainActivity.findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
 			}
-		});
+		}));
 
 		return rootView;
 	}
@@ -269,10 +260,7 @@ public class MainFragment extends Fragment {
 					if (regex.isEmpty())
 						return;
 
-					historyArray.remove(regex);
-					historyArray.add(0, regex);
-					((ArrayAdapter)historyList.getAdapter()).notifyDataSetChanged();
-					sp.edit().putStringSet(I.PREF_HISTORY, new HashSet<>(historyArray)).apply();
+					((HistoryAdapter)historyList.getAdapter()).addItem(regex);
 
 					if (!regexToggle.isChecked())
 						try { Pattern.compile(regex);
