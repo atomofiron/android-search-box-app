@@ -55,15 +55,11 @@ public class I {
     }
 
     public static boolean isTextFile(String path, String[] extra) {
-        int index = path.lastIndexOf('/');
-        if (index >= 0)
-            path = path.substring(index);
+		path = getFormat(path);
 
-        index = path.lastIndexOf('.');
-        if (index == -1)
-            return false;
+		if (path.isEmpty())
+			return false;
 
-        path = path.substring(index + 1).toLowerCase();
         switch (path) {
             case "txt":
             case "java":
@@ -82,6 +78,15 @@ public class I {
                 return true;
         return false;
     }
+
+    public static String getFormat(String path) {
+		int index = path.lastIndexOf('/');
+		if (index >= 0)
+			path = path.substring(index);
+
+		index = path.lastIndexOf('.');
+		return index == -1 ? "" : path.substring(index + 1).toLowerCase();
+	}
 
     public static SharedPreferences SP(Context co) {
         return PreferenceManager.getDefaultSharedPreferences(co);

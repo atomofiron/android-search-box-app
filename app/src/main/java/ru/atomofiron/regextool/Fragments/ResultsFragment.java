@@ -4,9 +4,11 @@ package ru.atomofiron.regextool.Fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,31 +79,31 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
 		File file = new File(listAdapter.getItem(position));
-		String name = file.getName();
-
-		if (name.contains("."))
-			name = name.substring(name.lastIndexOf('.')+1);
-		String format = name;
-		name = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name);
-		Intent intent = new Intent()
-				.setAction(android.content.Intent.ACTION_VIEW)
-				.setDataAndType(Uri.fromFile(file), name);
-		ArrayList<String> resultLinePositions = getArguments().getStringArrayList(I.RESULT_LINE_NUMS);
-
+		String format = I.getFormat(file.getName());
 		String[] extra = I.SP(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
-		if (I.isTextFile(format, extra))
+
+		if (I.isTextFile(format, extra)) {
+			ArrayList<String> resultLinePositions = getArguments().getStringArrayList(I.RESULT_LINE_NUMS);
+			String lineNums = resultLinePositions != null && resultLinePositions.size() > 0 ?
+					resultLinePositions.get(position) : "0";
+
 			startActivity(new Intent(ac, TextActivity.class)
 					.putExtra(I.SEARCH_REGEX, getArguments().getBoolean(I.SEARCH_REGEX))
 					.putExtra(I.RESULT_PATH, resultsList.get(position))
 					.putExtra(I.TARGET, getArguments().getString(I.TARGET))
-					.putExtra(I.RESULT_LINE_NUMS, resultLinePositions.size() > 0 ?
-							resultLinePositions.get(position) : "0"));
-		else if (intent.resolveActivity(ac.getPackageManager()) != null)
-			startActivityForResult(intent, 10);
-		else
-			Snack(getString(R.string.no_activity));
+					.putExtra(I.RESULT_LINE_NUMS, lineNums));
+		} else {
+			Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
+					FileProvider.getUriForFile(ac, ac.getApplicationContext().getPackageName() + ".provider", file);
+			Intent intent = new Intent()
+					.setAction(android.content.Intent.ACTION_VIEW)
+					.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension(format));
+			if (intent.resolveActivity(ac.getPackageManager()) != null)
+				startActivityForResult(intent, 10);
+			else
+				Snack(getString(R.string.no_activity));
+		}
 	}
 
 	@Override
