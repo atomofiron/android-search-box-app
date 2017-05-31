@@ -45,9 +45,10 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	}
 
 	public void update(File dir) {
-		if (dir.isDirectory()) {
+		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
+		if (dir.isDirectory() && (dir.canRead() || useRoot)) {
 			curDir = new RFile(dir);
-			((RFile)curDir).useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
+			((RFile)curDir).useRoot = useRoot;
 			update();
 		}
 	}
