@@ -261,6 +261,8 @@ public class MainFragment extends Fragment {
 				case R.id.go:
 					needShowResults = true;
 					String regex = regexText.getText().toString();
+					if (regex.isEmpty())
+						return;
 
 					historyArray.remove(regex);
 					historyArray.add(0, regex);
