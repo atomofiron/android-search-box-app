@@ -30,7 +30,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="preferences">Settings</string>
+    <string name="settings">Settings</string>
     <string name="pref_storage_path">Storage directory path</string>
     <string name="pref_extra_formats">Extra formats</string>
     <string name="pref_orientation">Screen orientation</string>
