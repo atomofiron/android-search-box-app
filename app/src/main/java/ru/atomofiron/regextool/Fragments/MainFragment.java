@@ -64,6 +64,7 @@ public class MainFragment extends Fragment {
 	private ViewPager viewPager;
 	private ListView historyList;
 	private ArrayList<String> historyArray;
+	private String defPath;
 
 	private I.OnSnackListener onSnackListener = null;
 	private OnResultListener onResultListener = null;
@@ -89,6 +90,7 @@ public class MainFragment extends Fragment {
 		if (rootView != null)
 			return rootView;
 
+		defPath = sp.getString(I.PREF_STORAGE_PATH, "/");
 		rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 		regexText = (RegexText)rootView.findViewById(R.id.regex_text);
@@ -135,7 +137,7 @@ public class MainFragment extends Fragment {
 		filesListView = new ListView(ac);
 		final FilesAdapter filesListAdapter = new FilesAdapter(ac, filesListView);
 		filesListView.setAdapter(filesListAdapter);
-		filesListAdapter.update(new File(sp.getString(I.PREF_STORAGE_PATH, "/")));
+		filesListAdapter.update(new File(defPath));
 
 		viewList.add(selectedListView);
 		viewList.add(filesListView);
@@ -171,6 +173,14 @@ public class MainFragment extends Fragment {
 		});
 
 		return rootView;
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		String path = sp.getString(I.PREF_STORAGE_PATH, "/");
+		if (!defPath.equals(path)) // в onCreateView() это не прокатывает
+			((FilesAdapter) filesListView.getAdapter()).update(new File((defPath = path)));
 	}
 
 	public void checkListForSearch() {
