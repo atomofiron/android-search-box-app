@@ -54,8 +54,11 @@ public class I {
     public static void Toast(Context context, int stringId) {
         Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
     }
+    public static void Toast(Context context, int stringId, boolean LONG) {
+        Toast.makeText(context, stringId, LONG ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show();
+    }
     public static void Snack(View fab, String message, boolean lengthLong) {
-        Snackbar.make(fab, message, lengthLong?Snackbar.LENGTH_LONG:Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(fab, message, lengthLong ? Snackbar.LENGTH_LONG : Snackbar.LENGTH_SHORT).show();
     }
 
     public static boolean isTextFile(String path, String[] extra) {

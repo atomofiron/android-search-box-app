@@ -35,4 +35,5 @@
     <string name="pref_storage_path">Путь к хранилищу</string>
     <string name="pref_extra_formats">Дополнительные форматы (через пробел)</string>
     <string name="pref_orientation">Ориентация экрана</string>
+    <string name="fucking_provider">Не удалось открыть файл из-за системных ограничений, попробуйте скопировать абсолютный путь к файлу и открыть его в другом приложении</string>
 </resources>

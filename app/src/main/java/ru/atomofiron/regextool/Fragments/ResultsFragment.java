@@ -100,17 +100,24 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 					.putExtra(I.RESULT_PATH, resultsList.get(position))
 					.putExtra(I.TARGET, getArguments().getString(I.TARGET))
 					.putExtra(I.RESULT_LINE_NUMS, lineNums));
-		} else {
-			Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
-					FileProvider.getUriForFile(ac, ac.getApplicationContext().getPackageName() + ".provider", file);
-			Intent intent = new Intent()
-					.setAction(android.content.Intent.ACTION_VIEW)
-					.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension(format));
-			if (intent.resolveActivity(ac.getPackageManager()) != null)
-				startActivityForResult(intent, 10);
-			else
-				Snack(getString(R.string.no_activity));
-		}
+		} else
+			try {
+				Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
+						FileProvider.getUriForFile(ac, ac.getApplicationContext().getPackageName() + ".provider", file);
+				Intent intent = new Intent()
+						.setAction(android.content.Intent.ACTION_VIEW)
+						.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension(format));
+				if (intent.resolveActivity(ac.getPackageManager()) != null)
+					startActivityForResult(intent, 10);
+				else
+					Snack(getString(R.string.no_activity));
+			} catch (Exception e) {
+				if (e.getMessage().startsWith("Failed to find configured root that contains")) {
+					I.Toast(ac, R.string.fucking_provider, true);
+					Snack(file.getAbsolutePath());
+				} else
+					I.Toast(ac, R.string.error);
+			}
 	}
 
 	@Override
