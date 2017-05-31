@@ -25,6 +25,8 @@
     <string name="need_restart">Restart required</string>
     <string name="use_root">Use root</string>
     <string name="history">History</string>
+    <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

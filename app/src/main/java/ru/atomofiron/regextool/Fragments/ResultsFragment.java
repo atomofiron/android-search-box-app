@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.Fragments;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -29,7 +30,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	private Activity ac;
 	private ListView rootView;
 	private ListAdapter listAdapter;
-	private I.SnackListener snackListener;
+	private I.OnSnackListener onSnackListener;
 
 	private ArrayList<String> resultsList;
 
@@ -68,13 +69,19 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	}
 
 
-	private void Snack(String str) {
-		if (snackListener != null)
-			snackListener.Snack(str);
+	private void Snack(final String str) {
+		if (onSnackListener != null)
+			onSnackListener.onSnack(str, R.string.copy, new View.OnClickListener() {
+				public void onClick(View v) {
+					((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
+							.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));
+					I.Toast(ac, R.string.copied);
+				}
+			});
 	}
 
-	public void setSnackListener(I.SnackListener listener) {
-		snackListener = listener;
+	public void setOnSnackListener(I.OnSnackListener listener) {
+		onSnackListener = listener;
 	}
 
 	@Override

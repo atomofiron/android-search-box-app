@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -66,7 +65,7 @@ public class MainFragment extends Fragment {
 	private ListView historyList;
 	private ArrayList<String> historyArray;
 
-	private I.SnackListener snackListener = null;
+	private I.OnSnackListener onSnackListener = null;
 	private OnResultListener onResultListener = null;
 
 	private MainActivity mainActivity;
@@ -217,8 +216,8 @@ public class MainFragment extends Fragment {
 				.putExtra(I.SEARCH_REGEX, regexToggle.isChecked()));
 	}
 
-	public void setSnackListener(I.SnackListener listener) {
-		snackListener = listener;
+	public void setOnSnackListener(I.OnSnackListener listener) {
+		onSnackListener = listener;
 	}
 	public void setOnResultListener(OnResultListener listener) {
 		onResultListener = listener;
@@ -231,13 +230,13 @@ public class MainFragment extends Fragment {
 	}
 
 	private void Snack(int id) {
-		if (snackListener != null)
-			snackListener.Snack(getString(id));
+		if (onSnackListener != null)
+			onSnackListener.onSnack(getString(id));
 	}
 
 	private void Snack(String str) {
-		if (snackListener != null)
-			snackListener.Snack(str);
+		if (onSnackListener != null)
+			onSnackListener.onSnack(str);
 	}
 
 

@@ -50,6 +50,10 @@ public class I {
     public static void Toast(Context context, String message, int time) {
         Toast.makeText(context, message, time).show();
     }
+
+    public static void Toast(Context context, int stringId) {
+        Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+    }
     public static void Snack(View fab, String message, boolean lengthLong) {
         Snackbar.make(fab, message, lengthLong?Snackbar.LENGTH_LONG:Snackbar.LENGTH_SHORT).show();
     }
@@ -94,8 +98,9 @@ public class I {
 
     public static void sleep(int sec) { try { Thread.sleep(sec * 1000); } catch (Exception ignored) {} }
 
-    public interface SnackListener {
-        public void Snack(String str);
+    public interface OnSnackListener {
+        void onSnack(String str);
+        void onSnack(String str, int actionId, View.OnClickListener callback);
     }
 
 }

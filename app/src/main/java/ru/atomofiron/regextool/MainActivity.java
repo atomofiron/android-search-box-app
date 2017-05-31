@@ -20,7 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.view.View;
 import android.widget.Toast;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
@@ -30,7 +30,7 @@ import ru.atomofiron.regextool.Utils.Cmd;
 import ru.atomofiron.regextool.Utils.Permissions;
 
 public class MainActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener, I.SnackListener, MainFragment.OnResultListener {
+		implements NavigationView.OnNavigationItemSelectedListener, I.OnSnackListener, MainFragment.OnResultListener {
 
 	private FragmentManager fragmentManager;
 	private MainFragment mainFragment;
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
 		fab = (FloatingActionButton)findViewById(R.id.fab);
 
 		mainFragment = new MainFragment();
-		mainFragment.setSnackListener(this);
+		mainFragment.setOnSnackListener(this);
 		mainFragment.setOnResultListener(this);
 
 		fragmentManager = getSupportFragmentManager();
@@ -200,23 +200,23 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void Snack(String str) {
+	public void onSnack(String str) {
 		Snackbar.make(fab, str, Snackbar.LENGTH_LONG).show();
 	}
+
+	@Override
+	public void onSnack(String str, int actionId, View.OnClickListener callback) {
+		Snackbar.make(fab, str, Snackbar.LENGTH_LONG).setAction(actionId, callback).show();
+	}
+
 	public void Snack(int id) {
 		Snackbar.make(fab, getString(id), Snackbar.LENGTH_LONG).show();
 	}
 
-	public void onSnack(String str, String action) {
-		Snackbar.make(fab, str, Snackbar.LENGTH_LONG)
-				.setAction(action, null).show();
-	}
-
-
 	@Override
 	public void onResult(Bundle bundle) {
 		ResultsFragment fragment = ResultsFragment.newInstance(bundle);
-		fragment.setSnackListener(this);
+		fragment.setOnSnackListener(this);
 		setFragment(fragment, true);
 	}
 }
