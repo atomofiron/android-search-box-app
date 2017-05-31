@@ -88,8 +88,11 @@ public class I {
 
     public static String getFormat(String path) {
 		int index = path.lastIndexOf('/');
-		if (index >= 0)
-			path = path.substring(index);
+		if (index == -1) {
+            if (path.lastIndexOf('.') == -1)
+                return path;
+        } else
+            path = path.substring(index);
 
 		index = path.lastIndexOf('.');
 		return index == -1 ? "" : path.substring(index + 1).toLowerCase();
