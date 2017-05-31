@@ -17,7 +17,6 @@
     <string name="in_files">Look in files</string>
     <string name="regex">Use regexp</string>
     <string name="bad_ex">Incorrect regular expression</string>
-    <string name="def_path">Default directory</string>
     <string name="reset">Reset</string>
     <string name="selected">Selected</string>
     <string name="provider">Provider</string>

@@ -17,7 +17,6 @@
     <string name="in_files">Искать в содержимом</string>
     <string name="regex">Поиск по шаблону</string>
     <string name="bad_ex">Неверное регулярное выражение</string>
-    <string name="def_path">Директория по умолчанию</string>
     <string name="reset">Сбросить</string>
 	<string name="selected">Выбрано</string>
     <string name="provider">Проводник</string>

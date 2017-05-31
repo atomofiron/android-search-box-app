@@ -175,35 +175,6 @@ public class MainActivity extends AppCompatActivity
 		helpDialog.show();
 	}
 
-	private void showConfig() {
-		if (pathDialog == null) {
-			final String path = sp.getString(I.PREF_STORAGE_PATH, "/");
-			final EditText et = new EditText(this);
-			et.setText(path);
-			pathDialog = new AlertDialog.Builder(this)
-					.setTitle(getString(R.string.def_path))
-					.setView(et)
-					.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							String newPath = et.getText().toString();
-							if (!newPath.equals(path) && !newPath.isEmpty())
-								sp.edit().putString(I.PREF_STORAGE_PATH, newPath).apply();
-							dialog.cancel();
-						}
-					})
-					.setNeutralButton(getString(R.string.reset), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							et.setText(Environment.getExternalStorageDirectory().getAbsolutePath());
-						}
-					})
-					.setNegativeButton(getString(R.string.cancel), null)
-					.setCancelable(true).create();
-		}
-		pathDialog.show();
-	}
-
 	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
 	public boolean onNavigationItemSelected(MenuItem item) {
