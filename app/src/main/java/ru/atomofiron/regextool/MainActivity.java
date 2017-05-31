@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,6 +24,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
+import ru.atomofiron.regextool.Fragments.PrefsFragment;
 import ru.atomofiron.regextool.Fragments.ResultsFragment;
 import ru.atomofiron.regextool.Utils.Cmd;
 import ru.atomofiron.regextool.Utils.Permissions;
@@ -44,12 +44,29 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		sp = I.SP(this);
+
+		//setRequestedOrientation(sp.getString());
+
 		setTheme(sp.getBoolean(I.PREF_DARK_THEME, false) ? R.style.AppTheme : R.style.AppTheme_Light);
 		setContentView(R.layout.activity_main);
 
 		if (Permissions.checkPerm(this, I.REQUEST_FOR_INIT))
 			init();
+
+		updatePrefs();
+	}
+
+	private void updatePrefs() {
+		sp.edit()
+				.putString(I.PREF_STORAGE_PATH, sp.getString(I.PREF_STORAGE_PATH,
+						Environment.getExternalStorageDirectory().getAbsolutePath()))
+				.putString(I.PREF_EXTRA_FORMATS, sp.getString(I.PREF_EXTRA_FORMATS,
+						"md mkd markdown cm ad adoc"))
+				.putString(I.PREF_ORIENTATION, sp.getString(I.PREF_ORIENTATION,
+						getString(R.string.orientation_def)))
+				.apply();
 	}
 
 	private void init() {
@@ -82,10 +99,13 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	private void setFragment(Fragment fragment, boolean back) {
-		FragmentTransaction transaction = fragmentManager.beginTransaction().replace(R.id.container, fragment);
+		FragmentTransaction transaction = fragmentManager.beginTransaction();
 		if (back)
-			transaction.addToBackStack("results");
-		transaction.commitAllowingStateLoss();
+			transaction.addToBackStack(null);
+		transaction
+				.replace(R.id.container, fragment)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.commitAllowingStateLoss();
 	}
 
 	@Override
@@ -132,7 +152,8 @@ public class MainActivity extends AppCompatActivity
 				I.Toast(this, getString(R.string.need_restart), Toast.LENGTH_SHORT);
 				break;
 			case R.id.def_path:
-				showConfig();
+				//showConfig();
+				setFragment(new PrefsFragment(), true);
 				break;
 			case R.id.use_root:
 				boolean useRoot = !sp.getBoolean(I.PREF_USE_ROOT, false) && Cmd.easyExec("su") == 0;
@@ -156,7 +177,7 @@ public class MainActivity extends AppCompatActivity
 
 	private void showConfig() {
 		if (pathDialog == null) {
-			final String path = sp.getString(I.STORAGE_PATH, "/");
+			final String path = sp.getString(I.PREF_STORAGE_PATH, "/");
 			final EditText et = new EditText(this);
 			et.setText(path);
 			pathDialog = new AlertDialog.Builder(this)
@@ -167,7 +188,7 @@ public class MainActivity extends AppCompatActivity
 						public void onClick(DialogInterface dialog, int which) {
 							String newPath = et.getText().toString();
 							if (!newPath.equals(path) && !newPath.isEmpty())
-								sp.edit().putString(I.STORAGE_PATH, newPath).apply();
+								sp.edit().putString(I.PREF_STORAGE_PATH, newPath).apply();
 							dialog.cancel();
 						}
 					})

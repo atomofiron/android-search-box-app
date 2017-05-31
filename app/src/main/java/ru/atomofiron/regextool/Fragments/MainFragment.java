@@ -92,10 +92,6 @@ public class MainFragment extends Fragment {
 
 		rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-		if (sp.getString(I.STORAGE_PATH, null) == null)
-			sp.edit().putString(I.STORAGE_PATH,
-							Environment.getExternalStorageDirectory().getAbsolutePath()).apply();
-
 		regexText = (RegexText)rootView.findViewById(R.id.regex_text);
 		caseToggle = (CheckBox)rootView.findViewById(R.id.case_sense);
 		infilesToggle = (CheckBox)rootView.findViewById(R.id.in_files);
@@ -140,7 +136,7 @@ public class MainFragment extends Fragment {
 		filesListView = new ListView(ac);
 		final FilesAdapter filesListAdapter = new FilesAdapter(ac, filesListView);
 		filesListView.setAdapter(filesListAdapter);
-		filesListAdapter.update(new File(sp.getString(I.STORAGE_PATH, "/")));
+		filesListAdapter.update(new File(sp.getString(I.PREF_STORAGE_PATH, "/")));
 
 		viewList.add(selectedListView);
 		viewList.add(filesListView);

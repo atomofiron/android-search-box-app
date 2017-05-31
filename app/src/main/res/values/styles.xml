@@ -4,11 +4,13 @@
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="colorAccent">@color/colorAccent</item>
+		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 	</style>
 	<style name="AppCompatLight" parent="Theme.AppCompat.Light.NoActionBar">
 		<item name="colorPrimary">@color/colorPrimaryL</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDarkL</item>
 		<item name="colorAccent">@color/colorAccentL</item>
+		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 	</style>
 
 	<style name="AppTheme" parent="@style/AppCompatDark">

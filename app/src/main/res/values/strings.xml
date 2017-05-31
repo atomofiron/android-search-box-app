@@ -1,32 +1,37 @@
 <resources>
-	<string name="app_name">Regex Finder</string>
-	<string name="action_help">Help</string>
+    <string name="app_name">Regex Finder</string>
+    <string name="action_help">Help</string>
 
-	<string name="case_sens">Case sens-ty</string>
-	<string name="storage_err">Error accessing memory</string>
-	<string name="searching">Search…</string>
-	<string name="error">Error(</string>
-	<string name="nothing">Nothing found</string>
-	<string name="warning">You have not selected any directory. The search will be made around the root section</string>
-	<string name="cancel">Cancel</string>
-	<string name="stop">Stop</string>
-	<string name="no_activity">You have no application able to open a file of this type</string>
-	<string name="help">The list of selected dirs:\nLong press to delete the record, checkbox to use.\n\nOn the selection list of the directory:\nShort press - go, checkbox to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
-	<string name="results">Your search returned %d results</string>
-	<string name="find">Find</string>
-	<string name="in_files">Look in files</string>
-	<string name="regex">Use regexp</string>
-	<string name="bad_ex">Incorrect regular expression</string>
-	<string name="def_path">Default directory</string>
-	<string name="reset">Reset</string>
-	<string name="selected">Selected</string>
-	<string name="provider">Provider</string>
-	<string name="no_checked">You didn\'t choose any directory!</string>
-	<string name="theme">Theme</string>
-	<string name="need_restart">Restart required</string>
-	<string name="use_root">Use root</string>
-	<string name="history">History</string>
+    <string name="case_sens">Case sens-ty</string>
+    <string name="storage_err">Error accessing memory</string>
+    <string name="searching">Search…</string>
+    <string name="error">Error(</string>
+    <string name="nothing">Nothing found</string>
+    <string name="warning">You have not selected any directory. The search will be made around the root section</string>
+    <string name="cancel">Cancel</string>
+    <string name="stop">Stop</string>
+    <string name="no_activity">You have no application able to open a file of this type</string>
+    <string name="help">The list of selected dirs:\nLong press to delete the record, checkbox to use.\n\nOn the selection list of the directory:\nShort press - go, checkbox to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
+    <string name="results">Your search returned %d results</string>
+    <string name="find">Find</string>
+    <string name="in_files">Look in files</string>
+    <string name="regex">Use regexp</string>
+    <string name="bad_ex">Incorrect regular expression</string>
+    <string name="def_path">Default directory</string>
+    <string name="reset">Reset</string>
+    <string name="selected">Selected</string>
+    <string name="provider">Provider</string>
+    <string name="no_checked">You didn\'t choose any directory!</string>
+    <string name="theme">Theme</string>
+    <string name="need_restart">Restart required</string>
+    <string name="use_root">Use root</string>
+    <string name="history">History</string>
 
-	<string name="navigation_drawer_open">Open navigation drawer</string>
-	<string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="preferences">Settings</string>
+    <string name="pref_storage_path">Storage directory path</string>
+    <string name="pref_extra_formats">Extra formats</string>
+    <string name="pref_orientation">Screen orientation</string>
 </resources>
