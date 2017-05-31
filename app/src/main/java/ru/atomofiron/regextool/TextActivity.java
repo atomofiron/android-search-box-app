@@ -32,7 +32,7 @@ public class TextActivity extends AppCompatActivity {
     int[] counts;
     int count;
     int[] pares;
-    int curPos = 0;
+    int curPos = -1;
     boolean ready = false;
 	private int target_n;
 	private int length;
