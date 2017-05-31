@@ -36,12 +36,15 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
 	private boolean useRoot;
 	private Context co;
 	private String lineNumsStr;
+	private String[] extraFormats;
 
     @Override
     protected void onHandleIntent(Intent intent) {
         I.Log("onHandleIntent()");
 		co = getBaseContext();
 		sp = I.SP(co);
+		extraFormats = sp.getString(I.PREF_EXTRA_FORMATS, "").split(" ");
+
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
         target = intent.getStringExtra(I.REGEX);
         caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
@@ -98,7 +101,7 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
             if (files != null)
                 for (File f : files)
                 	searchInFiles((RFile) f);
-        } else if (rfile.length() < maxSize && I.isTextFile(rfile.getName())) {
+        } else if (rfile.length() < maxSize && I.isTextFile(rfile.getName(), extraFormats)) {
 			lineNumsStr = "";
 
 			rfile.readFile(co, this);

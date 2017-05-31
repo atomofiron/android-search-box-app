@@ -54,7 +54,7 @@ public class I {
         Snackbar.make(fab, message, lengthLong?Snackbar.LENGTH_LONG:Snackbar.LENGTH_SHORT).show();
     }
 
-    public static boolean isTextFile(String path) {
+    public static boolean isTextFile(String path, String[] extra) {
         path = path.toLowerCase();
         if (path.indexOf('.') != -1)
             path = path.substring(path.lastIndexOf('.')+1);
@@ -71,6 +71,9 @@ public class I {
             case "json":
                 return true;
         }
+        for (String s : extra)
+            if (path.equals(s))
+                return true;
         return false;
     }
 

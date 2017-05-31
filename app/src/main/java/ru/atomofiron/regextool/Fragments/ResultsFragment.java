@@ -89,7 +89,9 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 				.setAction(android.content.Intent.ACTION_VIEW)
 				.setDataAndType(Uri.fromFile(file), name);
 		ArrayList<String> resultLinePositions = getArguments().getStringArrayList(I.RESULT_LINE_NUMS);
-		if (I.isTextFile(format))
+
+		String[] extra = I.SP(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
+		if (I.isTextFile(format, extra))
 			startActivity(new Intent(ac, TextActivity.class)
 					.putExtra(I.SEARCH_REGEX, getArguments().getBoolean(I.SEARCH_REGEX))
 					.putExtra(I.RESULT_PATH, resultsList.get(position))
