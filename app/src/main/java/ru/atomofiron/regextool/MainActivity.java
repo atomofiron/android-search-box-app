@@ -106,6 +106,9 @@ public class MainActivity extends AppCompatActivity
 				.replace(R.id.container, fragment)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.commitAllowingStateLoss();
+
+		drawer.setDrawerLockMode((fragment.getClass() == MainFragment.class) ?
+				DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 	}
 
 	@Override
