@@ -116,8 +116,12 @@ public class MainActivity extends AppCompatActivity
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		if (drawer.isDrawerOpen(GravityCompat.START))
 			drawer.closeDrawer(GravityCompat.START);
-		else
+		else {
+			if (fragmentManager.getBackStackEntryCount() < 2)
+				drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
 			super.onBackPressed();
+		}
 	}
 
 	@Override
