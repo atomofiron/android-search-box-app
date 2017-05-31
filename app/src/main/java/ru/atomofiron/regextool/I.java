@@ -55,9 +55,15 @@ public class I {
     }
 
     public static boolean isTextFile(String path, String[] extra) {
-        path = path.toLowerCase();
-        if (path.indexOf('.') != -1)
-            path = path.substring(path.lastIndexOf('.')+1);
+        int index = path.lastIndexOf('/');
+        if (index >= 0)
+            path = path.substring(index);
+
+        index = path.lastIndexOf('.');
+        if (index == -1)
+            return false;
+
+        path = path.substring(index + 1).toLowerCase();
         switch (path) {
             case "txt":
             case "java":
