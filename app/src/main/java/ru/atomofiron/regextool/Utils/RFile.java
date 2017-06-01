@@ -37,6 +37,16 @@ public class RFile extends File {
 		super(file.getAbsolutePath());
 	}
 
+	public RFile setUseRoot(boolean useRoot) {
+		this.useRoot = useRoot;
+		return this;
+	}
+
+	public boolean containsFiles() {
+		String[] list = list();
+		return list != null && list.length != 0;
+	}
+
 	@Override
 	public File[] listFiles() {
 		String[] list = list();

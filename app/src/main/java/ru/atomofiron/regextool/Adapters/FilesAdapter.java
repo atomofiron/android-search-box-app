@@ -29,32 +29,34 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	private SharedPreferences sp;
 	private final ArrayList<File> filesList = new ArrayList<>();
 	private final ArrayList<String> selectedList = new ArrayList<>();
-	private File curDir = null;
-	private ListView listView;
+	private RFile curDir = null;
 	private OnSelectedListener onSelectedListener = null;
 	private FileComparator fileComparator = new FileComparator();
 
 	public FilesAdapter(Context context, ListView listView) {
 		this.co = context;
-		this.listView = listView;
+		listView.setOnItemClickListener(this);
 
 		sp = I.SP(co);
-		listView.setOnItemClickListener(this);
-		curDir = new File("/");
+		curDir = new RFile("/");
 		update();
 	}
 
 	public void update(File dir) {
-		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
-		if (dir.isDirectory() && (dir.canRead() || useRoot)) {
-			curDir = new RFile(dir);
-			((RFile)curDir).useRoot = useRoot;
-			update();
+		RFile rfile = new RFile(dir).setUseRoot(sp.getBoolean(I.PREF_USE_ROOT, false));
+		if (rfile.containsFiles()) {
+			curDir = rfile;
+			update(curDir.useRoot);
 		}
 	}
 
 	public void update() {
+		update(sp.getBoolean(I.PREF_USE_ROOT, false));
+	}
+
+	private void update(boolean useRoot) {
 		filesList.clear();
+		curDir.useRoot = useRoot;
 
 		File[] files = curDir.listFiles();
 		if (files != null) {
@@ -67,13 +69,20 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		notifyDataSetChanged();
 	}
 
-	public void updateSelected() {
-		selectedList.clear();
+	private void updateSelectedHard() {
+		I.Log("updateSelectedHard");
 		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
+		selectedList.clear();
 		if (set != null && set.size() > 0)
 			for (String path : set)
 				selectedList.add(path);
+
 		notifyDataSetChanged();
+	}
+	public void updateSelected() {
+		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
+		if (set == null || !I.equivalent(selectedList, set))
+			updateSelectedHard();
 	}
 
 
@@ -118,6 +127,11 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		TextView title;
 		ImageView icon;
 		CheckBox check;
+		ViewHolder(View view) {
+			title = (TextView)view.findViewById(R.id.title);
+			icon = (ImageView)view.findViewById(R.id.icon);
+			check = (CheckBox)view.findViewById(R.id.checkbox);
+		}
 	}
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
@@ -126,12 +140,9 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		if (view == null) {
 			LayoutInflater inflater = LayoutInflater.from(co);
 			view = inflater.inflate(R.layout.layout_item, null, true);
-			holder = new ViewHolder();
-			holder.title = (TextView)view.findViewById(R.id.title);
-			holder.icon = (ImageView)view.findViewById(R.id.icon);
-			holder.check = (CheckBox)view.findViewById(R.id.checkbox);
-			holder.check.setVisibility(View.VISIBLE);
+			holder = new ViewHolder(view);
 
+			holder.check.setVisibility(View.VISIBLE);
 			holder.check.setOnClickListener(this);
 			view.setTag(holder);
 		} else
@@ -141,7 +152,10 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		String name;
 		name = file.getName();
 		holder.title.setText(position == 0 ? ".." : name);
-		holder.icon.setImageResource(file.isDirectory() ? R.drawable.ic_folder : R.drawable.ic_file);
+		holder.icon.setImageResource(
+				!file.isDirectory() ? R.drawable.ic_file :
+						I.containsFiles(new RFile(file).setUseRoot(curDir.useRoot)) ?
+								R.drawable.ic_folder : R.drawable.ic_folder_empty);
 
 		if (position != 0) {
 			holder.check.setVisibility(View.VISIBLE);

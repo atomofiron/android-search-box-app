@@ -10,6 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
+import ru.atomofiron.regextool.Utils.Cmd;
+import ru.atomofiron.regextool.Utils.RFile;
+
 
 public class I {
 
@@ -114,6 +123,21 @@ public class I {
                 .setMessage(co.getString(R.string.help))
                 .setNegativeButton("Ok", null)
                 .create().show();
+    }
+
+    public static boolean containsFiles(RFile file) {
+        return file.list() != null && file.list().length != 0;
+    }
+
+    public static boolean equivalent(Collection a, Collection b) {
+        if (a.size() != b.size())
+            return false;
+
+        for (Object o : a)
+            if (!b.contains(o))
+                return false;
+
+        return true;
     }
 
     public interface OnSnackListener {

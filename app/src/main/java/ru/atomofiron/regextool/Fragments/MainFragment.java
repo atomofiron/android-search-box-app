@@ -173,6 +173,8 @@ public class MainFragment extends Fragment {
 		String path = sp.getString(I.PREF_STORAGE_PATH, "/");
 		if (!defPath.equals(path)) // в onCreateView() это не прокатывает
 			((FilesAdapter) filesListView.getAdapter()).update(new File((defPath = path)));
+		else
+			((FilesAdapter) filesListView.getAdapter()).update();
 	}
 
 	public void checkListForSearch() {
