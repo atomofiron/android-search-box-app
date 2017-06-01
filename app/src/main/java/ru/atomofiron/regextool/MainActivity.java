@@ -195,23 +195,22 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.help:
-				showHelp();
-				break;
 			case R.id.theme:
 				boolean value = !sp.getBoolean(I.PREF_DARK_THEME, false);
 				sp.edit().putBoolean(I.PREF_DARK_THEME, value).apply();
 				item.setIcon(value ? R.drawable.ic_light : R.drawable.ic_dark);
 				I.Toast(this, getString(R.string.need_restart), Toast.LENGTH_SHORT);
 				break;
-			case R.id.def_path:
-				//showConfig();
-				setFragment(new PrefsFragment(), true);
-				break;
 			case R.id.use_root:
 				boolean useRoot = !sp.getBoolean(I.PREF_USE_ROOT, false) && Cmd.easyExec("su") == 0;
 				sp.edit().putBoolean(I.PREF_USE_ROOT, useRoot).apply();
 				updateUseRootIcon();
+				break;
+			case R.id.help:
+				showHelp();
+				break;
+			case R.id.settings:
+				setFragment(new PrefsFragment(), true);
 				break;
 		}
 		return super.onOptionsItemSelected(item);
