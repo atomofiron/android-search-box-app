@@ -159,6 +159,7 @@ public class MainFragment extends Fragment {
 		historyList.setAdapter(new HistoryAdapter(historyList, new HistoryAdapter.OnItemClickListener() {
 			public void onItemClick(String node) {
 				regexText.setText(node);
+				regexText.setSelection(node.length());
 				((DrawerLayout) mainActivity.findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
 			}
 		}));
