@@ -7,7 +7,7 @@
 		android:orderInCategory="100"
 		android:title="@string/theme"
 		app:showAsAction="always"
-		android:icon="@drawable/ic_dark"
+		android:icon="@drawable/ic_light"
 		/>
 	<item
 		android:id="@+id/use_root"
