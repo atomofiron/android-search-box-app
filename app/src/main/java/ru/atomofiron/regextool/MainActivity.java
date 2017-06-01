@@ -142,6 +142,10 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	private void setFragment(Fragment fragment, boolean back) {
+		Fragment curFragment = fragmentManager.findFragmentById(R.id.container);
+		if (curFragment != null && fragment.getClass().equals(fragmentManager.findFragmentById(R.id.container).getClass()))
+			return;
+
 		if (back)
 			showArrow(true);
 
