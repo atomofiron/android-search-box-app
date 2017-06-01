@@ -81,7 +81,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	}
 	public void updateSelected() {
 		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
-		if (set == null || !I.equivalent(selectedList, set))
+		if (selectedList.size() > 0 && set == null || set != null && !I.equivalent(selectedList, set))
 			updateSelectedHard();
 	}
 
