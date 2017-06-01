@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,9 +51,14 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
         caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
         if (!caseSense)
         	target = target.toLowerCase();
-        pattern = caseSense ?
-                Pattern.compile(target) :
-                Pattern.compile(target, Pattern.CASE_INSENSITIVE);
+		try {
+			pattern = caseSense ?
+					Pattern.compile(target) :
+					Pattern.compile(target, Pattern.CASE_INSENSITIVE);
+		} catch (Exception e) {
+			I.Toast(co, e.getMessage() == null ? e.toString() : e.getMessage(), Toast.LENGTH_LONG);
+			return;
+		}
         inFiles = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
         isRegex = intent.getBooleanExtra(I.SEARCH_REGEX, false);
 
