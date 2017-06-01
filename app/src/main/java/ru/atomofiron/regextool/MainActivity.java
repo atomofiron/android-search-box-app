@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 
 		sp = I.SP(this);
-
-		//setRequestedOrientation(sp.getString());
+		PrefsFragment.applyOrientation(this, sp.getString(I.PREF_ORIENTATION, getString(R.string.orientation_def)));
 
 		setTheme(sp.getBoolean(I.PREF_DARK_THEME, false) ? R.style.AppTheme : R.style.AppTheme_Light);
 		setContentView(R.layout.activity_main);

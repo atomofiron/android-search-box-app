@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.Fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
@@ -35,6 +36,16 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		preference.setSummary(newValue.toString());
+
+		if (preference.getKey().equals(I.PREF_ORIENTATION))
+			applyOrientation(getActivity(), (String) newValue);
 		return true;
+	}
+
+	public static void applyOrientation(Activity ac, String value) {
+		String[] arr = ac.getResources().getStringArray(R.array.orientation_var);
+		for (int i = 0; i < arr.length; i++)
+			if (arr[i].equals(value))
+				ac.setRequestedOrientation(i-1);
 	}
 }
