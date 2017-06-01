@@ -142,8 +142,13 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		name = file.getName();
 		holder.title.setText(position == 0 ? ".." : name);
 		holder.icon.setImageResource(file.isDirectory() ? R.drawable.ic_folder : R.drawable.ic_file);
-		holder.check.setTag(file);
-		holder.check.setChecked(selectedList.contains(file.getAbsolutePath()));
+
+		if (position != 0) {
+			holder.check.setVisibility(View.VISIBLE);
+			holder.check.setTag(file);
+			holder.check.setChecked(selectedList.contains(file.getAbsolutePath()));
+		} else
+			holder.check.setVisibility(View.GONE);
 
 		return view;
 	}
