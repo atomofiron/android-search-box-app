@@ -1,6 +1,6 @@
 package ru.atomofiron.regextool;
 
-import android.content.DialogInterface;
+import android.animation.ValueAnimator;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
@@ -37,9 +38,12 @@ public class MainActivity extends AppCompatActivity
 	private FloatingActionButton fab;
 	private DrawerLayout drawer;
 	private AlertDialog helpDialog = null;
-	private AlertDialog pathDialog = null;
 	private SharedPreferences sp;
 	private MenuItem useRootItem;
+
+	private ValueAnimator animArrowOn;
+	private ValueAnimator animArrowOff;
+	private boolean arrowIsShowen = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +78,20 @@ public class MainActivity extends AppCompatActivity
 		setSupportActionBar(toolbar);
 
 		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+		final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
 				this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		drawer.setDrawerListener(toggle);
 		toggle.syncState();
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if (arrowIsShowen)
+					onBackPressed();
+				else if (drawer.isDrawerOpen(GravityCompat.START))
+					drawer.closeDrawer(GravityCompat.START, true);
+				else
+					drawer.openDrawer(GravityCompat.START, true);
+			}
+		});
 
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
@@ -96,9 +110,39 @@ public class MainActivity extends AppCompatActivity
 			showHelp();
 			sp.edit().putBoolean(I.PREF_FIRST_START, false).apply();
 		}
+
+		// init arrow animation //
+
+		ValueAnimator.AnimatorUpdateListener arrowListener = new ValueAnimator.AnimatorUpdateListener() {
+			public void onAnimationUpdate(ValueAnimator animation) {
+				toggle.onDrawerSlide(drawer, (Float) animation.getAnimatedValue());
+			}
+		};
+		animArrowOn = ValueAnimator.ofFloat(0.0f, 1.0f);
+		animArrowOn.addUpdateListener(arrowListener);
+		animArrowOn.setInterpolator(new DecelerateInterpolator());
+		animArrowOn.setDuration(300);
+		animArrowOff = ValueAnimator.ofFloat(1.0f, 0.0f);
+		animArrowOff.addUpdateListener(arrowListener);
+		animArrowOff.setInterpolator(new DecelerateInterpolator());
+		animArrowOff.setDuration(300);
+	}
+
+	public void showArrow(final boolean showArrow) {
+		if (showArrow == arrowIsShowen)
+			return;
+		arrowIsShowen = showArrow;
+
+		if (showArrow)
+			animArrowOn.start();
+		else
+			animArrowOff.start();
 	}
 
 	private void setFragment(Fragment fragment, boolean back) {
+		if (back)
+			showArrow(true);
+
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 		if (back)
 			transaction.addToBackStack(null);
@@ -117,8 +161,10 @@ public class MainActivity extends AppCompatActivity
 		if (drawer.isDrawerOpen(GravityCompat.START))
 			drawer.closeDrawer(GravityCompat.START);
 		else {
-			if (fragmentManager.getBackStackEntryCount() < 2)
+			if (fragmentManager.getBackStackEntryCount() < 2) {
 				drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+				showArrow(false);
+			}
 
 			super.onBackPressed();
 		}
