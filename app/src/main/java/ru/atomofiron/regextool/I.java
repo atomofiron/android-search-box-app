@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -16,11 +17,12 @@ public class I {
     public static final String closeService = "ru.atomofiron.regextool.closeService";
 
     public static final String PREF_FIRST_START = "PREF_FIRST_START";
+    public static final String PREF_HELP = "pref_help";
     public static final String PREF_STORAGE_PATH = "pref_storage_path";
     public static final String PREF_EXTRA_FORMATS = "pref_extra_formats";
     public static final String PREF_ORIENTATION = "pref_orientation";
-    public static final String PREF_DARK_THEME = "PREF_DARK_THEME";
-    public static final String PREF_USE_ROOT = "PREF_USE_ROOT";
+    public static final String PREF_THEME = "pref_theme";
+    public static final String PREF_USE_ROOT = "pref_use_root";
     public static final String PREF_HISTORY = "PREF_HISTORY";
     public static final String PREF_HISTORY_PINNED = "PREF_HISTORY_PINNED";
 
@@ -104,6 +106,15 @@ public class I {
     }
 
     public static void sleep(int sec) { try { Thread.sleep(sec * 1000); } catch (Exception ignored) {} }
+
+
+    public static void showHelp(Context co) {
+        new AlertDialog.Builder(co)
+                .setTitle(co.getString(R.string.pref_help))
+                .setMessage(co.getString(R.string.help))
+                .setNegativeButton("Ok", null)
+                .create().show();
+    }
 
     public interface OnSnackListener {
         void onSnack(String str);

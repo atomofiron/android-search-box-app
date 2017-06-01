@@ -22,12 +22,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Toast;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Fragments.PrefsFragment;
 import ru.atomofiron.regextool.Fragments.ResultsFragment;
-import ru.atomofiron.regextool.Utils.Cmd;
 import ru.atomofiron.regextool.Utils.Permissions;
 
 public class MainActivity extends AppCompatActivity
@@ -39,7 +37,6 @@ public class MainActivity extends AppCompatActivity
 	private DrawerLayout drawer;
 	private AlertDialog helpDialog = null;
 	private SharedPreferences sp;
-	private MenuItem useRootItem;
 
 	private ValueAnimator animArrowOn;
 	private ValueAnimator animArrowOff;
@@ -50,9 +47,11 @@ public class MainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 
 		sp = I.SP(this);
-		PrefsFragment.applyOrientation(this, sp.getString(I.PREF_ORIENTATION, getString(R.string.orientation_def)));
+		setRequestedOrientation(Integer.parseInt(sp.getString(I.PREF_ORIENTATION, "2")) - 1);
 
-		setTheme(sp.getBoolean(I.PREF_DARK_THEME, false) ? R.style.AppTheme : R.style.AppTheme_Light);
+		if (sp.getString(I.PREF_THEME, "0").equals("0"))
+			setTheme(R.style.AppTheme_Light);
+
 		setContentView(R.layout.activity_main);
 
 		if (Permissions.checkPerm(this, I.REQUEST_FOR_INIT))
@@ -67,8 +66,6 @@ public class MainActivity extends AppCompatActivity
 						Environment.getExternalStorageDirectory().getAbsolutePath()))
 				.putString(I.PREF_EXTRA_FORMATS, sp.getString(I.PREF_EXTRA_FORMATS,
 						"md mkd markdown cm ad adoc"))
-				.putString(I.PREF_ORIENTATION, sp.getString(I.PREF_ORIENTATION,
-						getString(R.string.orientation_def)))
 				.apply();
 	}
 
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity
 
 		SharedPreferences sp = I.SP(this);
 		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
-			showHelp();
+			I.showHelp(this);
 			sp.edit().putBoolean(I.PREF_FIRST_START, false).apply();
 		}
 
@@ -173,44 +170,13 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	protected void onStart() {
-		super.onStart();
-		updateUseRootIcon();
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_main, menu);
-		menu.findItem(R.id.theme).setIcon(sp.getBoolean(I.PREF_DARK_THEME, false) ?
-				R.drawable.ic_dark : R.drawable.ic_light);
-		useRootItem = menu.findItem(R.id.use_root);
-		updateUseRootIcon();
 		return true;
 	}
-
-	private void updateUseRootIcon() {
-		if (useRootItem != null)
-			useRootItem.setIcon(sp.getBoolean(I.PREF_USE_ROOT, false) ?
-					R.drawable.hash : R.drawable.hash_dis);
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.theme:
-				boolean value = !sp.getBoolean(I.PREF_DARK_THEME, false);
-				sp.edit().putBoolean(I.PREF_DARK_THEME, value).apply();
-				item.setIcon(value ? R.drawable.ic_dark : R.drawable.ic_light);
-				I.Toast(this, getString(R.string.need_restart), Toast.LENGTH_SHORT);
-				break;
-			case R.id.use_root:
-				boolean useRoot = !sp.getBoolean(I.PREF_USE_ROOT, false) && Cmd.easyExec("su") == 0;
-				sp.edit().putBoolean(I.PREF_USE_ROOT, useRoot).apply();
-				updateUseRootIcon();
-				break;
-			case R.id.help:
-				showHelp();
-				break;
 			case R.id.settings:
 				setFragment(new PrefsFragment(), true);
 				break;
@@ -218,16 +184,6 @@ public class MainActivity extends AppCompatActivity
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void showHelp() {
-		if (helpDialog == null)
-			helpDialog = new AlertDialog.Builder(this)
-					.setTitle(getString(R.string.action_help))
-					.setMessage(getString(R.string.help))
-					.setNegativeButton("Ok", null)
-					.create();
-
-		helpDialog.show();
-	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
 	@Override

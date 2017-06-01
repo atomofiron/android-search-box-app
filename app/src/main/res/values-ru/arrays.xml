@@ -5,5 +5,9 @@
         <item>Альбомная</item>
         <item>Портретная</item>
     </string-array>
-    <string name="orientation_def">Портретная</string>
+
+    <string-array name="theme_var">
+        <item>Светлая</item>
+        <item>Тёмная</item>
+    </string-array>
 </resources>

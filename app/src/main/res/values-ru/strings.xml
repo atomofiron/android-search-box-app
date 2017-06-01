@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Regex Finder</string>
-    <string name="action_help">Помощь</string>
+    <string name="pref_help">Помощь</string>
 
     <string name="case_sens">Учитывать регистр</string>
     <string name="storage_err">Ошибка доступа к памяти</string>
@@ -34,6 +34,10 @@
     <string name="settings">Настройки</string>
     <string name="pref_storage_path">Путь к хранилищу</string>
     <string name="pref_extra_formats">Дополнительные форматы (через пробел)</string>
-    <string name="pref_orientation">Ориентация экрана</string>
+    <string name="pref_orientation">Ориентация экрана (нужен перезапуск)</string>
     <string name="fucking_provider">Не удалось открыть файл из-за системных ограничений, попробуйте скопировать абсолютный путь к файлу и открыть его в другом приложении</string>
+    <string name="pref_theme">Тема оформления (нужен перезапуск)</string>
+    <string name="pref_use_root">Использовать root</string>
+    <string name="preferences">Предпочтения</string>
+    <string name="app">Приложение</string>
 </resources>
