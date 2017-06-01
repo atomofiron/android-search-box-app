@@ -38,6 +38,8 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
 	private Context co;
 	private String lineNumsStr;
 	private String[] extraFormats;
+	private final ArrayList<String> doneList = new ArrayList<>();
+	private String tmp;
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -92,6 +94,9 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
     }
 
     void search(File file) {
+		if (doneList.contains(tmp = file.getAbsolutePath()) || !doneList.add(tmp)) // !doneList.add() always false
+			return;
+
         if (pattern.matcher(file.getName()).find())
         	resultListOfFilePaths.add(file.getAbsolutePath());
         if (file.isDirectory()) {
@@ -102,6 +107,9 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
         }
     }
     void searchInFiles(RFile rfile) {
+		if (doneList.contains(tmp = rfile.getAbsolutePath()) || !doneList.add(tmp)) // !doneList.add() always false
+			return;
+
         if (rfile.isDirectory()) {
             File[] files = rfile.listFiles();
             if (files != null)
