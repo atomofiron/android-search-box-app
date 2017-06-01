@@ -73,6 +73,8 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 		if (id == R.id.pin) {
 			boolean activated = !v.isActivated();
 			v.setActivated(activated);
+			((View) v.getParent()).findViewById(R.id.del).setVisibility(activated ? View.GONE : View.VISIBLE);
+
 			if (activated)
 				pinned.add(title);
 			else
@@ -126,8 +128,10 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 
 		String node = history.get(position);
 
-		holder.pin.setActivated(pinned.contains(node));
+		boolean p = pinned.contains(node);
+		holder.pin.setActivated(p);
 		holder.title.setText(node);
+		holder.del.setVisibility(p ? View.GONE : View.VISIBLE);
 
 		return convertView;
 	}
