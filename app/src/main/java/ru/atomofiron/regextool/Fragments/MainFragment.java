@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -56,10 +57,9 @@ public class MainFragment extends Fragment {
 	private ListView filesListView;
 
 	private ListAdapter selectedListAdapter;
-	private AlertDialog alertDialog;
-	private Receiver dirReceiver;
+	private LocalBroadcastManager broadcastManager;
+	private Receiver resultReceiver;
 	private SharedPreferences sp;
-	private boolean needShowResults = true;
 	private ViewPager viewPager;
 	private ListView historyList;
 	private String defPath;
@@ -78,8 +78,9 @@ public class MainFragment extends Fragment {
 		mainActivity = (MainActivity) ac;
 		sp = I.SP(ac);
 
-		dirReceiver = new Receiver();
-		ac.registerReceiver(dirReceiver, new IntentFilter(I.toMainActivity));
+		resultReceiver = new Receiver(ac);
+		broadcastManager = LocalBroadcastManager.getInstance(ac);
+		broadcastManager.registerReceiver(resultReceiver, new IntentFilter(I.toMainActivity));
 	}
 
 	@Override
@@ -193,25 +194,8 @@ public class MainFragment extends Fragment {
 	}
 
 	public void search() {
-		if (alertDialog == null)
-			alertDialog = new AlertDialog.Builder(ac)
-					.setView(R.layout.layout_searching)
-					.setCancelable(false)
-					.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							needShowResults=false;
-							ac.stopService(new Intent(ac, SearchService.class));
-						}
-					})
-					.setNegativeButton(R.string.stop, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							ac.stopService(new Intent(ac, SearchService.class));
-						}
-					})
-					.create();
-		alertDialog.show();
+		resultReceiver.alertDialog.show();
+
 		ac.startService(new Intent(ac, SearchService.class)
 				.putExtra(I.CASE_SENSE, caseToggle.isChecked())
 				.putExtra(I.SEARCH_LIST, selectedListAdapter.getPathArray())
@@ -229,7 +213,7 @@ public class MainFragment extends Fragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		ac.unregisterReceiver(dirReceiver);
+		broadcastManager.unregisterReceiver(resultReceiver);
 		ac.stopService(new Intent(ac, SearchService.class));
 	}
 
@@ -258,7 +242,7 @@ public class MainFragment extends Fragment {
 			String symbol;
 			switch (v.getId()) {
 				case R.id.go:
-					needShowResults = true;
+					resultReceiver.needShowResults = true;
 					String regex = regexText.getText().toString();
 					if (regex.isEmpty())
 						return;
@@ -285,6 +269,29 @@ public class MainFragment extends Fragment {
 	}
 
 	class Receiver extends BroadcastReceiver {
+		private AlertDialog alertDialog;
+		boolean needShowResults = true;
+
+		Receiver(Context co) {
+			alertDialog = new AlertDialog.Builder(co)
+					.setView(R.layout.layout_searching)
+					.setCancelable(false)
+					.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							needShowResults = false;
+							ac.stopService(new Intent(ac, SearchService.class));
+						}
+					})
+					.setNegativeButton(R.string.stop, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							ac.stopService(new Intent(ac, SearchService.class));
+						}
+					})
+					.create();
+		}
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			int i = intent.getIntExtra(I.SEARCH_CODE, I.SEARCH_ERROR);

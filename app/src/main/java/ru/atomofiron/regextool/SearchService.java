@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import java.io.File;
@@ -158,7 +159,8 @@ public class SearchService extends IntentService implements RFile.OnReadLineList
                     .putExtra(I.RESULT_LINE_NUMS, resultListOfLineNums);
         else
         	intent.putExtra(I.SEARCH_CODE, code);
-        sendBroadcast(intent);
+
+        LocalBroadcastManager.getInstance(co).sendBroadcast(intent);
     }
 
     void startForeground() {
