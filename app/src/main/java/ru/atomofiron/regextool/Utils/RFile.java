@@ -112,7 +112,7 @@ public class RFile extends File {
 		}
 		if (needDelete)
 			file.delete();
-		I.Log("result: "+result);
+
 		return result;
 	}
 
