@@ -195,7 +195,8 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+		// пока запрашивается только одно разрешения, можно не проверять какое именно было разрешено
+		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			switch (requestCode) {
 				case I.REQUEST_FOR_INIT:
 					init(); break;
