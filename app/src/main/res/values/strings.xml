@@ -34,9 +34,9 @@
     <string name="settings">Settings</string>
     <string name="pref_storage_path">Storage directory path</string>
     <string name="pref_extra_formats">Extra formats</string>
-    <string name="pref_orientation">Screen orientation (need restart)</string>
+    <string name="pref_orientation">Screen orientation</string>
     <string name="fucking_provider">Сould not open file due to system limitations, try to copy the absolute path to the file and open it in another application</string>
-    <string name="pref_theme">App theme (need restart)</string>
+    <string name="pref_theme">App theme</string>
     <string name="pref_use_root">Use root</string>
     <string name="preferences">Preferences</string>
     <string name="app">Application</string>

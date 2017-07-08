@@ -45,6 +45,11 @@ import ru.atomofiron.regextool.Utils.Permissions;
 
 
 public class MainFragment extends Fragment {
+	private String KEY_QUERY = "KEY_QUERY";
+	private String KEY_SELECTED = "KEY_SELECTED";
+	private String KEY_FLAG_CASE = "KEY_FLAG_CASE";
+	private String KEY_FLAG_IN_FILES = "KEY_FLAG_IN_FILES";
+	private String KEY_FLAG_REGEXP = "KEY_FLAG_REGEXP";
 
 	private Activity ac;
 	private View rootView;
@@ -169,6 +174,31 @@ public class MainFragment extends Fragment {
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putString(KEY_QUERY, regexText.getText().toString());
+		outState.putStringArrayList(KEY_SELECTED, selectedListAdapter.getCheckedPathArray());
+		outState.putBoolean(KEY_FLAG_CASE, caseToggle.isChecked());
+		outState.putBoolean(KEY_FLAG_IN_FILES, infilesToggle.isChecked());
+		outState.putBoolean(KEY_FLAG_REGEXP, regexToggle.isChecked());
+	}
+
+	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+
+		if (savedInstanceState == null)
+			return;
+
+		regexText.setText(savedInstanceState.getString(KEY_QUERY, ""));
+		selectedListAdapter.setCheckedPathsList(savedInstanceState.getStringArrayList(KEY_SELECTED));
+		caseToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_CASE));
+		infilesToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_IN_FILES));
+		regexToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_REGEXP));
+	}
+
+	@Override
 	public void onStart() {
 		super.onStart();
 		String path = sp.getString(I.PREF_STORAGE_PATH, "/");
@@ -198,7 +228,7 @@ public class MainFragment extends Fragment {
 
 		ac.startService(new Intent(ac, SearchService.class)
 				.putExtra(I.CASE_SENSE, caseToggle.isChecked())
-				.putExtra(I.SEARCH_LIST, selectedListAdapter.getPathArray())
+				.putExtra(I.SEARCH_LIST, selectedListAdapter.getCheckedPathArray())
 				.putExtra(I.REGEX, regexText.getText().toString())
 				.putExtra(I.SEARCH_IN_FILES, infilesToggle.isChecked())
 				.putExtra(I.SEARCH_REGEX, regexToggle.isChecked()));

@@ -49,6 +49,14 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		notifyDataSetChanged();
 	}
 
+	public void setCheckedPathsList(ArrayList<String> list) {
+		checkedPathsList.clear();
+		if (list != null)
+			checkedPathsList.addAll(list);
+
+		notifyDataSetChanged();
+	}
+
 	public void remove(int position) {
 		checkedPathsList.remove(selectedPathsList.remove(position));
 
@@ -67,7 +75,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		notifyDataSetChanged();
 	}
 
-	public ArrayList<String> getPathArray() {
+	public ArrayList<String> getCheckedPathArray() {
 		return checkedPathsList;
 	}
 

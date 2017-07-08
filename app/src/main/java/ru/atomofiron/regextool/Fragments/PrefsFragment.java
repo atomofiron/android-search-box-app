@@ -59,7 +59,12 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		return update(preference, newValue);
+		boolean result = update(preference, newValue);
+
+		if (preference.getKey().equals(I.PREF_THEME) || preference.getKey().equals(I.PREF_ORIENTATION))
+			getActivity().recreate();
+
+		return result;
 	}
 
 	private boolean update(Preference pref, Object newValue) {

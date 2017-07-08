@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity
 		mainFragment.setOnResultListener(this);
 
 		fragmentManager = getSupportFragmentManager();
-		setFragment(mainFragment, false);
+		if (fragmentManager.findFragmentById(R.id.container) == null)
+			setFragment(mainFragment, false);
 
 		SharedPreferences sp = I.SP(this);
 		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
