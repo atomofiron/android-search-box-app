@@ -45,6 +45,8 @@ import ru.atomofiron.regextool.Utils.Permissions;
 
 
 public class MainFragment extends Fragment {
+	public static String TAG = "MAIN_FRAGMENT";
+
 	private String KEY_QUERY = "KEY_QUERY";
 	private String KEY_SELECTED = "KEY_SELECTED";
 	private String KEY_FLAG_CASE = "KEY_FLAG_CASE";

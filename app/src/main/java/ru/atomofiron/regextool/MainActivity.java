@@ -94,13 +94,18 @@ public class MainActivity extends AppCompatActivity
 
 		fab = (FloatingActionButton)findViewById(R.id.fab);
 
-		mainFragment = new MainFragment();
+		fragmentManager = getSupportFragmentManager();
+		Fragment fragment = fragmentManager.findFragmentByTag(MainFragment.TAG);
+
+		if (fragment == null) {
+			mainFragment = new MainFragment();
+
+			setFragment(mainFragment, MainFragment.TAG, false);
+		} else
+			mainFragment = (MainFragment) fragment;
+
 		mainFragment.setOnSnackListener(this);
 		mainFragment.setOnResultListener(this);
-
-		fragmentManager = getSupportFragmentManager();
-		if (fragmentManager.findFragmentById(R.id.container) == null)
-			setFragment(mainFragment, false);
 
 		SharedPreferences sp = I.SP(this);
 		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
@@ -138,7 +143,7 @@ public class MainActivity extends AppCompatActivity
 		drawer.setDrawerLockMode(showArrow ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
 	}
 
-	private void setFragment(Fragment fragment, boolean back) {
+	private void setFragment(Fragment fragment, String tag, boolean back) {
 		Fragment curFragment = fragmentManager.findFragmentById(R.id.container);
 		if (curFragment != null && fragment.getClass().equals(fragmentManager.findFragmentById(R.id.container).getClass()))
 			return;
@@ -150,7 +155,7 @@ public class MainActivity extends AppCompatActivity
 		if (back)
 			transaction.addToBackStack(null);
 		transaction
-				.replace(R.id.container, fragment)
+				.replace(R.id.container, fragment, tag)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.commitAllowingStateLoss();
 	}
@@ -179,7 +184,7 @@ public class MainActivity extends AppCompatActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.settings:
-				setFragment(new PrefsFragment(), true);
+				setFragment(new PrefsFragment(), null, true);
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -226,6 +231,6 @@ public class MainActivity extends AppCompatActivity
 	public void onResult(Bundle bundle) {
 		ResultsFragment fragment = ResultsFragment.newInstance(bundle);
 		fragment.setOnSnackListener(this);
-		setFragment(fragment, true);
+		setFragment(fragment, null, true);
 	}
 }
