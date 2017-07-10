@@ -47,6 +47,14 @@ public class RFile extends File {
 		return list != null && list.length != 0;
 	}
 
+	public static boolean containsFiles(File file, boolean useRoot) {
+		if (useRoot)
+			file = new RFile(file).setUseRoot(true);
+
+		String[] list = file.list();
+		return list != null && list.length != 0;
+	}
+
 	@Override
 	public File[] listFiles() {
 		String[] list = list();

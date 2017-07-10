@@ -154,7 +154,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		holder.title.setText(position == 0 ? ".." : name);
 		holder.icon.setImageResource(
 				!file.isDirectory() ? R.drawable.ic_file :
-						I.containsFiles(new RFile(file).setUseRoot(curDir.useRoot)) ?
+						RFile.containsFiles(file, curDir.useRoot) ?
 								R.drawable.ic_folder : R.drawable.ic_folder_empty);
 
 		if (position != 0) {

@@ -125,10 +125,6 @@ public class I {
                 .create().show();
     }
 
-    public static boolean containsFiles(RFile file) {
-        return file.list() != null && file.list().length != 0;
-    }
-
     public static boolean equivalent(Collection a, Collection b) {
         if (a.size() != b.size())
             return false;
