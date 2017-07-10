@@ -45,13 +45,13 @@ import ru.atomofiron.regextool.Utils.Permissions;
 
 
 public class MainFragment extends Fragment {
-	public static String TAG = "MAIN_FRAGMENT";
+	public static final String TAG = "MAIN_FRAGMENT";
 
-	private String KEY_QUERY = "KEY_QUERY";
-	private String KEY_SELECTED = "KEY_SELECTED";
-	private String KEY_FLAG_CASE = "KEY_FLAG_CASE";
-	private String KEY_FLAG_IN_FILES = "KEY_FLAG_IN_FILES";
-	private String KEY_FLAG_REGEXP = "KEY_FLAG_REGEXP";
+	private static final String KEY_QUERY = "KEY_QUERY";
+	private static final String KEY_SELECTED = "KEY_SELECTED";
+	private static final String KEY_FLAG_CASE = "KEY_FLAG_CASE";
+	private static final String KEY_FLAG_IN_FILES = "KEY_FLAG_IN_FILES";
+	private static final String KEY_FLAG_REGEXP = "KEY_FLAG_REGEXP";
 
 	private Activity ac;
 	private View rootView;
