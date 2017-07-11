@@ -49,6 +49,7 @@ public class MainFragment extends Fragment {
 	public static final String TAG = "MAIN_FRAGMENT";
 
 	private static final String KEY_QUERY = "KEY_QUERY";
+	private static final String KEY_TEST = "KEY_TEST";
 	private static final String KEY_SELECTED = "KEY_SELECTED";
 	private static final String KEY_FLAG_CASE = "KEY_FLAG_CASE";
 	private static final String KEY_FLAG_IN_FILES = "KEY_FLAG_IN_FILES";
@@ -61,6 +62,7 @@ public class MainFragment extends Fragment {
 	private CheckBox caseToggle;
 	private CheckBox infilesToggle;
 	private CheckBox regexToggle;
+	private EditText testField;
 	private ListView selectedListView;
 	private ListView filesListView;
 
@@ -146,7 +148,7 @@ public class MainFragment extends Fragment {
 		filesListView.setAdapter(filesListAdapter);
 		filesListAdapter.update(new File(defPath));
 
-		EditText testField = (EditText) LayoutInflater.from(ac).inflate(R.layout.edittext_test, null);
+		testField = (EditText) LayoutInflater.from(ac).inflate(R.layout.edittext_test, null);
 		regexText.setTestField(testField);
 
 		viewList.add(testField);
@@ -186,6 +188,7 @@ public class MainFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 
 		outState.putString(KEY_QUERY, regexText.getText().toString());
+		outState.putString(KEY_TEST, testField.getText().toString());
 		outState.putStringArrayList(KEY_SELECTED, selectedListAdapter.getCheckedPathArray());
 		outState.putBoolean(KEY_FLAG_CASE, caseToggle.isChecked());
 		outState.putBoolean(KEY_FLAG_IN_FILES, infilesToggle.isChecked());
@@ -200,6 +203,7 @@ public class MainFragment extends Fragment {
 			return;
 
 		regexText.setText(savedInstanceState.getString(KEY_QUERY, ""));
+		testField.setText(savedInstanceState.getString(KEY_TEST, ""));
 		selectedListAdapter.setCheckedPathsList(savedInstanceState.getStringArrayList(KEY_SELECTED));
 		caseToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_CASE));
 		infilesToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_IN_FILES));
