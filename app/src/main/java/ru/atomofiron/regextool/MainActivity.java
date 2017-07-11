@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Fragments.PrefsFragment;
@@ -184,12 +186,19 @@ public class MainActivity extends AppCompatActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.settings:
+				hideKeyboard();
 				setFragment(new PrefsFragment(), null, true);
 				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void hideKeyboard() {
+		View view = getCurrentFocus();
+		if (view != null)
+			((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+					.hideSoftInputFromWindow(view.getWindowToken(), 0);
+	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
