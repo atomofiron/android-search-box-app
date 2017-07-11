@@ -59,8 +59,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 	public void startUpdate(View arg0){
 	}
 
-	int[] titles = new int[] { R.string.selected, R.string.provider };
 	public CharSequence getPageTitle(int position) {
-		return co.getString(titles[position]);
+		return co.getResources().getStringArray(R.array.tab_titles)[position];
 	}
 }

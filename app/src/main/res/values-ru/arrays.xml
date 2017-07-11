@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="tab_titles">
+        <item>Проверка</item>
+        <item>Выбрано</item>
+        <item>Проводник</item>
+    </string-array>
+
     <string-array name="orientation_var">
         <item>Системная</item>
         <item>Альбомная</item>

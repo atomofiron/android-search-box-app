@@ -18,8 +18,6 @@
     <string name="regex">Use regexp</string>
     <string name="bad_ex">Incorrect regular expression</string>
     <string name="reset">Reset</string>
-    <string name="selected">Selected</string>
-    <string name="provider">Provider</string>
     <string name="no_checked">You didn\'t choose any directory!</string>
     <string name="theme">Theme</string>
     <string name="need_restart">Restart required</string>
@@ -40,4 +38,5 @@
     <string name="pref_use_root">Use root</string>
     <string name="preferences">Preferences</string>
     <string name="app">Application</string>
+    <string name="test_field">Test text field</string>
 </resources>

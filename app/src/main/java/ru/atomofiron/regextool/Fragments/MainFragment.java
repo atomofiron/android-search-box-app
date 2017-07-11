@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.io.File;
@@ -145,19 +146,24 @@ public class MainFragment extends Fragment {
 		filesListView.setAdapter(filesListAdapter);
 		filesListAdapter.update(new File(defPath));
 
+		EditText testField = (EditText) LayoutInflater.from(ac).inflate(R.layout.edittext_test, null);
+		regexText.setTestField(testField);
+
+		viewList.add(testField);
 		viewList.add(selectedListView);
 		viewList.add(filesListView);
 		ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(ac, viewList);
 		viewPager.setAdapter(pagerAdapter);
 
-		((TabLayout) rootView.findViewById(R.id.tab_layout))
-				.setupWithViewPager(viewPager);
+		((TabLayout) rootView.findViewById(R.id.tab_layout)).setupWithViewPager(viewPager);
+
+		viewPager.setCurrentItem(1);
 		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 			public void onPageSelected(int position) {
-				if (position == 0)
+				if (position == 1)
 					selectedListAdapter.update();
-				else
+				else if (position == 2)
 					filesListAdapter.updateSelected();
 			}
 			public void onPageScrollStateChanged(int state) {}
