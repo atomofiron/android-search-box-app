@@ -134,7 +134,7 @@ public class MainFragment extends Fragment {
 		selectedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				selectedListAdapter.remove(position);
-				return false;
+				return true;
 			}
 		});
 		selectedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

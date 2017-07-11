@@ -123,6 +123,6 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 		Snack(listAdapter.getItem(position));
-		return false;
+		return true;
 	}
 }
