@@ -79,13 +79,10 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		return checkedPathsList;
 	}
 
-	public void onItemClick(int position) {
-		String path = selectedPathsList.get(position);
-
-		if (!checkedPathsList.remove(path)) // я... ну это)
-			checkedPathsList.add(path);
-
-		notifyDataSetChanged();
+	public void onItemClick(View view) {
+		// учёт отмеченных происходит в onCheckedChanged()
+		CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+		checkBox.setChecked(!checkBox.isChecked());
 	}
 
 	public int getCheckedCount() {
@@ -143,10 +140,9 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 				holder.count.setVisibility(View.VISIBLE);
 				holder.check.setVisibility(View.GONE);
 			}
-			if (checkable)
-				holder.check.setOnCheckedChangeListener(this);
-			else
+			if (!checkable)
 				holder.check.setVisibility(View.GONE);
+
             myView.setTag(holder);
         } else holder = (ViewHolder) myView.getTag();
 
@@ -158,8 +154,12 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 
 		if (countsList.size() > position)
 			holder.count.setText(String.valueOf(countsList.get(position)));
-		if (checkable)
-        	holder.check.setChecked(checkedPathsList.contains(path));
+
+		if (checkable) {
+			holder.check.setOnCheckedChangeListener(null);
+			holder.check.setChecked(checkedPathsList.contains(path));
+			holder.check.setOnCheckedChangeListener(this);
+		}
 
 		return myView;
     }

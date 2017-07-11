@@ -139,7 +139,7 @@ public class MainFragment extends Fragment {
 		});
 		selectedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				selectedListAdapter.onItemClick(position);
+				selectedListAdapter.onItemClick(view);
 			}
 		});
 
