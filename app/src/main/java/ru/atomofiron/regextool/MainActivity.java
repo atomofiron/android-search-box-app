@@ -96,25 +96,6 @@ public class MainActivity extends AppCompatActivity
 
 		fab = (FloatingActionButton)findViewById(R.id.fab);
 
-		fragmentManager = getSupportFragmentManager();
-		Fragment fragment = fragmentManager.findFragmentByTag(MainFragment.TAG);
-
-		if (fragment == null) {
-			mainFragment = new MainFragment();
-
-			setFragment(mainFragment, MainFragment.TAG, false);
-		} else
-			mainFragment = (MainFragment) fragment;
-
-		mainFragment.setOnSnackListener(this);
-		mainFragment.setOnResultListener(this);
-
-		SharedPreferences sp = I.SP(this);
-		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
-			I.showHelp(this);
-			sp.edit().putBoolean(I.PREF_FIRST_START, false).apply();
-		}
-
 		// init arrow animation //
 
 		ValueAnimator.AnimatorUpdateListener arrowListener = new ValueAnimator.AnimatorUpdateListener() {
@@ -130,6 +111,30 @@ public class MainActivity extends AppCompatActivity
 		animArrowOff.addUpdateListener(arrowListener);
 		animArrowOff.setInterpolator(new DecelerateInterpolator());
 		animArrowOff.setDuration(300);
+
+		// other //
+
+		fragmentManager = getSupportFragmentManager();
+		Fragment fragment = fragmentManager.findFragmentByTag(MainFragment.TAG);
+
+		if (fragment == null) {
+			mainFragment = new MainFragment();
+
+			setFragment(mainFragment, MainFragment.TAG, false);
+		} else
+			mainFragment = (MainFragment) fragment;
+
+		mainFragment.setOnSnackListener(this);
+		mainFragment.setOnResultListener(this);
+
+		if (fragmentManager.getBackStackEntryCount() > 0)
+			showArrow(true);
+
+		SharedPreferences sp = I.SP(this);
+		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
+			I.showHelp(this);
+			sp.edit().putBoolean(I.PREF_FIRST_START, false).apply();
+		}
 	}
 
 	public void showArrow(final boolean showArrow) {
