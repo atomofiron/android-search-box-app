@@ -3,7 +3,7 @@ package ru.atomofiron.regextool.Fragments;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v14.preference.SwitchPreference;
+import android.support.v7.preference.SwitchPreferenceCompat;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -87,7 +87,7 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 			case I.PREF_USE_ROOT:
 				if (value == null) {
 					if (sp.getBoolean(key, false) && Cmd.easyExec("su") != 0)
-						((SwitchPreference)pref).setChecked(false);
+						((SwitchPreferenceCompat)pref).setChecked(false);
 					break;
 				} else if (value.equals("true"))
 					return Cmd.easyExec("su") == 0;
