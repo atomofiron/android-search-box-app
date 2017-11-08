@@ -104,7 +104,7 @@ public class RFile extends File {
 			while ((line = br.readLine()) != null)
 				result = result.concat(String.format("%s\n", line));
 		} catch (Exception e) {
-			I.Log(e.toString());
+			I.log(e.toString());
 		} finally {
 			try {
 				if (br != null) br.close();

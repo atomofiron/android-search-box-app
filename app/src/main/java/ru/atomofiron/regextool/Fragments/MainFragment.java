@@ -84,7 +84,7 @@ public class MainFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		ac = getActivity();
 		mainActivity = (MainActivity) ac;
-		sp = I.SP(ac);
+		sp = I.sp(ac);
 
 		resultReceiver = new Receiver(ac);
 		broadcastManager = LocalBroadcastManager.getInstance(ac);
@@ -220,7 +220,7 @@ public class MainFragment extends Fragment {
 
 	public void checkListForSearch() {
 		if (selectedListAdapter.getCheckedCount() == 0) {
-			Snack(R.string.no_checked);
+			snack(R.string.no_checked);
 		} else
 			search();
 	}
@@ -239,7 +239,7 @@ public class MainFragment extends Fragment {
 		ac.startService(new Intent(ac, SearchService.class)
 				.putExtra(I.CASE_SENSE, caseToggle.isChecked())
 				.putExtra(I.SEARCH_LIST, selectedListAdapter.getCheckedPathArray())
-				.putExtra(I.REGEX, regexText.getText().toString())
+				.putExtra(I.QUERY, regexText.getText().toString())
 				.putExtra(I.SEARCH_IN_FILES, infilesToggle.isChecked())
 				.putExtra(I.SEARCH_REGEX, regexToggle.isChecked())
 				.putExtra(I.MULTILINE, multilineToggle.isChecked()));
@@ -258,12 +258,12 @@ public class MainFragment extends Fragment {
 		ac.stopService(new Intent(ac, SearchService.class));
 	}
 
-	private void Snack(int id) {
+	private void snack(int id) {
 		if (onSnackListener != null)
 			onSnackListener.onSnack(getString(id));
 	}
 
-	private void Snack(String str) {
+	private void snack(String str) {
 		if (onSnackListener != null)
 			onSnackListener.onSnack(str);
 	}
@@ -293,7 +293,7 @@ public class MainFragment extends Fragment {
 					if (!regexToggle.isChecked())
 						try { Pattern.compile(regex);
 						} catch (Exception ignored) {
-							Snack(R.string.bad_ex);
+							snack(R.string.bad_ex);
 							return;
 						}
 					if (regex.length() > 0 && Permissions.checkPerm(mainActivity, I.REQUEST_FOR_SEARCH))
@@ -336,19 +336,19 @@ public class MainFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			int i = intent.getIntExtra(I.SEARCH_CODE, I.SEARCH_ERROR);
-			I.Log("onReceive(): "+i);
+			I.log("onReceive(): "+i);
 			alertDialog.cancel();
 			switch (i) {
 				case I.SEARCH_ERROR:
-					Snack(R.string.error);
+					snack(R.string.error);
 					break;
 				case I.SEARCH_NOTHING:
 					if (needShowResults)
-						Snack(R.string.nothing);
+						snack(R.string.nothing);
 					break;
 				default:
 					if (needShowResults) {
-						Snack(getString(R.string.results, i));
+						snack(getString(R.string.results, i));
 						if (onResultListener != null)
 							onResultListener.onResult(intent.getExtras());
 					}

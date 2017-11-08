@@ -54,7 +54,7 @@ public class Cmd {
 
 			result = inputStream2String(execIn, "utf-8");
 		} catch (Exception e) {
-			I.Log(e.toString());
+			I.log(e.toString());
 		} finally {
 			try {
 				if (execIn != null) execIn.close();

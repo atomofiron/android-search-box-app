@@ -30,7 +30,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 
     public ListAdapter(Context context) {
         co = context;
-		sp = I.SP(co);
+		sp = I.sp(co);
 	}
 
 	public void setList(ArrayList<String> paths) {

@@ -37,7 +37,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		this.co = context;
 		listView.setOnItemClickListener(this);
 
-		sp = I.SP(co);
+		sp = I.sp(co);
 		curDir = new RFile("/");
 		update();
 	}
@@ -70,7 +70,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	}
 
 	private void updateSelectedHard() {
-		I.Log("updateSelectedHard");
+		I.log("updateSelectedHard");
 		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
 		selectedList.clear();
 		if (set != null && set.size() > 0)

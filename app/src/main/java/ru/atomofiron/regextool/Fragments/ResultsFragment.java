@@ -69,14 +69,13 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		return rootView;
 	}
 
-
-	private void Snack(final String str) {
+	private void snack(final String str) {
 		if (onSnackListener != null)
 			onSnackListener.onSnack(str, R.string.copy, new View.OnClickListener() {
 				public void onClick(View v) {
 					((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
 							.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));
-					I.Toast(ac, R.string.copied);
+					I.toast(ac, R.string.copied);
 				}
 			});
 	}
@@ -89,7 +88,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		File file = new File(listAdapter.getItem(position));
 		String format = I.getFormat(file.getName());
-		String[] extra = I.SP(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
+		String[] extra = I.sp(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
 
 		if (I.isTextFile(format, extra)) {
 			Intent intent = new Intent(ac, TextActivity.class);
@@ -105,19 +104,19 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 				if (intent.resolveActivity(ac.getPackageManager()) != null)
 					startActivityForResult(intent, 10);
 				else
-					Snack(getString(R.string.no_activity));
+					snack(getString(R.string.no_activity));
 			} catch (Exception e) {
 				if (e.getMessage().startsWith("Failed to find configured root that contains")) {
-					I.Toast(ac, R.string.fucking_provider, true);
-					Snack(file.getAbsolutePath());
+					I.toast(ac, R.string.fucking_provider, true);
+					snack(file.getAbsolutePath());
 				} else
-					I.Toast(ac, R.string.error);
+					I.toast(ac, R.string.error);
 			}
 	}
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		Snack(listAdapter.getItem(position));
+		snack(listAdapter.getItem(position));
 		return true;
 	}
 }

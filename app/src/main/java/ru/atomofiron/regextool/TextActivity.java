@@ -36,7 +36,7 @@ public class TextActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		setTheme(I.SP(this).getString(I.PREF_THEME, "0").equals("0") ? R.style.AppTheme_Light : R.style.AppTheme);
+		setTheme(I.sp(this).getString(I.PREF_THEME, "0").equals("0") ? R.style.AppTheme_Light : R.style.AppTheme);
         setContentView(R.layout.activity_text);
         co = this;
 
@@ -60,7 +60,7 @@ public class TextActivity extends AppCompatActivity {
             @Override
             public void run() {
 				RFile file = new RFile(result.path);
-				file.useRoot = I.SP(co).getBoolean(I.PREF_USE_ROOT, false);
+				file.useRoot = I.sp(co).getBoolean(I.PREF_USE_ROOT, false);
 				final Spannable spanRange = new SpannableString(file.readText(co));
 				int i = 0;
 				while (result.hasNext()) {
@@ -87,7 +87,7 @@ public class TextActivity extends AppCompatActivity {
     private class Listener implements View.OnClickListener/*, NestedScrollView.OnScrollChangeListener*/ {
         @Override
         public void onClick(View v) {
-            I.Log("onClick() "+curPos+" count="+result.size());
+            I.log("onClick() "+curPos+" count="+result.size());
             switch (v.getId()) {
                 case R.id.fab_prev:
                     curPos--;
@@ -110,14 +110,14 @@ public class TextActivity extends AppCompatActivity {
         int lastDiff=0;
         @Override
         public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-            I.Log("onScrollChange() "+lastDiff);
+            I.log("onScrollChange() "+lastDiff);
             if (isJump) {
                 isJump=false;
                 return;
             }
             int newDiff = (scrollY - oldScrollY) > 0 ? 1 : -1;
-            I.Log("newDiff = "+newDiff);
-            I.Log("newDiff>lastDiff = "+(newDiff>lastDiff));
+            I.log("newDiff = "+newDiff);
+            I.log("newDiff>lastDiff = "+(newDiff>lastDiff));
             if (newDiff>lastDiff) {
                 fabPrev.hide();
                 fabNext.hide();

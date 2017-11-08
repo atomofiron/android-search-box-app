@@ -19,7 +19,6 @@ public class Result implements Iterator, Parcelable {
 	}
 
 	private Result(Parcel in) {
-		I.Log("Result(Parcel in)");
 		path = in.readString();
 		int size = in.readInt();
 
@@ -84,8 +83,6 @@ public class Result implements Iterator, Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
-		I.Log("writeToParcel()");
-
 		parcel.writeString(path);
 		parcel.writeInt(startPositions.size());
 

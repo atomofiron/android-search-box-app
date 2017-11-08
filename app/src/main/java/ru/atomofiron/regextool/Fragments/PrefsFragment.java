@@ -27,7 +27,7 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 
-		sp = I.SP(getActivity());
+		sp = I.sp(getActivity());
 	}
 
 	@Override

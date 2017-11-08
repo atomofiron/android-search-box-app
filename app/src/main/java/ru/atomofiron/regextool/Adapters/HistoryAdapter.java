@@ -33,7 +33,7 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 		onItemClickListener = listener;
 
 		co = listView.getContext();
-		sp = I.SP(co);
+		sp = I.sp(co);
 
 		history = new ArrayList<>(sp.getStringSet(I.PREF_HISTORY, new HashSet<String>()));
 		pinned = sp.getStringSet(I.PREF_HISTORY_PINNED, new HashSet<String>());

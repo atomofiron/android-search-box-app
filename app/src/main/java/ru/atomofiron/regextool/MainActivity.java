@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		sp = I.SP(this);
+		sp = I.sp(this);
 		setRequestedOrientation(Integer.parseInt(sp.getString(I.PREF_ORIENTATION, "2")) - 1);
 
 		if (sp.getString(I.PREF_THEME, "0").equals("0"))
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity
 		if (fragmentManager.getBackStackEntryCount() > 0)
 			showArrow(true);
 
-		SharedPreferences sp = I.SP(this);
+		SharedPreferences sp = I.sp(this);
 		if (sp.getBoolean(I.PREF_FIRST_START, true)) {
 			I.showHelp(this);
 			sp.edit().putBoolean(I.PREF_FIRST_START, false).apply();

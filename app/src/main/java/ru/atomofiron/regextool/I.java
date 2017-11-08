@@ -10,15 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
-import ru.atomofiron.regextool.Utils.Cmd;
-import ru.atomofiron.regextool.Utils.RFile;
-
 
 public class I {
 
@@ -41,13 +33,11 @@ public class I {
     public static final int REQUEST_FOR_INIT = 1;
     public static final int REQUEST_FOR_SEARCH = 2;
     public static final String SEARCH_CODE = "SEARCH_CODE";
-    public static final String TARGET = "TARGET";
     public static final String SEARCH_LIST = "SEARCH_LIST";
     public static final String RESULT_LIST = "RESULT_LIST";
     public static final String RESULT = "RESULT";
-    public static final String RESULT_PATH = "RESULT_PATH";
     public static final String CASE_SENSE = "CASE_SENSE";
-    public static final String REGEX = "REGEX";
+    public static final String QUERY = "QUERY";
     public static final String SEARCH_IN_FILES = "SEARCH_IN_FILES";
     public static final String SEARCH_REGEX = "SEARCH_REGEX";
     public static final String MULTILINE = "MULTILINE";
@@ -55,21 +45,21 @@ public class I {
     public static final String SELECTED_LIST = "SELECTED_LIST";
     public static final String RES_PERM = "android.permission.READ_EXTERNAL_STORAGE";
 
-    public static void Log(String message) {
+    public static void log(String message) {
         Log.e("atomofiron", message);
     }
 
-    public static void Toast(Context context, String message, int time) {
+    public static void toast(Context context, String message, int time) {
         Toast.makeText(context, message, time).show();
     }
 
-    public static void Toast(Context context, int stringId) {
+    public static void toast(Context context, int stringId) {
         Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
     }
-    public static void Toast(Context context, int stringId, boolean LONG) {
+    public static void toast(Context context, int stringId, boolean LONG) {
         Toast.makeText(context, stringId, LONG ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show();
     }
-    public static void Snack(View fab, String message, boolean lengthLong) {
+    public static void snack(View fab, String message, boolean lengthLong) {
         Snackbar.make(fab, message, lengthLong ? Snackbar.LENGTH_LONG : Snackbar.LENGTH_SHORT).show();
     }
 
@@ -110,7 +100,7 @@ public class I {
 		return index == -1 ? "" : path.substring(index + 1).toLowerCase();
 	}
 
-    public static SharedPreferences SP(Context co) {
+    public static SharedPreferences sp(Context co) {
         return PreferenceManager.getDefaultSharedPreferences(co);
     }
 

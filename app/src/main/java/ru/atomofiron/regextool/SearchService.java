@@ -32,23 +32,21 @@ public class SearchService extends IntentService {
     boolean isRegex = false;
     int maxSize = 1024*1024;
     String target;
-	private SharedPreferences sp;
 	private boolean useRoot;
 	private Context co;
-	private String lineNumsStr;
 	private String[] extraFormats;
 	private final ArrayList<String> doneList = new ArrayList<>();
 	private String tmp;
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        I.Log("onHandleIntent()");
+        I.log("onHandleIntent()");
 		co = getBaseContext();
-		sp = I.SP(co);
+		SharedPreferences sp = I.sp(co);
 
 		extraFormats = sp.getString(I.PREF_EXTRA_FORMATS, "").split(" ");
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
-        target = intent.getStringExtra(I.REGEX);
+        target = intent.getStringExtra(I.QUERY);
         boolean caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
         boolean multiline = intent.getBooleanExtra(I.MULTILINE, false);
 
@@ -59,7 +57,7 @@ public class SearchService extends IntentService {
 			int flags = (caseSense ? 0 : Pattern.CASE_INSENSITIVE) | (multiline ? Pattern.MULTILINE : 0);
 			pattern = Pattern.compile(target, flags);
 		} catch (Exception e) {
-			I.Toast(co, e.getMessage() == null ? e.toString() : e.getMessage(), Toast.LENGTH_LONG);
+			I.toast(co, e.getMessage() == null ? e.toString() : e.getMessage(), Toast.LENGTH_LONG);
 			return;
 		}
         inFiles = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
@@ -68,7 +66,7 @@ public class SearchService extends IntentService {
         startForeground();
 		for (File file : co.getFilesDir().listFiles())
 			file.delete();
-        maxSize = I.SP(co).getInt(I.MAX_SIZE, maxSize);
+        maxSize = I.sp(co).getInt(I.MAX_SIZE, maxSize);
         try {
             for (RFile rfile : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
                 if (inFiles)
@@ -78,7 +76,7 @@ public class SearchService extends IntentService {
             if (!done)
             	sendResults(I.SEARCH_OK);
         } catch (Exception e) {
-            I.Log("ERR: " + e.getMessage());
+            I.log(e.toString());
             if (!done)
             	sendResults(I.SEARCH_ERROR);
         }
@@ -95,8 +93,10 @@ public class SearchService extends IntentService {
     }
 
     void search(File file) {
-		if (doneList.contains(tmp = file.getAbsolutePath()) || !doneList.add(tmp)) // !doneList.add() always false
+		if (doneList.contains(tmp = file.getAbsolutePath()))
 			return;
+		else
+			doneList.add(tmp);
 
         if (pattern.matcher(file.getName()).find())
         	results.add(new Result(file.getAbsolutePath()));
@@ -110,8 +110,8 @@ public class SearchService extends IntentService {
     void searchInFiles(RFile rfile) {
 		if (doneList.contains(tmp = rfile.getAbsolutePath()))
 			return;
-
-		doneList.add(tmp);
+		else
+			doneList.add(tmp);
 
         if (rfile.isDirectory()) {
             File[] files = rfile.listFiles();
@@ -140,13 +140,10 @@ public class SearchService extends IntentService {
     }
 
     void sendResults(int code) {
-        I.Log("sendResults() "+lineNumsStr);
         Intent intent = new Intent(I.toMainActivity).putExtra(I.SEARCH_IN_FILES,inFiles);
         if (code == I.SEARCH_OK)
             intent
                     .putExtra(I.SEARCH_CODE, results.size())
-                    .putExtra(I.SEARCH_REGEX, isRegex)
-                    .putExtra(I.TARGET, target)
                     .putExtra(I.RESULT_LIST, results);
         else
         	intent.putExtra(I.SEARCH_CODE, code);
