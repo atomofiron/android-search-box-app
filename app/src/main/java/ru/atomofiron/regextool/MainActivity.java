@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity
 
 	private void setFragment(Fragment fragment, String tag, boolean back) {
 		Fragment curFragment = fragmentManager.findFragmentById(R.id.container);
-		if (curFragment != null && fragment.getClass().equals(fragmentManager.findFragmentById(R.id.container).getClass()))
+		if (curFragment != null && fragment.getClass().equals(curFragment.getClass()))
 			return;
 
 		if (back)
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity
 
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 		if (back)
-			transaction.addToBackStack(null);
+			transaction.addToBackStack(fragment.getClass().getName());
 		transaction
 				.replace(R.id.container, fragment, tag)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

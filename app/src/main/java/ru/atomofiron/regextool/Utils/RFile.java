@@ -76,10 +76,7 @@ public class RFile extends File {
 		return Cmd.exec(String.format("ls -A -1 %s\n", getAbsolutePath())).split("\n");
 	}
 
-	public String readFile(Context co, OnReadLineListener listener) {
-		if (listener == null)
-			return null;
-
+	public String readText(Context co) {
 		File file = this;
 		boolean needDelete = false;
 		if (!canRead() && useRoot) {
@@ -103,14 +100,11 @@ public class RFile extends File {
 			isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 			br = new BufferedReader(isr);
 			String line;
-			int n = 0;
-			while ((line = br.readLine()) != null) {
-				listener.onReadLine(String.format("%s\n", line), n);
-				n++;
-			}
+
+			while ((line = br.readLine()) != null)
+				result = result.concat(String.format("%s\n", line));
 		} catch (Exception e) {
 			I.Log(e.toString());
-			result = e.toString();
 		} finally {
 			try {
 				if (br != null) br.close();
@@ -122,9 +116,5 @@ public class RFile extends File {
 			file.delete();
 
 		return result;
-	}
-
-	public interface OnReadLineListener {
-		public void onReadLine(String line, int lineNum);
 	}
 }

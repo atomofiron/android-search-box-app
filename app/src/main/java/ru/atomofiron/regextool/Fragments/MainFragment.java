@@ -22,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -56,21 +55,18 @@ public class MainFragment extends Fragment {
 	private static final String KEY_FLAG_REGEXP = "KEY_FLAG_REGEXP";
 
 	private Activity ac;
-	private View rootView;
 
 	private RegexText regexText;
 	private CheckBox caseToggle;
 	private CheckBox infilesToggle;
 	private CheckBox regexToggle;
 	private EditText testField;
-	private ListView selectedListView;
 	private ListView filesListView;
 
 	private ListAdapter selectedListAdapter;
 	private LocalBroadcastManager broadcastManager;
 	private Receiver resultReceiver;
 	private SharedPreferences sp;
-	private ViewPager viewPager;
 	private ListView historyList;
 	private String defPath;
 
@@ -96,16 +92,13 @@ public class MainFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		if (rootView != null)
-			return rootView;
-
 		defPath = sp.getString(I.PREF_STORAGE_PATH, "/");
-		rootView = inflater.inflate(R.layout.fragment_main, container, false);
+		ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_main, container, false);
 
-		regexText = (RegexText)rootView.findViewById(R.id.regex_text);
-		caseToggle = (CheckBox)rootView.findViewById(R.id.case_sense);
-		infilesToggle = (CheckBox)rootView.findViewById(R.id.in_files);
-		regexToggle = (CheckBox)rootView.findViewById(R.id.simple_search);
+		regexText = (RegexText) view.findViewById(R.id.regex_text);
+		caseToggle = (CheckBox) view.findViewById(R.id.case_sense);
+		infilesToggle = (CheckBox) view.findViewById(R.id.in_files);
+		regexToggle = (CheckBox) view.findViewById(R.id.simple_search);
 		regexToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				regexText.checkPatternValid(isChecked);
@@ -113,22 +106,21 @@ public class MainFragment extends Fragment {
 		});
 
 		ButtonListener listener = new ButtonListener();
-		rootView.findViewById(R.id.go).setOnClickListener(listener);
-		rootView.findViewById(R.id.slash).setOnClickListener(listener);
-		rootView.findViewById(R.id.box).setOnClickListener(listener);
-		rootView.findViewById(R.id.nobox).setOnClickListener(listener);
-		rootView.findViewById(R.id.dot).setOnClickListener(listener);
-		rootView.findViewById(R.id.star).setOnClickListener(listener);
-		rootView.findViewById(R.id.dash).setOnClickListener(listener);
-		rootView.findViewById(R.id.roof).setOnClickListener(listener);
-		rootView.findViewById(R.id.buck).setOnClickListener(listener);
+		view.findViewById(R.id.go).setOnClickListener(listener);
+		view.findViewById(R.id.slash).setOnClickListener(listener);
+		view.findViewById(R.id.box).setOnClickListener(listener);
+		view.findViewById(R.id.nobox).setOnClickListener(listener);
+		view.findViewById(R.id.dot).setOnClickListener(listener);
+		view.findViewById(R.id.star).setOnClickListener(listener);
+		view.findViewById(R.id.dash).setOnClickListener(listener);
+		view.findViewById(R.id.roof).setOnClickListener(listener);
+		view.findViewById(R.id.buck).setOnClickListener(listener);
 
-		viewPager = (ViewPager)rootView.findViewById(R.id.view_pager);
+		ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
 		ArrayList<View> viewList = new ArrayList<>();
 
-		selectedListView = new ListView(ac);
+		ListView selectedListView = new ListView(ac);
 		selectedListAdapter = new ListAdapter(ac);
-		selectedListAdapter.checkable = true;
 		selectedListAdapter.update();
 		selectedListView.setAdapter(selectedListAdapter);
 		selectedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -157,7 +149,7 @@ public class MainFragment extends Fragment {
 		ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(ac, viewList);
 		viewPager.setAdapter(pagerAdapter);
 
-		((TabLayout) rootView.findViewById(R.id.tab_layout)).setupWithViewPager(viewPager);
+		((TabLayout) view.findViewById(R.id.tab_layout)).setupWithViewPager(viewPager);
 
 		viewPager.setCurrentItem(1);
 		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -180,7 +172,7 @@ public class MainFragment extends Fragment {
 			}
 		}));
 
-		return rootView;
+		return view;
 	}
 
 	@Override

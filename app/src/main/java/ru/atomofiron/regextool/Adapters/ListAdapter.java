@@ -23,28 +23,20 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 
     private Context co;
 	private SharedPreferences sp;
-    private final ArrayList<String> selectedPathsList = new ArrayList<>();
-	private final ArrayList<Integer> countsList = new ArrayList<>();
+    protected final ArrayList<String> pathsList = new ArrayList<>();
 	private final ArrayList<String> checkedPathsList = new ArrayList<>();
 
-    public boolean counted = false;
-    public boolean checkable = false;
+    public boolean countedNotCheckable = false;
 
     public ListAdapter(Context context) {
         co = context;
 		sp = I.SP(co);
 	}
 
-	public void setCountsList(ArrayList<Integer> countsList) {
-		this.countsList.clear();
-		if (countsList != null)
-			this.countsList.addAll(countsList);
-	}
-
 	public void setList(ArrayList<String> paths) {
-		selectedPathsList.clear();
+		pathsList.clear();
 		if (paths != null)
-			selectedPathsList.addAll(paths);
+			pathsList.addAll(paths);
 
 		notifyDataSetChanged();
 	}
@@ -58,19 +50,19 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 	}
 
 	public void remove(int position) {
-		checkedPathsList.remove(selectedPathsList.remove(position));
+		checkedPathsList.remove(pathsList.remove(position));
 
-		Set<String> set = new HashSet<>(selectedPathsList);
+		Set<String> set = new HashSet<>(pathsList);
 		sp.edit().putStringSet(I.SELECTED_LIST, set).apply();
 
 		notifyDataSetChanged();
 	}
 
 	public void update() {
-		selectedPathsList.clear();
+		pathsList.clear();
 		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
 		if (set != null && set.size() > 0)
-			selectedPathsList.addAll(set);
+			pathsList.addAll(set);
 
 		notifyDataSetChanged();
 	}
@@ -91,12 +83,12 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 
 	@Override
 	public int getCount() {
-		return selectedPathsList.size();
+		return pathsList.size();
 	}
 
 	@Override
 	public String getItem(int position) {
-		return selectedPathsList.get(position);
+		return pathsList.get(position);
 	}
 
 	@Override
@@ -114,7 +106,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 			checkedPathsList.remove(path);
 	}
 
-	private static class ViewHolder {
+	protected static class ViewHolder {
         TextView text;
         TextView count;
         ImageView icon;
@@ -133,29 +125,24 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
             holder.count = (TextView)myView.findViewById(R.id.counter);
             holder.icon = (ImageView)myView.findViewById(R.id.icon);
             holder.check = (CheckBox)myView.findViewById(R.id.checkbox);
-            holder.check.setVisibility(counted ? View.GONE : View.VISIBLE);
 
-			if (countsList.size() > position) {
+			if (countedNotCheckable) {
 				holder.icon.setVisibility(View.GONE);
 				holder.count.setVisibility(View.VISIBLE);
 				holder.check.setVisibility(View.GONE);
 			}
-			if (!checkable)
-				holder.check.setVisibility(View.GONE);
 
             myView.setTag(holder);
-        } else holder = (ViewHolder) myView.getTag();
+        } else
+        	holder = (ViewHolder) myView.getTag();
 
-		String path = selectedPathsList.get(position);
+		String path = pathsList.get(position);
         holder.text.setText(path);
         holder.icon.setImageResource(new File(path).isDirectory() ?
 				R.drawable.ic_folder : R.drawable.ic_file);
         holder.check.setTag(path);
 
-		if (countsList.size() > position)
-			holder.count.setText(String.valueOf(countsList.get(position)));
-
-		if (checkable) {
+		if (!countedNotCheckable) {
 			holder.check.setOnCheckedChangeListener(null);
 			holder.check.setChecked(checkedPathsList.contains(path));
 			holder.check.setOnCheckedChangeListener(this);

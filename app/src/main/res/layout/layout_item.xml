@@ -40,7 +40,6 @@
         android:id="@+id/checkbox"
         android:layout_weight="0"
         android:checked="false"
-        android:visibility="gone"
         android:focusable="false"
         />
 

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
@@ -20,19 +21,20 @@ import android.widget.ListView;
 import java.io.File;
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.Adapters.ListAdapter;
+import ru.atomofiron.regextool.Adapters.ResultAdapter;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.TextActivity;
+import ru.atomofiron.regextool.Utils.Result;
 
 public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
 	private Activity ac;
 	private ListView rootView;
-	private ListAdapter listAdapter;
+	private ResultAdapter listAdapter;
 	private I.OnSnackListener onSnackListener;
 
-	private ArrayList<String> resultsList;
+	private ArrayList<Result> resultsList;
 
 	public ResultsFragment() {}
 
@@ -50,16 +52,15 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 
 	@Nullable
 	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		ac = getActivity();
 
 		if (rootView == null) {
 			rootView = new ListView(ac);
-			resultsList = getArguments().getStringArrayList(I.RESULT_LIST);
+			resultsList = getArguments().getParcelableArrayList(I.RESULT_LIST);
 
-			listAdapter = new ListAdapter(ac);
-			listAdapter.setList(resultsList);
-			listAdapter.setCountsList(getArguments().getIntegerArrayList(I.RESULT_LIST_COUNTS));
+			listAdapter = new ResultAdapter(ac);
+			listAdapter.setResults(resultsList);
 
 			rootView.setOnItemLongClickListener(this);
 			rootView.setOnItemClickListener(this);
@@ -91,15 +92,9 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		String[] extra = I.SP(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
 
 		if (I.isTextFile(format, extra)) {
-			ArrayList<String> resultLinePositions = getArguments().getStringArrayList(I.RESULT_LINE_NUMS);
-			String lineNums = resultLinePositions != null && resultLinePositions.size() > 0 ?
-					resultLinePositions.get(position) : "0";
-
-			startActivity(new Intent(ac, TextActivity.class)
-					.putExtra(I.SEARCH_REGEX, getArguments().getBoolean(I.SEARCH_REGEX))
-					.putExtra(I.RESULT_PATH, resultsList.get(position))
-					.putExtra(I.TARGET, getArguments().getString(I.TARGET))
-					.putExtra(I.RESULT_LINE_NUMS, lineNums));
+			Intent intent = new Intent(ac, TextActivity.class);
+			intent.putExtra(I.RESULT, resultsList.get(position));
+			startActivity(intent);
 		} else
 			try {
 				Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
