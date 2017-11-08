@@ -107,32 +107,46 @@
 			style="?attr/borderlessButtonStyle"
 			/>
 	</LinearLayout>
-	<LinearLayout
+	<TableLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal">
-		<CheckBox
-			android:layout_weight="1"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/case_sense"
-			android:text="@string/case_sens"
-			/>
-		<CheckBox
-			android:layout_weight="1"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/in_files"
-			android:text="@string/in_files"
-			/>
-		<CheckBox
-			android:layout_weight="1"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/simple_search"
-			android:text="@string/regex"
-			/>
-	</LinearLayout>
+		<TableRow>
+
+			<CheckBox
+				android:layout_weight="1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/case_sense"
+				android:text="@string/case_sens"
+				/>
+			<CheckBox
+				android:layout_weight="1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/simple_search"
+				android:text="@string/regex"
+				/>
+		</TableRow>
+		<TableRow>
+
+			<CheckBox
+				android:layout_weight="1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/in_files"
+				android:text="@string/in_files"
+				/>
+			<CheckBox
+				android:layout_weight="1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/multiline"
+				android:text="@string/multiline"
+				android:enabled="false"
+				/>
+		</TableRow>
+	</TableLayout>
 
 	<android.support.design.widget.TabLayout
 		android:layout_width="match_parent"

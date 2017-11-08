@@ -30,7 +30,6 @@ public class SearchService extends IntentService {
     boolean done = false; // у меня на Meizu без этого сервис при его закрытии не умирает // это вообще по-русски написано?..
     boolean inFiles = false;
     boolean isRegex = false;
-    boolean caseSense = false;
     int maxSize = 1024*1024;
     String target;
 	private SharedPreferences sp;
@@ -50,15 +49,15 @@ public class SearchService extends IntentService {
 		extraFormats = sp.getString(I.PREF_EXTRA_FORMATS, "").split(" ");
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
         target = intent.getStringExtra(I.REGEX);
-        caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
+        boolean caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
+        boolean multiline = intent.getBooleanExtra(I.MULTILINE, false);
 
         if (!caseSense)
         	target = target.toLowerCase();
 
 		try {
-			pattern = caseSense ?
-					Pattern.compile(target) :
-					Pattern.compile(target, Pattern.CASE_INSENSITIVE);
+			int flags = (caseSense ? 0 : Pattern.CASE_INSENSITIVE) | (multiline ? Pattern.MULTILINE : 0);
+			pattern = Pattern.compile(target, flags);
 		} catch (Exception e) {
 			I.Toast(co, e.getMessage() == null ? e.toString() : e.getMessage(), Toast.LENGTH_LONG);
 			return;

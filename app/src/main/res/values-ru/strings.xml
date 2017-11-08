@@ -16,6 +16,7 @@
     <string name="find">Найти</string>
     <string name="in_files">Искать в содержимом</string>
     <string name="regex">Поиск по шаблону</string>
+    <string name="multiline">Мультистрочный</string>
     <string name="bad_ex">Неверное регулярное выражение</string>
     <string name="reset">Сбросить</string>
     <string name="no_checked">Вы не выбрали ни одну директорию!</string>

@@ -50,6 +50,7 @@ public class I {
     public static final String REGEX = "REGEX";
     public static final String SEARCH_IN_FILES = "SEARCH_IN_FILES";
     public static final String SEARCH_REGEX = "SEARCH_REGEX";
+    public static final String MULTILINE = "MULTILINE";
     public static final String MAX_SIZE = "MAX_SIZE";
     public static final String SELECTED_LIST = "SELECTED_LIST";
     public static final String RES_PERM = "android.permission.READ_EXTERNAL_STORAGE";
