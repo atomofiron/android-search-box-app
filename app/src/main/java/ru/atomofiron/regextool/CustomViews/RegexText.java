@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.CustomViews;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Handler;
@@ -13,12 +14,14 @@ import android.util.AttributeSet;
 import android.widget.EditText;
 
 
+import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.Models.Finder;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.Models.Result;
 
 public class RegexText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;
+	private static final String TEST_TEXT = "TEST_TEXT";
 
 	/** Запрет реагировать на изменение текста. */
 	private boolean locked = false;
@@ -29,6 +32,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 	private Handler handler = new Handler();
 
 	private final Finder finder = new Finder();
+	private SharedPreferences sp;
 
 	public RegexText(Context context) {
 		super(context);
@@ -48,6 +52,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 	private void init(Context context) {
 		addTextChangedListener(this);
 		finder.tmpDirPath = context.getFilesDir().getAbsolutePath();
+		sp = I.sp(context);
 	}
 
 	@Override
@@ -127,8 +132,11 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 					return;
 
 				postTest();
+				sp.edit().putString(TEST_TEXT, s.toString()).apply();
 			}
 		});
+
+		testField.setText(sp.getString(TEST_TEXT, ""));
 	}
 
 	private void postTest() {
