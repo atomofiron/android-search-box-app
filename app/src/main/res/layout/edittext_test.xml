@@ -6,4 +6,5 @@
     android:hint="@string/test_field"
     android:inputType="textMultiLine|textNoSuggestions"
     android:gravity="top"
+    android:textSize="15sp"
     />
