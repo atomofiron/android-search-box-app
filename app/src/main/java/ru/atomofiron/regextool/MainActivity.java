@@ -29,10 +29,12 @@ import android.view.inputmethod.InputMethodManager;
 import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Fragments.PrefsFragment;
 import ru.atomofiron.regextool.Fragments.ResultsFragment;
+import ru.atomofiron.regextool.Fragments.TextFragment;
 import ru.atomofiron.regextool.Utils.Permissions;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	public static final String ACTION_SHOW_RESULTS = "ACTION_SHOW_RESULTS";
+	public static final String ACTION_SHOW_RESULT = "ACTION_SHOW_RESULT";
 
 	private FragmentManager fragmentManager;
 	private FloatingActionButton fab;
@@ -221,7 +223,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 
-		if (ACTION_SHOW_RESULTS.equals(intent.getAction()))
-			setFragment(ResultsFragment.newInstance(intent.getExtras()), true);
+		switch (intent.getAction()) {
+			case ACTION_SHOW_RESULTS:
+				setFragment(ResultsFragment.newInstance(intent.getExtras()), true);
+				break;
+			case ACTION_SHOW_RESULT:
+				setFragment(TextFragment.newInstance(intent.getExtras()), true);
+				break;
+		}
 	}
 }

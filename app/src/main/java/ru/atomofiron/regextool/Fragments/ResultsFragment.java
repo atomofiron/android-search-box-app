@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 import ru.atomofiron.regextool.Adapters.ResultAdapter;
 import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.MainActivity;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.TextActivity;
 import ru.atomofiron.regextool.Models.Result;
 import ru.atomofiron.regextool.Utils.SnackbarHelper;
 
@@ -105,11 +105,13 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		String format = I.getFormat(file.getName());
 		String[] extra = I.sp(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
 
-		if (I.isTextFile(format, extra)) {
-			Intent intent = new Intent(ac, TextActivity.class);
-			intent.putExtra(I.RESULT, resultsList.get(position));
-			startActivity(intent);
-		} else
+		if (I.isTextFile(format, extra))
+			startActivity(
+					new Intent(ac, MainActivity.class)
+							.setAction(MainActivity.ACTION_SHOW_RESULT)
+							.putExtra(I.RESULT, resultsList.get(position))
+			);
+		else
 			try {
 				Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
 						FileProvider.getUriForFile(ac, ac.getApplicationContext().getPackageName() + ".provider", file);

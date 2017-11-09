@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.atomofiron.regextool.TextActivity">
+    tools:context="ru.atomofiron.regextool.MainActivity">
 
     <ProgressBar
         android:layout_width="wrap_content"
