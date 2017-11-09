@@ -16,6 +16,7 @@ import ru.atomofiron.regextool.I;
 public class RFile extends File {
 
 	public boolean useRoot = false;
+	public String tmpDirPath = null;
 
 	public RFile(File dir, @NonNull String name) {
 		super(dir, name);
@@ -76,11 +77,11 @@ public class RFile extends File {
 		return Cmd.exec(String.format("ls -A -1 %s\n", getAbsolutePath())).split("\n");
 	}
 
-	public String readText(Context co) {
+	public String readText() {
 		File file = this;
 		boolean needDelete = false;
-		if (!canRead() && useRoot) {
-			String newPath = String.format("%1$s/%2$s", co.getFilesDir().getAbsolutePath(), getName());
+		if (!canRead() && useRoot && tmpDirPath != null) {
+			String newPath = String.format("%1$s/%2$s", tmpDirPath, getName());
 			if (Cmd.easyExec(String.format("cp -F %1$s %2$s", getAbsolutePath(), newPath)) == 0) {
 				if (Cmd.easyExec(String.format("chmod 0777 %s", newPath)) != 0)
 					Cmd.easyExec(String.format("rm %s", newPath));

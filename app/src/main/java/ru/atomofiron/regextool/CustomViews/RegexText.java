@@ -12,15 +12,14 @@ import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import ru.atomofiron.regextool.Models.Finder;
 import ru.atomofiron.regextool.R;
+import ru.atomofiron.regextool.Utils.Result;
 
 public class RegexText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;
 
-	private boolean isRegex = false;
 	/** Запрет реагировать на изменение текста. */
 	private boolean locked = false;
 	private int start = 0;
@@ -29,19 +28,26 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 	private EditText testField;
 	private Handler handler = new Handler();
 
+	private final Finder finder = new Finder();
+
 	public RegexText(Context context) {
 		super(context);
-		addTextChangedListener(this);
+		init(context);
 	}
 
 	public RegexText(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		addTextChangedListener(this);
+		init(context);
 	}
 
 	public RegexText(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
+		init(context);
+	}
+
+	private void init(Context context) {
 		addTextChangedListener(this);
+		finder.tmpDirPath = context.getFilesDir().getAbsolutePath();
 	}
 
 	@Override
@@ -76,7 +82,8 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		}
 		locked = false;
 
-		checkPatternValid();
+		finder.setQuery(s.toString());
+		updateMark();
 		postTest();
 	}
 
@@ -85,28 +92,29 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		setSelection(start);
 	}
 
-	public void checkPatternValid(boolean isRegex) {
-		this.isRegex = isRegex;
+	public void setRegex(boolean isRegex) {
+		finder.setRegex(isRegex);
 
-		checkPatternValid();
+		updateMark();
 		test();
 	}
 
-	private void checkPatternValid() {
-		if (isRegex && !isPatternValid())
+	public void setCaseSense(boolean caseSense) {
+		finder.setCaseSense(caseSense);
+		test();
+	}
+
+	public void setMultiline(boolean miltiline) {
+		finder.setMultiline(miltiline);
+		test();
+	}
+
+	private void updateMark() {
+		if (finder.isRegex() && !finder.regexpIsValid())
 			getBackground().setColorFilter(
 					getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
 		else
 			getBackground().clearColorFilter();
-	}
-
-	private boolean isPatternValid() {
-		try {
-			Pattern.compile(getText().toString());
-		} catch (Exception ignored) {
-			return false;
-		}
-		return true;
 	}
 
 	public void setTestField(EditText editText) {
@@ -139,48 +147,26 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		String text = testField.getText().toString();
 		int selectionStart = testField.getSelectionStart();
 
-		if (isRegex && !isPatternValid() || query.isEmpty() || text.isEmpty()) {
+		if (finder.isRegex() && !finder.regexpIsValid() || query.isEmpty() || text.isEmpty()) {
 			testField.setText(text); // getText().clearSpans() приводит к некорректному поведению
 			testField.setSelection(selectionStart);
+		} else {
+			Spannable spanRange = new SpannableString(text);
+			Result result = finder.search(text);
 
-			locked = false;
-			return;
-		}
-
-		int offset = 0;
-		Pattern pattern = isRegex ? Pattern.compile(query) : null;
-		Spannable spanRange = new SpannableString(text);
-
-		for (String s : text.split("\n")) {
-			if (isRegex) {
-				int pos = 0;
-				Matcher matcher = pattern.matcher(s);
-				while (matcher.find(pos)) {
-					spanRange.setSpan(
-							new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
-							offset + matcher.start(),
-							offset + matcher.end(),
-							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-					);
-					pos = matcher.end();
-				}
-			} else {
-				int pos = 0;
-				int index;
-				while ((index = s.indexOf(query, pos)) != -1) {
-					spanRange.setSpan(
-							new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
-							offset + index,
-							offset + index + query.length(),
-							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-					);
-					pos = index + query.length();
-				}
+			while (result.hasNext()) {
+				int[] region = result.next();
+				spanRange.setSpan(
+						new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
+						region[0],
+						region[1],
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+				);
 			}
-			offset += s.length() + 1;
+
+			testField.setText(spanRange);
+			testField.setSelection(selectionStart);
 		}
-		testField.setText(spanRange);
-		testField.setSelection(selectionStart);
 
 		locked = false;
 	}

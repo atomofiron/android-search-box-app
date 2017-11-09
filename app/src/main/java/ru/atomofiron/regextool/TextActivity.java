@@ -61,7 +61,8 @@ public class TextActivity extends AppCompatActivity {
             public void run() {
 				RFile file = new RFile(result.path);
 				file.useRoot = I.sp(co).getBoolean(I.PREF_USE_ROOT, false);
-				final Spannable spanRange = new SpannableString(file.readText(co));
+				file.tmpDirPath = co.getFilesDir().getAbsolutePath();
+				final Spannable spanRange = new SpannableString(file.readText());
 				int i = 0;
 				while (result.hasNext()) {
 					int[] pare = result.next();

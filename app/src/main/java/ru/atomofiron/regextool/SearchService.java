@@ -12,9 +12,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.atomofiron.regextool.Models.Finder;
 import ru.atomofiron.regextool.Utils.RFile;
 import ru.atomofiron.regextool.Utils.Result;
 
@@ -29,12 +29,9 @@ public class SearchService extends IntentService {
 
     boolean done = false; // у меня на Meizu без этого сервис при его закрытии не умирает // это вообще по-русски написано?..
     boolean inFiles = false;
-    boolean isRegex = false;
-    int maxSize = 1024*1024;
-    String target;
 	private boolean useRoot;
 	private Context co;
-	private String[] extraFormats;
+	private final Finder finder = new Finder();
 	private final ArrayList<String> doneList = new ArrayList<>();
 	private String tmp;
 
@@ -44,29 +41,23 @@ public class SearchService extends IntentService {
 		co = getBaseContext();
 		SharedPreferences sp = I.sp(co);
 
-		extraFormats = sp.getString(I.PREF_EXTRA_FORMATS, "").split(" ");
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
-        target = intent.getStringExtra(I.QUERY);
-        boolean caseSense = intent.getBooleanExtra(I.CASE_SENSE, false);
-        boolean multiline = intent.getBooleanExtra(I.MULTILINE, false);
-
-        if (!caseSense)
-        	target = target.toLowerCase();
-
-		try {
-			int flags = (caseSense ? 0 : Pattern.CASE_INSENSITIVE) | (multiline ? Pattern.MULTILINE : 0);
-			pattern = Pattern.compile(target, flags);
-		} catch (Exception e) {
-			I.toast(co, e.getMessage() == null ? e.toString() : e.getMessage(), Toast.LENGTH_LONG);
+		inFiles = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
+		finder.setExtraFormats(sp.getString(I.PREF_EXTRA_FORMATS, "").split(" "));
+		finder.setQuery(intent.getStringExtra(I.QUERY));
+		finder.setCaseSense(intent.getBooleanExtra(I.CASE_SENSE, false));
+		finder.setMultiline(intent.getBooleanExtra(I.MULTILINE, false));
+        if (!finder.setRegex(intent.getBooleanExtra(I.SEARCH_REGEX, false))) {
+			I.toast(co, finder.getLastException(), Toast.LENGTH_LONG);
 			return;
 		}
-        inFiles = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
-        isRegex = intent.getBooleanExtra(I.SEARCH_REGEX, false);
+		finder.setMaxSize(I.sp(co).getInt(I.MAX_SIZE, finder.getMaxSize()));
+		finder.tmpDirPath = co.getFilesDir().getAbsolutePath();
 
-        startForeground();
+		startForeground();
 		for (File file : co.getFilesDir().listFiles())
 			file.delete();
-        maxSize = I.sp(co).getInt(I.MAX_SIZE, maxSize);
+
         try {
             for (RFile rfile : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
                 if (inFiles)
@@ -118,24 +109,10 @@ public class SearchService extends IntentService {
             if (files != null)
                 for (File f : files)
                 	searchInFiles((RFile) f);
-        } else if (rfile.length() < maxSize && I.isTextFile(rfile.getName(), extraFormats)) {
-			String text = rfile.readText(co);
-			Result result = new Result(rfile.getAbsolutePath());
-
-			if (isRegex) {
-				Matcher matcher = pattern.matcher(text);
-
-				while (matcher.find())
-					result.add(matcher.start(), matcher.end());
-			} else {
-				int offset = 0;
-
-				while ((offset = text.indexOf(target, offset)) != -1)
-					result.add(offset, offset += target.length());
-			}
-
-			if (!result.isEmpty())
-				results.add(result);
+        } else {
+        	Result result = finder.search(rfile);
+        	if (!result.isEmpty())
+        		results.add(result);
         }
     }
 

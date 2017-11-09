@@ -123,10 +123,21 @@ public class MainFragment extends Fragment {
 		infilesToggle = (CheckBox) view.findViewById(R.id.in_files);
 		regexToggle = (CheckBox) view.findViewById(R.id.simple_search);
 		multilineToggle = (CheckBox) view.findViewById(R.id.multiline);
+
+		caseToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				regexText.setCaseSense(isChecked);
+			}
+		});
 		regexToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				regexText.checkPatternValid(isChecked);
+				regexText.setRegex(isChecked);
 				multilineToggle.setEnabled(isChecked);
+			}
+		});
+		multilineToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				regexText.setMultiline(isChecked);
 			}
 		});
 
