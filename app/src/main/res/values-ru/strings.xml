@@ -31,6 +31,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="settings">Настройки</string>
+    <string name="share">Поделиться</string>
     <string name="pref_storage_path">Путь к хранилищу</string>
     <string name="pref_extra_formats">Дополнительные форматы (через пробел)</string>
     <string name="pref_orientation">Ориентация экрана</string>

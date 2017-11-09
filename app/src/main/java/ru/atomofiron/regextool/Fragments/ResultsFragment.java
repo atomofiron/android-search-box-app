@@ -12,6 +12,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -44,6 +47,37 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		ResultsFragment fragment = new ResultsFragment();
 		fragment.setArguments(bundle);
 		return fragment;
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.menu_results, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.share) {
+			StringBuilder data = new StringBuilder();
+			for (Result result : resultsList)
+				data.append(result.toMarkdown());
+			String title = "regex_finder_results.txt";
+
+			Intent intent = new Intent(Intent.ACTION_SEND)
+					.setType("text/plain")
+					.putExtra(Intent.EXTRA_SUBJECT, title)
+					.putExtra(Intent.EXTRA_TITLE, title)
+					.putExtra(Intent.EXTRA_TEXT, data.toString());
+			startActivity(Intent.createChooser(intent, getResources().getString(R.string.app_name)));
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

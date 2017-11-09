@@ -3,6 +3,7 @@ package ru.atomofiron.regextool.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -97,5 +98,12 @@ public class Result implements Iterator, Parcelable {
 	@Override
 	public String toString() {
 		return path;
+	}
+
+	public String toMarkdown() {
+		String name = path.substring(path.lastIndexOf(File.separatorChar) + 1);
+		int index = name.lastIndexOf('.');
+		name = index > 0 ? name.substring(0, index) : name;
+		return String.format("[%1$s](%2$s)  \n", name, path);
 	}
 }
