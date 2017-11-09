@@ -301,7 +301,7 @@ public class MainFragment extends Fragment {
 
 					((HistoryAdapter)historyList.getAdapter()).addItem(regex);
 
-					if (!regexToggle.isChecked())
+					if (regexToggle.isChecked())
 						try { Pattern.compile(regex);
 						} catch (Exception ignored) {
 							snackbarHelper.show(R.string.bad_ex);
