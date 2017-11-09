@@ -90,7 +90,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	}
 
 	private void showPathWithCopyAction(final String str) {
-		snackbarHelper.show(str, R.string.copy, true, new View.OnClickListener() {
+		snackbarHelper.show(str, R.string.copy, new View.OnClickListener() {
 			public void onClick(View v) {
 				((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
 						.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));

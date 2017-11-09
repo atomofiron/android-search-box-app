@@ -33,12 +33,12 @@ public class SnackbarHelper {
 		Snackbar.make(view, message, length).show();
 	}
 
-	public void show(int messageStringId, int actionStringId, boolean interminable, View.OnClickListener listener) {
-		show(resources.getString(messageStringId), actionStringId, interminable, listener);
+	public void show(int messageStringId, int actionStringId, View.OnClickListener listener) {
+		show(resources.getString(messageStringId), actionStringId, listener);
 	}
 
-	public void show(String message, int actionStringId, boolean interminable, View.OnClickListener listener) {
-		Snackbar snackbar = Snackbar.make(view, message, interminable ? Snackbar.LENGTH_INDEFINITE : Snackbar.LENGTH_LONG);
+	public void show(String message, int actionStringId, View.OnClickListener listener) {
+		Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
 		snackbar.setAction(actionStringId, listener);
 		snackbar.show();
 	}
