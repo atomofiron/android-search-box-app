@@ -73,8 +73,6 @@ public class MainFragment extends Fragment {
 	private ListView historyList;
 	private String defPath;
 
-	private OnResultListener onResultListener = null;
-
 	private MainActivity mainActivity;
 
 	public MainFragment() {}
@@ -277,9 +275,6 @@ public class MainFragment extends Fragment {
 				.putExtra(I.MULTILINE, multilineToggle.isChecked()));
 	}
 
-	public void setOnResultListener(OnResultListener listener) {
-		onResultListener = listener;
-	}
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -299,10 +294,6 @@ public class MainFragment extends Fragment {
 
 
 // -------------------------------------------------------------
-
-	public interface OnResultListener {
-		public void onResult(Bundle bundle);
-	}
 
 	private class ButtonListener implements View.OnClickListener {
 		@Override
@@ -376,8 +367,11 @@ public class MainFragment extends Fragment {
 				default:
 					if (needShowResults) {
 						snack(getString(R.string.results, i));
-						if (onResultListener != null)
-							onResultListener.onResult(intent.getExtras());
+						startActivity(
+								new Intent(ac, MainActivity.class)
+										.setAction(MainActivity.ACTION_SHOW_RESULTS)
+										.putExtras(intent.getExtras())
+						);
 					}
 					break;
 			}

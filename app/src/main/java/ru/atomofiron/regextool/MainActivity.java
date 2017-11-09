@@ -2,6 +2,7 @@ package ru.atomofiron.regextool;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -30,11 +31,10 @@ import ru.atomofiron.regextool.Fragments.PrefsFragment;
 import ru.atomofiron.regextool.Fragments.ResultsFragment;
 import ru.atomofiron.regextool.Utils.Permissions;
 
-public class MainActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener, MainFragment.OnResultListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+	public static final String ACTION_SHOW_RESULTS = "ACTION_SHOW_RESULTS";
 
 	private FragmentManager fragmentManager;
-	private MainFragment mainFragment;
 	private FloatingActionButton fab;
 	private DrawerLayout drawer;
 	private AlertDialog helpDialog = null;
@@ -115,16 +115,8 @@ public class MainActivity extends AppCompatActivity
 		// other //
 
 		fragmentManager = getSupportFragmentManager();
-		Fragment fragment = fragmentManager.findFragmentById(R.id.container);
-
-		if (fragment == null) {
-			mainFragment = new MainFragment();
-
-			setFragment(mainFragment, false);
-		} else
-			mainFragment = (MainFragment) fragment;
-
-		mainFragment.setOnResultListener(this);
+		if (fragmentManager.findFragmentById(R.id.container) == null)
+			setFragment(new MainFragment(), false);
 
 		if (fragmentManager.getBackStackEntryCount() > 0)
 			showArrow(true);
@@ -215,7 +207,7 @@ public class MainActivity extends AppCompatActivity
 				case I.REQUEST_FOR_INIT:
 					init(); break;
 				case I.REQUEST_FOR_SEARCH:
-					mainFragment.search(); break;
+					break;
 			}
 		} else if (requestCode == I.REQUEST_FOR_INIT)
 			finish();
@@ -226,8 +218,10 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void onResult(Bundle bundle) {
-		ResultsFragment fragment = ResultsFragment.newInstance(bundle);
-		setFragment(fragment, true);
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+
+		if (ACTION_SHOW_RESULTS.equals(intent.getAction()))
+			setFragment(ResultsFragment.newInstance(intent.getExtras()), true);
 	}
 }
