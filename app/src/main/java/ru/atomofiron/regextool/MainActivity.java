@@ -31,7 +31,7 @@ import ru.atomofiron.regextool.Fragments.ResultsFragment;
 import ru.atomofiron.regextool.Utils.Permissions;
 
 public class MainActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener, I.OnSnackListener, MainFragment.OnResultListener {
+		implements NavigationView.OnNavigationItemSelectedListener, MainFragment.OnResultListener {
 
 	private FragmentManager fragmentManager;
 	private MainFragment mainFragment;
@@ -115,16 +115,15 @@ public class MainActivity extends AppCompatActivity
 		// other //
 
 		fragmentManager = getSupportFragmentManager();
-		Fragment fragment = fragmentManager.findFragmentByTag(MainFragment.TAG);
+		Fragment fragment = fragmentManager.findFragmentById(R.id.container);
 
 		if (fragment == null) {
 			mainFragment = new MainFragment();
 
-			setFragment(mainFragment, MainFragment.TAG, false);
+			setFragment(mainFragment, false);
 		} else
 			mainFragment = (MainFragment) fragment;
 
-		mainFragment.setOnSnackListener(this);
 		mainFragment.setOnResultListener(this);
 
 		if (fragmentManager.getBackStackEntryCount() > 0)
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity
 		drawer.setDrawerLockMode(showArrow ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
 	}
 
-	private void setFragment(Fragment fragment, String tag, boolean back) {
+	private void setFragment(Fragment fragment, boolean back) {
 		Fragment curFragment = fragmentManager.findFragmentById(R.id.container);
 		if (curFragment != null && fragment.getClass().equals(curFragment.getClass()))
 			return;
@@ -162,7 +161,7 @@ public class MainActivity extends AppCompatActivity
 		if (back)
 			transaction.addToBackStack(fragment.getClass().getName());
 		transaction
-				.replace(R.id.container, fragment, tag)
+				.replace(R.id.container, fragment)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.commitAllowingStateLoss();
 	}
@@ -192,7 +191,7 @@ public class MainActivity extends AppCompatActivity
 		switch (item.getItemId()) {
 			case R.id.settings:
 				hideKeyboard();
-				setFragment(new PrefsFragment(), null, true);
+				setFragment(new PrefsFragment(), true);
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -227,16 +226,6 @@ public class MainActivity extends AppCompatActivity
 			finish();
 	}
 
-	@Override
-	public void onSnack(String str) {
-		Snackbar.make(fab, str, Snackbar.LENGTH_LONG).show();
-	}
-
-	@Override
-	public void onSnack(String str, int actionId, View.OnClickListener callback) {
-		Snackbar.make(fab, str, Snackbar.LENGTH_LONG).setAction(actionId, callback).show();
-	}
-
 	public void Snack(int id) {
 		Snackbar.make(fab, getString(id), Snackbar.LENGTH_LONG).show();
 	}
@@ -244,7 +233,6 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onResult(Bundle bundle) {
 		ResultsFragment fragment = ResultsFragment.newInstance(bundle);
-		fragment.setOnSnackListener(this);
-		setFragment(fragment, null, true);
+		setFragment(fragment, true);
 	}
 }

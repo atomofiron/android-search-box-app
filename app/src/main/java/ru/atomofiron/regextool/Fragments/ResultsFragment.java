@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
@@ -32,7 +33,6 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	private Activity ac;
 	private ListView rootView;
 	private ResultAdapter listAdapter;
-	private I.OnSnackListener onSnackListener;
 
 	private ArrayList<Result> resultsList;
 
@@ -70,18 +70,13 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	}
 
 	private void snack(final String str) {
-		if (onSnackListener != null)
-			onSnackListener.onSnack(str, R.string.copy, new View.OnClickListener() {
-				public void onClick(View v) {
-					((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
-							.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));
-					I.toast(ac, R.string.copied);
-				}
-			});
-	}
-
-	public void setOnSnackListener(I.OnSnackListener listener) {
-		onSnackListener = listener;
+		I.snack(getView(), str, Snackbar.LENGTH_LONG, getString(R.string.copy), new View.OnClickListener() {
+			public void onClick(View v) {
+				((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
+						.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));
+				I.toast(ac, R.string.copied);
+			}
+		});
 	}
 
 	@Override

@@ -62,6 +62,15 @@ public class I {
     public static void snack(View fab, String message, boolean lengthLong) {
         Snackbar.make(fab, message, lengthLong ? Snackbar.LENGTH_LONG : Snackbar.LENGTH_SHORT).show();
     }
+    public static void snack(View fab, String message, int length, String action, View.OnClickListener actionListener) {
+        Snackbar snackbar = Snackbar.make(fab, message, length);
+        if (actionListener != null)
+            snackbar.setAction(action, actionListener);
+        snackbar.show();
+    }
+    public interface SnackCallback {
+        public void onAction();
+    }
 
     public static boolean isTextFile(String path, String[] extra) {
 		path = getFormat(path);
@@ -125,10 +134,4 @@ public class I {
 
         return true;
     }
-
-    public interface OnSnackListener {
-        void onSnack(String str);
-        void onSnack(String str, int actionId, View.OnClickListener callback);
-    }
-
 }

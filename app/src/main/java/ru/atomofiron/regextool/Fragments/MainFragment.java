@@ -45,8 +45,6 @@ import ru.atomofiron.regextool.Utils.Permissions;
 
 
 public class MainFragment extends Fragment {
-	public static final String TAG = "MAIN_FRAGMENT";
-
 	private static final String KEY_QUERY = "KEY_QUERY";
 	private static final String KEY_TEST = "KEY_TEST";
 	private static final String KEY_SELECTED = "KEY_SELECTED";
@@ -72,7 +70,6 @@ public class MainFragment extends Fragment {
 	private ListView historyList;
 	private String defPath;
 
-	private I.OnSnackListener onSnackListener = null;
 	private OnResultListener onResultListener = null;
 
 	private MainActivity mainActivity;
@@ -95,7 +92,7 @@ public class MainFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		defPath = sp.getString(I.PREF_STORAGE_PATH, "/");
-		ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_main, container, false);
+		View view = inflater.inflate(R.layout.fragment_main, container, false);
 
 		regexText = (RegexText) view.findViewById(R.id.regex_text);
 		caseToggle = (CheckBox) view.findViewById(R.id.case_sense);
@@ -245,9 +242,6 @@ public class MainFragment extends Fragment {
 				.putExtra(I.MULTILINE, multilineToggle.isChecked()));
 	}
 
-	public void setOnSnackListener(I.OnSnackListener listener) {
-		onSnackListener = listener;
-	}
 	public void setOnResultListener(OnResultListener listener) {
 		onResultListener = listener;
 	}
@@ -259,13 +253,11 @@ public class MainFragment extends Fragment {
 	}
 
 	private void snack(int id) {
-		if (onSnackListener != null)
-			onSnackListener.onSnack(getString(id));
+		snack(getString(id));
 	}
 
 	private void snack(String str) {
-		if (onSnackListener != null)
-			onSnackListener.onSnack(str);
+		I.snack(getView(), str, false);
 	}
 
 
