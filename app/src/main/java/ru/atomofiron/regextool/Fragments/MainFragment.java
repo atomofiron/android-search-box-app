@@ -19,6 +19,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -80,6 +82,8 @@ public class MainFragment extends Fragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+
 		ac = getActivity();
 		mainActivity = (MainActivity) ac;
 		sp = I.sp(ac);
@@ -87,6 +91,12 @@ public class MainFragment extends Fragment {
 		resultReceiver = new Receiver(ac);
 		broadcastManager = LocalBroadcastManager.getInstance(ac);
 		broadcastManager.registerReceiver(resultReceiver, new IntentFilter(I.toMainActivity));
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.menu_main, menu);
 	}
 
 	@Override
