@@ -48,6 +48,7 @@ import ru.atomofiron.regextool.Utils.SnackbarHelper;
 
 
 public class MainFragment extends Fragment {
+	public static final String ACTION_RESULTS = "ACTION_RESULTS";
 	private static final String KEY_QUERY = "KEY_QUERY";
 	private static final String KEY_TEST = "KEY_TEST";
 	private static final String KEY_SELECTED = "KEY_SELECTED";
@@ -90,7 +91,7 @@ public class MainFragment extends Fragment {
 
 		resultReceiver = new Receiver(ac);
 		broadcastManager = LocalBroadcastManager.getInstance(ac);
-		broadcastManager.registerReceiver(resultReceiver, new IntentFilter(I.toMainActivity));
+		broadcastManager.registerReceiver(resultReceiver, new IntentFilter(ACTION_RESULTS));
 	}
 
 	@Override
@@ -345,12 +346,12 @@ public class MainFragment extends Fragment {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			int i = intent.getIntExtra(I.SEARCH_CODE, I.SEARCH_ERROR);
+			int i = intent.getIntExtra(I.SEARCH_COUNT, I.SEARCH_ERROR);
 			I.log("onReceive(): "+i);
 			alertDialog.cancel();
 			switch (i) {
 				case I.SEARCH_ERROR:
-					snackbarHelper.show(R.string.error);
+					snackbarHelper.show(intent.getStringExtra(I.ERROR_MESSAGE));
 					break;
 				case I.SEARCH_NOTHING:
 					if (needShowResults)

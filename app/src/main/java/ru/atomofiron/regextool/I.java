@@ -14,9 +14,6 @@ import java.util.Collection;
 
 public class I {
 
-    public static final String toMainActivity = "ru.atomofiron.regextool.toMainActivity";
-    public static final String closeService = "ru.atomofiron.regextool.closeService";
-
     public static final String PREF_FIRST_START = "PREF_FIRST_START";
     public static final String PREF_HELP = "pref_help";
     public static final String PREF_STORAGE_PATH = "pref_storage_path";
@@ -27,11 +24,11 @@ public class I {
     public static final String PREF_HISTORY = "PREF_HISTORY";
     public static final String PREF_HISTORY_PINNED = "PREF_HISTORY_PINNED";
 
-    public static final int SEARCH_NOTHING = 0;
-    public static final int SEARCH_ERROR = -1;
-    public static final int SEARCH_OK = 1;
-    public static final int REQUEST_FOR_INIT = 1;
+	public static final int SEARCH_NOTHING = 0;
+	public static final int SEARCH_ERROR = -1;
+	public static final int REQUEST_FOR_INIT = 1;
     public static final int REQUEST_FOR_SEARCH = 2;
+    public static final String ERROR_MESSAGE = "ERROR_MESSAGE";
     public static final String SEARCH_COUNT = "SEARCH_COUNT";
     public static final String SEARCH_LIST = "SEARCH_LIST";
     public static final String RESULT_LIST = "RESULT_LIST";

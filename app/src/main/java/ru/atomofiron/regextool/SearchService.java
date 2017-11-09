@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Models.Finder;
 import ru.atomofiron.regextool.Models.RFile;
 import ru.atomofiron.regextool.Models.Result;
@@ -27,7 +28,7 @@ public class SearchService extends IntentService {
     ArrayList<Result> results = new ArrayList<>();
     Pattern pattern;
 
-    boolean done = false; // у меня на Meizu без этого сервис при его закрытии не умирает // это вообще по-русски написано?..
+    boolean stopped = false;
     boolean inFiles = false;
 	private boolean useRoot;
 	private Context co;
@@ -58,20 +59,21 @@ public class SearchService extends IntentService {
 		for (File file : co.getFilesDir().listFiles())
 			file.delete();
 
+		Intent resultIntent = new Intent(MainFragment.ACTION_RESULTS);
         try {
             for (RFile rfile : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
                 if (inFiles)
                 	searchInFiles(rfile);
 				else
 					search(rfile);
-            if (!done)
-            	sendResults(I.SEARCH_OK);
+
+			resultIntent.putExtra(I.SEARCH_COUNT, results.size()).putExtra(I.RESULT_LIST, results);
         } catch (Exception e) {
             I.log(e.toString());
-            if (!done)
-            	sendResults(I.SEARCH_ERROR);
+            resultIntent.putExtra(I.ERROR_MESSAGE, e.toString());
         }
-        done = true;
+
+		LocalBroadcastManager.getInstance(co).sendBroadcast(resultIntent);
     }
     RFile[] Strings2RFiles(ArrayList<String> stringsList) {
         int n = stringsList.size();
@@ -84,7 +86,7 @@ public class SearchService extends IntentService {
     }
 
     void search(File file) {
-		if (doneList.contains(tmp = file.getAbsolutePath()))
+		if (stopped || doneList.contains(tmp = file.getAbsolutePath()))
 			return;
 		else
 			doneList.add(tmp);
@@ -99,7 +101,7 @@ public class SearchService extends IntentService {
         }
     }
     void searchInFiles(RFile rfile) {
-		if (doneList.contains(tmp = rfile.getAbsolutePath()))
+		if (stopped || doneList.contains(tmp = rfile.getAbsolutePath()))
 			return;
 		else
 			doneList.add(tmp);
@@ -114,18 +116,6 @@ public class SearchService extends IntentService {
         	if (!result.isEmpty())
         		results.add(result);
         }
-    }
-
-    void sendResults(int code) {
-        Intent intent = new Intent(I.toMainActivity).putExtra(I.SEARCH_IN_FILES,inFiles);
-        if (code == I.SEARCH_OK)
-            intent
-                    .putExtra(I.SEARCH_CODE, results.size())
-                    .putExtra(I.RESULT_LIST, results);
-        else
-        	intent.putExtra(I.SEARCH_CODE, code);
-
-        LocalBroadcastManager.getInstance(co).sendBroadcast(intent);
     }
 
     void startForeground() {
@@ -150,9 +140,7 @@ public class SearchService extends IntentService {
     }
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        if (!done)
-        	sendResults(I.SEARCH_OK);
-        done = true;
-    }
+		super.onDestroy();
+		stopped = true;
+	}
 }
