@@ -31,7 +31,7 @@ import ru.atomofiron.regextool.Utils.Result;
 public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
 	private Activity ac;
-	private ListView rootView;
+	private ListView fragmentView;
 	private ResultAdapter listAdapter;
 
 	private ArrayList<Result> resultsList;
@@ -45,9 +45,13 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	}
 
 	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
+	public void onDestroyView() {
+		super.onDestroyView();
+		if ((fragmentView = (ListView) getView()) != null) {
+			ViewGroup parent = (ViewGroup) fragmentView.getParent();
+			if (parent != null)
+				parent.removeView(fragmentView);
+		}
 	}
 
 	@Nullable
@@ -55,18 +59,18 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		ac = getActivity();
 
-		if (rootView == null) {
-			rootView = new ListView(ac);
+		if (fragmentView == null) {
+			fragmentView = new ListView(ac);
 			resultsList = getArguments().getParcelableArrayList(I.RESULT_LIST);
 
 			listAdapter = new ResultAdapter(ac);
 			listAdapter.setResults(resultsList);
 
-			rootView.setOnItemLongClickListener(this);
-			rootView.setOnItemClickListener(this);
-			rootView.setAdapter(listAdapter);
+			fragmentView.setOnItemLongClickListener(this);
+			fragmentView.setOnItemClickListener(this);
+			fragmentView.setAdapter(listAdapter);
 		}
-		return rootView;
+		return fragmentView;
 	}
 
 	private void snack(final String str) {

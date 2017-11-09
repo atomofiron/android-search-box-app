@@ -54,6 +54,7 @@ public class MainFragment extends Fragment {
 	private static final String KEY_FLAG_MULTILINE = "KEY_FLAG_MULTILINE";
 
 	private Activity ac;
+	private View fragmentView;
 
 	private RegexText regexText;
 	private CheckBox caseToggle;
@@ -89,8 +90,21 @@ public class MainFragment extends Fragment {
 	}
 
 	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		if ((fragmentView = getView()) != null) {
+			ViewGroup parent = (ViewGroup) fragmentView.getParent();
+			if (parent != null)
+				parent.removeView(fragmentView);
+		}
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
+		if (fragmentView != null)
+			return fragmentView;
+
 		defPath = sp.getString(I.PREF_STORAGE_PATH, "/");
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 
