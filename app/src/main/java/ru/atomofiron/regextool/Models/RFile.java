@@ -1,6 +1,5 @@
-package ru.atomofiron.regextool.Utils;
+package ru.atomofiron.regextool.Models;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.io.BufferedReader;
@@ -12,6 +11,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 
 import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.Utils.Cmd;
 
 public class RFile extends File {
 

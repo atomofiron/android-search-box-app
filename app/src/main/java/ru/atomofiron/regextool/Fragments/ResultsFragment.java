@@ -26,7 +26,7 @@ import ru.atomofiron.regextool.Adapters.ResultAdapter;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.TextActivity;
-import ru.atomofiron.regextool.Utils.Result;
+import ru.atomofiron.regextool.Models.Result;
 
 public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import ru.atomofiron.regextool.Models.Finder;
-import ru.atomofiron.regextool.Utils.RFile;
-import ru.atomofiron.regextool.Utils.Result;
+import ru.atomofiron.regextool.Models.RFile;
+import ru.atomofiron.regextool.Models.Result;
 
 public class SearchService extends IntentService {
 

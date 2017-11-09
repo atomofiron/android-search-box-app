@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.Utils.Result;
+import ru.atomofiron.regextool.Models.Result;
 
 public class ResultAdapter extends ListAdapter {
 	private final ArrayList<Result> resultsList = new ArrayList<>();

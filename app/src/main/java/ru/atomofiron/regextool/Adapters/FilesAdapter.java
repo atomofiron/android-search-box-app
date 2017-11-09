@@ -21,7 +21,7 @@ import java.util.Set;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.Utils.FileComparator;
-import ru.atomofiron.regextool.Utils.RFile;
+import ru.atomofiron.regextool.Models.RFile;
 
 public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, View.OnClickListener {
 

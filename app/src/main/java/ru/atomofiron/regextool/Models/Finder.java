@@ -4,8 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ru.atomofiron.regextool.I;
-import ru.atomofiron.regextool.Utils.RFile;
-import ru.atomofiron.regextool.Utils.Result;
 
 public class Finder {
 	private int maxSize = 1024 * 1024;

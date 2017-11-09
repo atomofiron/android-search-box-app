@@ -1,12 +1,10 @@
-package ru.atomofiron.regextool.Utils;
+package ru.atomofiron.regextool.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import ru.atomofiron.regextool.I;
 
 public class Result implements Iterator, Parcelable {
 	public final String path;

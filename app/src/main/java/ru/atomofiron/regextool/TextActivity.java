@@ -12,8 +12,8 @@ import android.text.style.BackgroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import ru.atomofiron.regextool.Utils.RFile;
-import ru.atomofiron.regextool.Utils.Result;
+import ru.atomofiron.regextool.Models.RFile;
+import ru.atomofiron.regextool.Models.Result;
 
 public class TextActivity extends AppCompatActivity {
 

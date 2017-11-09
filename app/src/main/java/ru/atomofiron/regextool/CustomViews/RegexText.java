@@ -15,7 +15,7 @@ import android.widget.EditText;
 
 import ru.atomofiron.regextool.Models.Finder;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.Utils.Result;
+import ru.atomofiron.regextool.Models.Result;
 
 public class RegexText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;
