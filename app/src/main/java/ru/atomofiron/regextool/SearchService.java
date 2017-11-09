@@ -119,24 +119,20 @@ public class SearchService extends IntentService {
     }
 
     void startForeground() {
-        PendingIntent pintent = PendingIntent.getActivity(this, 0,
-				new Intent(this, MainActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+        		this,
+				0,
+				new Intent(this, MainActivity.class),
+				PendingIntent.FLAG_CANCEL_CURRENT
+		);
         Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.searching))
-                .setContentIntent(pintent)
-                .setAutoCancel(true)
+                .setContentTitle(getString(R.string.searching))
+                .setContentText(getString(R.string.app_name))
+                .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic);
-        Notification notif;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-        	notif = builder.build();
-        else
-        	notif = builder.getNotification();
-        notif.defaults = Notification.DEFAULT_LIGHTS;
-        notif.sound = null;
-        notif.flags |= Notification.FLAG_NO_CLEAR;
-        notif.vibrate = new long[] { 0, 0 };
-        startForeground(2016, notif);
+
+        startForeground(1, Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ?
+				builder.build() : builder.getNotification());
     }
     @Override
     public void onDestroy() {
