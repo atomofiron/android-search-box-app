@@ -44,6 +44,7 @@ import ru.atomofiron.regextool.MainActivity;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.SearchService;
 import ru.atomofiron.regextool.Utils.Permissions;
+import ru.atomofiron.regextool.Utils.SnackbarHelper;
 
 
 public class MainFragment extends Fragment {
@@ -57,6 +58,7 @@ public class MainFragment extends Fragment {
 
 	private Activity ac;
 	private View fragmentView;
+	private SnackbarHelper snackbarHelper;
 
 	private RegexText regexText;
 	private CheckBox caseToggle;
@@ -206,6 +208,7 @@ public class MainFragment extends Fragment {
 			}
 		}));
 
+		snackbarHelper = new SnackbarHelper(view);
 		return view;
 	}
 
@@ -249,9 +252,9 @@ public class MainFragment extends Fragment {
 	}
 
 	public void checkListForSearch() {
-		if (selectedListAdapter.getCheckedCount() == 0) {
-			snack(R.string.no_checked);
-		} else
+		if (selectedListAdapter.getCheckedCount() == 0)
+			snackbarHelper.show(R.string.no_checked);
+		else
 			search();
 	}
 
@@ -282,17 +285,6 @@ public class MainFragment extends Fragment {
 		ac.stopService(new Intent(ac, SearchService.class));
 	}
 
-	private void snack(int id) {
-		snack(getString(id));
-	}
-
-	private void snack(String str) {
-		I.snack(getView(), str, false);
-	}
-
-
-
-
 // -------------------------------------------------------------
 
 	private class ButtonListener implements View.OnClickListener {
@@ -311,7 +303,7 @@ public class MainFragment extends Fragment {
 					if (!regexToggle.isChecked())
 						try { Pattern.compile(regex);
 						} catch (Exception ignored) {
-							snack(R.string.bad_ex);
+							snackbarHelper.show(R.string.bad_ex);
 							return;
 						}
 					if (regex.length() > 0 && Permissions.checkPerm(mainActivity, I.REQUEST_FOR_SEARCH))
@@ -358,15 +350,14 @@ public class MainFragment extends Fragment {
 			alertDialog.cancel();
 			switch (i) {
 				case I.SEARCH_ERROR:
-					snack(R.string.error);
+					snackbarHelper.show(R.string.error);
 					break;
 				case I.SEARCH_NOTHING:
 					if (needShowResults)
-						snack(R.string.nothing);
+						snackbarHelper.show(R.string.nothing);
 					break;
 				default:
 					if (needShowResults) {
-						snack(getString(R.string.results, i));
 						startActivity(
 								new Intent(ac, MainActivity.class)
 										.setAction(MainActivity.ACTION_SHOW_RESULTS)

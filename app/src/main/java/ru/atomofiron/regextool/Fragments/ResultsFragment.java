@@ -27,14 +27,17 @@ import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.TextActivity;
 import ru.atomofiron.regextool.Models.Result;
+import ru.atomofiron.regextool.Utils.SnackbarHelper;
 
 public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
 	private Activity ac;
 	private ListView fragmentView;
 	private ResultAdapter listAdapter;
+	private SnackbarHelper snackbarHelper;
 
 	private ArrayList<Result> resultsList;
+	private String startMessage = null;
 
 	public ResultsFragment() {}
 
@@ -69,12 +72,25 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 			fragmentView.setOnItemLongClickListener(this);
 			fragmentView.setOnItemClickListener(this);
 			fragmentView.setAdapter(listAdapter);
+
+			snackbarHelper = new SnackbarHelper(fragmentView);
+			startMessage = getString(R.string.results, getArguments().getInt(I.SEARCH_CODE));
 		}
 		return fragmentView;
 	}
 
-	private void snack(final String str) {
-		I.snack(getView(), str, Snackbar.LENGTH_LONG, getString(R.string.copy), new View.OnClickListener() {
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		if (startMessage != null) {
+			snackbarHelper.show(startMessage);
+			startMessage = null;
+		}
+	}
+
+	private void showPathWithCopyAction(final String str) {
+		snackbarHelper.show(str, R.string.copy, true, new View.OnClickListener() {
 			public void onClick(View v) {
 				((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
 						.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));
@@ -103,11 +119,11 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 				if (intent.resolveActivity(ac.getPackageManager()) != null)
 					startActivityForResult(intent, 10);
 				else
-					snack(getString(R.string.no_activity));
+					snackbarHelper.show(R.string.no_activity);
 			} catch (Exception e) {
 				if (e.getMessage().startsWith("Failed to find configured root that contains")) {
 					I.toast(ac, R.string.fucking_provider, true);
-					snack(file.getAbsolutePath());
+					showPathWithCopyAction(file.getAbsolutePath());
 				} else
 					I.toast(ac, R.string.error);
 			}
@@ -115,7 +131,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		snack(listAdapter.getItem(position));
+		showPathWithCopyAction(listAdapter.getItem(position));
 		return true;
 	}
 }
