@@ -32,7 +32,7 @@ public class I {
     public static final int SEARCH_OK = 1;
     public static final int REQUEST_FOR_INIT = 1;
     public static final int REQUEST_FOR_SEARCH = 2;
-    public static final String SEARCH_CODE = "SEARCH_CODE";
+    public static final String SEARCH_COUNT = "SEARCH_COUNT";
     public static final String SEARCH_LIST = "SEARCH_LIST";
     public static final String RESULT_LIST = "RESULT_LIST";
     public static final String RESULT = "RESULT";

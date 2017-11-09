@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
@@ -74,7 +73,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 			fragmentView.setAdapter(listAdapter);
 
 			snackbarHelper = new SnackbarHelper(fragmentView);
-			startMessage = getString(R.string.results, getArguments().getInt(I.SEARCH_CODE));
+			startMessage = getString(R.string.results, getArguments().getInt(I.SEARCH_COUNT));
 		}
 		return fragmentView;
 	}
