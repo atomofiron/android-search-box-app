@@ -52,7 +52,7 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 			save(PREF_HISTORY);
 		} else
 			for (String note : sp.getString(PREF_HISTORY, "").split("\n"))
-				if (!note.isEmpty())
+				if (!note.trim().isEmpty())
 					history.add(note);
 
 		sort();
