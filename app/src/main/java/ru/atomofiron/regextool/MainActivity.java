@@ -110,9 +110,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		// other //
 
+		MainFragment mainFragment;
 		fragmentManager = getSupportFragmentManager();
+
 		if (fragmentManager.findFragmentById(R.id.container) == null)
-			setFragment(new MainFragment(), false);
+			setFragment(mainFragment = new MainFragment(), false);
+		else
+			mainFragment = (MainFragment) fragmentManager.findFragmentByTag(MainFragment.class.getName());
+
+		mainFragment.setDrawerViewWithHistory(drawer);
 
 		if (fragmentManager.getBackStackEntryCount() > 0)
 			showArrow(true);
@@ -149,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if (back)
 			transaction.addToBackStack(fragment.getClass().getName());
 		transaction
-				.replace(R.id.container, fragment)
+				.replace(R.id.container, fragment, fragment.getClass().getName())
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.commitAllowingStateLoss();
 	}

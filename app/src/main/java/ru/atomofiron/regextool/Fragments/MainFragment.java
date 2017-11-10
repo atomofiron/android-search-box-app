@@ -84,10 +84,8 @@ public class MainFragment extends Fragment {
 	private LocalBroadcastManager broadcastManager;
 	private Receiver resultReceiver;
 	private SharedPreferences sp;
-	private ListView historyList;
+	private HistoryAdapter historyAdapter;
 	private String defPath;
-
-	private MainActivity mainActivity;
 
 	public MainFragment() {}
 
@@ -97,7 +95,6 @@ public class MainFragment extends Fragment {
 		setHasOptionsMenu(true);
 
 		ac = getActivity();
-		mainActivity = (MainActivity) ac;
 		sp = I.sp(ac);
 
 		resultReceiver = new Receiver(ac);
@@ -212,17 +209,20 @@ public class MainFragment extends Fragment {
 			public void onPageScrollStateChanged(int state) {}
 		});
 
-		historyList = (ListView) mainActivity.findViewById(R.id.history_list);
-		historyList.setAdapter(new HistoryAdapter(historyList, new HistoryAdapter.OnItemClickListener() {
+		snackbarHelper = new SnackbarHelper(view);
+		return view;
+	}
+
+	public void setDrawerViewWithHistory(final DrawerLayout drawerView) {
+		ListView historyList = drawerView.findViewById(R.id.history_list);
+		historyAdapter = new HistoryAdapter(historyList, new HistoryAdapter.OnItemClickListener() {
 			public void onItemClick(String node) {
 				regexText.setText(node);
 				regexText.setSelection(node.length());
-				((DrawerLayout) mainActivity.findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
+				drawerView.closeDrawer(GravityCompat.START);
 			}
-		}));
-
-		snackbarHelper = new SnackbarHelper(view);
-		return view;
+		});
+		historyList.setAdapter(historyAdapter);
 	}
 
 	@Override
@@ -315,7 +315,7 @@ public class MainFragment extends Fragment {
 					if (regex.isEmpty())
 						return;
 
-					((HistoryAdapter)historyList.getAdapter()).addItem(regex);
+					historyAdapter.addItem(regex);
 
 					if (regexToggle.isChecked())
 						try { Pattern.compile(regex);
