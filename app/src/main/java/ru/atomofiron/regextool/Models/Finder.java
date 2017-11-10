@@ -1,5 +1,7 @@
 package ru.atomofiron.regextool.Models;
 
+import android.support.annotation.Nullable;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,6 +89,7 @@ public class Finder {
 		}
 	}
 
+	@Nullable
 	public Result search(RFile rFile) {
 		rFile.tmpDirPath = tmpDirPath;
 

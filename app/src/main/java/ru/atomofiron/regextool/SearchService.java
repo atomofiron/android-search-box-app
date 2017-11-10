@@ -114,7 +114,7 @@ public class SearchService extends IntentService {
                 	searchInFiles((RFile) f);
         } else {
         	Result result = finder.search(rfile);
-        	if (!result.isEmpty())
+        	if (result != null && !result.isEmpty())
         		addAndNotice(result);
         }
     }
