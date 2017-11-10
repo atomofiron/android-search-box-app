@@ -8,6 +8,7 @@ import ru.atomofiron.regextool.I;
 public class Finder {
 	private int maxSize = 1024 * 1024;
 	private String query = "";
+	private String queryLowerCase = "";
 	private String[] extraFormats;
 	private boolean caseSense = false;
 	private boolean multiline = false;
@@ -51,6 +52,7 @@ public class Finder {
 
 	public void setQuery(String query) {
 		this.query = query;
+		queryLowerCase = query.toLowerCase();
 		I.log("setQuery(): "+query);
 		setRegex(isRegex());
 	}
@@ -109,13 +111,11 @@ public class Finder {
 			if (query.isEmpty())
 				return result;
 
-			if (!caseSense) {
+			if (!caseSense)
 				text = text.toLowerCase();
-				query = query.toLowerCase();
-			}
 
 			int offset = 0;
-			while ((offset = text.indexOf(query, offset)) != -1)
+			while ((offset = text.indexOf(caseSense ? this.query : this.queryLowerCase, offset)) != -1)
 				result.add(offset, offset += query.length());
 		} else {
 			Matcher matcher = pattern.matcher(text);
@@ -125,5 +125,18 @@ public class Finder {
 		}
 
 		return result;
+	}
+
+	public boolean find(String name) {
+		if (pattern != null && pattern.pattern().isEmpty() )
+			return false;
+
+		if (pattern == null)
+			return !query.isEmpty() &&
+					(caseSense ? name : name.toLowerCase())
+							.contains(caseSense ? this.query : this.queryLowerCase);
+
+		else
+			return pattern.matcher(name).find();
 	}
 }

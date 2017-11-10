@@ -26,7 +26,6 @@ public class SearchService extends IntentService {
     }
 
     ArrayList<Result> results = new ArrayList<>();
-    Pattern pattern;
 
     boolean stopped = false;
     boolean inFiles = false;
@@ -91,7 +90,7 @@ public class SearchService extends IntentService {
 		else
 			doneList.add(tmp);
 
-        if (pattern.matcher(file.getName()).find())
+        if (finder.find(file.getName()))
         	results.add(new Result(file.getAbsolutePath()));
         if (file.isDirectory()) {
             File[] files = file.listFiles();
