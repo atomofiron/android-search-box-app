@@ -284,6 +284,7 @@ public class MainFragment extends Fragment {
 	}
 
 	public void search() {
+		resultReceiver.counterView.setText("0/0");
 		resultReceiver.alertDialog.show();
 
 		ac.startService(new Intent(ac, SearchService.class)
