@@ -53,13 +53,13 @@ public class RFile extends File {
 			file = new RFile(file).setUseRoot(true);
 
 		String[] list = file.list();
-		return list != null && list.length != 0;
+		return list != null && list.length != 0 && !list[0].isEmpty();
 	}
 
 	@Override
 	public File[] listFiles() {
 		String[] list = list();
-		if (list == null)
+		if (list == null || list.length == 0 || list[0].isEmpty())
 			return null;
 
 		String current = getAbsolutePath();
