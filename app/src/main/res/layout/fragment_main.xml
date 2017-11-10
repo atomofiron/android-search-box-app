@@ -122,6 +122,8 @@
 				android:layout_height="wrap_content"
 				android:id="@+id/case_sense"
 				android:text="@string/case_sens"
+				android:ellipsize="none"
+				android:singleLine="true"
 				/>
 			<CheckBox
 				android:layout_weight="1"
@@ -129,6 +131,8 @@
 				android:layout_height="wrap_content"
 				android:id="@+id/simple_search"
 				android:text="@string/regex"
+				android:ellipsize="none"
+				android:singleLine="true"
 				/>
 		</TableRow>
 		<TableRow>
@@ -139,6 +143,8 @@
 				android:layout_height="wrap_content"
 				android:id="@+id/in_files"
 				android:text="@string/in_files"
+				android:ellipsize="none"
+				android:singleLine="true"
 				/>
 			<CheckBox
 				android:layout_weight="1"
@@ -146,6 +152,8 @@
 				android:layout_height="wrap_content"
 				android:id="@+id/multiline"
 				android:text="@string/multiline"
+				android:ellipsize="none"
+				android:singleLine="true"
 				android:enabled="false"
 				/>
 		</TableRow>
