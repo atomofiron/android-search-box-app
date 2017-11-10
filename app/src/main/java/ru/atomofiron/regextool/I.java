@@ -20,6 +20,7 @@ public class I {
     public static final String PREF_EXTRA_FORMATS = "pref_extra_formats";
     public static final String PREF_ORIENTATION = "pref_orientation";
     public static final String PREF_THEME = "pref_theme";
+    public static final String PREF_MAX_SIZE = "max_size";
     public static final String PREF_USE_ROOT = "pref_use_root";
 
     public static final String SEARCH_COUNT = "SEARCH_COUNT";
@@ -31,7 +32,6 @@ public class I {
     public static final String SEARCH_IN_FILES = "SEARCH_IN_FILES";
     public static final String SEARCH_REGEX = "SEARCH_REGEX";
     public static final String MULTILINE = "MULTILINE";
-    public static final String MAX_SIZE = "MAX_SIZE";
     public static final String SELECTED_LIST = "SELECTED_LIST";
 
     public static void log(String message) {

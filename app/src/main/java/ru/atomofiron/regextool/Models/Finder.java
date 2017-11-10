@@ -8,7 +8,8 @@ import java.util.regex.Pattern;
 import ru.atomofiron.regextool.I;
 
 public class Finder {
-	private int maxSize = 1024 * 1024;
+	private final int MB = 1024 * 1024;
+	private int maxSize = MB;
 	private String query = "";
 	private String queryLowerCase = "";
 	private String[] extraFormats;
@@ -40,16 +41,12 @@ public class Finder {
 		return true;
 	}
 
-	public int getMaxSize() {
-		return maxSize;
-	}
-
 	public String getLastException() {
 		return lastException;
 	}
 
 	public void setMaxSize(int maxSize) {
-		this.maxSize = maxSize;
+		this.maxSize = maxSize * MB;
 	}
 
 	public void setQuery(String query) {

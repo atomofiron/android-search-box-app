@@ -53,7 +53,7 @@ public class SearchService extends IntentService {
 			I.toast(co, finder.getLastException(), Toast.LENGTH_LONG);
 			return;
 		}
-		finder.setMaxSize(I.sp(co).getInt(I.MAX_SIZE, finder.getMaxSize()));
+		finder.setMaxSize(I.sp(co).getInt(I.PREF_MAX_SIZE, 10));
 		finder.tmpDirPath = co.getFilesDir().getAbsolutePath();
 
 		startForeground();

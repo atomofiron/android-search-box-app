@@ -17,6 +17,12 @@
             app:title="@string/pref_extra_formats"
             app:key="pref_extra_formats"
             />
+        <SeekBarPreference
+            app:title="@string/max_size"
+            app:summary="@string/max_size_sum"
+            app:key="max_size"
+            app:defaultValue="10"
+            />
         <SwitchPreferenceCompat
             app:title="@string/pref_use_root"
             app:key="pref_use_root"
