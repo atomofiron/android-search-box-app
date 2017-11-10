@@ -19,24 +19,41 @@ import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 
 public class HistoryAdapter extends BaseAdapter implements View.OnClickListener {
+	private static final String PREF_HISTORY = "PREF_HISTORY";
+	private static final String PREF_HISTORY_PINNED = "PREF_HISTORY_PINNED";
 
 	private Context co;
 	private SharedPreferences sp;
-	private ArrayList<String> history;
+	private ArrayList<String> history = new ArrayList<>();
 	private Set<String> pinned;
-	private ListView listView;
 
 	private OnItemClickListener onItemClickListener;
 
 	public HistoryAdapter(ListView listView, OnItemClickListener listener) {
-		this.listView = listView;
 		onItemClickListener = listener;
 
 		co = listView.getContext();
 		sp = I.sp(co);
 
-		history = new ArrayList<>(sp.getStringSet(I.PREF_HISTORY, new HashSet<String>()));
-		pinned = sp.getStringSet(I.PREF_HISTORY_PINNED, new HashSet<String>());
+		pinned = sp.getStringSet(PREF_HISTORY_PINNED, new HashSet<String>());
+
+		// переход от Set<String> на мультистрочный String для истории
+		if (sp.getAll().get(PREF_HISTORY) instanceof Set) {
+			history.addAll(sp.getStringSet(PREF_HISTORY, new HashSet<String>()));
+			sp.edit().putStringSet(PREF_HISTORY, null).apply();
+
+			int c = 0;
+			for (int i = 0; i < history.size(); i++) {
+				String s = history.get(i);
+				if (pinned.contains(s) && history.remove(s))
+					history.add(c++, s);
+			}
+
+			save(PREF_HISTORY);
+		} else
+			for (String note : sp.getString(PREF_HISTORY, "").split("\n"))
+				if (!note.isEmpty())
+					history.add(note);
 
 		sort();
 	}
@@ -52,11 +69,12 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 	}
 
 	public void addItem(String node) {
-		sort();
+		if (node.replace(" ", "").isEmpty())
+			return;
 
 		history.add(history.remove(node) && pinned.contains(node) ? 0 : pinned.size(), node);
 
-		save(I.PREF_HISTORY);
+		save(PREF_HISTORY);
 		notifyDataSetChanged();
 	}
 
@@ -80,13 +98,14 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 			else
 				pinned.remove(title);
 
-			save(I.PREF_HISTORY_PINNED);
-		} else if (id == R.id.del) {
-			if (pinned.remove(title))
-				save(I.PREF_HISTORY_PINNED);
+			history.add(history.remove(title) && pinned.contains(title) ? 0 : pinned.size(), title);
 
+			save(PREF_HISTORY_PINNED);
+			save(PREF_HISTORY);
+			notifyDataSetChanged();
+		} else if (id == R.id.del) {
 			if (history.remove(title))
-				save(I.PREF_HISTORY);
+				save(PREF_HISTORY);
 
 			notifyDataSetChanged();
 		} else
@@ -94,7 +113,14 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 	}
 
 	private void save(String key) {
-		sp.edit().putStringSet(key, key.equals(I.PREF_HISTORY_PINNED) ? pinned : new HashSet<>(history)).apply();
+		if (key.equals(PREF_HISTORY)) {
+			StringBuilder stringBuilder = new StringBuilder();
+			for (String note : history)
+				stringBuilder.append(note).append('\n');
+
+			sp.edit().putString(key, stringBuilder.toString()).apply();
+		} else
+			sp.edit().putStringSet(key, pinned).apply();
 	}
 
 	public void sort() {
