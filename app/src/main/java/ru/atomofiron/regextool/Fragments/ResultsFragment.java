@@ -74,7 +74,11 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 					.putExtra(Intent.EXTRA_SUBJECT, title)
 					.putExtra(Intent.EXTRA_TITLE, title)
 					.putExtra(Intent.EXTRA_TEXT, data.toString());
-			startActivity(Intent.createChooser(intent, getResources().getString(R.string.app_name)));
+
+			if (intent.resolveActivity(ac.getPackageManager()) != null)
+				startActivity(Intent.createChooser(intent, getResources().getString(R.string.app_name)));
+			else
+				snackbarHelper.show(R.string.no_activity);
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -151,8 +155,9 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 				Intent intent = new Intent()
 						.setAction(android.content.Intent.ACTION_VIEW)
 						.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension(format));
+
 				if (intent.resolveActivity(ac.getPackageManager()) != null)
-					startActivityForResult(intent, 10);
+					startActivity(intent);
 				else
 					snackbarHelper.show(R.string.no_activity);
 			} catch (Exception e) {
