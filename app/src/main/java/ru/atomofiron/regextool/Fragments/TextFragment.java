@@ -21,6 +21,8 @@ import ru.atomofiron.regextool.Models.Result;
 import ru.atomofiron.regextool.R;
 
 public class TextFragment extends Fragment implements View.OnClickListener {
+	private final int spanBackgroundColor = Color.argb(255, 0, 0, 127);
+	private final BackgroundColorSpan focusSpan = new BackgroundColorSpan(Color.argb(127, 0, 127, 0));
 
 	private View fragmentView;
 	private TextView counter;
@@ -28,8 +30,7 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 	private TextView textView;
 
 	private int curPos = -1;
-	private int count = 0;
-	private int[] startPositions;
+	private int[][] spanRegions;
 
 	private Result result;
 
@@ -51,8 +52,8 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		scrollView = view.findViewById(R.id.scroll_text);
 
 		result = getArguments().getParcelable(I.RESULT);
-		count = result.size();
-		startPositions = new int[count];
+		int count = result.size();
+		spanRegions = new int[count][];
 		counter.setText(String.format("0/%d", count));
 
 		view.findViewById(R.id.fab_prev).setOnClickListener(this);
@@ -66,20 +67,19 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 				file.useRoot = I.sp(getContext()).getBoolean(I.PREF_USE_ROOT, false);
 				file.tmpDirPath = getContext().getFilesDir().getAbsolutePath();
 				final Spannable spanRange = new SpannableString(file.readText());
-				int i = 0;
+				int i = -1;
 				while (result.hasNext()) {
-					int[] pare = result.next();
-					startPositions[i++] = pare[0];
-					spanRange.setSpan(new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
-							pare[0], pare[1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					spanRegions[++i] = result.next();
+					spanRange.setSpan(new BackgroundColorSpan(spanBackgroundColor),
+							spanRegions[i][0], spanRegions[i][1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				}
 
 				getActivity().runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						textView.setText(spanRange);
+						textView.setText(spanRange, TextView.BufferType.EDITABLE);
 						view.findViewById(R.id.progressbar).setVisibility(View.GONE);
-						view.findViewById(R.id.fab_layout).setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+						view.findViewById(R.id.fab_layout).setVisibility(spanRegions.length > 0 ? View.VISIBLE : View.GONE);
 					}
 				});
 			}
@@ -114,7 +114,10 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		}
 		Layout layout = textView.getLayout();
 		//scrollView.scrollTo(0, layout.getLineTop(counts[curPos-1]));//layout.getLineForOffset(startPos)));
-		scrollView.scrollTo(0, layout.getLineTop(layout.getLineForOffset(startPositions[curPos])));
-		counter.setText(String.format("%1$d/%2$d", curPos + 1, count));
+		scrollView.scrollTo(0, layout.getLineTop(layout.getLineForOffset(spanRegions[curPos][0])));
+		counter.setText(String.format("%1$d/%2$d", curPos + 1, spanRegions.length));
+
+		textView.getEditableText().removeSpan(focusSpan);
+		textView.getEditableText().setSpan(focusSpan, spanRegions[curPos][0], spanRegions[curPos][1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 }
