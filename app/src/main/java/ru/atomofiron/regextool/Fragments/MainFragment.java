@@ -280,7 +280,8 @@ public class MainFragment extends Fragment {
 			else if (requestCode == REQUEST_FOR_PROVIDER)
 				((FilesAdapter) filesListView.getAdapter()).update(new File(defPath));
 		} else if (requestCode == REQUEST_FOR_PROVIDER)
-			viewPager.setCurrentItem(1);
+			if (!sp.getBoolean(I.PREF_USE_ROOT, false))
+				viewPager.setCurrentItem(1);
 	}
 
 	public void search() {
