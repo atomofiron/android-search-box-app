@@ -13,7 +13,7 @@ public class ResultAdapter extends ListAdapter {
 
 	public ResultAdapter(Context context) {
 		super(context);
-		countedNotCheckable = true;
+		checkable = false;
 	}
 
 	public void setResults(ArrayList<Result> results) {
@@ -25,6 +25,7 @@ public class ResultAdapter extends ListAdapter {
 			pathsList.add(result.path);
 		}
 
+		counted = results.size() > 0 && !results.get(0).isEmpty();
 		notifyDataSetChanged();
 	}
 
@@ -32,7 +33,11 @@ public class ResultAdapter extends ListAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = super.getView(position, convertView, parent);
 
-		((ViewHolder) view.getTag()).count.setText(String.valueOf(resultsList.get(position).size()));
+		if (counted) {
+			ViewHolder holder = (ViewHolder) view.getTag();
+			holder.count.setText(String.valueOf(resultsList.get(position).size()));
+			holder.icon.setVisibility(View.GONE);
+		}
 
 		return view;
 	}

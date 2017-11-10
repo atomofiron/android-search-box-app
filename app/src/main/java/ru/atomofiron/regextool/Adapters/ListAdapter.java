@@ -26,7 +26,8 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
     protected final ArrayList<String> pathsList = new ArrayList<>();
 	private final ArrayList<String> checkedPathsList = new ArrayList<>();
 
-    public boolean countedNotCheckable = false;
+    boolean counted = false;
+    boolean checkable = true;
 
     public ListAdapter(Context context) {
         co = context;
@@ -126,11 +127,9 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
             holder.icon = (ImageView)myView.findViewById(R.id.icon);
             holder.check = (CheckBox)myView.findViewById(R.id.checkbox);
 
-			if (countedNotCheckable) {
-				holder.icon.setVisibility(View.GONE);
-				holder.count.setVisibility(View.VISIBLE);
-				holder.check.setVisibility(View.GONE);
-			}
+			holder.icon.setVisibility(counted ? View.GONE : View.VISIBLE);
+			holder.count.setVisibility(counted ? View.VISIBLE : View.GONE);
+			holder.check.setVisibility(checkable ? View.VISIBLE : View.GONE);
 
             myView.setTag(holder);
         } else
@@ -138,11 +137,11 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 
 		String path = pathsList.get(position);
         holder.text.setText(path);
-        holder.icon.setImageResource(new File(path).isDirectory() ?
-				R.drawable.ic_folder : R.drawable.ic_file);
+        if (new File(path).isDirectory())
+        	holder.icon.setImageResource(R.drawable.ic_folder);
         holder.check.setTag(path);
 
-		if (!countedNotCheckable) {
+		if (checkable) {
 			holder.check.setOnCheckedChangeListener(null);
 			holder.check.setChecked(checkedPathsList.contains(path));
 			holder.check.setOnCheckedChangeListener(this);
