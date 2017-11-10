@@ -104,6 +104,6 @@ public class Result implements Iterator, Parcelable {
 		String name = path.substring(path.lastIndexOf(File.separatorChar) + 1);
 		int index = name.lastIndexOf('.');
 		name = index > 0 ? name.substring(0, index) : name;
-		return String.format("[%1$s](%2$s)  \n", name, path);
+		return String.format("[%1$s](%2$s)  \n", name, path.replace(" ", "\\ "));
 	}
 }
