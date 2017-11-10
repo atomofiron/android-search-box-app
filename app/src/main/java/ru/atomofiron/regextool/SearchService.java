@@ -27,7 +27,7 @@ public class SearchService extends IntentService {
     ArrayList<Result> results = new ArrayList<>();
 
     boolean stopped = false;
-    boolean inFiles = false;
+    boolean inTheContent = false;
 	private boolean useRoot;
 	private Context co;
 	private final Finder finder = new Finder();
@@ -44,7 +44,7 @@ public class SearchService extends IntentService {
 		broadcastManager = LocalBroadcastManager.getInstance(co);
 
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
-		inFiles = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
+		inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
 		finder.setExtraFormats(sp.getString(I.PREF_EXTRA_FORMATS, "").split(" "));
 		finder.setQuery(intent.getStringExtra(I.QUERY));
 		finder.setCaseSense(intent.getBooleanExtra(I.CASE_SENSE, false));
@@ -63,8 +63,8 @@ public class SearchService extends IntentService {
 		Intent resultIntent = new Intent(MainFragment.ACTION_RESULTS);
         try {
             for (RFile rfile : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
-                if (inFiles)
-                	searchInFiles(rfile);
+                if (inTheContent)
+                	searchInTheContent(rfile);
 				else
 					search(rfile);
 
@@ -101,7 +101,7 @@ public class SearchService extends IntentService {
                 	search(f);
         }
     }
-    void searchInFiles(RFile rfile) {
+    void searchInTheContent(RFile rfile) {
 		if (stopped || doneList.contains(tmp = rfile.getAbsolutePath()))
 			return;
 		else
@@ -111,7 +111,7 @@ public class SearchService extends IntentService {
             File[] files = rfile.listFiles();
             if (files != null)
                 for (File f : files)
-                	searchInFiles((RFile) f);
+                	searchInTheContent((RFile) f);
         } else {
         	Result result = finder.search(rfile);
         	if (result != null && !result.isEmpty())

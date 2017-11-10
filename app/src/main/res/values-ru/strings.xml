@@ -14,7 +14,7 @@
     <string name="help">В списке выбранных директорий:\nДолгое нажатие - стереть запись, галочка - задействовать.\n\nВ списке выбора директории:\nКороткое нажатие - перейти, галочка - выбрать.\n\nНа экране результатов:\nКороткое - открыть, долгое - показать абсолютный путь.</string>
     <string name="results">Поиск дал %d результатов</string>
     <string name="find">Найти</string>
-    <string name="in_files">Искать в содержимом</string>
+    <string name="in_the_content">По содержимому</string>
     <string name="regex">Поиск по шаблону</string>
     <string name="multiline">Мультистрочный</string>
     <string name="bad_ex">Неверное регулярное выражение</string>

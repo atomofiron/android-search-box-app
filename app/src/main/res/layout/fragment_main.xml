@@ -142,7 +142,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/in_files"
-				android:text="@string/in_files"
+				android:text="@string/in_the_content"
 				android:ellipsize="none"
 				android:singleLine="true"
 				/>

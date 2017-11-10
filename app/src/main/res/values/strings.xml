@@ -14,7 +14,7 @@
     <string name="help">The list of selected dirs:\nLong press to delete the record, checkbox to use.\n\nOn the selection list of the directory:\nShort press - go, checkbox to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
     <string name="results">Your search returned %d results</string>
     <string name="find">Find</string>
-    <string name="in_files">Seek in files</string>
+    <string name="in_the_content">In the content</string>
     <string name="regex">Use regexp</string>
     <string name="multiline">Multiline mode</string>
     <string name="bad_ex">Incorrect regular expression</string>
