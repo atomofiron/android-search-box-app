@@ -26,8 +26,6 @@ public class I {
 
 	public static final int SEARCH_NOTHING = 0;
 	public static final int SEARCH_ERROR = -1;
-	public static final int REQUEST_FOR_INIT = 1;
-    public static final int REQUEST_FOR_SEARCH = 2;
     public static final String ERROR_MESSAGE = "ERROR_MESSAGE";
     public static final String SEARCH_COUNT = "SEARCH_COUNT";
     public static final String SEARCH_LIST = "SEARCH_LIST";
@@ -40,7 +38,6 @@ public class I {
     public static final String MULTILINE = "MULTILINE";
     public static final String MAX_SIZE = "MAX_SIZE";
     public static final String SELECTED_LIST = "SELECTED_LIST";
-    public static final String RES_PERM = "android.permission.READ_EXTERNAL_STORAGE";
 
     public static void log(String message) {
         Log.e("atomofiron", message);

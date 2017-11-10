@@ -43,11 +43,14 @@ import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.MainActivity;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.SearchService;
-import ru.atomofiron.regextool.Utils.Permissions;
+import ru.atomofiron.regextool.Utils.PermissionHelper;
 import ru.atomofiron.regextool.Utils.SnackbarHelper;
 
 
 public class MainFragment extends Fragment {
+	private static final int REQUEST_FOR_PROVIDER = 1;
+	private static final int REQUEST_FOR_SEARCH = 2;
+
 	public static final String ACTION_RESULTS = "ACTION_RESULTS";
 	private static final String KEY_QUERY = "KEY_QUERY";
 	private static final String KEY_TEST = "KEY_TEST";
@@ -66,6 +69,7 @@ public class MainFragment extends Fragment {
 	private CheckBox infilesToggle;
 	private CheckBox regexToggle;
 	private CheckBox multilineToggle;
+	private ViewPager viewPager;
 	private EditText testField;
 	private ListView filesListView;
 
@@ -153,7 +157,7 @@ public class MainFragment extends Fragment {
 		view.findViewById(R.id.roof).setOnClickListener(listener);
 		view.findViewById(R.id.buck).setOnClickListener(listener);
 
-		ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+		viewPager = (ViewPager) view.findViewById(R.id.view_pager);
 		ArrayList<View> viewList = new ArrayList<>();
 
 		ListView selectedListView = new ListView(ac);
@@ -195,7 +199,8 @@ public class MainFragment extends Fragment {
 				if (position == 1)
 					selectedListAdapter.update();
 				else if (position == 2)
-					filesListAdapter.updateSelected();
+					if (PermissionHelper.checkPerm(MainFragment.this, REQUEST_FOR_PROVIDER))
+						filesListAdapter.updateSelected();
 			}
 			public void onPageScrollStateChanged(int state) {}
 		});
@@ -262,9 +267,13 @@ public class MainFragment extends Fragment {
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-			if (requestCode == I.REQUEST_FOR_SEARCH)
+		if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+			if (requestCode == REQUEST_FOR_SEARCH)
 				checkListForSearch();
+			else if (requestCode == REQUEST_FOR_PROVIDER)
+				((FilesAdapter) filesListView.getAdapter()).update(new File(defPath));
+		} else if (requestCode == REQUEST_FOR_PROVIDER)
+			viewPager.setCurrentItem(1);
 	}
 
 	public void search() {
@@ -307,8 +316,10 @@ public class MainFragment extends Fragment {
 							snackbarHelper.show(R.string.bad_ex);
 							return;
 						}
-					if (regex.length() > 0 && Permissions.checkPerm(mainActivity, I.REQUEST_FOR_SEARCH))
+
+					if (PermissionHelper.checkPerm(MainFragment.this, REQUEST_FOR_SEARCH))
 						checkListForSearch();
+
 					return;
 				default:
 					symbol = ((Button)v).getText().toString();
