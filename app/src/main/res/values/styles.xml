@@ -1,23 +1,23 @@
 <resources>
 
 	<style name="AppCompatDark" parent="Theme.AppCompat.NoActionBar">
+		<item name="android:windowBackground">@color/windowBackgroundDark</item>
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="colorAccent">@color/colorAccent</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 	</style>
 	<style name="AppCompatLight" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="android:windowBackground">@color/windowBackgroundLight</item>
 		<item name="colorPrimary">@color/colorPrimaryL</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDarkL</item>
 		<item name="colorAccent">@color/colorAccentL</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 	</style>
 
-	<style name="AppTheme" parent="@style/AppCompatDark">
-		<item name="android:windowBackground">@color/windowBackground</item>
-	</style>
-	<style name="AppTheme.Light" parent="@style/AppCompatLight">
-	</style>
+	<style name="AppTheme" parent="@style/AppCompatDark"/>
+
+	<style name="AppTheme.Light" parent="@style/AppCompatLight"/>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
