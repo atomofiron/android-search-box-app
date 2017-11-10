@@ -17,4 +17,13 @@
         android:text="@string/searching"
         android:layout_margin="@dimen/activity_horizontal_margin"
         />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/counter"
+        android:text="0/0"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:gravity="right"
+        android:textAlignment="gravity"
+        />
 </LinearLayout>

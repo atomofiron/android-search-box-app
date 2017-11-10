@@ -29,6 +29,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +52,13 @@ public class MainFragment extends Fragment {
 	private static final int REQUEST_FOR_PROVIDER = 1;
 	private static final int REQUEST_FOR_SEARCH = 2;
 
+	public static final int SEARCH_NOTHING = 0;
+	public static final int SEARCH_ERROR = -1;
+
 	public static final String ACTION_RESULTS = "ACTION_RESULTS";
+	public static final String KEY_ERROR_MESSAGE = "KEY_ERROR_MESSAGE";
+	public static final String KEY_NOTICE = "KEY_NOTICE";
+
 	private static final String KEY_QUERY = "KEY_QUERY";
 	private static final String KEY_TEST = "KEY_TEST";
 	private static final String KEY_SELECTED = "KEY_SELECTED";
@@ -333,11 +340,14 @@ public class MainFragment extends Fragment {
 
 	class Receiver extends BroadcastReceiver {
 		private AlertDialog alertDialog;
+		private TextView counterView;
 		boolean needShowResults = true;
 
 		Receiver(Context co) {
+			View view = LayoutInflater.from(ac).inflate(R.layout.layout_searching, null);
+			counterView = view.findViewById(R.id.counter);
 			alertDialog = new AlertDialog.Builder(co)
-					.setView(R.layout.layout_searching)
+					.setView(view)
 					.setCancelable(false)
 					.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						@Override
@@ -357,27 +367,29 @@ public class MainFragment extends Fragment {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			int i = intent.getIntExtra(I.SEARCH_COUNT, I.SEARCH_ERROR);
-			I.log("onReceive(): "+i);
-			alertDialog.cancel();
-			switch (i) {
-				case I.SEARCH_ERROR:
-					snackbarHelper.show(intent.getStringExtra(I.ERROR_MESSAGE));
-					break;
-				case I.SEARCH_NOTHING:
-					if (needShowResults)
-						snackbarHelper.show(R.string.nothing);
-					break;
-				default:
-					if (needShowResults) {
-						startActivity(
-								new Intent(ac, MainActivity.class)
-										.setAction(MainActivity.ACTION_SHOW_RESULTS)
-										.putExtras(intent.getExtras())
-						);
-					}
-					break;
-			}
+			if (!intent.getExtras().containsKey(KEY_NOTICE)) {
+				alertDialog.cancel();
+
+				switch (intent.getIntExtra(I.SEARCH_COUNT, SEARCH_ERROR)) {
+					case SEARCH_ERROR:
+						snackbarHelper.show(intent.getStringExtra(KEY_ERROR_MESSAGE));
+						break;
+					case SEARCH_NOTHING:
+						if (needShowResults)
+							snackbarHelper.show(R.string.nothing);
+						break;
+					default:
+						if (needShowResults) {
+							startActivity(
+									new Intent(ac, MainActivity.class)
+											.setAction(MainActivity.ACTION_SHOW_RESULTS)
+											.putExtras(intent.getExtras())
+							);
+						}
+						break;
+				}
+			} else
+				counterView.setText(intent.getStringExtra(KEY_NOTICE));
 		}
 	}
 }

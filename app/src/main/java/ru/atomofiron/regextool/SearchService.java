@@ -34,12 +34,15 @@ public class SearchService extends IntentService {
 	private final Finder finder = new Finder();
 	private final ArrayList<String> doneList = new ArrayList<>();
 	private String tmp;
+	private long lastNoticed = 0;
+	private LocalBroadcastManager broadcastManager;
 
     @Override
     protected void onHandleIntent(Intent intent) {
         I.log("onHandleIntent()");
 		co = getBaseContext();
 		SharedPreferences sp = I.sp(co);
+		broadcastManager = LocalBroadcastManager.getInstance(co);
 
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
 		inFiles = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
@@ -69,10 +72,10 @@ public class SearchService extends IntentService {
 			resultIntent.putExtra(I.SEARCH_COUNT, results.size()).putExtra(I.RESULT_LIST, results);
         } catch (Exception e) {
             I.log(e.toString());
-            resultIntent.putExtra(I.ERROR_MESSAGE, e.toString());
+            resultIntent.putExtra(I.SEARCH_COUNT, MainFragment.SEARCH_ERROR).putExtra(MainFragment.KEY_ERROR_MESSAGE, e.toString());
         }
 
-		LocalBroadcastManager.getInstance(co).sendBroadcast(resultIntent);
+		broadcastManager.sendBroadcast(resultIntent);
     }
     RFile[] Strings2RFiles(ArrayList<String> stringsList) {
         int n = stringsList.size();
@@ -91,7 +94,7 @@ public class SearchService extends IntentService {
 			doneList.add(tmp);
 
         if (finder.find(file.getName()))
-        	results.add(new Result(file.getAbsolutePath()));
+        	addAndNotice(new Result(file.getAbsolutePath()));
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (file.listFiles() != null && file.listFiles().length > 0)
@@ -113,9 +116,23 @@ public class SearchService extends IntentService {
         } else {
         	Result result = finder.search(rfile);
         	if (!result.isEmpty())
-        		results.add(result);
+        		addAndNotice(result);
         }
     }
+
+    private void addAndNotice(Result result) {
+		results.add(result);
+
+		long now = System.currentTimeMillis();
+		if (now - lastNoticed > 100) {
+			lastNoticed = now;
+
+			broadcastManager.sendBroadcast(
+					new Intent(MainFragment.ACTION_RESULTS)
+					.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), doneList.size()))
+			);
+		}
+	}
 
     void startForeground() {
         PendingIntent pendingIntent = PendingIntent.getActivity(

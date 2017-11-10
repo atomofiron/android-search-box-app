@@ -24,9 +24,6 @@ public class I {
     public static final String PREF_HISTORY = "PREF_HISTORY";
     public static final String PREF_HISTORY_PINNED = "PREF_HISTORY_PINNED";
 
-	public static final int SEARCH_NOTHING = 0;
-	public static final int SEARCH_ERROR = -1;
-    public static final String ERROR_MESSAGE = "ERROR_MESSAGE";
     public static final String SEARCH_COUNT = "SEARCH_COUNT";
     public static final String SEARCH_LIST = "SEARCH_LIST";
     public static final String RESULT_LIST = "RESULT_LIST";
