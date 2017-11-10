@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="ru.atomofiron.regextool.MainActivity">
 
     <ProgressBar
@@ -38,13 +39,15 @@
         android:id="@+id/fab_layout"
         android:gravity="center_vertical"
         >
-        <android.support.design.widget.FloatingActionButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/fab_prev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_prev" />
+            android:src="@drawable/ic_prev"
+            app:backgroundTint="?colorAccent"
+            />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,13 +55,14 @@
             android:text="0/0"
             android:background="?android:windowBackground"
             />
-        <android.support.design.widget.FloatingActionButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/fab_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_next"
+            app:backgroundTint="?colorAccent"
             />
     </LinearLayout>
 
