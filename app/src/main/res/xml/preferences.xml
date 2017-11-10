@@ -23,6 +23,10 @@
             app:key="max_size"
             app:defaultValue="10"
             />
+        <CheckBoxPreference
+            app:title="@string/exclude_dirs"
+            android:key="exclude_dirs"
+            />
         <SwitchPreferenceCompat
             app:title="@string/pref_use_root"
             app:key="pref_use_root"

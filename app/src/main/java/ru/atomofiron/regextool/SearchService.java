@@ -28,6 +28,7 @@ public class SearchService extends IntentService {
 
     boolean stopped = false;
     boolean inTheContent = false;
+    boolean excludeDirs = false;
 	private boolean useRoot;
 	private Context co;
 	private final Finder finder = new Finder();
@@ -44,6 +45,7 @@ public class SearchService extends IntentService {
 		broadcastManager = LocalBroadcastManager.getInstance(co);
 
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
+		excludeDirs = sp.getBoolean(I.PREF_EXCLUDE_DIRS, false);
 		inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
 		finder.setExtraFormats(sp.getString(I.PREF_EXTRA_FORMATS, "").split(" "));
 		finder.setQuery(intent.getStringExtra(I.QUERY));
@@ -92,8 +94,9 @@ public class SearchService extends IntentService {
 		else
 			doneList.add(tmp);
 
-        if (finder.find(file.getName()))
+        if (!(file.isDirectory() && excludeDirs) && finder.find(file.getName()))
         	addAndNotice(new Result(file.getAbsolutePath()));
+
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (file.listFiles() != null && file.listFiles().length > 0)
