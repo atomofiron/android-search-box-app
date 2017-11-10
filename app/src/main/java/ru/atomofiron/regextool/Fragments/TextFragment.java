@@ -79,7 +79,7 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 					public void run() {
 						textView.setText(spanRange);
 						view.findViewById(R.id.progressbar).setVisibility(View.GONE);
-						view.findViewById(R.id.fab_layout).setVisibility(View.VISIBLE);
+						view.findViewById(R.id.fab_layout).setVisibility(count > 0 ? View.VISIBLE : View.GONE);
 					}
 				});
 			}
