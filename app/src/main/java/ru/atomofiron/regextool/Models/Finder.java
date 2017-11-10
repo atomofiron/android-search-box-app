@@ -53,7 +53,6 @@ public class Finder {
 	public void setQuery(String query) {
 		this.query = query;
 		queryLowerCase = query.toLowerCase();
-		I.log("setQuery(): "+query);
 		setRegex(isRegex());
 	}
 

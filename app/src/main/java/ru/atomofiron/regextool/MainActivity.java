@@ -6,11 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,21 +24,18 @@ import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Fragments.PrefsFragment;
 import ru.atomofiron.regextool.Fragments.ResultsFragment;
 import ru.atomofiron.regextool.Fragments.TextFragment;
-import ru.atomofiron.regextool.Utils.PermissionHelper;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	public static final String ACTION_SHOW_RESULTS = "ACTION_SHOW_RESULTS";
 	public static final String ACTION_SHOW_RESULT = "ACTION_SHOW_RESULT";
 
 	private FragmentManager fragmentManager;
-	private FloatingActionButton fab;
 	private DrawerLayout drawer;
-	private AlertDialog helpDialog = null;
 	private SharedPreferences sp;
 
 	private ValueAnimator animArrowOn;
 	private ValueAnimator animArrowOff;
-	private boolean arrowIsShowen = false;
+	private boolean arrowIsShown = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		toggle.syncState();
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (arrowIsShowen)
+				if (arrowIsShown)
 					onBackPressed();
 				else if (drawer.isDrawerOpen(GravityCompat.START))
 					drawer.closeDrawer(GravityCompat.START, true);
@@ -89,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
-
-		fab = (FloatingActionButton)findViewById(R.id.fab);
 
 		// init arrow animation //
 
@@ -131,9 +124,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	public void showArrow(final boolean showArrow) {
-		if (showArrow == arrowIsShowen)
+		if (showArrow == arrowIsShown)
 			return;
-		arrowIsShowen = showArrow;
+		arrowIsShown = showArrow;
 
 		if (showArrow)
 			animArrowOn.start();

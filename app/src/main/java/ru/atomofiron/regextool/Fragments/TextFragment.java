@@ -100,7 +100,6 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		I.log("onClick() "+curPos+" count="+result.size());
 		switch (v.getId()) {
 			case R.id.fab_prev:
 				curPos--;

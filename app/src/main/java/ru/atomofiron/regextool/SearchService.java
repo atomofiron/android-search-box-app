@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Models.Finder;
