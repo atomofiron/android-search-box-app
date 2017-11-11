@@ -3,7 +3,7 @@
     <string-array name="tab_titles">
         <item>Test</item>
         <item>Selected</item>
-        <item>Provider</item>
+        <item>Explorer</item>
     </string-array>
 
     <string-array name="orientation_var">
