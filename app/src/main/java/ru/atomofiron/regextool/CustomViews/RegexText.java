@@ -136,7 +136,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 			}
 		});
 
-		testField.setText(sp.getString(TEST_TEXT, ""));
+		testField.setText(new SpannableString(sp.getString(TEST_TEXT, "")), BufferType.SPANNABLE);
 	}
 
 	private void postTest() {
@@ -149,33 +149,20 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 	}
 
 	private void test() {
-		locked = true;
+		Editable editable = testField.getText();
+		Result result = finder.search(testField.getText().toString());
 
-		String query = getText().toString();
-		String text = testField.getText().toString();
-		int selectionStart = testField.getSelectionStart();
+		for (BackgroundColorSpan span : editable.getSpans(0, editable.length(), BackgroundColorSpan.class))
+			editable.removeSpan(span);
 
-		if (finder.isRegex() && !finder.regexpIsValid() || query.isEmpty() || text.isEmpty()) {
-			testField.setText(text); // getText().clearSpans() приводит к некорректному поведению
-			testField.setSelection(selectionStart);
-		} else {
-			Spannable spanRange = new SpannableString(text);
-			Result result = finder.search(text);
-
-			while (result.hasNext()) {
-				int[] region = result.next();
-				spanRange.setSpan(
-						new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
-						region[0],
-						region[1],
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-				);
-			}
-
-			testField.setText(spanRange);
-			testField.setSelection(selectionStart);
+		while (result.hasNext()) {
+			int[] region = result.next();
+			editable.setSpan(
+					new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
+					region[0],
+					region[1],
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+			);
 		}
-
-		locked = false;
 	}
 }
