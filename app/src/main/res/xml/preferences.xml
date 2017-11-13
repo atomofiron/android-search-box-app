@@ -17,7 +17,7 @@
             app:title="@string/pref_extra_formats"
             app:key="pref_extra_formats"
             />
-        <ru.atomofiron.regextool.CustomViews.SeekBarPreference
+        <ru.atomofiron.regextool.CustomViews.NumberPreference
             app:title="@string/max_size"
             app:summary="@string/max_size_sum"
             app:key="max_size"
