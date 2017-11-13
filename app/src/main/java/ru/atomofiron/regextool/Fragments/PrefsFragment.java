@@ -63,6 +63,8 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 
 		if (preference.getKey().equals(I.PREF_THEME) || preference.getKey().equals(I.PREF_ORIENTATION))
 			getActivity().recreate();
+		else if (preference.getKey().equals(I.PREF_MAX_SIZE))
+			update(preference, newValue);
 
 		return result;
 	}
@@ -91,6 +93,12 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 					break;
 				} else if (value.equals("true"))
 					return Cmd.easyExec("su") == 0;
+			case I.PREF_MAX_SIZE:
+				if (newValue == null)
+					newValue = sp.getInt(key, 0);
+
+				pref.setSummary(I.intToHumanReadable((int) newValue, getResources().getStringArray(R.array.size_suffix_arr)));
+				break;
 		}
 		return true;
 	}

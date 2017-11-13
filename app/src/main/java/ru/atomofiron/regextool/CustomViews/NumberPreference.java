@@ -32,6 +32,7 @@ public class NumberPreference extends Preference implements NumberText.OnInputLi
 	@Override
 	protected Integer onGetDefaultValue(TypedArray a, int index) {
 		defaultValue = a.getInt(index, 0);
+		callChangeListener(defaultValue);
 		return defaultValue;
 	}
 
@@ -67,6 +68,7 @@ public class NumberPreference extends Preference implements NumberText.OnInputLi
 
 	@Override
 	public void onInput(int value) {
+		callChangeListener(value);
 		persistInt(value);
 	}
 }
