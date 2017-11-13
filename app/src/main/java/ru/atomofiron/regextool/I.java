@@ -21,6 +21,7 @@ public class I {
     public static final String PREF_ORIENTATION = "pref_orientation";
     public static final String PREF_THEME = "pref_theme";
     public static final String PREF_MAX_SIZE = "max_size";
+    public static final String PREF_MAX_DEPTH = "max_depth";
     public static final String PREF_EXCLUDE_DIRS = "exclude_dirs";
     public static final String PREF_USE_ROOT = "pref_use_root";
 

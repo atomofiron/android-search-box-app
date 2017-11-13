@@ -30,6 +30,7 @@ public class SearchService extends IntentService {
     boolean inTheContent = false;
     boolean excludeDirs = false;
 	private boolean useRoot;
+	private int maxDepth = 0;
 	private Context co;
 	private final Finder finder = new Finder();
 	private final ArrayList<String> doneList = new ArrayList<>();
@@ -44,6 +45,7 @@ public class SearchService extends IntentService {
 		SharedPreferences sp = I.sp(co);
 		broadcastManager = LocalBroadcastManager.getInstance(co);
 
+		maxDepth = sp.getInt(I.PREF_MAX_DEPTH, 1024);
 		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
 		excludeDirs = sp.getBoolean(I.PREF_EXCLUDE_DIRS, false);
 		inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
@@ -66,9 +68,9 @@ public class SearchService extends IntentService {
         try {
             for (RFile rfile : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
                 if (inTheContent)
-                	searchInTheContent(rfile);
+                	searchInTheContent(rfile, 0);
 				else
-					search(rfile);
+					search(rfile, 0);
 
 			resultIntent.putExtra(I.SEARCH_COUNT, results.size()).putExtra(I.RESULT_LIST, results);
         } catch (Exception e) {
@@ -88,33 +90,33 @@ public class SearchService extends IntentService {
         return filesList;
     }
 
-    void search(File file) {
+    void search(File file, int depth) {
 		if (stopped || doneList.contains(tmp = file.getAbsolutePath()))
 			return;
 		else
 			doneList.add(tmp);
 
-        if (!(file.isDirectory() && excludeDirs) && finder.find(file.getName()))
+        if (!(file.isDirectory() && (excludeDirs || depth == 0)) && finder.find(file.getName()))
         	addAndNotice(new Result(file.getAbsolutePath()));
 
-        if (file.isDirectory()) {
+        if (depth <= maxDepth && file.isDirectory()) {
             File[] files = file.listFiles();
             if (file.listFiles() != null && file.listFiles().length > 0)
                 for (File f : files)
-                	search(f);
+                	search(f, depth + 1);
         }
     }
-    void searchInTheContent(RFile rfile) {
+    void searchInTheContent(RFile rfile, int depth) {
 		if (stopped || doneList.contains(tmp = rfile.getAbsolutePath()))
 			return;
 		else
 			doneList.add(tmp);
 
-        if (rfile.isDirectory()) {
+        if (depth <= maxDepth && rfile.isDirectory()) {
             File[] files = rfile.listFiles();
             if (files != null)
                 for (File f : files)
-                	searchInTheContent((RFile) f);
+                	searchInTheContent((RFile) f, depth + 1);
         } else {
         	Result result = finder.search(rfile);
         	if (result != null && !result.isEmpty())

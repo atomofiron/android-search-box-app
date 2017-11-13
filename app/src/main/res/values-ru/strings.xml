@@ -37,6 +37,7 @@
     <string name="pref_orientation">Ориентация экрана</string>
     <string name="fucking_provider">Не удалось открыть файл из-за системных ограничений, попробуйте скопировать абсолютный путь к файлу и открыть его в другом приложении</string>
     <string name="pref_theme">Тема оформления</string>
+    <string name="max_depth">Максимальная глубина поиска</string>
     <string name="max_size">Максимальный размер файла (МБ)</string>
     <string name="max_size_sum">При поиске по содержимому</string>
     <string name="exclude_dirs">Исключить директории из результатов поиска</string>
