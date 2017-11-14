@@ -141,7 +141,12 @@ public class MainFragment extends Fragment {
 		regexToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				regexText.setRegex(isChecked);
-				multilineToggle.setEnabled(isChecked);
+				multilineToggle.setEnabled(isChecked && contentToggle.isChecked());
+			}
+		});
+		contentToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				multilineToggle.setEnabled(isChecked && regexToggle.isChecked());
 			}
 		});
 		multilineToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
