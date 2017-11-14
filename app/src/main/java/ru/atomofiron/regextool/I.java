@@ -14,6 +14,7 @@ import java.util.Collection;
 
 public class I {
 
+    public static final String PREF_LAST_VERSION = "PREF_LAST_VERSION";
     public static final String PREF_FIRST_START = "PREF_FIRST_START";
     public static final String PREF_HELP = "pref_help";
     public static final String PREF_STORAGE_PATH = "pref_storage_path";
