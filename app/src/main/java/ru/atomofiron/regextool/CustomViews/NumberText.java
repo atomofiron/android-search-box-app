@@ -72,8 +72,11 @@ public class NumberText extends android.support.v7.widget.AppCompatEditText impl
 			setText(value.substring(1, value.length()));
 
 			setSelection(start == 0 ? 0 : start - 1);
-		} else
-			onInput();
+		} else if (value.length() == 0) {
+			setText("0");
+			setSelection(1);
+		} else if (onInputListener != null)
+			onInputListener.onInput(Integer.parseInt(getText().toString()));
 	}
 
 	@Override
@@ -91,22 +94,8 @@ public class NumberText extends android.support.v7.widget.AppCompatEditText impl
 	public void onEditorAction(int actionCode) {
 		super.onEditorAction(actionCode);
 
-		if (actionCode == EditorInfo.IME_ACTION_DONE) {
+		if (actionCode == EditorInfo.IME_ACTION_DONE)
 			setFocusable(false);
-
-			onInput();
-		}
-	}
-
-	private void onInput() {
-		if (length() == 0) {
-			setText("0");
-			setSelection(1);
-			return;
-		}
-
-		if (onInputListener != null)
-			onInputListener.onInput(Integer.parseInt(getText().toString()));
 	}
 
 	@Override
