@@ -21,7 +21,7 @@ import ru.atomofiron.regextool.Models.Result;
 import ru.atomofiron.regextool.R;
 
 public class TextFragment extends Fragment implements View.OnClickListener {
-	private final int spanBackgroundColor = Color.argb(255, 0, 0, 127);
+	private final int spanBackgroundColor = Color.argb(127, 0, 0, 255);
 	private final BackgroundColorSpan focusSpan = new BackgroundColorSpan(Color.argb(127, 0, 127, 0));
 
 	private View fragmentView;
