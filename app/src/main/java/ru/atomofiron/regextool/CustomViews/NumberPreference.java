@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 public class NumberPreference extends Preference implements NumberText.OnInputListener {
 
 	private NumberText editText = null;
-	private int defaultValue; // это поле инициализируется в конструкторе суперкласса!
+	private int initialValue = 0;
 
 	public NumberPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
@@ -31,9 +31,12 @@ public class NumberPreference extends Preference implements NumberText.OnInputLi
 
 	@Override
 	protected Integer onGetDefaultValue(TypedArray a, int index) {
-		defaultValue = a.getInt(index, 0);
-		callChangeListener(defaultValue);
-		return defaultValue;
+		return a.getInt(index, 0);
+	}
+
+	@Override
+	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
+		initialValue = restoreValue ? getPersistedInt(initialValue) : (Integer) defaultValue;
 	}
 
 	@Override
@@ -52,12 +55,7 @@ public class NumberPreference extends Preference implements NumberText.OnInputLi
 			viewGroup.addView(editText);
 			viewGroup.setVisibility(View.VISIBLE);
 
-			editText.setText(
-					String.valueOf(
-							PreferenceManager.getDefaultSharedPreferences(getContext())
-									.getInt(getKey(), defaultValue)
-					)
-			);
+			editText.setText(String.valueOf(initialValue));
 		}
 	}
 
