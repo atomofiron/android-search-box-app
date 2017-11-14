@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v7.preference.*;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import ru.atomofiron.regextool.R;
 
 public class NumberPreference extends Preference implements NumberText.OnInputListener {
 
@@ -29,6 +27,10 @@ public class NumberPreference extends Preference implements NumberText.OnInputLi
 		super(context);
 	}
 
+	{
+		setWidgetLayoutResource(R.layout.edittext_number);
+	}
+
 	@Override
 	protected Integer onGetDefaultValue(TypedArray a, int index) {
 		return a.getInt(index, 0);
@@ -44,17 +46,9 @@ public class NumberPreference extends Preference implements NumberText.OnInputLi
 		super.onBindViewHolder(holder);
 
 		if (editText == null) {
-			editText = new NumberText(getContext());
+			editText = (NumberText) holder.findViewById(R.id.number);
 			editText.setFocusable(false);
 			editText.setOnInputListener(this);
-			editText.setLayoutParams(new LinearLayout.LayoutParams(
-					LinearLayout.LayoutParams.WRAP_CONTENT,
-					LinearLayout.LayoutParams.WRAP_CONTENT
-			));
-			ViewGroup viewGroup = holder.itemView.findViewById(android.R.id.widget_frame);
-			viewGroup.addView(editText);
-			viewGroup.setVisibility(View.VISIBLE);
-
 			editText.setText(String.valueOf(initialValue));
 		}
 	}
