@@ -45,4 +45,5 @@
     <string name="preferences">Предпочтения</string>
     <string name="app">Приложение</string>
     <string name="test_field">Тестовое поле</string>
+    <string name="waiting_for_results">Ожидание результатов…</string>
 </resources>

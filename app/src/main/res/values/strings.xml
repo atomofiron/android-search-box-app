@@ -45,4 +45,5 @@
     <string name="preferences">Preferences</string>
     <string name="app">Application</string>
     <string name="test_field">Test text field</string>
+    <string name="waiting_for_results">Waiting for the results…</string>
 </resources>

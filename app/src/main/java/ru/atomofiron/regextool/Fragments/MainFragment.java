@@ -291,7 +291,7 @@ public class MainFragment extends Fragment {
 
 	public void search() {
 		resultReceiver.counterView.setText("0/0");
-		resultReceiver.alertDialog.show();
+		resultReceiver.processDialog.show();
 
 		ac.startService(new Intent(ac, SearchService.class)
 				.putExtra(I.CASE_SENSE, caseToggle.isChecked())
@@ -346,14 +346,15 @@ public class MainFragment extends Fragment {
 	}
 
 	class Receiver extends BroadcastReceiver {
-		private AlertDialog alertDialog;
+		private AlertDialog processDialog;
+		private AlertDialog waitingDialog;
 		private TextView counterView;
 		boolean needShowResults = true;
 
 		Receiver(Context co) {
 			View view = LayoutInflater.from(ac).inflate(R.layout.layout_searching, null);
 			counterView = view.findViewById(R.id.counter);
-			alertDialog = new AlertDialog.Builder(co)
+			processDialog = new AlertDialog.Builder(co)
 					.setView(view)
 					.setCancelable(false)
 					.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -367,6 +368,17 @@ public class MainFragment extends Fragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							ac.stopService(new Intent(ac, SearchService.class));
+							waitingDialog.show();
+						}
+					})
+					.create();
+			waitingDialog = new AlertDialog.Builder(co)
+					.setCancelable(false)
+					.setTitle(R.string.waiting_for_results)
+					.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							needShowResults = false;
 						}
 					})
 					.create();
@@ -375,7 +387,8 @@ public class MainFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (!intent.getExtras().containsKey(KEY_NOTICE)) {
-				alertDialog.cancel();
+				processDialog.cancel();
+				waitingDialog.cancel();
 
 				switch (intent.getIntExtra(I.SEARCH_COUNT, SEARCH_ERROR)) {
 					case SEARCH_ERROR:
