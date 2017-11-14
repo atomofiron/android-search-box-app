@@ -73,7 +73,7 @@ public class MainFragment extends Fragment {
 
 	private RegexText regexText;
 	private CheckBox caseToggle;
-	private CheckBox infilesToggle;
+	private CheckBox contentToggle;
 	private CheckBox regexToggle;
 	private CheckBox multilineToggle;
 	private ViewPager viewPager;
@@ -129,7 +129,7 @@ public class MainFragment extends Fragment {
 
 		regexText = (RegexText) view.findViewById(R.id.regex_text);
 		caseToggle = (CheckBox) view.findViewById(R.id.case_sense);
-		infilesToggle = (CheckBox) view.findViewById(R.id.in_files);
+		contentToggle = (CheckBox) view.findViewById(R.id.in_files);
 		regexToggle = (CheckBox) view.findViewById(R.id.simple_search);
 		multilineToggle = (CheckBox) view.findViewById(R.id.multiline);
 
@@ -233,7 +233,7 @@ public class MainFragment extends Fragment {
 		outState.putString(KEY_TEST, testField.getText().toString());
 		outState.putStringArrayList(KEY_SELECTED, selectedListAdapter.getCheckedPathArray());
 		outState.putBoolean(KEY_FLAG_CASE, caseToggle.isChecked());
-		outState.putBoolean(KEY_FLAG_IN_FILES, infilesToggle.isChecked());
+		outState.putBoolean(KEY_FLAG_IN_FILES, contentToggle.isChecked());
 		outState.putBoolean(KEY_FLAG_REGEXP, regexToggle.isChecked());
 		outState.putBoolean(KEY_FLAG_MULTILINE, multilineToggle.isChecked());
 	}
@@ -249,7 +249,7 @@ public class MainFragment extends Fragment {
 		testField.setText(savedInstanceState.getString(KEY_TEST, ""));
 		selectedListAdapter.setCheckedPathsList(savedInstanceState.getStringArrayList(KEY_SELECTED));
 		caseToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_CASE));
-		infilesToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_IN_FILES));
+		contentToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_IN_FILES));
 		regexToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_REGEXP));
 		multilineToggle.setChecked(savedInstanceState.getBoolean(KEY_FLAG_MULTILINE));
 	}
@@ -292,7 +292,7 @@ public class MainFragment extends Fragment {
 				.putExtra(I.CASE_SENSE, caseToggle.isChecked())
 				.putExtra(I.SEARCH_LIST, selectedListAdapter.getCheckedPathArray())
 				.putExtra(I.QUERY, regexText.getText().toString())
-				.putExtra(I.SEARCH_IN_FILES, infilesToggle.isChecked())
+				.putExtra(I.SEARCH_IN_FILES, contentToggle.isChecked())
 				.putExtra(I.SEARCH_REGEX, regexToggle.isChecked())
 				.putExtra(I.MULTILINE, multilineToggle.isChecked()));
 	}
