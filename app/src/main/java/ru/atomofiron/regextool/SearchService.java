@@ -24,15 +24,14 @@ public class SearchService extends IntentService {
         super("SearchService");
     }
 
-    ArrayList<Result> results = new ArrayList<>();
+    private final ArrayList<Result> results = new ArrayList<>();
+	private final ArrayList<String> doneList = new ArrayList<>();
 
-    boolean inTheContent = false;
-    boolean excludeDirs = false;
+    private boolean inTheContent = false;
+    private boolean excludeDirs = false;
 	private boolean useRoot;
 	private int maxDepth = 0;
-	private Context co;
 	private Finder finder;
-	private final ArrayList<String> doneList = new ArrayList<>();
 	private String tmp;
 	private long lastNoticed = 0;
 	private LocalBroadcastManager broadcastManager;
@@ -40,7 +39,7 @@ public class SearchService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         I.log("onHandleIntent()");
-		co = getBaseContext();
+		Context co = getBaseContext();
 		SharedPreferences sp = I.sp(co);
 		broadcastManager = LocalBroadcastManager.getInstance(co);
 
