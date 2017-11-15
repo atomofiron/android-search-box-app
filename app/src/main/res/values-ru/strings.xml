@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Regex Finder</string>
-    <string name="pref_help">Помощь</string>
+    <string name="tips">Подсказки</string>
 
     <string name="case_sens">Учитывать регистр</string>
     <string name="storage_err">Ошибка доступа к памяти</string>
@@ -11,7 +11,7 @@
     <string name="cancel">Отмена</string>
     <string name="stop">Стоп</string>
     <string name="no_activity">У вас нет приложения, способного открыть файл этого типа</string>
-    <string name="help">В списке выбранных директорий:\nДолгое нажатие - стереть запись, галочка - задействовать.\n\nВ списке выбора директории:\nКороткое нажатие - перейти, галочка - выбрать.\n\nНа экране результатов:\nКороткое - открыть, долгое - показать абсолютный путь.</string>
+    <string name="tips_message">В списке выбранных директорий:\nДолгое нажатие - стереть запись, галочка - задействовать.\n\nВ списке выбора директории:\nКороткое нажатие - перейти, галочка - выбрать.\n\nНа экране результатов:\nКороткое - открыть, долгое - показать абсолютный путь.</string>
     <string name="results">Поиск дал %d результатов</string>
     <string name="find">Найти</string>
     <string name="in_the_content">По содержимому</string>

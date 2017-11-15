@@ -16,7 +16,6 @@ public class I {
 
     public static final String PREF_LAST_VERSION = "PREF_LAST_VERSION";
     public static final String PREF_FIRST_START = "PREF_FIRST_START";
-    public static final String PREF_HELP = "pref_help";
     public static final String PREF_STORAGE_PATH = "pref_storage_path";
     public static final String PREF_EXTRA_FORMATS = "pref_extra_formats";
     public static final String PREF_ORIENTATION = "pref_orientation";
@@ -98,8 +97,8 @@ public class I {
 
     public static void showHelp(Context co) {
         new AlertDialog.Builder(co)
-                .setTitle(co.getString(R.string.pref_help))
-                .setMessage(co.getString(R.string.help))
+                .setTitle(co.getString(R.string.tips))
+                .setMessage(co.getString(R.string.tips_message))
                 .setNegativeButton("Ok", null)
                 .create().show();
     }

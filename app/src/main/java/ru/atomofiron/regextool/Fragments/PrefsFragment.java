@@ -9,6 +9,9 @@ import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,8 +29,23 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		setHasOptionsMenu(true);
 
 		sp = I.sp(getActivity());
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.menu_preferences, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.tips)
+			I.showHelp(getContext());
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -42,13 +60,7 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 					pref.setOnPreferenceChangeListener(this);
 					update(pref, null);
 				}
-			} else if (pref.getKey().equals(I.PREF_HELP))
-				pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-					public boolean onPreferenceClick(Preference preference) {
-						I.showHelp(getContext());
-						return false;
-					}
-				});
+			}
 		}
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
