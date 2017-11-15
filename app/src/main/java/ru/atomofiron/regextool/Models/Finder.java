@@ -14,11 +14,20 @@ public class Finder {
 	private String[] extraFormats;
 	private boolean caseSense = false;
 	private boolean multiline = false;
+	private boolean interrupted = false;
 
 	private Pattern pattern;
 	private String lastException = "";
 
 	public String tmpDirPath = null;
+
+	public void interrupt() {
+		interrupted = true;
+	}
+
+	public boolean isInterrupted() {
+		return interrupted;
+	}
 
 	public boolean isRegex() {
 		return pattern != null;
@@ -113,12 +122,12 @@ public class Finder {
 				text = text.toLowerCase();
 
 			int offset = 0;
-			while ((offset = text.indexOf(caseSense ? this.query : this.queryLowerCase, offset)) != -1)
+			while (!interrupted && (offset = text.indexOf(caseSense ? this.query : this.queryLowerCase, offset)) != -1)
 				result.add(offset, offset += query.length());
 		} else {
 			Matcher matcher = pattern.matcher(text);
 
-			while (matcher.find())
+			while (!interrupted && matcher.find())
 				result.add(matcher.start(), matcher.end());
 		}
 
