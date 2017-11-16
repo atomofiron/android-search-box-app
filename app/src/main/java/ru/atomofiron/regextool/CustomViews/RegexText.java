@@ -22,6 +22,7 @@ import ru.atomofiron.regextool.Models.Result;
 public class RegexText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;
 	private static final String TEST_TEXT = "TEST_TEXT";
+	private final int SPAN_COLOR;
 
 	/** Запрет реагировать на изменение текста. */
 	private boolean locked = false;
@@ -36,23 +37,24 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 
 	public RegexText(Context context) {
 		super(context);
-		init(context);
 	}
 
 	public RegexText(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
 	}
 
 	public RegexText(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init(context);
 	}
 
-	private void init(Context context) {
+	{
+		Context context = getContext();
+
 		addTextChangedListener(this);
 		finder.tmpDirPath = context.getFilesDir().getAbsolutePath();
 		sp = I.sp(context);
+
+		SPAN_COLOR = context.getResources().getColor(R.color.spanGreen);
 	}
 
 	@Override
@@ -157,12 +159,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 
 		while (result.hasNext()) {
 			int[] region = result.next();
-			editable.setSpan(
-					new BackgroundColorSpan(Color.argb(128, 0, 128, 0)),
-					region[0],
-					region[1],
-					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-			);
+			editable.setSpan(new BackgroundColorSpan(SPAN_COLOR), region[0], region[1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
 	}
 }
