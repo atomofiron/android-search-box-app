@@ -123,7 +123,7 @@ public class I {
 		}
 		String value = String.format("%.2f", f);
     	value = value.endsWith("0") ? value.substring(0, value.length() - 1) : value;
-    	value = value.endsWith(",0") ? value.substring(0, value.length() - 2) : value;
+    	value = value.endsWith(",0") || value.endsWith(".0") ? value.substring(0, value.length() - 2) : value;
 
 		return value + suffixes[k];
     }
