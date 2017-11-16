@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if (intent != null && intent.getAction() != null)
 			switch (intent.getAction()) {
 				case ACTION_SHOW_RESULTS:
-					setFragment(ResultsFragment.newInstance(intent.getExtras()), true);
+					setFragment(new ResultsFragment(), true);
 					break;
 				case ACTION_SHOW_RESULT:
 					setFragment(TextFragment.newInstance(intent.getExtras()), true);

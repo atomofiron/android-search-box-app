@@ -17,6 +17,7 @@ import ru.atomofiron.regextool.Fragments.MainFragment;
 import ru.atomofiron.regextool.Models.Finder;
 import ru.atomofiron.regextool.Models.RFile;
 import ru.atomofiron.regextool.Models.Result;
+import ru.atomofiron.regextool.Models.ResultsHolder;
 
 public class SearchService extends IntentService {
 
@@ -71,7 +72,8 @@ public class SearchService extends IntentService {
 				else
 					search(rfile, 0);
 
-			resultIntent.putExtra(I.SEARCH_COUNT, results.size()).putExtra(I.RESULT_LIST, results);
+			resultIntent.putExtra(I.SEARCH_COUNT, results.size());
+			ResultsHolder.setResults(results);
         } catch (Exception e) {
             I.log(e.toString());
             resultIntent.putExtra(I.SEARCH_COUNT, MainFragment.SEARCH_ERROR).putExtra(MainFragment.KEY_ERROR_MESSAGE, e.toString());

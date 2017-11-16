@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import ru.atomofiron.regextool.Adapters.ResultAdapter;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.MainActivity;
+import ru.atomofiron.regextool.Models.ResultsHolder;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.Models.Result;
 import ru.atomofiron.regextool.Utils.SnackbarHelper;
@@ -42,12 +43,6 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	private String startMessage = null;
 
 	public ResultsFragment() {}
-
-	public static ResultsFragment newInstance(Bundle bundle) {
-		ResultsFragment fragment = new ResultsFragment();
-		fragment.setArguments(bundle);
-		return fragment;
-	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,7 +96,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 
 		if (fragmentView == null) {
 			fragmentView = new ListView(ac);
-			resultsList = getArguments().getParcelableArrayList(I.RESULT_LIST);
+			resultsList = ResultsHolder.getResults();
 
 			listAdapter = new ResultAdapter(ac);
 			listAdapter.setResults(resultsList);
@@ -111,9 +106,18 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 			fragmentView.setAdapter(listAdapter);
 
 			snackbarHelper = new SnackbarHelper(fragmentView);
-			startMessage = getString(R.string.results, getArguments().getInt(I.SEARCH_COUNT));
-		}
+			startMessage = getString(R.string.results, resultsList.size());
+		} else
+			ResultsHolder.resetResults();
+
 		return fragmentView;
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		ResultsHolder.setResults(resultsList);
 	}
 
 	@Override
