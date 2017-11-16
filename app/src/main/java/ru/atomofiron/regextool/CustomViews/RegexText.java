@@ -134,7 +134,6 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 					return;
 
 				postTest();
-				sp.edit().putString(TEST_TEXT, s.toString()).apply();
 			}
 		});
 
@@ -161,5 +160,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 			int[] region = result.next();
 			editable.setSpan(new BackgroundColorSpan(SPAN_COLOR), region[0], region[1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
+
+		sp.edit().putString(TEST_TEXT, editable.toString()).apply();
 	}
 }
