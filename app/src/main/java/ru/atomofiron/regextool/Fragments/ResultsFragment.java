@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,7 +55,9 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.menu_results, menu);
+
+		if (resultsList != null)
+			inflater.inflate(R.menu.menu_results, menu);
 	}
 
 	@Override
@@ -82,10 +86,12 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		if ((fragmentView = (ListView) getView()) != null) {
-			ViewGroup parent = (ViewGroup) fragmentView.getParent();
+
+		View view = getView();
+		if (view != null) {
+			ViewGroup parent = (ViewGroup) view.getParent();
 			if (parent != null)
-				parent.removeView(fragmentView);
+				parent.removeView(view);
 		}
 	}
 
@@ -97,6 +103,17 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		if (fragmentView == null) {
 			fragmentView = new ListView(ac);
 			resultsList = ResultsHolder.getResults();
+
+			if (resultsList == null) {
+				TextView label = new TextView(getContext());
+				label.setText(R.string.data_was_lost);
+				label.setGravity(Gravity.CENTER);
+				label.setLayoutParams(new ViewGroup.LayoutParams(
+						ViewGroup.LayoutParams.MATCH_PARENT,
+						ViewGroup.LayoutParams.MATCH_PARENT
+				));
+				return label;
+			}
 
 			listAdapter = new ResultAdapter(ac);
 			listAdapter.setResults(resultsList);

@@ -47,4 +47,5 @@
     <string name="test_field">Тестовое поле</string>
     <string name="waiting_for_results">Ожидание результатов…</string>
     <string name="no_access">Нет доступа</string>
+    <string name="data_was_lost">Данные были утеряны</string>
 </resources>

@@ -47,4 +47,5 @@
     <string name="test_field">Test text field</string>
     <string name="waiting_for_results">Waiting for the results…</string>
     <string name="no_access">No access</string>
+    <string name="data_was_lost">Data was lost</string>
 </resources>
