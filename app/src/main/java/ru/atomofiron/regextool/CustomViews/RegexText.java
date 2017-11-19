@@ -129,8 +129,13 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			public void afterTextChanged(Editable s) {
-				if (locked || s.length() == 0)
+				if (locked)
 					return;
+
+				if (s.length() == 0) {
+					sp.edit().putString(TEST_TEXT, "").apply();
+					return;
+				}
 
 				postTest();
 			}
