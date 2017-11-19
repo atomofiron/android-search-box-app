@@ -49,6 +49,9 @@ public class RFile extends File {
 	}
 
 	public static boolean containsFiles(File file, boolean useRoot) {
+		if (file == null)
+			return false;
+
 		if (useRoot)
 			file = new RFile(file).setUseRoot(true);
 

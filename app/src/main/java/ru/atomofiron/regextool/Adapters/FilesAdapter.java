@@ -43,6 +43,9 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	}
 
 	public void update(File dir) {
+		if (dir == null)
+			return;
+
 		RFile rfile = new RFile(dir).setUseRoot(sp.getBoolean(I.PREF_USE_ROOT, false));
 		if (rfile.containsFiles()) {
 			curDir = rfile;
@@ -59,12 +62,11 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		curDir.useRoot = useRoot;
 
 		File[] files = curDir.listFiles();
-		if (files != null) {
+		if (files != null)
 			Collections.addAll(filesList, files);
-		}
+
 		Collections.sort(filesList, fileComparator);
-		filesList.add(0, curDir.getParentFile() == null ?
-				new File("/") : curDir.getParentFile());
+		filesList.add(0, curDir);
 
 		notifyDataSetChanged();
 	}
@@ -74,8 +76,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
 		selectedList.clear();
 		if (set != null && set.size() > 0)
-			for (String path : set)
-				selectedList.add(path);
+			selectedList.addAll(set);
 
 		notifyDataSetChanged();
 	}
@@ -103,7 +104,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		update(filesList.get(position));
+		update(position == 0 ? filesList.get(position).getParentFile() : filesList.get(position));
 	}
 
 	@Override
@@ -149,20 +150,14 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 			holder = (ViewHolder) view.getTag();
 
 		File file = filesList.get(position);
-		String name;
-		name = file.getName();
-		holder.title.setText(position == 0 ? curDir.getParent() + " [" + curDir.getName() + "]" : name);
+		holder.title.setText(position == 0 ? file.getParent() + " [" + file.getName() + "]" : file.getName());
 		holder.icon.setImageResource(
 				!file.isDirectory() ? R.drawable.ic_file :
-						RFile.containsFiles(file, curDir.useRoot) ?
+						RFile.containsFiles(position == 0 ? file.getParentFile() : file, curDir.useRoot) ?
 								R.drawable.ic_folder : R.drawable.ic_folder_empty);
 
-		if (position != 0) {
-			holder.check.setVisibility(View.VISIBLE);
-			holder.check.setTag(file);
-			holder.check.setChecked(selectedList.contains(file.getAbsolutePath()));
-		} else
-			holder.check.setVisibility(View.GONE);
+		holder.check.setTag(file);
+		holder.check.setChecked(selectedList.contains(file.getAbsolutePath()));
 
 		return view;
 	}
