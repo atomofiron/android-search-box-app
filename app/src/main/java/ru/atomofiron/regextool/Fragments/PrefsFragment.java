@@ -102,9 +102,10 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 				if (value == null) {
 					if (sp.getBoolean(key, false) && Cmd.easyExec("su") != 0)
 						((SwitchPreferenceCompat)pref).setChecked(false);
-					break;
 				} else if (value.equals("true"))
 					return Cmd.easyExec("su") == 0;
+
+				break;
 			case I.PREF_MAX_SIZE:
 				if (newValue == null)
 					newValue = sp.getInt(key, 0);
