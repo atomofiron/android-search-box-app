@@ -59,30 +59,35 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		view.findViewById(R.id.fab_prev).setOnClickListener(this);
 		view.findViewById(R.id.fab_next).setOnClickListener(this);
 		//((NestedScrollView)findViewById(R.id.scroll_text)).setOnScrollChangeListener(listener);
+		final RFile file = new RFile(result.path)
+				.setUseRoot(I.sp(getContext()).getBoolean(I.PREF_USE_ROOT, false));
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				RFile file = new RFile(result.path);
-				file.useRoot = I.sp(getContext()).getBoolean(I.PREF_USE_ROOT, false);
-				final Spannable spanRange = new SpannableString(file.readText());
-				int i = -1;
-				while (result.hasNext()) {
-					spanRegions[++i] = result.next();
-					spanRange.setSpan(new BackgroundColorSpan(spanBackgroundColor),
-							spanRegions[i][0], spanRegions[i][1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				}
-
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						textView.setText(spanRange, TextView.BufferType.EDITABLE);
-						view.findViewById(R.id.progressbar).setVisibility(View.GONE);
-						view.findViewById(R.id.fab_layout).setVisibility(spanRegions.length > 0 ? View.VISIBLE : View.GONE);
+		if (file.canRead())
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					final Spannable spanRange = new SpannableString(file.readText());
+					int i = -1;
+					while (result.hasNext()) {
+						spanRegions[++i] = result.next();
+						spanRange.setSpan(new BackgroundColorSpan(spanBackgroundColor),
+								spanRegions[i][0], spanRegions[i][1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 					}
-				});
-			}
-		}).start();
+
+					getActivity().runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							textView.setText(spanRange, TextView.BufferType.EDITABLE);
+							view.findViewById(R.id.progressbar).setVisibility(View.GONE);
+							view.findViewById(R.id.fab_layout).setVisibility(spanRegions.length > 0 ? View.VISIBLE : View.GONE);
+						}
+					});
+				}
+			}).start();
+		else {
+			view.findViewById(R.id.progressbar).setVisibility(View.GONE);
+			view.findViewById(R.id.label).setVisibility(View.VISIBLE);
+		}
 
 		return view;
 	}
