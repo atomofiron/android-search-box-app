@@ -51,7 +51,6 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		Context context = getContext();
 
 		addTextChangedListener(this);
-		finder.tmpDirPath = context.getFilesDir().getAbsolutePath();
 		sp = I.sp(context);
 
 		SPAN_COLOR = context.getResources().getColor(R.color.spanGreen);

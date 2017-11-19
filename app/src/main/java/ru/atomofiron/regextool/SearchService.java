@@ -55,7 +55,6 @@ public class SearchService extends IntentService {
 			return;
 		}
 		finder.setMaxSize(I.sp(co).getInt(I.PREF_MAX_SIZE, 10485760));
-		finder.tmpDirPath = co.getFilesDir().getAbsolutePath();
 
 		startForeground();
 		for (File file : co.getFilesDir().listFiles())

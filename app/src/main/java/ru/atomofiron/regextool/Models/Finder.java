@@ -19,8 +19,6 @@ public class Finder {
 	private Pattern pattern;
 	private String lastException = "";
 
-	public String tmpDirPath = null;
-
 	public void interrupt() {
 		interrupted = true;
 	}
@@ -96,8 +94,6 @@ public class Finder {
 
 	@Nullable
 	public Result search(RFile rFile) {
-		rFile.tmpDirPath = tmpDirPath;
-
 		if (rFile.length() < maxSize && I.isTextFile(rFile.getName(), extraFormats))
 			return search(rFile.readText(), rFile);
 		else

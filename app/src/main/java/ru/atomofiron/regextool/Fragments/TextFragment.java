@@ -65,7 +65,6 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 			public void run() {
 				RFile file = new RFile(result.path);
 				file.useRoot = I.sp(getContext()).getBoolean(I.PREF_USE_ROOT, false);
-				file.tmpDirPath = getContext().getFilesDir().getAbsolutePath();
 				final Spannable spanRange = new SpannableString(file.readText());
 				int i = -1;
 				while (result.hasNext()) {

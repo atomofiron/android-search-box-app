@@ -16,7 +16,6 @@ import ru.atomofiron.regextool.Utils.Cmd;
 public class RFile extends File {
 
 	public boolean useRoot = false;
-	public String tmpDirPath = null;
 
 	public RFile(File dir, @NonNull String name) {
 		super(dir, name);
