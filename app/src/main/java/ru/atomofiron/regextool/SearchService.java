@@ -94,11 +94,15 @@ public class SearchService extends IntentService {
     void search(File file, int depth) {
 		if (doneList.contains(tmp = file.getAbsolutePath()))
 			return;
-		else
+		else {
 			doneList.add(tmp);
+			noticeIfNecessary();
+		}
 
-        if (!(file.isDirectory() && (excludeDirs || depth == 0)) && finder.find(file.getName()))
-        	addAndNotice(new Result(file.getAbsolutePath()));
+        if (!(file.isDirectory() && (excludeDirs || depth == 0)) && finder.find(file.getName())) {
+			results.add(new Result(file.getAbsolutePath()));
+        	noticeIfNecessary();
+		}
 
         if (depth <= maxDepth && file.isDirectory()) {
             File[] files = file.listFiles();
@@ -114,8 +118,10 @@ public class SearchService extends IntentService {
     void searchInTheContent(RFile rfile, int depth) {
 		if (doneList.contains(tmp = rfile.getAbsolutePath()))
 			return;
-		else
+		else {
 			doneList.add(tmp);
+			noticeIfNecessary();
+		}
 
         if (depth <= maxDepth && rfile.isDirectory()) {
             File[] files = rfile.listFiles();
@@ -128,14 +134,14 @@ public class SearchService extends IntentService {
 				}
         } else {
         	Result result = finder.search(rfile);
-        	if (result != null && !result.isEmpty())
-        		addAndNotice(result);
+        	if (result != null && !result.isEmpty()) {
+				results.add(result);
+				noticeIfNecessary();
+			}
         }
     }
 
-    private void addAndNotice(Result result) {
-		results.add(result);
-
+    private void noticeIfNecessary() {
 		long now = System.currentTimeMillis();
 		if (now - lastNoticed > 100) {
 			lastNoticed = now;
