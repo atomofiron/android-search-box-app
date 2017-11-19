@@ -42,6 +42,11 @@ public class RFile extends File {
 		return this;
 	}
 
+	@Override
+	public boolean canRead() {
+		return super.canRead() || useRoot;
+	}
+
 	public boolean containsFiles() {
 		String[] list = list();
 		return list != null && list.length != 0;
@@ -73,14 +78,14 @@ public class RFile extends File {
 
 	@Override
 	public String[] list() {
-		if (canRead() || !isDirectory() || !useRoot)
+		if (super.canRead() || !isDirectory() || !useRoot)
 			return super.list();
 
 		return Cmd.exec(String.format("ls -A -1 \"%s\"\n", getAbsolutePath())).split("\n");
 	}
 
 	public String readText() {
-		if (!canRead())
+		if (!super.canRead())
 			return useRoot ? Cmd.exec(String.format("cat \"%s\"", getAbsolutePath())) : "";
 
 		String result = "";
