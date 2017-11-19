@@ -68,7 +68,7 @@ public class RFile extends File {
 		String current = getAbsolutePath();
 		RFile[] files = new RFile[list.length];
 		for (int i = 0; i < list.length; i++)
-			files[i] = new RFile(String.format("%1$s/%2$s", current, list[i]));
+			files[i] = new RFile(String.format("%1$s/%2$s", current, list[i])).setUseRoot(useRoot);
 		return files;
 	}
 
@@ -77,30 +77,20 @@ public class RFile extends File {
 		if (canRead() || !isDirectory() || !useRoot)
 			return super.list();
 
-		return Cmd.exec(String.format("ls -A -1 %s\n", getAbsolutePath())).split("\n");
+		return Cmd.exec(String.format("ls -A -1 \"%s\"\n", getAbsolutePath())).split("\n");
 	}
 
 	public String readText() {
-		File file = this;
-		boolean needDelete = false;
-		if (!canRead() && useRoot && tmpDirPath != null) {
-			String newPath = String.format("%1$s/%2$s", tmpDirPath, getName());
-			if (Cmd.easyExec(String.format("cp -F %1$s %2$s", getAbsolutePath(), newPath)) == 0) {
-				if (Cmd.easyExec(String.format("chmod 0777 %s", newPath)) != 0)
-					Cmd.easyExec(String.format("rm %s", newPath));
-				else {
-					file = new File(newPath);
-					needDelete = true;
-				}
-			}
-		}
+		if (!canRead())
+			return useRoot ? Cmd.exec(String.format("cat \"%s\"", getAbsolutePath())) : "";
+
 		String result = "";
 
 		InputStream fis = null;
 		InputStreamReader isr = null;
 		BufferedReader br = null;
 		try {
-			fis = new FileInputStream(file);
+			fis = new FileInputStream(this);
 			isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 			br = new BufferedReader(isr);
 			String line;
@@ -116,8 +106,6 @@ public class RFile extends File {
 				if (fis != null) fis.close();
 			} catch (Exception ignored) {}
 		}
-		if (needDelete)
-			file.delete();
 
 		return result;
 	}
