@@ -4,11 +4,8 @@ package ru.atomofiron.regextool;
 import android.content.SharedPreferences;
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import java.util.Collection;
 
@@ -38,17 +35,6 @@ public class I {
 
     public static void log(String message) {
         Log.e("atomofiron", message);
-    }
-
-    public static void toast(Context context, String message, int time) {
-        Toast.makeText(context, message, time).show();
-    }
-
-    public static void toast(Context context, int stringId) {
-        Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
-    }
-    public static void toast(Context context, int stringId, boolean LONG) {
-        Toast.makeText(context, stringId, LONG ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show();
     }
 
     public static boolean isTextFile(String path, String[] extra) {

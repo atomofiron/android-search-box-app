@@ -152,7 +152,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 			public void onClick(View v) {
 				((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
 						.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));
-				I.toast(ac, R.string.copied);
+				snackbarHelper.show(R.string.copied);
 			}
 		});
 	}
@@ -183,10 +183,10 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 					snackbarHelper.show(R.string.no_activity);
 			} catch (Exception e) {
 				if (e.getMessage().startsWith("Failed to find configured root that contains")) {
-					I.toast(ac, R.string.fucking_provider, true);
+					snackbarHelper.showLong(R.string.fucking_provider);
 					showPathWithCopyAction(file.getAbsolutePath());
 				} else
-					I.toast(ac, R.string.error);
+					snackbarHelper.show(R.string.error);
 			}
 	}
 

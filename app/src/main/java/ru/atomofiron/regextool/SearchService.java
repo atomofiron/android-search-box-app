@@ -51,7 +51,7 @@ public class SearchService extends IntentService {
 		finder.setCaseSense(intent.getBooleanExtra(I.CASE_SENSE, false));
 		finder.setMultiline(intent.getBooleanExtra(I.MULTILINE, false));
         if (!finder.setRegex(intent.getBooleanExtra(I.SEARCH_REGEX, false))) {
-			I.toast(co, finder.getLastException(), Toast.LENGTH_LONG);
+			Toast.makeText(co, finder.getLastException(), Toast.LENGTH_LONG).show();
 			return;
 		}
 		finder.setMaxSize(I.sp(co).getInt(I.PREF_MAX_SIZE, 10485760));
