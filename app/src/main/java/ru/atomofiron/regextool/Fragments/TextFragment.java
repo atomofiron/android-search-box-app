@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.Fragments;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,8 +22,8 @@ import ru.atomofiron.regextool.Models.Result;
 import ru.atomofiron.regextool.R;
 
 public class TextFragment extends Fragment implements View.OnClickListener {
-	private final int spanBackgroundColor = Color.argb(127, 72, 96, 192);
-	private final BackgroundColorSpan focusSpan = new BackgroundColorSpan(Color.argb(127, 0, 127, 0));
+	private int spanBackgroundColor;
+	private BackgroundColorSpan focusSpan;
 
 	private View fragmentView;
 	private TextView counter;
@@ -38,6 +39,15 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		TextFragment textFragment = new TextFragment();
 		textFragment.setArguments(bundle);
 		return textFragment;
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		Resources resources = context.getResources();
+		spanBackgroundColor = resources.getColor(R.color.spanBlue);
+		focusSpan = new BackgroundColorSpan(resources.getColor(R.color.spanGreen));
 	}
 
 	@Override

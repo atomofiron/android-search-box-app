@@ -12,5 +12,6 @@
 
 
 	<color name="red">#ffff0000</color>
+	<color name="spanBlue">#7f4f60c0</color>
 	<color name="spanGreen">#7f007f00</color>
 </resources>
