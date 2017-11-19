@@ -60,13 +60,13 @@ public class RFile extends File {
 	}
 
 	@Override
-	public File[] listFiles() {
+	public RFile[] listFiles() {
 		String[] list = list();
 		if (list == null || list.length == 0 || list[0].isEmpty())
 			return null;
 
 		String current = getAbsolutePath();
-		File[] files = new File[list.length];
+		RFile[] files = new RFile[list.length];
 		for (int i = 0; i < list.length; i++)
 			files[i] = new RFile(String.format("%1$s/%2$s", current, list[i]));
 		return files;

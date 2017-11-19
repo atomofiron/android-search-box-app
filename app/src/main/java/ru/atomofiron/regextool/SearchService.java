@@ -26,15 +26,14 @@ public class SearchService extends IntentService {
     }
 
     private final ArrayList<Result> results = new ArrayList<>();
-	private final ArrayList<String> doneList = new ArrayList<>();
 
     private boolean inTheContent = false;
     private boolean excludeDirs = false;
 	private boolean useRoot;
 	private int maxDepth = 0;
 	private Finder finder;
-	private String tmp;
 	private long lastNoticed = 0;
+	private long count = 0;
 	private LocalBroadcastManager broadcastManager;
 
     @Override
@@ -91,64 +90,54 @@ public class SearchService extends IntentService {
         return filesList;
     }
 
-    void search(File file, int depth) {
-		if (doneList.contains(tmp = file.getAbsolutePath()))
-			return;
-		else {
-			doneList.add(tmp);
-			noticeIfNecessary();
-		}
-
-        if (!(file.isDirectory() && (excludeDirs || depth == 0)) && finder.find(file.getName())) {
-			results.add(new Result(file.getAbsolutePath()));
-        	noticeIfNecessary();
-		}
-
-        if (depth <= maxDepth && file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (file.listFiles() != null && file.listFiles().length > 0)
-                for (File f : files) {
+    void search(RFile file, int depth) {
+		if (depth <= maxDepth && file.isDirectory()) {
+			RFile[] files = file.listFiles();
+			if (files != null)
+				for (RFile f : files) {
 					if (finder.isInterrupted())
 						break;
 
 					search(f, depth + 1);
 				}
-        }
-    }
-    void searchInTheContent(RFile rfile, int depth) {
-		if (doneList.contains(tmp = rfile.getAbsolutePath()))
-			return;
-		else {
-			doneList.add(tmp);
-			noticeIfNecessary();
 		}
 
+		if (!file.isDirectory() || !excludeDirs) {
+			if (finder.find(file.getName()))
+				results.add(new Result(file.getAbsolutePath()));
+
+			incCountAndNoticeIfNecessary();
+		}
+    }
+    void searchInTheContent(RFile rfile, int depth) {
         if (depth <= maxDepth && rfile.isDirectory()) {
-            File[] files = rfile.listFiles();
+            RFile[] files = rfile.listFiles();
             if (files != null)
-                for (File f : files) {
+                for (RFile f : files) {
 					if (finder.isInterrupted())
 						break;
 
-					searchInTheContent((RFile) f, depth + 1);
+					searchInTheContent(f, depth + 1);
 				}
-        } else {
+        } else if (rfile.isFile()) {
         	Result result = finder.search(rfile);
-        	if (result != null && !result.isEmpty()) {
+        	if (result != null && !result.isEmpty())
 				results.add(result);
-				noticeIfNecessary();
-			}
-        }
-    }
 
-    private void noticeIfNecessary() {
+			incCountAndNoticeIfNecessary();
+        }
+	}
+
+    private void incCountAndNoticeIfNecessary() {
+		count++;
+
 		long now = System.currentTimeMillis();
 		if (now - lastNoticed > 100) {
 			lastNoticed = now;
 
 			broadcastManager.sendBroadcast(
 					new Intent(MainFragment.ACTION_RESULTS)
-					.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), doneList.size()))
+					.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), count))
 			);
 		}
 	}
