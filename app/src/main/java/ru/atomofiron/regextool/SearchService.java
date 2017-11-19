@@ -27,9 +27,7 @@ public class SearchService extends IntentService {
 
     private final ArrayList<Result> results = new ArrayList<>();
 
-    private boolean inTheContent = false;
-    private boolean excludeDirs = false;
-	private boolean useRoot;
+	private boolean excludeDirs = false;
 	private int maxDepth = 0;
 	private Finder finder;
 	private long lastNoticed = 0;
@@ -44,9 +42,9 @@ public class SearchService extends IntentService {
 		broadcastManager = LocalBroadcastManager.getInstance(co);
 
 		maxDepth = sp.getInt(I.PREF_MAX_DEPTH, 1024);
-		useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
+		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
 		excludeDirs = sp.getBoolean(I.PREF_EXCLUDE_DIRS, false);
-		inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
+		boolean inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
 		finder = new Finder();
 		finder.setExtraFormats(sp.getString(I.PREF_EXTRA_FORMATS, "").split(" "));
 		finder.setQuery(intent.getStringExtra(I.QUERY));
@@ -65,11 +63,11 @@ public class SearchService extends IntentService {
 
 		Intent resultIntent = new Intent(MainFragment.ACTION_RESULTS);
         try {
-            for (RFile rfile : Strings2RFiles(intent.getStringArrayListExtra(I.SEARCH_LIST)))
+            for (String path : intent.getStringArrayListExtra(I.SEARCH_LIST))
                 if (inTheContent)
-                	searchInTheContent(rfile, 0);
+                	searchInTheContent(new RFile(path).setUseRoot(useRoot), 0);
 				else
-					search(rfile, 0);
+					search(new RFile(path).setUseRoot(useRoot), 0);
 
 			resultIntent.putExtra(I.SEARCH_COUNT, results.size());
 			ResultsHolder.setResults(results);
@@ -79,15 +77,6 @@ public class SearchService extends IntentService {
         }
 
 		broadcastManager.sendBroadcast(resultIntent);
-    }
-    RFile[] Strings2RFiles(ArrayList<String> stringsList) {
-        int n = stringsList.size();
-		RFile[] filesList = new RFile[n];
-        for (int i = 0; i < n; i++) {
-			filesList[i] = new RFile(stringsList.get(i));
-			filesList[i].useRoot = useRoot;
-		}
-        return filesList;
     }
 
     void search(RFile file, int depth) {
