@@ -173,17 +173,8 @@ public class MainFragment extends Fragment {
 		selectedListAdapter = new ListAdapter(ac);
 		selectedListAdapter.update();
 		selectedListView.setAdapter(selectedListAdapter);
-		selectedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				selectedListAdapter.remove(position);
-				return true;
-			}
-		});
-		selectedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				selectedListAdapter.onItemClick(view);
-			}
-		});
+		selectedListView.setOnItemLongClickListener(selectedListAdapter);
+		selectedListView.setOnItemClickListener(selectedListAdapter);
 
 		filesListView = new ListView(ac);
 		final FilesAdapter filesListAdapter = new FilesAdapter(ac, filesListView);

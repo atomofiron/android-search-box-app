@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -19,7 +20,7 @@ import java.util.Set;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 
-public class ListAdapter extends BaseAdapter implements CompoundButton.OnCheckedChangeListener { // Почему BaseAdapter, потому что он прост и выполняет свою задачу
+public class ListAdapter extends BaseAdapter implements CompoundButton.OnCheckedChangeListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener { // Почему BaseAdapter, потому что он прост и выполняет свою задачу
 
     private Context co;
 	private SharedPreferences sp;
@@ -50,13 +51,15 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		notifyDataSetChanged();
 	}
 
-	public void remove(int position) {
-		checkedPathsList.remove(pathsList.remove(position));
+	@Override
+	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+		checkedPathsList.remove(pathsList.remove(i));
 
 		Set<String> set = new HashSet<>(pathsList);
 		sp.edit().putStringSet(I.SELECTED_LIST, set).apply();
 
 		notifyDataSetChanged();
+		return true;
 	}
 
 	public void update() {
@@ -65,6 +68,10 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		if (set != null && set.size() > 0)
 			pathsList.addAll(set);
 
+		for (int i = 0; i < checkedPathsList.size(); i++)
+			if (!pathsList.contains(checkedPathsList.get(i)))
+				checkedPathsList.remove(i--);
+
 		notifyDataSetChanged();
 	}
 
@@ -72,7 +79,8 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		return checkedPathsList;
 	}
 
-	public void onItemClick(View view) {
+	@Override
+	public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 		// учёт отмеченных происходит в onCheckedChanged()
 		CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
 		checkBox.setChecked(!checkBox.isChecked());
