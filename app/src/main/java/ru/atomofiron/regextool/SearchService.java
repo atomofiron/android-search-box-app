@@ -2,6 +2,7 @@ package ru.atomofiron.regextool;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -33,8 +34,21 @@ public class SearchService extends IntentService {
 	private long lastNoticed = 0;
 	private long count = 0;
 	private LocalBroadcastManager broadcastManager;
+	private PendingIntent mainPendingIntent;
 
-    @Override
+	@Override
+	public void onCreate() {
+		super.onCreate();
+
+		mainPendingIntent = PendingIntent.getActivity(
+				this,
+				0,
+				new Intent(this, MainActivity.class),
+				PendingIntent.FLAG_UPDATE_CURRENT
+		);
+	}
+
+	@Override
     protected void onHandleIntent(Intent intent) {
         I.log("onHandleIntent()");
 		Context co = getBaseContext();
@@ -75,6 +89,8 @@ public class SearchService extends IntentService {
             resultIntent.putExtra(I.SEARCH_COUNT, MainFragment.SEARCH_ERROR).putExtra(MainFragment.KEY_ERROR_MESSAGE, e.toString());
         }
 
+        stopForeground(true);
+		showNotification(String.format("%1$s/%2$s", results.size(), count));
 		broadcastManager.sendBroadcast(resultIntent);
     }
 
@@ -131,21 +147,35 @@ public class SearchService extends IntentService {
 	}
 
     void startForeground() {
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-        		this,
-				0,
-				new Intent(this, MainActivity.class),
-				PendingIntent.FLAG_CANCEL_CURRENT
-		);
         Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.searching))
                 .setContentText(getString(R.string.app_name))
-                .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.ic);
+                .setContentIntent(mainPendingIntent)
+                .setSmallIcon(R.drawable.ic_search_file);
 
         startForeground(1, Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ?
 				builder.build() : builder.getNotification());
     }
+
+    private void showNotification(String subtext) {
+		Notification.Builder builder = new Notification.Builder(this)
+				.setTicker(getString(R.string.search_completed))
+				.setContentTitle(getString(R.string.search_completed))
+				.setContentText(getString(R.string.app_name))
+				.setContentIntent(mainPendingIntent)
+				.setSmallIcon(R.drawable.ic_search_file);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+			builder.setSubText(subtext);
+
+		NotificationManager notifier = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (notifier != null) {
+			// API >= 16 getNotification() вызывает build()
+			Notification notification = builder.getNotification();
+			notification.flags |= Notification.FLAG_AUTO_CANCEL;
+			notifier.notify(2, notification);
+		}
+	}
     @Override
     public void onDestroy() {
 		super.onDestroy();

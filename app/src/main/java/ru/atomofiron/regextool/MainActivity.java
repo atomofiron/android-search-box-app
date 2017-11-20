@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool;
 
 import android.animation.ValueAnimator;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -211,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if (intent != null && intent.getAction() != null)
 			switch (intent.getAction()) {
 				case ACTION_SHOW_RESULTS:
+					NotificationManager notifier = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+					if (notifier != null)
+						notifier.cancelAll();
+
 					setFragment(new ResultsFragment(), true);
 					break;
 				case ACTION_SHOW_RESULT:
