@@ -30,7 +30,6 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	private final ArrayList<File> filesList = new ArrayList<>();
 	private final ArrayList<String> selectedList = new ArrayList<>();
 	private RFile curDir = null;
-	private OnSelectedListener onSelectedListener = null;
 	private FileComparator fileComparator = new FileComparator();
 
 	public FilesAdapter(Context context, ListView listView) {
@@ -119,9 +118,6 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 
 		Set<String> set = new HashSet<>(selectedList);
 		sp.edit().putStringSet(I.SELECTED_LIST, set).apply();
-
-		if (onSelectedListener != null)
-			onSelectedListener.onSelected(file, isChecked);
 	}
 
 	private static class ViewHolder {
@@ -161,13 +157,4 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 
 		return view;
 	}
-
-	public void setOnSelectedListener(OnSelectedListener listener) {
-		onSelectedListener = listener;
-	}
-
-	public interface OnSelectedListener {
-		public void onSelected(File file, boolean selected);
-	}
-
 }
