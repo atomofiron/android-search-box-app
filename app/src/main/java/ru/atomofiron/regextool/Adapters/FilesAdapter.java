@@ -27,7 +27,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 
 	private Context co;
 	private SharedPreferences sp;
-	private final ArrayList<File> filesList = new ArrayList<>();
+	private final ArrayList<RFile> filesList = new ArrayList<>();
 	private final ArrayList<String> selectedList = new ArrayList<>();
 	private RFile curDir = null;
 	private FileComparator fileComparator = new FileComparator();
@@ -37,54 +37,63 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		listView.setOnItemClickListener(this);
 
 		sp = I.sp(co);
-		curDir = new RFile("/");
-		update();
+		update(sp.getString(I.PREF_STORAGE_PATH, "/"));
 	}
 
-	public void update(File dir) {
+	private void update(RFile dir) {
 		if (dir == null)
 			return;
 
-		RFile rfile = new RFile(dir).setUseRoot(sp.getBoolean(I.PREF_USE_ROOT, false));
-		if (rfile.containsFiles()) {
-			curDir = rfile;
-			update(curDir.useRoot);
+		if (dir.containsFiles()) {
+			curDir = dir;
+			update();
 		}
 	}
 
-	public void update() {
-		update(sp.getBoolean(I.PREF_USE_ROOT, false));
+	private void update(String path) {
+		update(new RFile(path).setUseRoot(sp.getBoolean(I.PREF_USE_ROOT, false)));
 	}
 
-	private void update(boolean useRoot) {
-		filesList.clear();
-		curDir.useRoot = useRoot;
+	public void updateIfNeeded() {
+		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
+		boolean needed = useRoot != curDir.useRoot;
 
-		File[] files = curDir.listFiles();
+		if (!curDir.setUseRoot(useRoot).canRead()) {
+			curDir = new RFile(sp.getString(I.PREF_STORAGE_PATH, "/"));
+			needed = true;
+		}
+
+		if (needed)
+			update();
+	}
+
+	public void update() {
+		filesList.clear();
+
+		RFile[] files = curDir.listFiles();
 		if (files != null)
-			Collections.addAll(filesList, files);
+			for (RFile rFile : files) {
+				filesList.add(rFile);
+				rFile.flag = rFile.containsFiles();
+			}
 
 		Collections.sort(filesList, fileComparator);
 		filesList.add(0, curDir);
+		curDir.flag = curDir.getParentFile() != null && curDir.getParentFile().canRead();
 
 		notifyDataSetChanged();
 	}
 
-	private void updateSelectedHard() {
-		I.log("updateSelectedHard");
-		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
-		selectedList.clear();
-		if (set != null && set.size() > 0)
-			selectedList.addAll(set);
-
-		notifyDataSetChanged();
-	}
 	public void updateSelected() {
 		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
-		if (selectedList.size() > 0 && set == null || set != null && !I.equivalent(selectedList, set))
-			updateSelectedHard();
-	}
+		if (selectedList.size() > 0 && set == null || set != null && !I.equivalent(selectedList, set)) {
+			selectedList.clear();
+			if (set != null && set.size() > 0)
+				selectedList.addAll(set);
 
+			notifyDataSetChanged();
+		}
+	}
 
 	@Override
 	public int getCount() {
@@ -104,6 +113,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		update(position == 0 ? filesList.get(position).getParentFile() : filesList.get(position));
+		((ListView) parent).smoothScrollToPositionFromTop(0, 0);
 	}
 
 	@Override
@@ -145,15 +155,14 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		} else
 			holder = (ViewHolder) view.getTag();
 
-		File file = filesList.get(position);
-		holder.title.setText(position == 0 ? file.getParent() + " [" + file.getName() + "]" : file.getName());
+		RFile rFile = filesList.get(position);
+		holder.title.setText(position == 0 ? rFile.getParent() + " [" + rFile.getName() + "]" : rFile.getName());
 		holder.icon.setImageResource(
-				!file.isDirectory() ? R.drawable.ic_file :
-						RFile.containsFiles(position == 0 ? file.getParentFile() : file, curDir.useRoot) ?
-								R.drawable.ic_folder : R.drawable.ic_folder_empty);
+				!rFile.isDirectory() ? R.drawable.ic_file :
+						rFile.flag ? R.drawable.ic_folder : R.drawable.ic_folder_empty);
 
-		holder.check.setTag(file);
-		holder.check.setChecked(selectedList.contains(file.getAbsolutePath()));
+		holder.check.setTag(rFile);
+		holder.check.setChecked(selectedList.contains(rFile.getAbsolutePath()));
 
 		return view;
 	}

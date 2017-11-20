@@ -16,6 +16,7 @@ import ru.atomofiron.regextool.Utils.Cmd;
 public class RFile extends File {
 
 	public boolean useRoot = false;
+	public boolean flag = false;
 
 	public RFile(File dir, @NonNull String name) {
 		super(dir, name);
@@ -47,20 +48,15 @@ public class RFile extends File {
 		return super.canRead() || useRoot;
 	}
 
+	@Override
+	public RFile getParentFile() {
+		File parent = super.getParentFile();
+		return parent == null ? null : new RFile(parent).setUseRoot(useRoot);
+	}
+
 	public boolean containsFiles() {
 		String[] list = list();
 		return list != null && list.length != 0;
-	}
-
-	public static boolean containsFiles(File file, boolean useRoot) {
-		if (file == null)
-			return false;
-
-		if (useRoot)
-			file = new RFile(file).setUseRoot(true);
-
-		String[] list = file.list();
-		return list != null && list.length != 0 && !list[0].isEmpty();
 	}
 
 	@Override

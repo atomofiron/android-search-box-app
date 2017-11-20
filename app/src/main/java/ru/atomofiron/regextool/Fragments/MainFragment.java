@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -31,7 +30,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -85,7 +83,6 @@ public class MainFragment extends Fragment {
 	private Receiver resultReceiver;
 	private SharedPreferences sp;
 	private HistoryAdapter historyAdapter;
-	private String defPath;
 
 	public MainFragment() {}
 
@@ -124,7 +121,6 @@ public class MainFragment extends Fragment {
 		if (fragmentView != null)
 			return fragmentView;
 
-		defPath = sp.getString(I.PREF_STORAGE_PATH, "/");
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 
 		regexText = (RegexText) view.findViewById(R.id.regex_text);
@@ -179,7 +175,6 @@ public class MainFragment extends Fragment {
 		filesListView = new ListView(ac);
 		final FilesAdapter filesListAdapter = new FilesAdapter(ac, filesListView);
 		filesListView.setAdapter(filesListAdapter);
-		filesListAdapter.update(new File(defPath));
 
 		testField = (EditText) LayoutInflater.from(ac).inflate(R.layout.edittext_test, null);
 		regexText.setTestField(testField);
@@ -253,11 +248,8 @@ public class MainFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		String path = sp.getString(I.PREF_STORAGE_PATH, "/");
-		if (!defPath.equals(path)) // в onCreateView() это не прокатывает
-			((FilesAdapter) filesListView.getAdapter()).update(new File((defPath = path)));
-		else
-			((FilesAdapter) filesListView.getAdapter()).update();
+
+		((FilesAdapter) filesListView.getAdapter()).updateIfNeeded();
 	}
 
 	public void checkListForSearch() {
@@ -274,7 +266,7 @@ public class MainFragment extends Fragment {
 			if (requestCode == REQUEST_FOR_SEARCH)
 				checkListForSearch();
 			else if (requestCode == REQUEST_FOR_PROVIDER)
-				((FilesAdapter) filesListView.getAdapter()).update(new File(defPath));
+				((FilesAdapter) filesListView.getAdapter()).update();
 		} else if (requestCode == REQUEST_FOR_PROVIDER)
 			if (!sp.getBoolean(I.PREF_USE_ROOT, false))
 				viewPager.setCurrentItem(1);
