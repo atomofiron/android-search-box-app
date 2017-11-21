@@ -7,11 +7,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import ru.atomofiron.regextool.Fragments.MainFragment;
@@ -31,10 +31,8 @@ public class SearchService extends IntentService {
 	private boolean excludeDirs = false;
 	private int maxDepth = 0;
 	private Finder finder;
-	private long lastNoticed = 0;
-	private long count = 0;
-	private LocalBroadcastManager broadcastManager;
 	private PendingIntent mainPendingIntent;
+	private Noticer noticer;
 
 	@Override
 	public void onCreate() {
@@ -53,7 +51,6 @@ public class SearchService extends IntentService {
         I.log("onHandleIntent()");
 		Context co = getBaseContext();
 		SharedPreferences sp = I.sp(co);
-		broadcastManager = LocalBroadcastManager.getInstance(co);
 
 		maxDepth = sp.getInt(I.PREF_MAX_DEPTH, 1024);
 		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
@@ -71,8 +68,10 @@ public class SearchService extends IntentService {
 		finder.setMaxSize(I.sp(co).getInt(I.PREF_MAX_SIZE, 10485760));
 
 		startForeground();
-		for (File file : co.getFilesDir().listFiles())
-			file.delete();
+
+		LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(co);
+		noticer = new Noticer(broadcastManager, results);
+		noticer.execute();
 
 		Intent resultIntent = new Intent(MainFragment.ACTION_RESULTS);
         try {
@@ -90,7 +89,7 @@ public class SearchService extends IntentService {
         }
 
         stopForeground(true);
-		showNotification(String.format("%1$s/%2$s", results.size(), count));
+		showNotification(String.format("%1$s/%2$s", results.size(), noticer.count));
 		broadcastManager.sendBroadcast(resultIntent);
     }
 
@@ -110,7 +109,7 @@ public class SearchService extends IntentService {
 			if (finder.find(file.getName()))
 				results.add(new Result(file.getAbsolutePath()));
 
-			incCountAndNoticeIfNecessary();
+			noticer.count++;
 		}
     }
     void searchInTheContent(RFile rfile, int depth) {
@@ -124,26 +123,14 @@ public class SearchService extends IntentService {
 					searchInTheContent(f, depth + 1);
 				}
         } else if (rfile.isFile()) {
+        	noticer.current = rfile.getAbsolutePath();
+
         	Result result = finder.search(rfile);
         	if (result != null && !result.isEmpty())
 				results.add(result);
 
-			incCountAndNoticeIfNecessary();
+			noticer.count++;
         }
-	}
-
-    private void incCountAndNoticeIfNecessary() {
-		count++;
-
-		long now = System.currentTimeMillis();
-		if (now - lastNoticed > 100) {
-			lastNoticed = now;
-
-			broadcastManager.sendBroadcast(
-					new Intent(MainFragment.ACTION_RESULTS)
-					.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), count))
-			);
-		}
 	}
 
     void startForeground() {
@@ -181,5 +168,40 @@ public class SearchService extends IntentService {
 		super.onDestroy();
 
 		finder.interrupt();
+		noticer.cancel(false);
+	}
+
+	private static class Noticer extends AsyncTask<Void, Void, Boolean> {
+		private static final long NOTICE_PERIOD = 100L;
+
+		private final LocalBroadcastManager broadcastManager;
+		private final ArrayList<Result> results;
+
+		private long lastNoticed = 0L;
+		long count = 0L;
+		String current = "";
+
+		Noticer(LocalBroadcastManager broadcastManager, ArrayList<Result> results) {
+			this.broadcastManager = broadcastManager;
+			this.results = results;
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... voids) {
+			while (!isCancelled()) {
+				long now = System.currentTimeMillis();
+
+				if (now - lastNoticed >= NOTICE_PERIOD) {
+					broadcastManager.sendBroadcast(
+							new Intent(MainFragment.ACTION_RESULTS)
+									.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), count))
+									.putExtra(MainFragment.KEY_NOTICE_CURRENT, current)
+					);
+
+					lastNoticed = now;
+				}
+			}
+			return false;
+		}
 	}
 }

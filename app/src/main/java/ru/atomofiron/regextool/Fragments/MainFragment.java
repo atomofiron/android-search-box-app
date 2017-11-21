@@ -56,6 +56,7 @@ public class MainFragment extends Fragment {
 	public static final String ACTION_RESULTS = "ACTION_RESULTS";
 	public static final String KEY_ERROR_MESSAGE = "KEY_ERROR_MESSAGE";
 	public static final String KEY_NOTICE = "KEY_NOTICE";
+	public static final String KEY_NOTICE_CURRENT = "KEY_NOTICE_CURRENT";
 
 	private static final String KEY_QUERY = "KEY_QUERY";
 	private static final String KEY_TEST = "KEY_TEST";
@@ -331,11 +332,13 @@ public class MainFragment extends Fragment {
 	class Receiver extends BroadcastReceiver {
 		private AlertDialog processDialog;
 		private TextView counterView;
+		private TextView currentView;
 		boolean needShowResults = true;
 
 		Receiver(Context co) {
 			View view = LayoutInflater.from(ac).inflate(R.layout.layout_searching, null);
 			counterView = view.findViewById(R.id.counter);
+			currentView = view.findViewById(R.id.current);
 			processDialog = new AlertDialog.Builder(co)
 					.setView(view)
 					.setCancelable(false)
@@ -378,8 +381,10 @@ public class MainFragment extends Fragment {
 						}
 						break;
 				}
-			} else
+			} else {
 				counterView.setText(intent.getStringExtra(KEY_NOTICE));
+				currentView.setText(intent.getStringExtra(KEY_NOTICE_CURRENT));
+			}
 		}
 	}
 }
