@@ -177,13 +177,12 @@ public class SearchService extends IntentService {
 		noticer.cancel(false);
 	}
 
-	private static class Noticer extends AsyncTask<Void, Void, Boolean> {
+	private static class Noticer extends AsyncTask<Void, Void, Void> {
 		private static final long NOTICE_PERIOD = 100L;
 
 		private final LocalBroadcastManager broadcastManager;
 		private final ArrayList<Result> results;
 
-		private long lastNoticed = 0L;
 		long count = 0L;
 		String current = "";
 
@@ -193,21 +192,28 @@ public class SearchService extends IntentService {
 		}
 
 		@Override
-		protected Boolean doInBackground(Void... voids) {
+		protected Void doInBackground(Void... voids) {
 			while (!isCancelled()) {
-				long now = System.currentTimeMillis();
+				try {
+					Thread.sleep(NOTICE_PERIOD);
+				} catch (Exception e) {
+					I.log(e.toString());
 
-				if (now - lastNoticed >= NOTICE_PERIOD) {
 					broadcastManager.sendBroadcast(
 							new Intent(MainFragment.ACTION_RESULTS)
-									.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), count))
-									.putExtra(MainFragment.KEY_NOTICE_CURRENT, current)
+									.putExtra(MainFragment.KEY_NOTICE, "-/-")
+									.putExtra(MainFragment.KEY_NOTICE_CURRENT, "")
 					);
-
-					lastNoticed = now;
+					return null;
 				}
+
+				broadcastManager.sendBroadcast(
+						new Intent(MainFragment.ACTION_RESULTS)
+								.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), count))
+								.putExtra(MainFragment.KEY_NOTICE_CURRENT, current)
+				);
 			}
-			return false;
+			return null;
 		}
 	}
 }
