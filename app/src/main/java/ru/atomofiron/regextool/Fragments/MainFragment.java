@@ -301,7 +301,6 @@ public class MainFragment extends Fragment {
 			String symbol;
 			switch (v.getId()) {
 				case R.id.go:
-					resultReceiver.needShowResults = true;
 					String regex = regexText.getText().toString();
 					if (regex.isEmpty())
 						return;
@@ -333,7 +332,6 @@ public class MainFragment extends Fragment {
 		private AlertDialog processDialog;
 		private TextView counterView;
 		private TextView currentView;
-		boolean needShowResults = true;
 
 		Receiver(Context co) {
 			View view = LayoutInflater.from(ac).inflate(R.layout.layout_searching, null);
@@ -345,7 +343,7 @@ public class MainFragment extends Fragment {
 					.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							needShowResults = false;
+							SearchService.needToSendResults = false;
 							ac.stopService(new Intent(ac, SearchService.class));
 						}
 					})
@@ -368,17 +366,14 @@ public class MainFragment extends Fragment {
 						snackbarHelper.show(intent.getStringExtra(KEY_ERROR_MESSAGE));
 						break;
 					case SEARCH_NOTHING:
-						if (needShowResults)
-							snackbarHelper.show(R.string.nothing);
+						snackbarHelper.show(R.string.nothing);
 						break;
 					default:
-						if (needShowResults) {
-							startActivity(
-									new Intent(ac, MainActivity.class)
-											.setAction(MainActivity.ACTION_SHOW_RESULTS)
-											.putExtras(intent.getExtras())
-							);
-						}
+						startActivity(
+								new Intent(ac, MainActivity.class)
+										.setAction(MainActivity.ACTION_SHOW_RESULTS)
+										.putExtras(intent.getExtras())
+						);
 						break;
 				}
 			} else {

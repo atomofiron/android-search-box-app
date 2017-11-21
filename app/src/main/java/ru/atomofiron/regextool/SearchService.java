@@ -28,6 +28,8 @@ public class SearchService extends IntentService {
 
     private final ArrayList<Result> results = new ArrayList<>();
 
+    // компенсация отсутствия возможности получить Intent через stopService()
+    public static boolean needToSendResults;
 	private boolean excludeDirs = false;
 	private int maxDepth = 0;
 	private Finder finder;
@@ -38,6 +40,7 @@ public class SearchService extends IntentService {
 	public void onCreate() {
 		super.onCreate();
 
+		needToSendResults = true;
 		mainPendingIntent = PendingIntent.getActivity(
 				this,
 				0,
@@ -89,8 +92,11 @@ public class SearchService extends IntentService {
         }
 
         stopForeground(true);
-		showNotification(String.format("%1$s/%2$s", results.size(), noticer.count));
-		broadcastManager.sendBroadcast(resultIntent);
+
+        if (needToSendResults) {
+			showNotification(String.format("%1$s/%2$s", results.size(), noticer.count));
+			broadcastManager.sendBroadcast(resultIntent);
+		}
     }
 
     void search(RFile file, int depth) {
