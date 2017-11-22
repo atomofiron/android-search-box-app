@@ -65,8 +65,10 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 	public void update() {
 		pathsList.clear();
 		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
-		if (set != null && set.size() > 0)
-			pathsList.addAll(set);
+		if (set != null)
+			for (String path : set)
+				if (new File(path).exists())
+					pathsList.add(path);
 
 		for (int i = 0; i < checkedPathsList.size(); i++)
 			if (!pathsList.contains(checkedPathsList.get(i)))
