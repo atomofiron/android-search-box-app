@@ -70,7 +70,7 @@ public class MainFragment extends Fragment {
 	private static final String KEY_FLAG_REGEXP = "KEY_FLAG_REGEXP";
 	private static final String KEY_FLAG_MULTILINE = "KEY_FLAG_MULTILINE";
 
-	private Activity ac;
+	private Context co;
 	private View fragmentView;
 	private SnackbarHelper snackbarHelper;
 
@@ -96,11 +96,11 @@ public class MainFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		ac = getActivity();
-		sp = I.sp(ac);
+		co = getContext();
+		sp = I.sp(co);
 
-		resultReceiver = new Receiver(ac);
-		broadcastManager = LocalBroadcastManager.getInstance(ac);
+		resultReceiver = new Receiver(co);
+		broadcastManager = LocalBroadcastManager.getInstance(co);
 		broadcastManager.registerReceiver(resultReceiver, new IntentFilter(ACTION_RESULTS));
 	}
 
@@ -170,24 +170,24 @@ public class MainFragment extends Fragment {
 		viewPager = (ViewPager) view.findViewById(R.id.view_pager);
 		ArrayList<View> viewList = new ArrayList<>();
 
-		ListView selectedListView = new ListView(ac);
-		selectedListAdapter = new ListAdapter(ac);
+		ListView selectedListView = new ListView(co);
+		selectedListAdapter = new ListAdapter(co);
 		selectedListAdapter.update();
 		selectedListView.setAdapter(selectedListAdapter);
 		selectedListView.setOnItemLongClickListener(selectedListAdapter);
 		selectedListView.setOnItemClickListener(selectedListAdapter);
 
-		filesListView = new ListView(ac);
-		final FilesAdapter filesListAdapter = new FilesAdapter(ac, filesListView);
+		filesListView = new ListView(co);
+		final FilesAdapter filesListAdapter = new FilesAdapter(co, filesListView);
 		filesListView.setAdapter(filesListAdapter);
 
-		testField = (EditText) LayoutInflater.from(ac).inflate(R.layout.edittext_test, null);
+		testField = (EditText) LayoutInflater.from(co).inflate(R.layout.edittext_test, null);
 		regexText.setTestField(testField);
 
 		viewList.add(testField);
 		viewList.add(selectedListView);
 		viewList.add(filesListView);
-		ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(ac, viewList);
+		ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(co, viewList);
 		viewPager.setAdapter(pagerAdapter);
 
 		((TabLayout) view.findViewById(R.id.tab_layout)).setupWithViewPager(viewPager);
@@ -281,7 +281,7 @@ public class MainFragment extends Fragment {
 		resultReceiver.counterView.setText("0/0");
 		resultReceiver.processDialog.show();
 
-		ac.startService(new Intent(ac, SearchService.class)
+		co.startService(new Intent(co, SearchService.class)
 				.putExtra(I.CASE_SENSE, caseToggle.isChecked())
 				.putExtra(I.SEARCH_LIST, selectedListAdapter.getCheckedPathArray())
 				.putExtra(I.QUERY, regexText.getText().toString())
@@ -294,7 +294,7 @@ public class MainFragment extends Fragment {
 	public void onDestroy() {
 		super.onDestroy();
 		broadcastManager.unregisterReceiver(resultReceiver);
-		ac.stopService(new Intent(ac, SearchService.class));
+		co.stopService(new Intent(co, SearchService.class));
 	}
 
 // -------------------------------------------------------------
@@ -338,7 +338,7 @@ public class MainFragment extends Fragment {
 		private TextView currentView;
 
 		Receiver(Context co) {
-			View view = LayoutInflater.from(ac).inflate(R.layout.layout_searching, null);
+			View view = LayoutInflater.from(MainFragment.this.co).inflate(R.layout.layout_searching, null);
 			counterView = view.findViewById(R.id.counter);
 			currentView = view.findViewById(R.id.current);
 			processDialog = new AlertDialog.Builder(co)
@@ -348,13 +348,13 @@ public class MainFragment extends Fragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							SearchService.needToSendResults = false;
-							ac.stopService(new Intent(ac, SearchService.class));
+							MainFragment.this.co.stopService(new Intent(MainFragment.this.co, SearchService.class));
 						}
 					})
 					.setNegativeButton(R.string.stop, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							ac.stopService(new Intent(ac, SearchService.class));
+							MainFragment.this.co.stopService(new Intent(MainFragment.this.co, SearchService.class));
 						}
 					})
 					.create();
@@ -378,7 +378,7 @@ public class MainFragment extends Fragment {
 						break;
 					default:
 						startActivity(
-								new Intent(ac, MainActivity.class)
+								new Intent(co, MainActivity.class)
 										.setAction(MainActivity.ACTION_SHOW_RESULTS)
 										.putExtras(intent.getExtras())
 						);
@@ -396,19 +396,19 @@ public class MainFragment extends Fragment {
 		}
 
 		private void showNotification(String text) {
-			Notification.Builder builder = new Notification.Builder(ac)
+			Notification.Builder builder = new Notification.Builder(co)
 					.setTicker(getString(R.string.search_completed))
 					.setContentTitle(getString(R.string.app_name))
 					.setContentText(text)
 					.setSmallIcon(R.drawable.ic_search_file)
 					.setContentIntent(PendingIntent.getActivity(
-							ac,
+							co,
 							0,
-							new Intent(ac, MainActivity.class),
+							new Intent(co, MainActivity.class),
 							PendingIntent.FLAG_UPDATE_CURRENT
 					));
 
-			NotificationManager notifier = (NotificationManager) ac.getSystemService(Context.NOTIFICATION_SERVICE);
+			NotificationManager notifier = (NotificationManager) co.getSystemService(Context.NOTIFICATION_SERVICE);
 			if (notifier != null) {
 				// API >= 16 getNotification() вызывает build()
 				Notification notification = builder.getNotification();
