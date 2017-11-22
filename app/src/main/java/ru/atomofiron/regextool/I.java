@@ -103,14 +103,11 @@ public class I {
     public static String intToHumanReadable(final int bytes, String[] suffixes) {
     	int k = 0;
     	float f = (float) bytes;
-    	while (f >= 1024) {
+    	while (f >= 970) {
     		f /= 1024;
     		k++;
 		}
-		String value = String.format("%.2f", f);
-    	value = value.endsWith("0") ? value.substring(0, value.length() - 1) : value;
-    	value = value.endsWith(",0") || value.endsWith(".0") ? value.substring(0, value.length() - 2) : value;
-
-		return value + suffixes[k];
+		return String.format("%1$.2f %2$s", f, suffixes[k])
+				.replaceAll("[.,]00|(?<=[.,][0-9])0", "");
     }
 }
