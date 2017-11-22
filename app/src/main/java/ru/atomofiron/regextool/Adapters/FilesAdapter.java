@@ -112,8 +112,11 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		RFile lastDir = curDir;
 		update(position == 0 ? filesList.get(position).getParentFile() : filesList.get(position));
-		((ListView) parent).smoothScrollToPositionFromTop(0, 0);
+
+		if (lastDir != curDir)
+			parent.setSelection(position == 0 ? filesList.indexOf(lastDir) : 0);
 	}
 
 	@Override
