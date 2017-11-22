@@ -1,16 +1,22 @@
 <resources>
 
-	<style name="AppTheme" parent="@style/AppCompatDark">
-		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
+	<style name="AppTheme.White" parent="@style/AppCompat.Light">
+		<item name="android:windowBackground">@color/windowBackgroundWhite</item>
+		<item name="android:colorPrimary">@color/colorPrimaryLight</item>
+		<item name="android:colorPrimaryDark">@color/colorPrimaryDarkLight</item>
+		<item name="android:colorAccent">@color/colorAccentLight</item>
+	</style>
+	<style name="AppTheme.Dark" parent="@style/AppCompat">
+		<item name="android:windowBackground">@color/windowBackgroundDark</item>
 		<item name="android:colorPrimary">@color/colorPrimary</item>
 		<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="android:colorAccent">@color/colorAccent</item>
 	</style>
-	<style name="AppTheme.Light" parent="@style/AppCompatLight">
-		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
-		<item name="android:colorPrimary">@color/colorPrimaryL</item>
-		<item name="android:colorPrimaryDark">@color/colorPrimaryDarkL</item>
-		<item name="android:colorAccent">@color/colorAccentL</item>
+	<style name="AppTheme.Black" parent="@style/AppCompat">
+		<item name="android:windowBackground">@color/windowBackgroundBlack</item>
+		<item name="android:colorPrimary">@color/colorPrimary</item>
+		<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="android:colorAccent">@color/colorAccent</item>
 	</style>
 
 </resources>

@@ -44,8 +44,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		sp = I.sp(this);
 		setRequestedOrientation(Integer.parseInt(sp.getString(I.PREF_ORIENTATION, "2")) - 1);
 
-		if (sp.getString(I.PREF_THEME, "0").equals("0"))
-			setTheme(R.style.AppTheme_Light);
+		setTheme(new int[] {
+				R.style.AppTheme_White,
+				R.style.AppTheme_Dark,
+				R.style.AppTheme_Black,
+		}[Integer.parseInt(sp.getString(I.PREF_THEME, "0"))]);
 
 		setContentView(R.layout.activity_main);
 

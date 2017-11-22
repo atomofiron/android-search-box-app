@@ -1,29 +1,33 @@
 <resources>
 
-	<style name="AppCompatDark" parent="Theme.AppCompat.NoActionBar">
-		<item name="android:windowBackground">@color/windowBackgroundDark</item>
+	<style name="AppCompat" parent="Theme.AppCompat.NoActionBar">
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="colorAccent">@color/colorAccent</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 	</style>
-	<style name="AppCompatLight" parent="Theme.AppCompat.Light.NoActionBar">
-		<item name="android:windowBackground">@color/windowBackgroundLight</item>
-		<item name="colorPrimary">@color/colorPrimaryL</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDarkL</item>
-		<item name="colorAccent">@color/colorAccentL</item>
+	<style name="AppCompat.Light" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">@color/colorPrimaryLight</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDarkLight</item>
+		<item name="colorAccent">@color/colorAccentLight</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 	</style>
 
-	<style name="AppTheme" parent="@style/AppCompatDark"/>
-
-	<style name="AppTheme.Light" parent="@style/AppCompatLight"/>
+	<style name="AppTheme.White" parent="@style/AppCompat.Light">
+		<item name="android:windowBackground">@color/windowBackgroundWhite</item>
+	</style>
+	<style name="AppTheme.Dark" parent="@style/AppCompat">
+		<item name="android:windowBackground">@color/windowBackgroundDark</item>
+	</style>
+	<style name="AppTheme.Black" parent="@style/AppCompat">
+		<item name="android:windowBackground">@color/windowBackgroundBlack</item>
+	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
 	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-	<style name="AppTheme.NoActionBar">
+	<style name="AppCompat.NoActionBar">
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
 	</style>

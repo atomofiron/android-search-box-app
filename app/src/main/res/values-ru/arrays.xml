@@ -13,8 +13,9 @@
     </string-array>
 
     <string-array name="theme_var">
-        <item>Светлая</item>
+        <item>Белая</item>
         <item>Тёмная</item>
+        <item>Чёрная</item>
     </string-array>
 
     <string-array name="size_suffix_arr">
