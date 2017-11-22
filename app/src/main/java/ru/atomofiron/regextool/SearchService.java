@@ -21,6 +21,7 @@ import ru.atomofiron.regextool.Models.Result;
 import ru.atomofiron.regextool.Models.ResultsHolder;
 
 public class SearchService extends IntentService {
+	private static final int FOREGROUND_NOTIFICATION_ID = 1;
 
     public SearchService() {
         super("SearchService");
@@ -33,21 +34,7 @@ public class SearchService extends IntentService {
 	private boolean excludeDirs = false;
 	private int maxDepth = 0;
 	private Finder finder;
-	private PendingIntent mainPendingIntent;
 	private Noticer noticer;
-
-	@Override
-	public void onCreate() {
-		super.onCreate();
-
-		needToSendResults = true;
-		mainPendingIntent = PendingIntent.getActivity(
-				this,
-				0,
-				new Intent(this, MainActivity.class),
-				PendingIntent.FLAG_UPDATE_CURRENT
-		);
-	}
 
 	@Override
     protected void onHandleIntent(Intent intent) {
@@ -71,6 +58,7 @@ public class SearchService extends IntentService {
 		finder.setMaxSize(I.sp(co).getInt(I.PREF_MAX_SIZE, 10485760));
 
 		startForeground();
+		needToSendResults = true;
 
 		LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(co);
 		noticer = new Noticer(broadcastManager, results);
@@ -93,10 +81,8 @@ public class SearchService extends IntentService {
 
         stopForeground(true);
 
-        if (needToSendResults) {
-			showNotification(String.format("%1$s/%2$s", results.size(), noticer.count));
+        if (needToSendResults)
 			broadcastManager.sendBroadcast(resultIntent);
-		}
     }
 
     void search(RFile file, int depth) {
@@ -143,32 +129,18 @@ public class SearchService extends IntentService {
         Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.searching))
                 .setContentText(getString(R.string.app_name))
-                .setContentIntent(mainPendingIntent)
-                .setSmallIcon(R.drawable.ic_search_file);
+				.setSmallIcon(R.drawable.ic_search_file)
+                .setContentIntent(PendingIntent.getActivity(
+						this,
+						0,
+						new Intent(this, MainActivity.class),
+						PendingIntent.FLAG_UPDATE_CURRENT
+				));
 
-        startForeground(1, Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ?
+        startForeground(FOREGROUND_NOTIFICATION_ID, Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ?
 				builder.build() : builder.getNotification());
     }
 
-    private void showNotification(String subtext) {
-		Notification.Builder builder = new Notification.Builder(this)
-				.setTicker(getString(R.string.search_completed))
-				.setContentTitle(getString(R.string.search_completed))
-				.setContentText(getString(R.string.app_name))
-				.setContentIntent(mainPendingIntent)
-				.setSmallIcon(R.drawable.ic_search_file);
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-			builder.setSubText(subtext);
-
-		NotificationManager notifier = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		if (notifier != null) {
-			// API >= 16 getNotification() вызывает build()
-			Notification notification = builder.getNotification();
-			notification.flags |= Notification.FLAG_AUTO_CANCEL;
-			notifier.notify(2, notification);
-		}
-	}
     @Override
     public void onDestroy() {
 		super.onDestroy();

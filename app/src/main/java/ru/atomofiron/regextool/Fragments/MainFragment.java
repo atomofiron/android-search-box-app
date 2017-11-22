@@ -1,6 +1,9 @@
 package ru.atomofiron.regextool.Fragments;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -52,6 +55,7 @@ public class MainFragment extends Fragment {
 
 	public static final int SEARCH_NOTHING = 0;
 	public static final int SEARCH_ERROR = -1;
+	public static final int NOTIFICATION_ID = 2;
 
 	public static final String ACTION_RESULTS = "ACTION_RESULTS";
 	public static final String KEY_ERROR_MESSAGE = "KEY_ERROR_MESSAGE";
@@ -361,12 +365,16 @@ public class MainFragment extends Fragment {
 			if (!intent.getExtras().containsKey(KEY_NOTICE)) {
 				processDialog.cancel();
 
-				switch (intent.getIntExtra(I.SEARCH_COUNT, SEARCH_ERROR)) {
+				String text;
+				int count = intent.getIntExtra(I.SEARCH_COUNT, SEARCH_ERROR);
+				switch (count) {
 					case SEARCH_ERROR:
 						snackbarHelper.show(intent.getStringExtra(KEY_ERROR_MESSAGE));
+
+						text = getString(R.string.error);
 						break;
 					case SEARCH_NOTHING:
-						snackbarHelper.show(R.string.nothing);
+						snackbarHelper.show(text = getString(R.string.nothing));
 						break;
 					default:
 						startActivity(
@@ -374,11 +382,38 @@ public class MainFragment extends Fragment {
 										.setAction(MainActivity.ACTION_SHOW_RESULTS)
 										.putExtras(intent.getExtras())
 						);
+
+						text = getString(R.string.results, count);
 						break;
 				}
+
+				if (!isResumed())
+					showNotification(text);
 			} else {
 				counterView.setText(intent.getStringExtra(KEY_NOTICE));
 				currentView.setText(intent.getStringExtra(KEY_NOTICE_CURRENT));
+			}
+		}
+
+		private void showNotification(String text) {
+			Notification.Builder builder = new Notification.Builder(ac)
+					.setTicker(getString(R.string.search_completed))
+					.setContentTitle(getString(R.string.app_name))
+					.setContentText(text)
+					.setSmallIcon(R.drawable.ic_search_file)
+					.setContentIntent(PendingIntent.getActivity(
+							ac,
+							0,
+							new Intent(ac, MainActivity.class),
+							PendingIntent.FLAG_UPDATE_CURRENT
+					));
+
+			NotificationManager notifier = (NotificationManager) ac.getSystemService(Context.NOTIFICATION_SERVICE);
+			if (notifier != null) {
+				// API >= 16 getNotification() вызывает build()
+				Notification notification = builder.getNotification();
+				notification.flags |= Notification.FLAG_AUTO_CANCEL;
+				notifier.notify(NOTIFICATION_ID, notification);
 			}
 		}
 	}

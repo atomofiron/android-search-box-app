@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.Fragments;
 
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -50,6 +51,15 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		NotificationManager notifier = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		if (notifier != null)
+			notifier.cancel(MainFragment.NOTIFICATION_ID);
 	}
 
 	@Override
