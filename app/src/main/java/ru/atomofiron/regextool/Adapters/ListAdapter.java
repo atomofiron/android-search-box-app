@@ -112,7 +112,16 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		String path = (String)buttonView.getTag();
 
 		if (isChecked) {
+			int size = checkedPathsList.size();
+			for (int i = 0; i < checkedPathsList.size(); i++) {
+				String checkedPath = checkedPathsList.get(i);
+				if (path.startsWith(checkedPath) || checkedPath.startsWith(path))
+					checkedPathsList.remove(i--);
+			}
 			checkedPathsList.add(path);
+
+			if (size >= checkedPathsList.size())
+				notifyDataSetChanged();
 		} else
 			checkedPathsList.remove(path);
 	}
