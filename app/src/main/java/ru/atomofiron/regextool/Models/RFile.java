@@ -77,7 +77,8 @@ public class RFile extends File {
 		if (super.canRead() || !isDirectory() || !useRoot)
 			return super.list();
 
-		return Cmd.exec(String.format("ls -A -1 \"%s\"\n", getAbsolutePath())).split("\n");
+		return Cmd.exec(String.format("ls -a \"%s\"\n", getAbsolutePath())).
+				replace(".\n..\n", "").split("\n");
 	}
 
 	public String readText() {
