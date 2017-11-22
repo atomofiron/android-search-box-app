@@ -1,12 +1,11 @@
 package ru.atomofiron.regextool.Utils;
 
-import java.io.File;
 import java.util.Comparator;
 
-public class FileComparator implements Comparator {
-	public final int compare(Object pFirst, Object pSecond) {
-		File first = (File) pFirst;
-		File second = (File) pSecond;
+import ru.atomofiron.regextool.Models.RFile;
+
+public class FileComparator implements Comparator<RFile> {
+	public final int compare(RFile first, RFile second) {
 		if (first.isDirectory() && !second.isDirectory())
 			return -1;
 		else if (!first.isDirectory() && second.isDirectory())
