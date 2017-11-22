@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -396,25 +397,21 @@ public class MainFragment extends Fragment {
 		}
 
 		private void showNotification(String text) {
-			Notification.Builder builder = new Notification.Builder(co)
-					.setTicker(getString(R.string.search_completed))
-					.setContentTitle(getString(R.string.app_name))
-					.setContentText(text)
-					.setSmallIcon(R.drawable.ic_search_file)
-					.setContentIntent(PendingIntent.getActivity(
-							co,
-							0,
-							new Intent(co, MainActivity.class),
-							PendingIntent.FLAG_UPDATE_CURRENT
-					));
-
 			NotificationManager notifier = (NotificationManager) co.getSystemService(Context.NOTIFICATION_SERVICE);
-			if (notifier != null) {
-				// API >= 16 getNotification() вызывает build()
-				Notification notification = builder.getNotification();
-				notification.flags |= Notification.FLAG_AUTO_CANCEL;
-				notifier.notify(NOTIFICATION_ID, notification);
-			}
+			if (notifier != null)
+				notifier.notify(NOTIFICATION_ID, new NotificationCompat.Builder(co, I.NOTIFICATION_CHANNEL_ID)
+						.setTicker(getString(R.string.search_completed))
+						.setContentTitle(getString(R.string.search_completed))
+						.setContentText(text)
+						.setSmallIcon(R.drawable.ic_search_file_done)
+						.setColor(getResources().getColor(R.color.colorPrimaryLight))
+						.setContentIntent(PendingIntent.getActivity(
+								co,
+								0,
+								new Intent(co, MainActivity.class),
+								PendingIntent.FLAG_UPDATE_CURRENT
+						)).build()
+				);
 		}
 	}
 }

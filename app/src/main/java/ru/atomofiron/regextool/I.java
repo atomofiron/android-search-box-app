@@ -33,6 +33,8 @@ public class I {
     public static final String MULTILINE = "MULTILINE";
     public static final String SELECTED_LIST = "SELECTED_LIST";
 
+    public static final String NOTIFICATION_CHANNEL_ID = "channel_id";
+
     public static void log(String message) {
         Log.e("atomofiron", message);
     }

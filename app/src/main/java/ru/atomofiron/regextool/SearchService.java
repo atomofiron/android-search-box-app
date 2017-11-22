@@ -1,14 +1,12 @@
 package ru.atomofiron.regextool;
 
 import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
@@ -125,21 +123,19 @@ public class SearchService extends IntentService {
         }
 	}
 
-    void startForeground() {
-        Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle(getString(R.string.searching))
-                .setContentText(getString(R.string.app_name))
+	void startForeground() {
+		startForeground(FOREGROUND_NOTIFICATION_ID, new NotificationCompat.Builder(this, I.NOTIFICATION_CHANNEL_ID)
+				.setContentTitle(getString(R.string.searching))
 				.setSmallIcon(R.drawable.ic_search_file)
-                .setContentIntent(PendingIntent.getActivity(
+				.setColor(getResources().getColor(R.color.colorPrimaryLight))
+				.setContentIntent(PendingIntent.getActivity(
 						this,
 						0,
 						new Intent(this, MainActivity.class),
 						PendingIntent.FLAG_UPDATE_CURRENT
-				));
-
-        startForeground(FOREGROUND_NOTIFICATION_ID, Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ?
-				builder.build() : builder.getNotification());
-    }
+				)).build()
+		);
+	}
 
     @Override
     public void onDestroy() {
