@@ -37,7 +37,14 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		listView.setOnItemClickListener(this);
 
 		sp = I.sp(co);
-		update(sp.getString(I.PREF_STORAGE_PATH, "/"));
+		update(getDefaultDir());
+	}
+
+	private RFile getDefaultDir() {
+		// защита от дурака, который может указать несуществующую директорию или файл
+		RFile rFile = new RFile(sp.getString(I.PREF_STORAGE_PATH, "/"));
+		return (rFile.isDirectory() ? rFile : new RFile("/"))
+				.setUseRoot(sp.getBoolean(I.PREF_USE_ROOT, false));
 	}
 
 	private void update(RFile dir) {
@@ -50,16 +57,12 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		}
 	}
 
-	private void update(String path) {
-		update(new RFile(path).setUseRoot(sp.getBoolean(I.PREF_USE_ROOT, false)));
-	}
-
 	public void updateIfNeeded() {
 		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
 		boolean needed = useRoot != curDir.useRoot;
 
 		if (!curDir.setUseRoot(useRoot).canRead()) {
-			curDir = new RFile(sp.getString(I.PREF_STORAGE_PATH, "/"));
+			curDir = getDefaultDir();
 			needed = true;
 		}
 
