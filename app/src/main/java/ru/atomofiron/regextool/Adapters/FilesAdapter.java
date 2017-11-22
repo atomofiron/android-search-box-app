@@ -44,7 +44,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		if (dir == null)
 			return;
 
-		if (dir.containsFiles()) {
+		if (dir.containsFiles() || curDir == null) {
 			curDir = dir;
 			update();
 		}
