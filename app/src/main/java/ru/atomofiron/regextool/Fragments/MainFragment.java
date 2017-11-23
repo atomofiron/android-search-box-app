@@ -329,8 +329,13 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 				break;
 		}
 		int start = regexText.getSelectionStart();
+		int end = regexText.getSelectionEnd();
+
+		if (start != end)
+			regexText.getText().replace(start, end, "");
+
 		regexText.getText().insert(start, symbol);
-		regexText.setSelection(start+1, start+1);
+		regexText.setSelection(start + symbol.length(), start + symbol.length());
 	}
 
 	class Receiver extends BroadcastReceiver {
