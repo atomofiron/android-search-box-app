@@ -122,8 +122,12 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		if (fragmentView != null)
+		if (fragmentView != null) {
+			if (PrefsFragment.changedPrefs.remove(I.PREF_SPECIAL_CHARACTERS))
+				initCharacterButtons((ViewGroup) fragmentView.findViewById(R.id.characters_pane));
+
 			return fragmentView;
+		}
 
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 

@@ -22,6 +22,7 @@ import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.Utils.Cmd;
 
 public class PrefsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+	public static final ArrayList<String> changedPrefs = new ArrayList<>();
 
 	private SharedPreferences sp;
 
@@ -79,6 +80,14 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 			getActivity().recreate();
 		else if (preference.getKey().equals(I.PREF_MAX_SIZE))
 			update(preference, newValue);
+
+		// чтобы можно было проверить факт изменения определённой конфигурации
+		// и совершить необходимые действия
+		String key = preference.getKey();
+		switch (key) {
+			case I.PREF_SPECIAL_CHARACTERS:
+				changedPrefs.add(key);
+		}
 
 		return result;
 	}
