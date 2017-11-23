@@ -59,16 +59,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private void updatePrefs() {
 		SharedPreferences.Editor editor = sp.edit();
 
-		editor
-				.putString(I.PREF_STORAGE_PATH, sp.getString(I.PREF_STORAGE_PATH,
-						Environment.getExternalStorageDirectory().getAbsolutePath()))
-				.putString(I.PREF_EXTRA_FORMATS, sp.getString(I.PREF_EXTRA_FORMATS,
-						"md mkd markdown cm ad adoc"));
-
 		// каскадное обновление настроек в зависимости от номера версии
 		switch (sp.getInt(I.PREF_LAST_VERSION, 0)) {
+			case BuildConfig.VERSION_CODE: // текущая
+				break;
 			case 0: // 0 - 7
-				editor.putInt(I.PREF_MAX_SIZE, sp.getInt(I.PREF_MAX_SIZE, 10) * 1048576);
+				editor.putInt(I.PREF_MAX_SIZE, sp.getInt(I.PREF_MAX_SIZE, 10) * 1048576)
+						.putString(I.PREF_STORAGE_PATH, Environment.getExternalStorageDirectory().getAbsolutePath())
+						.putString(I.PREF_EXTRA_FORMATS, I.DEFAULT_EXTRA_FORMATS);
 			default:
 				editor.putInt(I.PREF_LAST_VERSION, BuildConfig.VERSION_CODE);
 		}

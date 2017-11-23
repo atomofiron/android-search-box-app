@@ -171,7 +171,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		File file = new File(listAdapter.getItem(position));
 		String format = I.getFormat(file.getName());
-		String[] extra = I.sp(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
+		String[] extra = I.sp(getActivity()).getString(I.PREF_EXTRA_FORMATS, I.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+");
 
 		if (I.isTextFile(format, extra)) {
 			ResultsHolder.setResult(resultsList.get(position));

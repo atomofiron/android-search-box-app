@@ -45,7 +45,7 @@ public class SearchService extends IntentService {
 		excludeDirs = sp.getBoolean(I.PREF_EXCLUDE_DIRS, false);
 		boolean inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
 		finder = new Finder();
-		finder.setExtraFormats(sp.getString(I.PREF_EXTRA_FORMATS, "").split(" "));
+		finder.setExtraFormats(sp.getString(I.PREF_EXTRA_FORMATS, I.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+"));
 		finder.setQuery(intent.getStringExtra(I.QUERY));
 		finder.setCaseSense(intent.getBooleanExtra(I.CASE_SENSE, false));
 		finder.setMultiline(intent.getBooleanExtra(I.MULTILINE, false));

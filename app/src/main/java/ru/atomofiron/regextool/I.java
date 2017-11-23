@@ -33,6 +33,7 @@ public class I {
     public static final String SELECTED_LIST = "SELECTED_LIST";
 
     public static final String NOTIFICATION_CHANNEL_ID = "channel_id";
+    public static final String DEFAULT_EXTRA_FORMATS = "md mkd markdown cm ad adoc";
     public static final String DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $";
 
     public static void log(String message) {
