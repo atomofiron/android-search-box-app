@@ -21,6 +21,7 @@ import ru.atomofiron.regextool.Models.Result;
 
 public class RegexText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;
+	private static final String LAST_QUERY = "LAST_QUERY";
 	private static final String TEST_TEXT = "TEST_TEXT";
 	private final int SPAN_COLOR;
 
@@ -54,6 +55,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		sp = I.sp(context);
 
 		SPAN_COLOR = context.getResources().getColor(R.color.spanGreen);
+		setText(sp.getString(LAST_QUERY, ""));
 	}
 
 	@Override
@@ -166,5 +168,6 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		}
 
 		sp.edit().putString(TEST_TEXT, editable.toString()).apply();
+		sp.edit().putString(LAST_QUERY, getText().toString()).apply();
 	}
 }
