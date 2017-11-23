@@ -56,6 +56,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 
 		SPAN_COLOR = context.getResources().getColor(R.color.spanGreen);
 		setText(sp.getString(LAST_QUERY, ""));
+		setSelection(getText().length());
 	}
 
 	@Override
