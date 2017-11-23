@@ -41,7 +41,7 @@ public class SearchService extends IntentService {
 		SharedPreferences sp = I.sp(co);
 
 		maxDepth = sp.getInt(I.PREF_MAX_DEPTH, 1024);
-		boolean useRoot = sp.getBoolean(I.PREF_USE_ROOT, false);
+		boolean useSu = sp.getBoolean(I.PREF_USE_SU, false);
 		excludeDirs = sp.getBoolean(I.PREF_EXCLUDE_DIRS, false);
 		boolean inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
 		finder = new Finder();
@@ -66,9 +66,9 @@ public class SearchService extends IntentService {
         try {
             for (String path : intent.getStringArrayListExtra(I.SEARCH_LIST))
                 if (inTheContent)
-                	searchInTheContent(new RFile(path).setUseRoot(useRoot), 0);
+                	searchInTheContent(new RFile(path, useSu), 0);
 				else
-					search(new RFile(path).setUseRoot(useRoot), 0);
+					search(new RFile(path, useSu), 0);
 
 			resultIntent.putExtra(I.SEARCH_COUNT, results.size());
 			ResultsHolder.setResults(results);

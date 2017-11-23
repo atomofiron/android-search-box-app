@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					setFragment(new ResultsFragment(), true);
 					break;
 				case ACTION_SHOW_RESULT:
-					setFragment(TextFragment.newInstance(intent.getExtras()), true);
+					setFragment(new TextFragment(), true);
 					break;
 			}
 	}

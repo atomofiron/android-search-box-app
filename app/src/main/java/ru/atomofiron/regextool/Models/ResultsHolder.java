@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public final class ResultsHolder {
 	private static ArrayList<Result> results = null;
+	private static Result result = null;
 
 	private ResultsHolder() {
 	}
@@ -22,5 +23,21 @@ public final class ResultsHolder {
 
 	public static void resetResults() {
 		results = null;
+	}
+
+	public static void setResult(Result result) {
+		ResultsHolder.result = result;
+	}
+
+	public static Result getResult() {
+		Result result = ResultsHolder.result;
+
+		resetResult();
+
+		return result;
+	}
+
+	public static void resetResult() {
+		result = null;
 	}
 }

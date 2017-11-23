@@ -48,11 +48,6 @@ public class Result implements Iterator, Parcelable {
 		return hasNext();
 	}
 
-	public boolean moveToLast() {
-		itPosition = startPositions.size() > 0 ? startPositions.size() - 1 : 0;
-		return hasNext();
-	}
-
 	@Override
 	public boolean hasNext() {
 		return startPositions.size() > itPosition;

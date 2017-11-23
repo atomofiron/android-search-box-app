@@ -98,12 +98,12 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 				int i = Integer.parseInt(value == null ? sp.getString(key, "2") : value);
 				pref.setSummary(getResources().getStringArray(R.array.orientation_var)[i]);
 				break;
-			case I.PREF_USE_ROOT:
+			case I.PREF_USE_SU:
 				if (value == null) {
-					if (sp.getBoolean(key, false) && Cmd.easyExec("su") != 0)
+					if (sp.getBoolean(key, false) && !Cmd.checkSu())
 						((SwitchPreferenceCompat)pref).setChecked(false);
 				} else if (value.equals("true"))
-					return Cmd.easyExec("su") == 0;
+					return Cmd.checkSu();
 
 				break;
 			case I.PREF_MAX_SIZE:

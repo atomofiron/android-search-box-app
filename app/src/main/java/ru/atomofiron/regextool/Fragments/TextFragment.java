@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.Models.RFile;
 import ru.atomofiron.regextool.Models.Result;
+import ru.atomofiron.regextool.Models.ResultsHolder;
 import ru.atomofiron.regextool.R;
 
 public class TextFragment extends Fragment implements View.OnClickListener {
@@ -52,8 +54,11 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		if (fragmentView != null)
+		if (fragmentView != null) {
+			ResultsHolder.resetResult();
+
 			return fragmentView;
+		}
 
 		final View view = inflater.inflate(R.layout.fragment_text, container, false);
 
@@ -61,7 +66,7 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		textView = view.findViewById(R.id.text);
 		scrollView = view.findViewById(R.id.scroll_text);
 
-		result = getArguments().getParcelable(I.RESULT);
+		result = ResultsHolder.getResult();
 		int count = result.size();
 		spanRegions = new int[count][];
 		counter.setText(String.format("0/%d", count));
@@ -69,8 +74,7 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		view.findViewById(R.id.fab_prev).setOnClickListener(this);
 		view.findViewById(R.id.fab_next).setOnClickListener(this);
 		//((NestedScrollView)findViewById(R.id.scroll_text)).setOnScrollChangeListener(listener);
-		final RFile file = new RFile(result.path)
-				.setUseRoot(I.sp(getContext()).getBoolean(I.PREF_USE_ROOT, false));
+		final RFile file = new RFile(result.path, I.sp(getContext()).getBoolean(I.PREF_USE_SU, false));
 
 		if (file.canRead())
 			new Thread(new Runnable() {
@@ -78,20 +82,23 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 				public void run() {
 					final Spannable spanRange = new SpannableString(file.readText());
 					int i = -1;
+					result.moveToFirst();
 					while (result.hasNext()) {
 						spanRegions[++i] = result.next();
 						spanRange.setSpan(new BackgroundColorSpan(spanBackgroundColor),
 								spanRegions[i][0], spanRegions[i][1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 					}
 
-					getActivity().runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							textView.setText(spanRange, TextView.BufferType.EDITABLE);
-							view.findViewById(R.id.progressbar).setVisibility(View.GONE);
-							view.findViewById(R.id.fab_layout).setVisibility(spanRegions.length > 0 ? View.VISIBLE : View.GONE);
-						}
-					});
+					Activity activity = getActivity();
+					if (activity != null)
+						activity.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								textView.setText(spanRange, TextView.BufferType.EDITABLE);
+								view.findViewById(R.id.progressbar).setVisibility(View.GONE);
+								view.findViewById(R.id.fab_layout).setVisibility(spanRegions.length > 0 ? View.VISIBLE : View.GONE);
+							}
+						});
 				}
 			}).start();
 		else {
@@ -100,6 +107,13 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		}
 
 		return view;
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		ResultsHolder.setResult(result);
 	}
 
 	@Override
@@ -128,7 +142,7 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		}
 		Layout layout = textView.getLayout();
 		//scrollView.scrollTo(0, layout.getLineTop(counts[curPos-1]));//layout.getLineForOffset(startPos)));
-		scrollView.scrollTo(0, layout.getLineTop(layout.getLineForOffset(spanRegions[curPos][0])));
+		scrollView.scrollTo(0, layout.getLineTop(layout.getLineForOffset(spanRegions[curPos][0])) - scrollView.getHeight() / 2);
 		counter.setText(String.format("%1$d/%2$d", curPos + 1, spanRegions.length));
 
 		textView.getEditableText().removeSpan(focusSpan);

@@ -20,12 +20,10 @@ public class I {
     public static final String PREF_MAX_SIZE = "max_size";
     public static final String PREF_MAX_DEPTH = "max_depth";
     public static final String PREF_EXCLUDE_DIRS = "exclude_dirs";
-    public static final String PREF_USE_ROOT = "pref_use_root";
+    public static final String PREF_USE_SU = "pref_use_su";
 
     public static final String SEARCH_COUNT = "SEARCH_COUNT";
     public static final String SEARCH_LIST = "SEARCH_LIST";
-    public static final String RESULT_LIST = "RESULT_LIST";
-    public static final String RESULT = "RESULT";
     public static final String CASE_SENSE = "CASE_SENSE";
     public static final String QUERY = "QUERY";
     public static final String SEARCH_IN_FILES = "SEARCH_IN_FILES";

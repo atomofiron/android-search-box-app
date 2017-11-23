@@ -1,7 +1,5 @@
 package ru.atomofiron.regextool.Fragments;
 
-import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -255,7 +253,7 @@ public class MainFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 
-		((FilesAdapter) filesListView.getAdapter()).updateIfNeeded();
+		((FilesAdapter) filesListView.getAdapter()).refreshIfNeeded();
 	}
 
 	public void checkListForSearch() {
@@ -272,9 +270,9 @@ public class MainFragment extends Fragment {
 			if (requestCode == REQUEST_FOR_SEARCH)
 				checkListForSearch();
 			else if (requestCode == REQUEST_FOR_PROVIDER)
-				((FilesAdapter) filesListView.getAdapter()).update();
+				((FilesAdapter) filesListView.getAdapter()).refresh();
 		} else if (requestCode == REQUEST_FOR_PROVIDER)
-			if (!sp.getBoolean(I.PREF_USE_ROOT, false))
+			if (!sp.getBoolean(I.PREF_USE_SU, false))
 				viewPager.setCurrentItem(1);
 	}
 

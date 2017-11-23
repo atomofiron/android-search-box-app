@@ -9,8 +9,8 @@ import ru.atomofiron.regextool.I;
 
 public class Cmd {
 
-	public static int easyExec(String cmd) {
-		int code = -1;
+	public static boolean checkSu() {
+		boolean ok = false;
 		Process exec = null;
 		OutputStream execOs = null;
 
@@ -19,45 +19,45 @@ public class Cmd {
 			execOs = exec.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(execOs);
 
-			dos.writeBytes(String.format("%s\n", cmd));
+			dos.writeBytes("su\n");
 			dos.flush();
 
 			dos.close();
-			code = exec.waitFor();
+			ok = exec.waitFor() == 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			I.log(e.toString());
 		} finally {
 			try {
 				if (execOs != null) execOs.close();
 				if (exec != null) exec.destroy();
 			} catch (Exception ignored) {}
 		}
-		return code;
+		return ok;
 	}
 
 	public static String exec(String cmd) {
 
 		String result = "";
 		Process exec = null;
-		InputStream execIn = null;
+		InputStream execIs = null;
 		OutputStream execOs = null;
 
 		try {
 			exec = Runtime.getRuntime().exec("su");
-			execIn = exec.getInputStream();
+			execIs = exec.getInputStream();
 			execOs = exec.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(execOs);
 
-			dos.writeBytes(cmd);
+			dos.writeBytes(String.format("%s\n", cmd));
 			dos.flush();
 			dos.close();
 
-			result = inputStream2String(execIn, "utf-8");
+			result = inputStream2String(execIs);
 		} catch (Exception e) {
 			I.log(e.toString());
 		} finally {
 			try {
-				if (execIn != null) execIn.close();
+				if (execIs != null) execIs.close();
 				if (execOs != null) execOs.close();
 				if (exec != null) exec.destroy();
 			} catch (Exception e) { e.printStackTrace(); }
@@ -65,15 +65,14 @@ public class Cmd {
 		return result;
 	}
 
-	private static String inputStream2String(InputStream in, String encoding) throws Exception  {
-		StringBuilder out = new StringBuilder();
-		InputStreamReader isr = new InputStreamReader(in, encoding);
-		char[] b = new char[1024];
-		int n;
-		while ((n = isr.read(b)) !=  -1) {
-			String s = new String(b, 0, n);
-			out.append(s);
-		}
-		return out.toString();
+	private static String inputStream2String(InputStream stream) throws Exception  {
+		StringBuilder builder = new StringBuilder();
+		InputStreamReader reader = new InputStreamReader(stream, "utf-8");
+		int read;
+		char[] buffer = new char[1024];
+		while ((read = reader.read(buffer)) !=  -1)
+			builder.append(buffer, 0, read);
+
+		return builder.toString();
 	}
 }

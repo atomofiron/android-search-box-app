@@ -22,7 +22,6 @@
     <string name="no_checked">Вы не выбрали ни одну директорию!</string>
     <string name="theme">Тема</string>
     <string name="need_restart">Нужен перезапуск</string>
-	<string name="use_root">Использовать root</string>
 	<string name="history">История</string>
     <string name="copy">Скопировать</string>
     <string name="copied">Скопировано</string>
@@ -41,7 +40,7 @@
     <string name="max_size">Максимальный размер файла</string>
     <string name="max_size_sum">При поиске по содержимому</string>
     <string name="exclude_dirs">Исключить директории из результатов поиска</string>
-    <string name="pref_use_root">Использовать root</string>
+    <string name="pref_use_su">Использовать root</string>
     <string name="preferences">Предпочтения</string>
     <string name="app">Приложение</string>
     <string name="test_field">Тестовое поле</string>

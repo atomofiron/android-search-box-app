@@ -19,8 +19,8 @@
             android:key="exclude_dirs"
             />
         <SwitchPreferenceCompat
-            app:title="@string/pref_use_root"
-            app:key="pref_use_root"
+            app:title="@string/pref_use_su"
+            app:key="pref_use_su"
             app:defaultValue="false"
             />
     </PreferenceCategory>

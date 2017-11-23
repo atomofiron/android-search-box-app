@@ -173,13 +173,13 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		String format = I.getFormat(file.getName());
 		String[] extra = I.sp(getActivity()).getString(I.PREF_EXTRA_FORMATS, "").split(" ");
 
-		if (I.isTextFile(format, extra))
+		if (I.isTextFile(format, extra)) {
+			ResultsHolder.setResult(resultsList.get(position));
 			startActivity(
 					new Intent(ac, MainActivity.class)
 							.setAction(MainActivity.ACTION_SHOW_RESULT)
-							.putExtra(I.RESULT, resultsList.get(position))
 			);
-		else
+		} else
 			try {
 				Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
 						FileProvider.getUriForFile(ac, ac.getApplicationContext().getPackageName() + ".provider", file);
