@@ -14,6 +14,7 @@ public class I {
     public static final String PREF_LAST_VERSION = "PREF_LAST_VERSION";
     public static final String PREF_FIRST_START = "PREF_FIRST_START";
     public static final String PREF_STORAGE_PATH = "pref_storage_path";
+    public static final String PREF_SPECIAL_CHARACTERS = "pref_special_characters";
     public static final String PREF_EXTRA_FORMATS = "pref_extra_formats";
     public static final String PREF_ORIENTATION = "pref_orientation";
     public static final String PREF_THEME = "pref_theme";
@@ -32,6 +33,7 @@ public class I {
     public static final String SELECTED_LIST = "SELECTED_LIST";
 
     public static final String NOTIFICATION_CHANNEL_ID = "channel_id";
+    public static final String DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $";
 
     public static void log(String message) {
         Log.e("atomofiron", message);

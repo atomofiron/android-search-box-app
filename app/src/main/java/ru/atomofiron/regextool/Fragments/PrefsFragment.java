@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.Utils.Cmd;
@@ -89,6 +91,10 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 			case I.PREF_STORAGE_PATH:
 			case I.PREF_EXTRA_FORMATS:
 				pref.setSummary(value == null ? sp.getString(key, "") : value);
+				break;
+			case I.PREF_SPECIAL_CHARACTERS:
+				pref.setSummary(value == null ?
+						sp.getString(I.PREF_SPECIAL_CHARACTERS, I.DEFAULT_SPECIAL_CHARACTERS) : value);
 				break;
 			case I.PREF_THEME:
 				pref.setSummary(getResources().getStringArray(R.array.theme_var)

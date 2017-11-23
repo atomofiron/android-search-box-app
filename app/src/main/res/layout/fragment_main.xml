@@ -40,76 +40,11 @@
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/btn_pane"
+		android:id="@+id/characters_pane"
 		android:orientation="horizontal"
 		android:layout_marginLeft="@dimen/activity_horizontal_margin"
 		android:layout_marginRight="@dimen/activity_horizontal_margin"
-		>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/slash"
-			android:text="\\"
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/box"
-			android:text="["
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/nobox"
-			android:text="{"
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/dot"
-			android:text="."
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/star"
-			android:text="*"
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/dash"
-			android:text="-"
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/roof"
-			android:text="^"
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-		<Button
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:id="@+id/buck"
-			android:text="$"
-			android:layout_weight="1"
-			style="?attr/borderlessButtonStyle"
-			/>
-	</LinearLayout>
+		/>
 	<TableLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

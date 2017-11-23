@@ -48,7 +48,7 @@ import ru.atomofiron.regextool.Utils.PermissionHelper;
 import ru.atomofiron.regextool.Utils.SnackbarHelper;
 
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements View.OnClickListener {
 	private static final int REQUEST_FOR_PROVIDER = 1;
 	private static final int REQUEST_FOR_SEARCH = 2;
 
@@ -155,16 +155,7 @@ public class MainFragment extends Fragment {
 			}
 		});
 
-		ButtonListener listener = new ButtonListener();
-		view.findViewById(R.id.go).setOnClickListener(listener);
-		view.findViewById(R.id.slash).setOnClickListener(listener);
-		view.findViewById(R.id.box).setOnClickListener(listener);
-		view.findViewById(R.id.nobox).setOnClickListener(listener);
-		view.findViewById(R.id.dot).setOnClickListener(listener);
-		view.findViewById(R.id.star).setOnClickListener(listener);
-		view.findViewById(R.id.dash).setOnClickListener(listener);
-		view.findViewById(R.id.roof).setOnClickListener(listener);
-		view.findViewById(R.id.buck).setOnClickListener(listener);
+		initCharacterButtons((ViewGroup) view.findViewById(R.id.characters_pane));
 
 		viewPager = (ViewPager) view.findViewById(R.id.view_pager);
 		ArrayList<View> viewList = new ArrayList<>();
@@ -206,6 +197,21 @@ public class MainFragment extends Fragment {
 
 		snackbarHelper = new SnackbarHelper(view);
 		return view;
+	}
+
+	private void initCharacterButtons(ViewGroup pane) {
+		pane.removeAllViews();
+
+		String[] characters = sp.getString(I.PREF_SPECIAL_CHARACTERS, I.DEFAULT_SPECIAL_CHARACTERS)
+				.trim().split("[ ]+");
+
+		if (characters.length > 0 && !characters[0].isEmpty())
+			for (String c : characters) {
+				Button view = (Button) LayoutInflater.from(co).inflate(R.layout.button_character, pane, false);
+				view.setText(c);
+				view.setOnClickListener(this);
+				pane.addView(view);
+			}
 	}
 
 	public void setDrawerViewWithHistory(final DrawerLayout drawerView) {
@@ -296,39 +302,35 @@ public class MainFragment extends Fragment {
 		co.stopService(new Intent(co, SearchService.class));
 	}
 
-// -------------------------------------------------------------
-
-	private class ButtonListener implements View.OnClickListener {
-		@Override
-		public void onClick(View v) {
-			String symbol;
-			switch (v.getId()) {
-				case R.id.go:
-					String regex = regexText.getText().toString();
-					if (regex.isEmpty())
-						return;
-
-					historyAdapter.addItem(regex);
-
-					if (regexToggle.isChecked())
-						try { Pattern.compile(regex);
-						} catch (Exception ignored) {
-							snackbarHelper.show(R.string.bad_ex);
-							return;
-						}
-
-					if (PermissionHelper.checkPerm(MainFragment.this, REQUEST_FOR_SEARCH))
-						checkListForSearch();
-
+	@Override
+	public void onClick(View v) {
+		String symbol;
+		switch (v.getId()) {
+			case R.id.go:
+				String regex = regexText.getText().toString();
+				if (regex.isEmpty())
 					return;
-				default:
-					symbol = ((Button)v).getText().toString();
-					break;
-			}
-			int start = regexText.getSelectionStart();
-			regexText.getText().insert(start, symbol);
-			regexText.setSelection(start+1, start+1);
+
+				historyAdapter.addItem(regex);
+
+				if (regexToggle.isChecked())
+					try { Pattern.compile(regex);
+					} catch (Exception ignored) {
+						snackbarHelper.show(R.string.bad_ex);
+						return;
+					}
+
+				if (PermissionHelper.checkPerm(MainFragment.this, REQUEST_FOR_SEARCH))
+					checkListForSearch();
+
+				return;
+			default:
+				symbol = ((Button)v).getText().toString();
+				break;
 		}
+		int start = regexText.getSelectionStart();
+		regexText.getText().insert(start, symbol);
+		regexText.setSelection(start+1, start+1);
 	}
 
 	class Receiver extends BroadcastReceiver {

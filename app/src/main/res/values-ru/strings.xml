@@ -48,4 +48,5 @@
     <string name="no_access">Нет доступа</string>
     <string name="data_was_lost">Данные были утеряны</string>
     <string name="search_completed">Поиск завершён</string>
+    <string name="pref_special_characters">Специальные символы</string>
 </resources>
