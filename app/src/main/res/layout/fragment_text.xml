@@ -62,6 +62,7 @@
             android:id="@+id/counter"
             android:text="0/0"
             android:background="?android:windowBackground"
+            android:padding="4dp"
             />
         <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/fab_next"
