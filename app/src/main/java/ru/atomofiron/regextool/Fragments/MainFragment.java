@@ -131,6 +131,8 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+		view.findViewById(R.id.go).setOnClickListener(this);
+
 		regexText = (RegexText) view.findViewById(R.id.regex_text);
 		caseToggle = (CheckBox) view.findViewById(R.id.case_sense);
 		contentToggle = (CheckBox) view.findViewById(R.id.in_files);
