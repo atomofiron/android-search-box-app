@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.0'
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "ru.atomofiron.regextool"
         minSdkVersion 15
-        targetSdkVersion 27
-        versionCode 9
-        versionName "1.4"
+        targetSdkVersion 28
+        versionCode 10
+        versionName "1.4.1"
     }
     buildTypes {
         /*debug {
@@ -26,12 +25,12 @@ android {
     }
 }
 
-def sdkVersion = "27.0.0"
+def sdkVersion = "28.0.0"
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "com.android.support:appcompat-v7:$sdkVersion"
-    compile "com.android.support:design:$sdkVersion"
-    compile "com.android.support:support-v4:$sdkVersion"
-    compile "com.android.support:preference-v14:$sdkVersion"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "com.android.support:appcompat-v7:$sdkVersion"
+    implementation "com.android.support:design:$sdkVersion"
+    implementation "com.android.support:support-v4:$sdkVersion"
+    implementation "com.android.support:preference-v14:$sdkVersion"
 }
