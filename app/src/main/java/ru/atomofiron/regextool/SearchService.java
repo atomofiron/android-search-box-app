@@ -1,11 +1,14 @@
 package ru.atomofiron.regextool;
 
 import android.app.IntentService;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
@@ -124,6 +127,14 @@ public class SearchService extends IntentService {
 	}
 
 	void startForeground() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
+					.createNotificationChannel(new NotificationChannel(
+							I.NOTIFICATION_CHANNEL_ID,
+							I.NOTIFICATION_CHANNEL_ID,
+							NotificationManager.IMPORTANCE_DEFAULT)
+					);
+		}
 		startForeground(FOREGROUND_NOTIFICATION_ID, new NotificationCompat.Builder(this, I.NOTIFICATION_CHANNEL_ID)
 				.setContentTitle(getString(R.string.searching))
 				.setSmallIcon(R.drawable.ic_search_file)

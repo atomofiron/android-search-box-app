@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.Fragments;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -409,7 +411,15 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
 		private void showNotification(String text) {
 			NotificationManager notifier = (NotificationManager) co.getSystemService(Context.NOTIFICATION_SERVICE);
-			if (notifier != null)
+			if (notifier != null) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+					notifier.createNotificationChannel(new NotificationChannel(
+							I.NOTIFICATION_CHANNEL_ID,
+							I.NOTIFICATION_CHANNEL_ID,
+							NotificationManager.IMPORTANCE_DEFAULT)
+					);
+				}
+
 				notifier.notify(NOTIFICATION_ID, new NotificationCompat.Builder(co, I.NOTIFICATION_CHANNEL_ID)
 						.setTicker(getString(R.string.search_completed))
 						.setContentTitle(getString(R.string.search_completed))
@@ -423,6 +433,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 								PendingIntent.FLAG_UPDATE_CURRENT
 						)).build()
 				);
+			}
 		}
 	}
 }
