@@ -7,8 +7,8 @@ android {
         applicationId "ru.atomofiron.regextool"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 10
-        versionName "1.4.1"
+        versionCode 12
+        versionName "1.5.1"
     }
     buildTypes {
         /*debug {
