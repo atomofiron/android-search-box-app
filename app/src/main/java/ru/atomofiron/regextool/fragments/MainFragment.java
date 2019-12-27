@@ -41,7 +41,7 @@ import ru.atomofiron.regextool.adapters.FilesAdapter;
 import ru.atomofiron.regextool.adapters.HistoryAdapter;
 import ru.atomofiron.regextool.adapters.ListAdapter;
 import ru.atomofiron.regextool.adapters.ViewPagerAdapter;
-import ru.atomofiron.regextool.custom.RegexText;
+import ru.atomofiron.regextool.view.custom.RegexText;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.MainActivity;
 import ru.atomofiron.regextool.R;
