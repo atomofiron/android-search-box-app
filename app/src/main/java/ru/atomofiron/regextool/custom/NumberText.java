@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.CustomViews;
+package ru.atomofiron.regextool.custom;
 
 import android.content.Context;
 import android.graphics.Rect;

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Fragments;
+package ru.atomofiron.regextool.fragments;
 
 
 import android.app.Activity;
@@ -27,13 +27,13 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.Adapters.ResultAdapter;
+import ru.atomofiron.regextool.adapters.ResultAdapter;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.MainActivity;
-import ru.atomofiron.regextool.Models.ResultsHolder;
+import ru.atomofiron.regextool.models.ResultsHolder;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.Models.Result;
-import ru.atomofiron.regextool.Utils.SnackbarHelper;
+import ru.atomofiron.regextool.models.Result;
+import ru.atomofiron.regextool.utils.SnackbarHelper;
 
 public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 

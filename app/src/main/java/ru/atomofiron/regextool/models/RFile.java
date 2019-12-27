@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Models;
+package ru.atomofiron.regextool.models;
 
 import android.support.annotation.NonNull;
 
@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import ru.atomofiron.regextool.I;
-import ru.atomofiron.regextool.Utils.Cmd;
+import ru.atomofiron.regextool.utils.Cmd;
 
 public class RFile extends File {
 	public final static String ROOT = "/";

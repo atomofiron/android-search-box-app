@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Models;
+package ru.atomofiron.regextool.models;
 
 import android.support.annotation.Nullable;
 

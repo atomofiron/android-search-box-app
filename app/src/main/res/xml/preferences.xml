@@ -14,7 +14,7 @@
             app:key="pref_special_characters"
             app:defaultValue="\\ [ { ? + * ^ $"
             />
-        <ru.atomofiron.regextool.CustomViews.NumberPreference
+        <ru.atomofiron.regextool.custom.NumberPreference
             app:title="@string/max_depth"
             app:key="max_depth"
             app:defaultValue="1024"
@@ -37,7 +37,7 @@
             app:title="@string/pref_extra_formats"
             app:key="pref_extra_formats"
             />
-        <ru.atomofiron.regextool.CustomViews.NumberPreference
+        <ru.atomofiron.regextool.custom.NumberPreference
             app:title="@string/max_size"
             app:key="max_size"
             app:defaultValue="10485760"

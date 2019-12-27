@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Utils;
+package ru.atomofiron.regextool.utils;
 
 import java.io.DataOutputStream;
 import java.io.InputStream;

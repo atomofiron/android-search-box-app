@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Adapters;
+package ru.atomofiron.regextool.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,8 +21,8 @@ import java.util.Set;
 
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.Utils.FileComparator;
-import ru.atomofiron.regextool.Models.RFile;
+import ru.atomofiron.regextool.utils.FileComparator;
+import ru.atomofiron.regextool.models.RFile;
 
 public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 

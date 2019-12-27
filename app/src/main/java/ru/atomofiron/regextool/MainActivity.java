@@ -20,10 +20,10 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 
-import ru.atomofiron.regextool.Fragments.MainFragment;
-import ru.atomofiron.regextool.Fragments.PrefsFragment;
-import ru.atomofiron.regextool.Fragments.ResultsFragment;
-import ru.atomofiron.regextool.Fragments.TextFragment;
+import ru.atomofiron.regextool.fragments.MainFragment;
+import ru.atomofiron.regextool.fragments.PrefsFragment;
+import ru.atomofiron.regextool.fragments.ResultsFragment;
+import ru.atomofiron.regextool.fragments.TextFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	public static final String ACTION_SHOW_RESULTS = "ACTION_SHOW_RESULTS";

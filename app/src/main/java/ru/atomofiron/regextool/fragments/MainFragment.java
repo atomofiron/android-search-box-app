@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Fragments;
+package ru.atomofiron.regextool.fragments;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -37,17 +37,17 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import ru.atomofiron.regextool.Adapters.FilesAdapter;
-import ru.atomofiron.regextool.Adapters.HistoryAdapter;
-import ru.atomofiron.regextool.Adapters.ListAdapter;
-import ru.atomofiron.regextool.Adapters.ViewPagerAdapter;
-import ru.atomofiron.regextool.CustomViews.RegexText;
+import ru.atomofiron.regextool.adapters.FilesAdapter;
+import ru.atomofiron.regextool.adapters.HistoryAdapter;
+import ru.atomofiron.regextool.adapters.ListAdapter;
+import ru.atomofiron.regextool.adapters.ViewPagerAdapter;
+import ru.atomofiron.regextool.custom.RegexText;
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.MainActivity;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.SearchService;
-import ru.atomofiron.regextool.Utils.PermissionHelper;
-import ru.atomofiron.regextool.Utils.SnackbarHelper;
+import ru.atomofiron.regextool.utils.PermissionHelper;
+import ru.atomofiron.regextool.utils.SnackbarHelper;
 
 
 public class MainFragment extends Fragment implements View.OnClickListener {

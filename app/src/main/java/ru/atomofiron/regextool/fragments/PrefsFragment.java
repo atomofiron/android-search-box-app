@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Fragments;
+package ru.atomofiron.regextool.fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.Utils.Cmd;
+import ru.atomofiron.regextool.utils.Cmd;
 
 public class PrefsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
 	public static final ArrayList<String> changedPrefs = new ArrayList<>();

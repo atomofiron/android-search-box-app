@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Utils;
+package ru.atomofiron.regextool.utils;
 
 import android.content.res.Resources;
 import android.support.design.widget.Snackbar;

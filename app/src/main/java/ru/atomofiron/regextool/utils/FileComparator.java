@@ -1,8 +1,8 @@
-package ru.atomofiron.regextool.Utils;
+package ru.atomofiron.regextool.utils;
 
 import java.util.Comparator;
 
-import ru.atomofiron.regextool.Models.RFile;
+import ru.atomofiron.regextool.models.RFile;
 
 public class FileComparator implements Comparator<RFile> {
 	public final int compare(RFile first, RFile second) {

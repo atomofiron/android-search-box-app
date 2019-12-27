@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Adapters;
+package ru.atomofiron.regextool.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;

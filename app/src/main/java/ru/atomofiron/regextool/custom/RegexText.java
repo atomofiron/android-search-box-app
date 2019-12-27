@@ -1,8 +1,7 @@
-package ru.atomofiron.regextool.CustomViews;
+package ru.atomofiron.regextool.custom;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.text.Editable;
@@ -15,9 +14,9 @@ import android.widget.EditText;
 
 
 import ru.atomofiron.regextool.I;
-import ru.atomofiron.regextool.Models.Finder;
+import ru.atomofiron.regextool.models.Finder;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.Models.Result;
+import ru.atomofiron.regextool.models.Result;
 
 public class RegexText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;

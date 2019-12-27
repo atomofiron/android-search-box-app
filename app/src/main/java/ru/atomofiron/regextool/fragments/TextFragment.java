@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.Fragments;
+package ru.atomofiron.regextool.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,9 +18,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.atomofiron.regextool.I;
-import ru.atomofiron.regextool.Models.RFile;
-import ru.atomofiron.regextool.Models.Result;
-import ru.atomofiron.regextool.Models.ResultsHolder;
+import ru.atomofiron.regextool.models.RFile;
+import ru.atomofiron.regextool.models.Result;
+import ru.atomofiron.regextool.models.ResultsHolder;
 import ru.atomofiron.regextool.R;
 
 public class TextFragment extends Fragment implements View.OnClickListener {

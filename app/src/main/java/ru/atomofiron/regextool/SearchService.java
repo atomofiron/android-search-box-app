@@ -15,11 +15,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.Fragments.MainFragment;
-import ru.atomofiron.regextool.Models.Finder;
-import ru.atomofiron.regextool.Models.RFile;
-import ru.atomofiron.regextool.Models.Result;
-import ru.atomofiron.regextool.Models.ResultsHolder;
+import ru.atomofiron.regextool.fragments.MainFragment;
+import ru.atomofiron.regextool.models.Finder;
+import ru.atomofiron.regextool.models.RFile;
+import ru.atomofiron.regextool.models.Result;
+import ru.atomofiron.regextool.models.ResultsHolder;
 
 public class SearchService extends IntentService {
 	private static final int FOREGROUND_NOTIFICATION_ID = 1;
