@@ -9,14 +9,14 @@
     <string name="nothing">Ничего не найдено</string>
     <string name="warning">Вы не выбрали ни одной директории. Поиск будет произведён по всему корневому разделу</string>
     <string name="cancel">Отмена</string>
-    <string name="stop">Стоп</string>
+    <string name="stop">Остановить</string>
     <string name="no_activity">У вас нет приложения, способного открыть файл этого типа</string>
     <string name="tips_message">В списке выбранных директорий:\nДолгое нажатие - стереть запись, галочка - задействовать.\n\nВ списке выбора директории:\nКороткое нажатие - перейти, галочка - выбрать.\n\nНа экране результатов:\nКороткое - открыть, долгое - показать абсолютный путь.</string>
     <string name="results">Поиск дал %d результатов</string>
     <string name="find">Найти</string>
-    <string name="in_the_content">По содержимому</string>
+    <string name="search_in_the_content">Искать по содержимому файлов</string>
     <string name="regex">Поиск по шаблону</string>
-    <string name="multiline">Мультистрочный</string>
+    <string name="multiline">Мультистрочный поиск</string>
     <string name="bad_ex">Неверное регулярное выражение</string>
     <string name="reset">Сбросить</string>
     <string name="no_checked">Вы не выбрали ни одну директорию!</string>
@@ -29,6 +29,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="look">Наблюдать</string>
+    <string name="config">Параметры</string>
+    <string name="files">Файлы</string>
+    <string name="replace">Заменить</string>
+    <string name="bookmark">Закладки</string>
     <string name="settings">Настройки</string>
     <string name="share">Поделиться</string>
     <string name="pref_storage_path">Путь к хранилищу</string>
@@ -49,4 +54,7 @@
     <string name="data_was_lost">Данные были утеряны</string>
     <string name="search_completed">Поиск завершён</string>
     <string name="pref_special_characters">Специальные символы</string>
+    <string name="search">Search</string>
+    <string name="use_regular_expression">Use regular expression</string>
+    <string name="enable_replace">Замена текста</string>
 </resources>

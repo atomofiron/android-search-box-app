@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <attr name="isDarkTheme" format="boolean" />
+    <attr name="colorBackground" format="color" />
+    <attr name="colorContent" format="color" />
+    <attr name="colorFieldBackground" format="color" />
+    <attr name="cardViewBackgroundColor" format="color" tools:override="true" />
+    <attr name="colorPositive" format="color" />
+    <attr name="colorNegative" format="color" />
+    <attr name="colorAccentLite" format="color" />
+
+    <declare-styleable name="BottomOptionMenu">
+        <attr name="menu" format="reference" />
+    </declare-styleable>
+</resources>

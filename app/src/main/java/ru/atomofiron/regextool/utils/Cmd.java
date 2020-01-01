@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.Util;
 
 public class Cmd {
 
@@ -25,7 +25,7 @@ public class Cmd {
 			dos.close();
 			ok = exec.waitFor() == 0;
 		} catch (Exception e) {
-			I.log(e.toString());
+			Util.log(e.toString());
 		} finally {
 			try {
 				if (execOs != null) execOs.close();
@@ -54,7 +54,7 @@ public class Cmd {
 
 			result = inputStream2String(execIs);
 		} catch (Exception e) {
-			I.log(e.toString());
+			Util.log(e.toString());
 		} finally {
 			try {
 				if (execIs != null) execIs.close();

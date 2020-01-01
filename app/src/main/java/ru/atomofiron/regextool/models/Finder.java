@@ -1,11 +1,11 @@
 package ru.atomofiron.regextool.models;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.Util;
 
 public class Finder {
 	private int maxSize = 0;
@@ -94,7 +94,7 @@ public class Finder {
 
 	@Nullable
 	public Result search(RFile rFile) {
-		if (rFile.length() < maxSize && I.isTextFile(rFile.getName(), extraFormats))
+		if (rFile.length() < maxSize && Util.isTextFile(rFile.getName(), extraFormats))
 			return search(rFile.readText(), rFile);
 		else
 			return null;

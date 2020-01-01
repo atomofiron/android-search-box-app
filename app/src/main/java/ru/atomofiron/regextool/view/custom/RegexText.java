@@ -12,13 +12,14 @@ import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
+import androidx.appcompat.widget.AppCompatEditText;
 
-import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.Util;
 import ru.atomofiron.regextool.models.Finder;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.models.Result;
 
-public class RegexText extends android.support.v7.widget.AppCompatEditText implements TextWatcher {
+public class RegexText extends AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;
 	private static final String LAST_QUERY = "LAST_QUERY";
 	private static final String TEST_TEXT = "TEST_TEXT";
@@ -51,7 +52,7 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 		Context context = getContext();
 
 		addTextChangedListener(this);
-		sp = I.sp(context);
+		sp = Util.sp(context);
 
 		SPAN_COLOR = context.getResources().getColor(R.color.spanGreen);
 		setText(sp.getString(LAST_QUERY, ""));
@@ -156,6 +157,8 @@ public class RegexText extends android.support.v7.widget.AppCompatEditText imple
 	}
 
 	private void test() {
+		if (true) return;
+
 		Editable editable = testField.getText();
 		Result result = finder.search(testField.getText().toString());
 

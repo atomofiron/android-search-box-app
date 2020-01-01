@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<FrameLayout
+		android:id="@+id/root_fl"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		/>
+	<ImageView
+		android:id="@+id/root_iv_joystick"
+		android:layout_width="@dimen/joystick_size"
+		android:layout_height="@dimen/joystick_size"
+		android:src="@drawable/ic_circle"
+		android:padding="4dp"
+		android:layout_gravity="bottom|center_horizontal"
+		/>
+</FrameLayout>

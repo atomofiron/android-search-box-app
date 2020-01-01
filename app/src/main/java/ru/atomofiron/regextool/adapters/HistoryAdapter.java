@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.Util;
 import ru.atomofiron.regextool.R;
 
 public class HistoryAdapter extends BaseAdapter implements View.OnClickListener {
@@ -33,7 +33,7 @@ public class HistoryAdapter extends BaseAdapter implements View.OnClickListener 
 		onItemClickListener = listener;
 
 		co = listView.getContext();
-		sp = I.sp(co);
+		sp = Util.sp(co);
 
 		pinned = sp.getStringSet(PREF_HISTORY_PINNED, new HashSet<String>());
 

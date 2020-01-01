@@ -3,7 +3,7 @@ package ru.atomofiron.regextool.utils;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 public class PermissionHelper {
 	public static final String PERMISSION = "android.permission.READ_EXTERNAL_STORAGE";

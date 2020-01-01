@@ -1,17 +1,25 @@
 <resources>
 	<!-- Default screen margins, per the Android Design guidelines. -->
 	<dimen name="activity_horizontal_margin">8dp</dimen>
-	<dimen name="activity_vertical_margin">8dp</dimen>
 	<dimen name="fab_margin">16dp</dimen>
+	<dimen name="common_margin">16dp</dimen>
+	<dimen name="corner_radius">16dp</dimen>
+	<dimen name="common_half_margin">8dp</dimen>
 	<dimen name="edit_text_padding">8dp</dimen>
 	<dimen name="search_button_padding">16dp</dimen>
 	<dimen name="item_icon_padding">4dp</dimen>
 	<dimen name="nav_header_vertical_spacing">16dp</dimen>
 	<dimen name="nav_header_height">160dp</dimen>
 
+	<dimen name="common_size">48dp</dimen>
+
 	<dimen name="padding_micro">2dp</dimen>
 	<dimen name="padding_mini">4dp</dimen>
 	<dimen name="padding_middle">8dp</dimen>
 	<dimen name="padding_large">16dp</dimen>
 	<dimen name="padding_very_large">32dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="action_bar_size">56dp</dimen>
+    <dimen name="card_max_width">512dp</dimen>
+    <dimen name="joystick_size">56dp</dimen>
 </resources>

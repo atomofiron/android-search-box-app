@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
-public class NumberText extends android.support.v7.widget.AppCompatEditText implements View.OnClickListener, TextWatcher {
+import androidx.appcompat.widget.AppCompatEditText;
+
+public class NumberText extends AppCompatEditText implements View.OnClickListener, TextWatcher {
 
 	private InputMethodManager inputMethodManager = null;
 	private OnInputListener onInputListener = null;

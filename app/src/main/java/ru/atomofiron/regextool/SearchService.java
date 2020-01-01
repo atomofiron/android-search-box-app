@@ -9,17 +9,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.fragments.MainFragment;
 import ru.atomofiron.regextool.models.Finder;
 import ru.atomofiron.regextool.models.RFile;
 import ru.atomofiron.regextool.models.Result;
-import ru.atomofiron.regextool.models.ResultsHolder;
+import ru.atomofiron.regextool.screens.root.RootActivityWhite;
 
 public class SearchService extends IntentService {
 	private static final int FOREGROUND_NOTIFICATION_ID = 1;
@@ -39,24 +39,24 @@ public class SearchService extends IntentService {
 
 	@Override
     protected void onHandleIntent(Intent intent) {
-        I.log("onHandleIntent()");
+        Util.log("onHandleIntent()");
 		Context co = getBaseContext();
-		SharedPreferences sp = I.sp(co);
+		SharedPreferences sp = Util.sp(co);
 
-		maxDepth = sp.getInt(I.PREF_MAX_DEPTH, 1024);
-		boolean useSu = sp.getBoolean(I.PREF_USE_SU, false);
-		excludeDirs = sp.getBoolean(I.PREF_EXCLUDE_DIRS, false);
-		boolean inTheContent = intent.getBooleanExtra(I.SEARCH_IN_FILES, false);
+		maxDepth = sp.getInt(Util.PREF_MAX_DEPTH, 1024);
+		boolean useSu = sp.getBoolean(Util.PREF_USE_SU, false);
+		excludeDirs = sp.getBoolean(Util.PREF_EXCLUDE_DIRS, false);
+		boolean inTheContent = intent.getBooleanExtra(Util.SEARCH_IN_FILES, false);
 		finder = new Finder();
-		finder.setExtraFormats(sp.getString(I.PREF_EXTRA_FORMATS, I.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+"));
-		finder.setQuery(intent.getStringExtra(I.QUERY));
-		finder.setCaseSense(intent.getBooleanExtra(I.CASE_SENSE, false));
-		finder.setMultiline(intent.getBooleanExtra(I.MULTILINE, false));
-        if (!finder.setRegex(intent.getBooleanExtra(I.SEARCH_REGEX, false))) {
+		finder.setExtraFormats(sp.getString(Util.PREF_EXTRA_FORMATS, Util.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+"));
+		finder.setQuery(intent.getStringExtra(Util.QUERY));
+		finder.setCaseSense(intent.getBooleanExtra(Util.CASE_SENSE, false));
+		finder.setMultiline(intent.getBooleanExtra(Util.MULTILINE, false));
+        if (!finder.setRegex(intent.getBooleanExtra(Util.SEARCH_REGEX, false))) {
 			Toast.makeText(co, finder.getLastException(), Toast.LENGTH_LONG).show();
 			return;
 		}
-		finder.setMaxSize(I.sp(co).getInt(I.PREF_MAX_SIZE, 10485760));
+		finder.setMaxSize(Util.sp(co).getInt(Util.PREF_MAX_SIZE, 10485760));
 
 		startForeground();
 		needToSendResults = true;
@@ -65,25 +65,25 @@ public class SearchService extends IntentService {
 		noticer = new Noticer(broadcastManager, results);
 		noticer.execute();
 
-		Intent resultIntent = new Intent(MainFragment.ACTION_RESULTS);
+		/*Intent resultIntent = new Intent(FinderFragment.Companion.getACTION_RESULTS());
         try {
-            for (String path : intent.getStringArrayListExtra(I.SEARCH_LIST))
+            for (String path : intent.getStringArrayListExtra(Util.SEARCH_LIST))
                 if (inTheContent)
                 	searchInTheContent(new RFile(path, useSu), 0);
 				else
 					search(new RFile(path, useSu), 0);
 
-			resultIntent.putExtra(I.SEARCH_COUNT, results.size());
+			resultIntent.putExtra(Util.SEARCH_COUNT, results.size());
 			ResultsHolder.setResults(results);
         } catch (Exception e) {
-            I.log(e.toString());
-            resultIntent.putExtra(I.SEARCH_COUNT, MainFragment.SEARCH_ERROR).putExtra(MainFragment.KEY_ERROR_MESSAGE, e.toString());
+            Util.log(e.toString());
+            resultIntent.putExtra(Util.SEARCH_COUNT, FinderFragment.Companion.getSEARCH_ERROR()).putExtra(FinderFragment.Companion.getKEY_ERROR_MESSAGE(), e.toString());
         }
 
         stopForeground(true);
 
         if (needToSendResults)
-			broadcastManager.sendBroadcast(resultIntent);
+			broadcastManager.sendBroadcast(resultIntent);*/
     }
 
     void search(RFile file, int depth) {
@@ -130,19 +130,19 @@ public class SearchService extends IntentService {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
 					.createNotificationChannel(new NotificationChannel(
-							I.NOTIFICATION_CHANNEL_ID,
-							I.NOTIFICATION_CHANNEL_ID,
+							Util.NOTIFICATION_CHANNEL_ID,
+							Util.NOTIFICATION_CHANNEL_ID,
 							NotificationManager.IMPORTANCE_DEFAULT)
 					);
 		}
-		startForeground(FOREGROUND_NOTIFICATION_ID, new NotificationCompat.Builder(this, I.NOTIFICATION_CHANNEL_ID)
+		startForeground(FOREGROUND_NOTIFICATION_ID, new NotificationCompat.Builder(this, Util.NOTIFICATION_CHANNEL_ID)
 				.setContentTitle(getString(R.string.searching))
 				.setSmallIcon(R.drawable.ic_search_file)
 				.setColor(getResources().getColor(R.color.colorPrimaryLight))
 				.setContentIntent(PendingIntent.getActivity(
 						this,
 						0,
-						new Intent(this, MainActivity.class),
+						new Intent(this, RootActivityWhite.class),
 						PendingIntent.FLAG_UPDATE_CURRENT
 				)).build()
 		);
@@ -172,26 +172,26 @@ public class SearchService extends IntentService {
 
 		@Override
 		protected Void doInBackground(Void... voids) {
-			while (!isCancelled()) {
+			/*while (!isCancelled()) {
 				try {
 					Thread.sleep(NOTICE_PERIOD);
 				} catch (Exception e) {
-					I.log(e.toString());
+					Util.log(e.toString());
 
 					broadcastManager.sendBroadcast(
-							new Intent(MainFragment.ACTION_RESULTS)
-									.putExtra(MainFragment.KEY_NOTICE, "-/-")
-									.putExtra(MainFragment.KEY_NOTICE_CURRENT, "")
+							new Intent(FinderFragment.Companion.getACTION_RESULTS())
+									.putExtra(FinderFragment.Companion.getKEY_NOTICE(), "-/-")
+									.putExtra(FinderFragment.Companion.getKEY_NOTICE_CURRENT(), "")
 					);
 					return null;
 				}
 
 				broadcastManager.sendBroadcast(
-						new Intent(MainFragment.ACTION_RESULTS)
-								.putExtra(MainFragment.KEY_NOTICE, String.format("%1$s/%2$s", results.size(), count))
-								.putExtra(MainFragment.KEY_NOTICE_CURRENT, current)
+						new Intent(FinderFragment.Companion.getACTION_RESULTS())
+								.putExtra(FinderFragment.Companion.getKEY_NOTICE(), String.format("%1$s/%2$s", results.size(), count))
+								.putExtra(FinderFragment.Companion.getKEY_NOTICE_CURRENT(), current)
 				);
-			}
+			}*/
 			return null;
 		}
 	}

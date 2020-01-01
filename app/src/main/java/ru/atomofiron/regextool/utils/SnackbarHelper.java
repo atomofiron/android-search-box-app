@@ -1,8 +1,9 @@
 package ru.atomofiron.regextool.utils;
 
 import android.content.res.Resources;
-import android.support.design.widget.Snackbar;
 import android.view.View;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class SnackbarHelper {
 	private final View view;

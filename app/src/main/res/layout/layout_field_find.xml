@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/common_margin"
+    android:layout_marginTop="@dimen/common_half_margin"
+    android:layout_marginEnd="@dimen/common_margin"
+    android:layout_marginBottom="@dimen/common_half_margin"
+    >
+    <ru.atomofiron.regextool.view.custom.RegexText
+        android:id="@+id/regex_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:inputType="textNoSuggestions"
+        android:padding="@dimen/common_margin"
+        android:paddingEnd="64dp"
+        android:background="@drawable/bg_rounded"
+        android:hint="@string/find"
+        />
+    <ImageButton
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/bg_transparent_ripple"
+        android:src="@drawable/ic_find"
+        android:layout_gravity="center_vertical|end"
+        />
+</FrameLayout>

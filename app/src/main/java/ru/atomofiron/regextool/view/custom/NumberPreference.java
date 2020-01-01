@@ -2,8 +2,11 @@ package ru.atomofiron.regextool.view.custom;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v7.preference.*;
 import android.util.AttributeSet;
+
+import androidx.preference.Preference;
+import androidx.preference.PreferenceViewHolder;
+
 import ru.atomofiron.regextool.R;
 
 public class NumberPreference extends Preference implements NumberText.OnInputListener {

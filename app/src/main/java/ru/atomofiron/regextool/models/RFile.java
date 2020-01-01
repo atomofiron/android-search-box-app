@@ -1,6 +1,6 @@
 package ru.atomofiron.regextool.models;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.Util;
 import ru.atomofiron.regextool.utils.Cmd;
 
 public class RFile extends File {
@@ -109,7 +109,7 @@ public class RFile extends File {
 			while ((line = br.readLine()) != null)
 				result = result.concat(line).concat("\n");
 		} catch (Exception e) {
-			I.log(e.toString());
+			Util.log(e.toString());
 		} finally {
 			try {
 				if (br != null) br.close();

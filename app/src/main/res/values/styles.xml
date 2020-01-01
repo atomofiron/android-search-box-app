@@ -1,35 +1,68 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<style name="AppTheme.White" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="isDarkTheme">false</item>
+		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+		<item name="android:clipToPadding">false</item>
+		<item name="android:windowBackground">@color/windowBackgroundWhite</item>
+		<item name="android:statusBarColor">@color/windowBackgroundWhite</item>
+		<item name="android:navigationBarColor">@color/windowBackgroundWhite</item>
+		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryLight</item>
+		<item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimaryDarkLight</item>
+		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccent</item>
+		<item name="android:colorControlHighlight">@color/colorAccent</item>
+		<item name="colorPrimary">@color/colorPrimaryLight</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDarkLight</item>
+		<item name="colorAccent">@color/colorAccent</item>
+		<item name="colorControlHighlight">@color/colorAccent</item>
 
-	<style name="AppCompat" parent="Theme.AppCompat.NoActionBar">
+		<item name="colorContent">@color/black</item>
+		<item name="colorPositive">@color/black</item>
+		<item name="colorBackground">@color/windowBackgroundWhite</item>
+		<item name="colorNegative">@color/windowBackgroundWhite</item>
+		<item name="colorFieldBackground">@color/light_grey</item>
+		<item name="cardViewBackgroundColor">@color/windowBackgroundWhite</item>
+		<item name="colorAccentLite">@color/colorAccentLight</item>
+	</style>
+	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+		<item name="isDarkTheme">true</item>
+		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+		<item name="android:clipToPadding">false</item>
+		<item name="android:windowBackground">@color/windowBackgroundDark</item>
+		<item name="android:statusBarColor">@color/windowBackgroundDark</item>
+		<item name="android:navigationBarColor">@color/windowBackgroundDark</item>
+		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimary</item>
+		<item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
+		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccent</item>
+		<item name="android:colorControlHighlight">@color/colorAccent</item>
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="colorAccent">@color/colorAccent</item>
-		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-	</style>
-	<style name="AppCompat.Light" parent="Theme.AppCompat.Light.NoActionBar">
-		<item name="colorPrimary">@color/colorPrimaryLight</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDarkLight</item>
-		<item name="colorAccent">@color/colorAccentLight</item>
-		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-	</style>
+		<item name="colorControlHighlight">@color/colorAccent</item>
 
-	<style name="AppTheme.White" parent="@style/AppCompat.Light">
-		<item name="android:windowBackground">@color/windowBackgroundWhite</item>
+		<item name="colorContent">@color/white</item>
+		<item name="colorPositive">@color/white</item>
+		<item name="colorBackground">@color/windowBackgroundDark</item>
+		<item name="colorNegative">@color/windowBackgroundDark</item>
+		<item name="colorFieldBackground">@color/windowBackgroundDarkLight</item>
+		<item name="cardViewBackgroundColor">@color/windowBackgroundDarkLight</item>
+		<item name="colorAccentLite">@color/colorAccentDark</item>
 	</style>
-	<style name="AppTheme.Dark" parent="@style/AppCompat">
-		<item name="android:windowBackground">@color/windowBackgroundDark</item>
-	</style>
-	<style name="AppTheme.Black" parent="@style/AppCompat">
+	<style name="AppTheme.Black" parent="@style/AppTheme.Dark">
 		<item name="android:windowBackground">@color/windowBackgroundBlack</item>
+		<item name="android:statusBarColor">@color/windowBackgroundBlack</item>
+		<item name="android:navigationBarColor">@color/windowBackgroundBlack</item>
+
+		<item name="colorBackground">@color/windowBackgroundBlack</item>
+		<item name="colorFieldBackground">@color/windowBackgroundDark</item>
+		<item name="cardViewBackgroundColor">@color/windowBackgroundDark</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
 	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-	<style name="AppCompat.NoActionBar">
+	<!--<style name="AppCompat.NoActionBar">
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
-	</style>
-
+	</style>-->
 </resources>

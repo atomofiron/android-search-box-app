@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/common_margin"
+    android:paddingTop="@dimen/common_half_margin"
+    android:paddingEnd="@dimen/common_margin"
+    android:paddingBottom="@dimen/common_half_margin"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    >
+
+    <ImageView
+        android:id="@+id/item_iv_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_file"
+        />
+    <TextView
+        android:id="@+id/item_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Some file"
+        android:layout_marginStart="@dimen/common_half_margin"
+        />
+</LinearLayout>

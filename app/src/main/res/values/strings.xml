@@ -14,7 +14,7 @@
     <string name="tips_message">The list of selected dirs:\nLong press to delete the record, checkbox to use.\n\nOn the selection list of the directory:\nShort press - go, checkbox to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
     <string name="results">Your search returned %d results</string>
     <string name="find">Find</string>
-    <string name="in_the_content">In the content</string>
+    <string name="search_in_the_content">Search in the files content</string>
     <string name="regex">Use regexp</string>
     <string name="multiline">Multiline mode</string>
     <string name="bad_ex">Incorrect regular expression</string>
@@ -29,6 +29,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="look">Look</string>
+    <string name="config">Config</string>
+    <string name="files">Files</string>
+    <string name="replace">Replace</string>
+    <string name="bookmark">Bookmarks</string>
     <string name="settings">Settings</string>
     <string name="share">Share</string>
     <string name="pref_storage_path">Storage directory path</string>
@@ -49,4 +54,7 @@
     <string name="data_was_lost">Data was lost</string>
     <string name="search_completed">Search completed</string>
     <string name="pref_special_characters">Special characters</string>
+    <string name="search">Search</string>
+    <string name="use_regular_expression">Use regular expression</string>
+    <string name="enable_replace">Замена текста</string>
 </resources>

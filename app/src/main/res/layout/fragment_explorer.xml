@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorBackground"
+    >
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/explorer_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        />
+    <ru.atomofiron.regextool.view.custom.FixedBottomAppBar
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:layout_gravity="bottom"
+        app:backgroundTint="?attr/colorBackground"
+        app:hideOnScroll="true"
+        >
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            >
+            <ru.atomofiron.regextool.view.custom.BottomOptionMenu
+                android:id="@+id/explorer_bom"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_gravity="bottom"
+                app:menu="@menu/menu_nav_explorer"
+                />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </ru.atomofiron.regextool.view.custom.FixedBottomAppBar>
+    <ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetView
+        android:id="@+id/explorer_bsv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

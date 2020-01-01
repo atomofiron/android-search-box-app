@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import ru.atomofiron.regextool.I;
+import ru.atomofiron.regextool.Util;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.utils.FileComparator;
 import ru.atomofiron.regextool.models.RFile;
@@ -37,13 +37,13 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		this.co = context;
 		listView.setOnItemClickListener(this);
 
-		sp = I.sp(co);
+		sp = Util.sp(co);
 		setDir(getDefaultDir());
 	}
 
 	private RFile getDefaultDir() {
-		boolean useSu = sp.getBoolean(I.PREF_USE_SU, false);
-		RFile rFile = new RFile(sp.getString(I.PREF_STORAGE_PATH, RFile.ROOT), useSu);
+		boolean useSu = sp.getBoolean(Util.PREF_USE_SU, false);
+		RFile rFile = new RFile(sp.getString(Util.PREF_STORAGE_PATH, RFile.ROOT), useSu);
 		// защита от дурака, который может указать несуществующую директорию или файл
 		return (rFile.isDirectory() ? rFile : new RFile(RFile.ROOT, useSu));
 	}
@@ -56,7 +56,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	}
 
 	public void refreshIfNeeded() {
-		boolean useSu = sp.getBoolean(I.PREF_USE_SU, false);
+		boolean useSu = sp.getBoolean(Util.PREF_USE_SU, false);
 		boolean needed = curDir.setUseSu(useSu);
 
 		if (!curDir.canRead()) {
@@ -90,8 +90,8 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	}
 
 	public void updateSelected() {
-		Set<String> set = sp.getStringSet(I.SELECTED_LIST, null);
-		if (selectedList.size() > 0 && set == null || set != null && !I.equivalent(selectedList, set)) {
+		Set<String> set = sp.getStringSet(Util.SELECTED_LIST, null);
+		if (selectedList.size() > 0 && set == null || set != null && !Util.equivalent(selectedList, set)) {
 			selectedList.clear();
 			if (set != null && set.size() > 0)
 				selectedList.addAll(set);
@@ -134,7 +134,7 @@ public class FilesAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		else
 			selectedList.remove((String) compoundButton.getTag());
 
-		sp.edit().putStringSet(I.SELECTED_LIST, new HashSet<>(selectedList)).apply();
+		sp.edit().putStringSet(Util.SELECTED_LIST, new HashSet<>(selectedList)).apply();
 	}
 
 	private static class ViewHolder {
