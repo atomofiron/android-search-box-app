@@ -20,6 +20,8 @@
 	<color name="white">#ffffffff</color>
 	<color name="mask">#ff000000</color>
 	<color name="black">#ff000000</color>
+	<color name="grey_dark">#ff333333</color>
+	<color name="white_dark">#ffcccccc</color>
 	<color name="red">#ffff0000</color>
 	<color name="red_soft">#ff5252</color>
 	<color name="spanBlue">#5f4f60c0</color>

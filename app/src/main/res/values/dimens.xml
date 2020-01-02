@@ -12,6 +12,7 @@
 	<dimen name="nav_header_height">160dp</dimen>
 
 	<dimen name="common_size">48dp</dimen>
+	<dimen name="common_half_size">24dp</dimen>
 
 	<dimen name="padding_micro">2dp</dimen>
 	<dimen name="padding_mini">4dp</dimen>

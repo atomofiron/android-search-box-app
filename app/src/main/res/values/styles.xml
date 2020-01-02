@@ -15,13 +15,15 @@
 		<item name="colorAccent">@color/colorAccent</item>
 		<item name="colorControlHighlight">@color/colorAccent</item>
 
-		<item name="colorContent">@color/black</item>
+		<item name="colorContent">@color/grey_dark</item>
 		<item name="colorPositive">@color/black</item>
-		<item name="colorBackground">@color/windowBackgroundWhite</item>
 		<item name="colorNegative">@color/windowBackgroundWhite</item>
-		<item name="colorFieldBackground">@color/light_grey</item>
-		<item name="cardViewBackgroundColor">@color/windowBackgroundWhite</item>
 		<item name="colorAccentLite">@color/colorAccentLight</item>
+
+		<item name="colorBackground">@color/windowBackgroundWhite</item>
+		<item name="colorFieldBackground">@color/light_grey</item>
+		<item name="colorCardBackground">@color/windowBackgroundWhite</item>
+		<item name="colorFieldDivider">@color/light_grey</item>
 	</style>
 	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
 		<item name="isDarkTheme">true</item>
@@ -39,13 +41,15 @@
 		<item name="colorAccent">@color/colorAccent</item>
 		<item name="colorControlHighlight">@color/colorAccent</item>
 
-		<item name="colorContent">@color/white</item>
+		<item name="colorContent">@color/white_dark</item>
 		<item name="colorPositive">@color/white</item>
-		<item name="colorBackground">@color/windowBackgroundDark</item>
 		<item name="colorNegative">@color/windowBackgroundDark</item>
-		<item name="colorFieldBackground">@color/windowBackgroundDarkLight</item>
-		<item name="cardViewBackgroundColor">@color/windowBackgroundDarkLight</item>
 		<item name="colorAccentLite">@color/colorAccentDark</item>
+
+		<item name="colorBackground">@color/windowBackgroundDark</item>
+		<item name="colorFieldBackground">@color/windowBackgroundDarkLight</item>
+		<item name="colorCardBackground">@color/windowBackgroundDarkLight</item>
+		<item name="colorFieldDivider">@color/windowBackgroundDark</item>
 	</style>
 	<style name="AppTheme.Black" parent="@style/AppTheme.Dark">
 		<item name="android:windowBackground">@color/windowBackgroundBlack</item>
@@ -54,7 +58,8 @@
 
 		<item name="colorBackground">@color/windowBackgroundBlack</item>
 		<item name="colorFieldBackground">@color/windowBackgroundDark</item>
-		<item name="cardViewBackgroundColor">@color/windowBackgroundDark</item>
+		<item name="colorCardBackground">@color/windowBackgroundDark</item>
+		<item name="colorFieldDivider">@color/windowBackgroundBlack</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>

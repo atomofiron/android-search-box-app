@@ -23,7 +23,6 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         super.onViewCreated(view, savedInstanceState)
 
         val items = listOf(
-                FinderItem(R.layout.layout_field_replace),
                 FinderItem(R.layout.layout_field_find),
                 FinderItem(R.layout.layout_characters),
                 FinderItem(R.layout.layout_config),

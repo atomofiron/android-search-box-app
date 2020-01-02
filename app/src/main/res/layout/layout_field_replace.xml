@@ -3,28 +3,28 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/common_margin"
-    android:layout_marginTop="@dimen/common_half_margin"
-    android:layout_marginEnd="@dimen/common_margin"
-    android:layout_marginBottom="@dimen/common_half_margin"
     >
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="?attr/colorFieldDivider"
+        />
     <ru.atomofiron.regextool.view.custom.RegexText
         android:id="@+id/rt_replace"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/common_size"
         android:maxLines="1"
         android:singleLine="true"
         android:imeOptions="actionDone"
         android:inputType="textNoSuggestions"
-        android:padding="@dimen/common_margin"
+        android:paddingStart="@dimen/common_margin"
         android:paddingEnd="64dp"
-        android:background="@drawable/bg_rounded"
         android:hint="@string/replace"
+        android:background="@color/transparent"
         />
     <ImageButton
-        android:id="@+id/btn_replace"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="@dimen/common_size"
+        android:layout_height="@dimen/common_size"
         android:background="@drawable/bg_transparent_ripple"
         android:src="@drawable/ic_replace"
         android:layout_gravity="center_vertical|end"

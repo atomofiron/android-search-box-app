@@ -13,5 +13,5 @@
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardBackgroundColor="?attr/cardViewBackgroundColor"
+    app:cardBackgroundColor="?attr/colorCardBackground"
     />

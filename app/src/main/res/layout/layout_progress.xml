@@ -2,10 +2,44 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/common_half_margin">
 
+    <ru.atomofiron.regextool.view.custom.ProgressSpinner
+        android:id="@+id/progress_btn_spinner"
+        android:layout_width="@dimen/common_size"
+        android:layout_height="@dimen/common_size"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    <ImageView
+        android:layout_width="@dimen/common_size"
+        android:layout_height="@dimen/common_size"
+        android:src="@drawable/ic_progress_mask"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    <TextView
+        android:id="@+id/progress_tv_counter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="36/96"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:textSize="12dp"
+        android:gravity="center_horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="SpUsage"
+        />
     <TextView
         android:id="@+id/progress_btn_look"
         android:layout_width="wrap_content"
@@ -17,29 +51,6 @@
         app:layout_constraintRight_toLeftOf="@+id/progress_btn_spinner"
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-        />
-    <ru.atomofiron.regextool.view.custom.ProgressSpinner
-        android:id="@+id/progress_btn_spinner"
-        android:layout_width="@dimen/common_size"
-        android:layout_height="@dimen/common_size"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
-    <TextView
-        android:id="@+id/progress_tv_counter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="36/96"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:background="@drawable/counter_bg"
-        android:backgroundTint="?attr/cardViewBackgroundColor"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         />
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/progress_btn_stop"

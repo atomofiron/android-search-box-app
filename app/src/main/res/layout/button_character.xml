@@ -6,5 +6,5 @@
     android:layout_weight="1"
     android:textAllCaps="false"
     android:lines="1"
-    style="?attr/borderlessButtonStyle"
+    android:background="?attr/selectableItemBackgroundBorderless"
     />

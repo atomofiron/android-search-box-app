@@ -4,10 +4,11 @@
     <attr name="colorBackground" format="color" />
     <attr name="colorContent" format="color" />
     <attr name="colorFieldBackground" format="color" />
-    <attr name="cardViewBackgroundColor" format="color" tools:override="true" />
+    <attr name="colorCardBackground" format="color" tools:override="true" />
     <attr name="colorPositive" format="color" />
     <attr name="colorNegative" format="color" />
     <attr name="colorAccentLite" format="color" />
+    <attr name="colorFieldDivider" format="color" />
 
     <declare-styleable name="BottomOptionMenu">
         <attr name="menu" format="reference" />

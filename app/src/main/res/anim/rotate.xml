@@ -8,6 +8,6 @@
         android:pivotY="50%"
         android:repeatMode="restart"
         android:repeatCount="infinite"
-        android:duration="@integer/anim_duration"
+        android:duration="@integer/anim_duration_rotate"
         />
 </set>

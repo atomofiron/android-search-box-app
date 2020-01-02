@@ -92,7 +92,7 @@ public class RegexText extends AppCompatEditText implements TextWatcher {
 		locked = false;
 
 		finder.setQuery(s.toString());
-		updateMark();
+		updateErrorMark();
 		postTest();
 	}
 
@@ -104,7 +104,7 @@ public class RegexText extends AppCompatEditText implements TextWatcher {
 	public void setRegex(boolean isRegex) {
 		finder.setRegex(isRegex);
 
-		updateMark();
+		updateErrorMark();
 		test();
 	}
 
@@ -118,7 +118,7 @@ public class RegexText extends AppCompatEditText implements TextWatcher {
 		test();
 	}
 
-	private void updateMark() {
+	private void updateErrorMark() {
 		if (finder.isRegex() && !finder.regexpIsValid())
 			getBackground().setColorFilter(
 					getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
