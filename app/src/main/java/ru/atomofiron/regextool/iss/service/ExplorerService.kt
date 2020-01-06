@@ -47,7 +47,7 @@ class ExplorerService {
     fun closeDir(dir: XFile, callback: (List<XFile>) -> Unit) {
         val cursor = findCursor(dir)
         cursor.close()
-        closeRecursively(dir)
+        removeAllChildren(dir)
 
         callback(files)
     }
@@ -58,9 +58,19 @@ class ExplorerService {
         }
     }
 
-    private fun closeRecursively(dir: XFile) {
+    private fun removeAllChildren(dir: XFile) {
         val path = dir.completedPath
-        files.removeIf { it.completedParentPath.startsWith(path) }
+        val each = files.iterator()
+        var removed = false
+        while (each.hasNext()) {
+            val next = each.next()
+            if (next.completedParentPath.startsWith(path)) {
+                each.remove()
+                removed = true
+            } else if (removed) {
+                break
+            }
+        }
     }
 
     private fun findCursor(dir: XFile): MutableXFile {
