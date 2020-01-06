@@ -52,6 +52,12 @@ class ExplorerService {
         callback(files)
     }
 
+    fun persistState() {
+        val vertexes = files.filter { file ->
+            file.opened && file.files?.find { child -> child.opened } == null
+        }
+    }
+
     private fun closeRecursively(dir: XFile) {
         val path = dir.completedPath
         files.removeIf { it.completedParentPath.startsWith(path) }

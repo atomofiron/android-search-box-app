@@ -22,11 +22,10 @@ class ExplorerInteractor {
                     callback(it)
                 }
             }
+            service.persistState()
             tik("cacheChildrenDirs")
             service.cacheChildrenDirs(dir)
             tik("cacheChildrenDirs end")
-
-
         }
         tik("openDir end")
     }

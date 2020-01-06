@@ -11,7 +11,7 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D> : RecyclerView.Adapter<H>
         holder.onBind(items[position], position)
     }
 
-    override fun getItemId(position: Int): Long = position.toLong()
+    override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
 
     fun setItems(items: List<D>) {
         this.items.clear()

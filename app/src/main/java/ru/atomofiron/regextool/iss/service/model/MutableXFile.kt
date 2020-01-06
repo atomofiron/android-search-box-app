@@ -11,7 +11,10 @@ class MutableXFile : XFile {
     private set
 
     override var opened: Boolean = false
-    private set
+    private set(value) {
+        require(file.isDirectory || !value) { "$completedPath is not a directory!" }
+        field = value
+    }
 
     override val completedPath: String by lazy {
         if (file.isFile || file.absolutePath.endsWith("/")) {
@@ -63,19 +66,18 @@ class MutableXFile : XFile {
 
     /** @return error or null */
     fun open(su: Boolean = false): String? {
-         val error = when (files) {
+        val error = when (files) {
             null -> {
                 // second chance to cache
                 cache(su).also {
                     if (it != null) {
-                        this.files = ArrayList()
+                        files = ArrayList()
                     }
                 }
             }
             else -> null
-         }
-        //files!!.forEach { it.cache(su) }
-        opened = true
+        }
+        opened = files!!.isNotEmpty()
         return error
     }
 
@@ -119,6 +121,7 @@ class MutableXFile : XFile {
 
     private fun clear() {
         files = null
+        opened = false
     }
 
     override fun equals(other: Any?): Boolean {
@@ -129,5 +132,7 @@ class MutableXFile : XFile {
         }
     }
 
-    override fun hashCode(): Int = file.absolutePath.hashCode()
+    override fun hashCode(): Int = completedPath.hashCode()
+
+    override fun toString(): String = completedPath
 }

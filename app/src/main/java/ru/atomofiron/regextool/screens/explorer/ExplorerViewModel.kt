@@ -25,8 +25,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app) {
         router.showFinder()
     }
 
-    fun onConfigOptionSelected() {
-
+    fun onOptionsOptionSelected() {
     }
 
     fun onSettingsOptionSelected() {
