@@ -32,5 +32,6 @@ class ExplorerInteractor {
 
     fun closeDir(dir: XFile, callback: (List<XFile>) -> Unit) {
         service.closeDir(dir, callback)
+        service.persistState()
     }
 }
