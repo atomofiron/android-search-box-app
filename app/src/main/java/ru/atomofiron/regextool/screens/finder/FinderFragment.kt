@@ -2,6 +2,8 @@ package ru.atomofiron.regextool.screens.finder
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
@@ -18,6 +20,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.finder_rv)
     private val bottomOptionMenu = Knife<BottomOptionMenu>(this, R.id.finder_bom)
+    private val drawer = Knife<DrawerLayout>(this, R.id.finder_dl)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,7 +51,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
 
         bottomOptionMenu.view.setOnMenuItemClickListener { id ->
             when (id) {
-                R.id.menu_history -> viewModel.onHistoryOptionSelected()
+                R.id.menu_history -> drawer.view.openDrawer(GravityCompat.START, true)
                 R.id.menu_explorer -> viewModel.onExplorerOptionSelected()
                 R.id.menu_config -> viewModel.onConfigOptionSelected()
                 R.id.menu_settings -> viewModel.onSettingsOptionSelected()

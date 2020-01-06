@@ -33,7 +33,7 @@
     <string name="config">Config</string>
     <string name="files">Files</string>
     <string name="replace">Replace</string>
-    <string name="bookmark">Bookmarks</string>
+    <string name="bookmarks">Bookmarks</string>
     <string name="settings">Settings</string>
     <string name="share">Share</string>
     <string name="pref_storage_path">Storage directory path</string>

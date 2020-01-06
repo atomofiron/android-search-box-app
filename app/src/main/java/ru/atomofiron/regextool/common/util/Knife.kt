@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 class Knife<T : View> {
     private val activity: Activity?
     private val fragment: Fragment?
+    private val root: View?
 
     private val id: Int
 
@@ -16,6 +17,7 @@ class Knife<T : View> {
                 field = when {
                     activity != null -> activity.findViewById(id)
                     fragment != null -> fragment.view?.findViewById(id)
+                    root != null -> root.findViewById(id)
                     else -> null
                 }
             }
@@ -27,12 +29,21 @@ class Knife<T : View> {
     constructor(activity: Activity, id: Int) {
         this.activity = activity
         this.fragment = null
+        this.root = null
         this.id = id
     }
 
     constructor(fragment: Fragment, id: Int) {
         this.activity = null
         this.fragment = fragment
+        this.root = null
+        this.id = id
+    }
+
+    constructor(view: View, id: Int) {
+        this.activity = null
+        this.fragment = null
+        this.root = view
         this.id = id
     }
 

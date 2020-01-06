@@ -2,6 +2,10 @@ package ru.atomofiron.regextool.screens.explorer
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
@@ -18,19 +22,23 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
     private val bottomOptionMenu = Knife<BottomOptionMenu>(this, R.id.explorer_bom)
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.explorer_bsv)
+    private val drawer = Knife<DrawerLayout>(this, R.id.explorer_dv)
+
+    private val explorerAdapter = ExplorerAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView {
             layoutManager = LinearLayoutManager(context).apply { stackFromEnd = true }
-            adapter = ExplorerAdapter()
+            adapter = explorerAdapter
+            explorerAdapter.setOnItemClickListener(viewModel::onItemClicked)
         }
 
         bottomOptionMenu {
             setOnMenuItemClickListener { id ->
                 when (id) {
-                    R.id.menu_bookmark -> viewModel.onBookmarksOptionSelected()
+                    R.id.menu_bookmark -> drawer.view.openDrawer(GravityCompat.START, true)
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
                     R.id.menu_config -> bottomSheetView.view.show()
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
@@ -46,5 +54,10 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         } else {
             false
         }
+    }
+
+    override fun onSubscribeData(owner: LifecycleOwner) {
+        super.onSubscribeData(owner)
+        viewModel.files.observe(owner, Observer { explorerAdapter.setItems(it) })
     }
 }

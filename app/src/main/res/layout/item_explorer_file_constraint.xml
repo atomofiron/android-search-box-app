@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/common_margin"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="@dimen/common_nano_margin"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="@dimen/common_nano_margin"
+        />
+
+    <ImageView
+        android:id="@+id/item_iv_icon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_file"
+        app:layout_constraintBottom_toTopOf="@+id/bottom"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/item_tv_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top"
+        />
+    <TextView
+        android:id="@+id/item_tv_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorContent"
+        app:layout_constraintLeft_toRightOf="@+id/item_iv_icon"
+        app:layout_constraintRight_toLeftOf="@id/item_cb"
+        app:layout_constraintTop_toBottomOf="@id/top"
+        app:layout_constraintBottom_toTopOf="@+id/item_fl_summary"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Some file ................................................................"
+        />
+
+    <FrameLayout
+        android:id="@+id/item_fl_summary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/item_iv_icon"
+        app:layout_constraintTop_toBottomOf="@+id/item_tv_title"
+        app:layout_constraintRight_toLeftOf="@+id/item_cb"
+        app:layout_constraintBottom_toTopOf="@+id/bottom"
+        >
+        <TextView
+            android:id="@+id/item_tv_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_gravity="start|bottom"
+            android:typeface="monospace"
+            tools:text="-rw-r----- kek cheburek"
+            />
+        <TextView
+            android:id="@+id/item_tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_gravity="end|bottom"
+            android:typeface="monospace"
+            tools:text="0000-00-00 00:00"
+            />
+    </FrameLayout>
+    <TextView
+        android:id="@+id/item_tv_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_marginStart="@dimen/common_nano_margin"
+        android:typeface="monospace"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottom"
+        tools:text="000KB"
+        />
+    <CheckBox
+        android:id="@+id/item_cb"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/item_tv_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

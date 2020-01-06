@@ -11,25 +11,25 @@ public class Cmd {
 
 	public static boolean checkSu() {
 		boolean ok = false;
-		Process exec = null;
+		Process process = null;
 		OutputStream execOs = null;
 
 		try {
-			exec = Runtime.getRuntime().exec("su");
-			execOs = exec.getOutputStream();
+			process = Runtime.getRuntime().exec("su");
+			execOs = process.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(execOs);
 
 			dos.writeBytes("su\n");
 			dos.flush();
 
 			dos.close();
-			ok = exec.waitFor() == 0;
+			ok = process.waitFor() == 0;
 		} catch (Exception e) {
 			Util.log(e.toString());
 		} finally {
 			try {
 				if (execOs != null) execOs.close();
-				if (exec != null) exec.destroy();
+				if (process != null) process.destroy();
 			} catch (Exception ignored) {}
 		}
 		return ok;
@@ -38,14 +38,14 @@ public class Cmd {
 	public static String exec(String cmd) {
 
 		String result = "";
-		Process exec = null;
+		Process process = null;
 		InputStream execIs = null;
 		OutputStream execOs = null;
 
 		try {
-			exec = Runtime.getRuntime().exec("su");
-			execIs = exec.getInputStream();
-			execOs = exec.getOutputStream();
+			process = Runtime.getRuntime().exec("su");
+			execIs = process.getInputStream();
+			execOs = process.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(execOs);
 
 			dos.writeBytes(String.format("%s\n", cmd));
@@ -59,7 +59,7 @@ public class Cmd {
 			try {
 				if (execIs != null) execIs.close();
 				if (execOs != null) execOs.close();
-				if (exec != null) exec.destroy();
+				if (process != null) process.destroy();
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		return result;
@@ -70,8 +70,9 @@ public class Cmd {
 		InputStreamReader reader = new InputStreamReader(stream, "utf-8");
 		int read;
 		char[] buffer = new char[1024];
-		while ((read = reader.read(buffer)) !=  -1)
+		while ((read = reader.read(buffer)) !=  -1) {
 			builder.append(buffer, 0, read);
+		}
 
 		return builder.toString();
 	}

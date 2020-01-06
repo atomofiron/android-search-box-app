@@ -33,7 +33,7 @@
     <string name="config">Параметры</string>
     <string name="files">Файлы</string>
     <string name="replace">Заменить</string>
-    <string name="bookmark">Закладки</string>
+    <string name="bookmarks">Закладки</string>
     <string name="settings">Настройки</string>
     <string name="share">Поделиться</string>
     <string name="pref_storage_path">Путь к хранилищу</string>

@@ -3,7 +3,7 @@
     tools:context="ru.atomofiron.regextool.MainActivity">
     <item
         android:id="@+id/menu_bookmark"
-        android:title="@string/bookmark"
+        android:title="@string/bookmarks"
         android:icon="@drawable/ic_bookmark"
         />
     <item

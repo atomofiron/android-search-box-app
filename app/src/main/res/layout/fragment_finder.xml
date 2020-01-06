@@ -3,7 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/drawer_layout"
+	android:id="@+id/finder_dl"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="?attr/colorBackground"
@@ -19,7 +19,7 @@
 			android:id="@+id/finder_rv"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:paddingBottom="64dp"
+			android:paddingBottom="@dimen/rv_padding_top"
 			android:clipToPadding="false"
 			/>
 
@@ -46,7 +46,6 @@
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 	<com.google.android.material.navigation.NavigationView
-		android:id="@+id/nav_view"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
 		android:layout_gravity="start">
