@@ -84,6 +84,7 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 
 		// чтобы можно было проверить факт изменения определённой конфигурации
 		// и совершить необходимые действия
+		// todo переделать по-человечески
 		String key = preference.getKey();
 		switch (key) {
 			case Util.PREF_SPECIAL_CHARACTERS:
@@ -93,7 +94,7 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 		return result;
 	}
 
-	private boolean update(Preference pref, Object newValue) {
+	private boolean update(final Preference pref, Object newValue) {
 		String value = newValue == null ? null : newValue.toString();
 
 		String key = pref.getKey();
@@ -123,10 +124,21 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 
 				break;
 			case Util.PREF_MAX_SIZE:
-				if (newValue == null)
+				if (newValue == null) {
 					newValue = sp.getInt(key, 0);
+				}
 
-				pref.setSummary(Util.intToHumanReadable((int) newValue, getResources().getStringArray(R.array.size_suffix_arr)));
+				View view = getView();
+				if (view != null) {
+					final int intValue = (int) newValue;
+					view.post(new Runnable() {
+						public void run() {
+						    // иначе мьюха меняется в процессе рассчётов списка
+							String[] suffixes = getResources().getStringArray(R.array.size_suffix_arr);
+							pref.setSummary(Util.intToHumanReadable(intValue, suffixes));
+						}
+					});
+				}
 				break;
 		}
 		return true;

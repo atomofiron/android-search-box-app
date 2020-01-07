@@ -163,25 +163,43 @@ abstract class BaseRouter {
 
         manager {
             onViewDestroy()
-            when {
-                fragment == null -> activity?.finish()
-                backStackEntryCount > 0 -> popBackStack()
-                fragments.size > 1 -> {
-                    beginTransaction().apply {
-                        remove(fragment)
-                        fragments.findLast { it !== fragment }?.let(::show)
-                        commit()
-                    }
-                }
+            when (fragment) {
+                null -> activity?.finish()
+                else -> closeScreen(fragment)
             }
         }
     }
 
     fun onBack() {
         manager {
-            val consumed = (fragments.findLast { !it.isHidden } as BaseFragment<*>?)?.onBack() == true
+            @Suppress("MoveVariableDeclarationIntoWhen")
+            val lastVisible = fragments.findLast { !it.isHidden }
+            val consumed = when (lastVisible) {
+                null -> false
+                is BaseFragment<*> -> lastVisible.onBack()
+                else -> {
+                    closeScreen(lastVisible)
+                    return@manager
+                }
+            }
             if (!consumed) {
                 closeScreen()
+            }
+        }
+    }
+
+    private fun closeScreen(lastVisible: Fragment) {
+        manager {
+            when {
+                backStackEntryCount > 0 -> popBackStack()
+                fragments.size > 1 -> {
+                    beginTransaction().apply {
+                        remove(lastVisible)
+                        fragments.findLast { it !== fragment }?.let(::show)
+                        commit()
+                    }
+                }
+                else -> activity?.finish()
             }
         }
     }

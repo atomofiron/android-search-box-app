@@ -21,16 +21,12 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app) {
         files.value = explorerInteractor.getFiles()
     }
 
-    fun onSearchOptionSelected() {
-        router.showFinder()
-    }
+    fun onSearchOptionSelected() = router.showFinder()
 
     fun onOptionsOptionSelected() {
     }
 
-    fun onSettingsOptionSelected() {
-
-    }
+    fun onSettingsOptionSelected() = router.showSettings()
 
     fun onItemClicked(position: Int) {
         val item = files.value!![position]

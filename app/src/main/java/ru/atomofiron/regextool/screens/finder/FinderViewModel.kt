@@ -14,7 +14,5 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
     }
 
-    fun onSettingsOptionSelected() {
-
-    }
+    fun onSettingsOptionSelected() = router.showSettings()
 }

@@ -77,8 +77,9 @@ public class NumberText extends AppCompatEditText implements View.OnClickListene
 		} else if (value.length() == 0) {
 			setText("0");
 			setSelection(1);
-		} else if (onInputListener != null)
+		} else if (onInputListener != null) {
 			onInputListener.onInput(Integer.parseInt(getText().toString()));
+		}
 	}
 
 	@Override
