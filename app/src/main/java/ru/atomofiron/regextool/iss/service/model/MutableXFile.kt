@@ -65,9 +65,9 @@ class MutableXFile : XFile {
         name = parts[7]
     }
 
-    /** @return error or null */
     fun open() {
         opened = files.isNotEmpty()
+        files.filter { it.opened }.forEach { it.close() }
     }
 
     fun close() {
@@ -77,7 +77,8 @@ class MutableXFile : XFile {
 
     /** @return error or null */
     fun cache(su: Boolean = false): String? {
-        val output = Shell.exec("ls -lah \"$completedPath\"", su)
+        require(file.isDirectory) { UnsupportedOperationException("$this is not a directory!") }
+        val output = Shell.exec(Shell.LS_LAH.format(completedPath), su)
         return if (output.success) {
             val lines = output.output.split("\n")
             val dirs = ArrayList<MutableXFile>()

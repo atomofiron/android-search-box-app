@@ -4,7 +4,7 @@ import java.io.File
 
 interface XFile {
     val file: File
-    val files: List<XFile>?
+    val files: List<XFile>
     val opened: Boolean
 
     /* путь + / */

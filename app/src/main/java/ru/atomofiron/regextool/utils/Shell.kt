@@ -9,6 +9,8 @@ object Shell {
     private const val SH = "sh"
     private const val SUCCESS = 0
 
+    const val LS_LAH = "ls -lah \"%s\""
+
     fun checkSu(): Boolean {
         var ok: Boolean
         var process: Process? = null

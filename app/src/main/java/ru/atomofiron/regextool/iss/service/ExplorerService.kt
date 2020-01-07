@@ -41,9 +41,10 @@ class ExplorerService {
         dir.cache(su)
         dir.files.forEachIndexed { index, it ->
             val i = dirFiles.indexOf(it)
-            when (i) {
-                -1 -> it.cache(su)
-                else -> dir.files[index] = dirFiles[i]
+            val isNew = i == -1
+            when {
+                isNew && it.file.isDirectory -> it.cache(su)
+                it.file.isDirectory -> dir.files[index] = dirFiles[i]
             }
         }
 
