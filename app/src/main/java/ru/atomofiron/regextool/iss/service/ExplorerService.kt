@@ -28,20 +28,43 @@ class ExplorerService {
             return
         }
         dir as MutableXFile
-        val su = sp.getBoolean(Util.PREF_USE_SU, false)
-        dir.open(su)
+        dir.open()
         val index = files.indexOf(dir)
-        files.addAll(index + 1, dir.files!!)
+        files.addAll(index + 1, dir.files)
         callback(files)
     }
 
-    fun cacheChildrenDirs(dir: XFile) {
+    fun updateDir(dir: XFile) {
+        dir as MutableXFile
+        val su = sp.getBoolean(Util.PREF_USE_SU, false)
+        val dirFiles = dir.files
+        dir.cache(su)
+        dir.files.forEachIndexed { index, it ->
+            val i = dirFiles.indexOf(it)
+            when (i) {
+                -1 -> it.cache(su)
+                else -> dir.files[index] = dirFiles[i]
+            }
+        }
+
+        files.removeAll(dirFiles)
+
+        if (dir.opened && dir.files.isEmpty()) {
+            dir.close()
+        } else {
+            val index = files.indexOf(dir)
+            files.addAll(index + 1, dir.files)
+        }
+    }
+
+    fun cacheChildrenDirs(dir: XFile, callback: (List<XFile>) -> Unit) {
         if (!dir.file.isDirectory) {
             return
         }
         dir as MutableXFile
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
-        dir.files!!.filter { it.file.isDirectory }.forEach { it.cache(su) }
+        dir.files.filter { it.file.isDirectory }.forEach { it.cache(su) }
+        callback(files)
     }
 
     fun closeDir(dir: XFile, callback: (List<XFile>) -> Unit) {
