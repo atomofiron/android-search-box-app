@@ -61,7 +61,7 @@ class ExplorerService {
     }
 
     fun cacheChildrenDirs(dir: XFile, callback: (List<XFile>) -> Unit) {
-        if (!dir.file.isDirectory) {
+        if (!dir.file.isDirectory || !dir.opened) {
             return
         }
         dir as MutableXFile
