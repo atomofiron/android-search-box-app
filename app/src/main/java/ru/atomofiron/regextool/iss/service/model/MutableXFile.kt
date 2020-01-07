@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.iss.service.model
 
+import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 
@@ -88,7 +89,7 @@ class MutableXFile : XFile {
 
     /** @return error or null */
     fun cache(su: Boolean = false): String? {
-        val output = Shell.exec("ls -lah $completedPath", su)
+        val output = Shell.exec("ls -lah \"$completedPath\"", su)
         return if (output.success) {
             val lines = output.output.split("\n")
             val dirs = ArrayList<MutableXFile>()
@@ -115,6 +116,7 @@ class MutableXFile : XFile {
             this.files = files
             null
         } else {
+            log("output.error $completedPath ${output.error}")
             output.error
         }
     }

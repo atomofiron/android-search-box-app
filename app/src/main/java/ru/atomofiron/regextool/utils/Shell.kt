@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.utils
 
 import ru.atomofiron.regextool.log
-import java.io.DataOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -13,16 +12,16 @@ object Shell {
     fun checkSu(): Boolean {
         var ok: Boolean
         var process: Process? = null
-        var os: OutputStream? = null
+        var outputStream: OutputStream? = null
 
         try {
             process = Runtime.getRuntime().exec(SU)
-            os = process.outputStream
-            val dos = DataOutputStream(os)
+            outputStream = process.outputStream
+            val osw = outputStream.writer()
 
-            dos.writeBytes(SU)
-            dos.flush()
-            dos.close()
+            osw.write(SU)
+            osw.flush()
+            osw.close()
 
             ok = process.waitFor() == 0
         } catch (e: Exception) {
@@ -30,7 +29,7 @@ object Shell {
             log(e.toString())
         } finally {
             try {
-                os?.close()
+                outputStream?.close()
                 process?.destroy()
             } catch (e: Exception) { }
         }
@@ -52,11 +51,11 @@ object Shell {
             inputStream = process.inputStream
             outputStream = process.outputStream
             errorStream = process.errorStream
-            val dos = DataOutputStream(outputStream)
+            val osw = outputStream.writer()
 
-            dos.writeBytes(String.format("%s\n", cmd))
-            dos.flush()
-            dos.close()
+            osw.write(String.format("%s\n", cmd))
+            osw.flush()
+            osw.close()
 
             output = inputStream.reader().readText()
             error = errorStream.reader().readText()
