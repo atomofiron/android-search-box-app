@@ -23,7 +23,8 @@
 	<color name="grey_dark">#ff333333</color>
 	<color name="white_dark">#ffcccccc</color>
 	<color name="red">#ffff0000</color>
-	<color name="red_soft">#ff5252</color>
+	<color name="red_soft">#ffff5252</color>
+	<color name="red_soft_pressed">#ffcc4040</color>
 	<color name="spanBlue">#5f4f60c0</color>
 	<color name="spanGreen">#7f007f00</color>
 	<color name="dark_grey">#ff333333</color>
