@@ -17,12 +17,12 @@ class ExplorerInteractor {
                 GlobalScope.launch(Dispatchers.Main) {
                     callback(it)
                 }
-            }
-            service.persistState()
-            service.updateDir(dir)
-            service.cacheChildrenDirs(dir) {
-                GlobalScope.launch(Dispatchers.Main) {
-                    callback(it)
+                service.persistState()
+                service.updateDir(dir)
+                service.cacheChildrenDirs(dir) {
+                    GlobalScope.launch(Dispatchers.Main) {
+                        callback(it)
+                    }
                 }
             }
         }

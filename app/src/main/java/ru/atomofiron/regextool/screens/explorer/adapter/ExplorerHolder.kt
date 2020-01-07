@@ -29,9 +29,10 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
 
         itemView.setOnClickListener(onClickListener)
 
-        val type = when (item.file.isDirectory) {
-            true -> R.drawable.ic_folder
-            false -> R.drawable.ic_file_circle
+        val type = when {
+            !item.file.isDirectory -> R.drawable.ic_file_circle
+            item.files?.isEmpty() == true -> R.drawable.ic_folder_empty
+            else -> R.drawable.ic_folder
         }
         icon.view.setImageResource(type)
         name.view.text = item.file.name

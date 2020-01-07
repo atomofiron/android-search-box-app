@@ -8,7 +8,7 @@ class MutableXFile : XFile {
     companion object {
         private const val TOTAL = "total"
     }
-    override var files: MutableList<MutableXFile> = ArrayList()
+    override var files: MutableList<MutableXFile>? = null
     private set
 
     override var opened: Boolean = false
@@ -66,12 +66,12 @@ class MutableXFile : XFile {
     }
 
     fun open() {
-        opened = files.isNotEmpty()
-        files.filter { it.opened }.forEach { it.close() }
+        opened = files!!.isNotEmpty()
+        files!!.filter { it.opened }.forEach { it.close() }
     }
 
     fun close() {
-        files.forEach { it.clear() }
+        files!!.forEach { it.clear() }
         opened = false
     }
 
@@ -112,7 +112,7 @@ class MutableXFile : XFile {
     }
 
     private fun clear() {
-        files.clear()
+        files = null
         opened = false
     }
 

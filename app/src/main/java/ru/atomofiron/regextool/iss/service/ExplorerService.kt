@@ -29,32 +29,34 @@ class ExplorerService {
         }
         dir as MutableXFile
         dir.open()
-        val index = files.indexOf(dir)
-        files.addAll(index + 1, dir.files)
-        callback(files)
+        if (dir.files!!.isNotEmpty()) {
+            val index = files.indexOf(dir)
+            files.addAll(index.inc(), dir.files!!)
+            callback(files)
+        }
     }
 
     fun updateDir(dir: XFile) {
         dir as MutableXFile
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
-        val dirFiles = dir.files
+        val dirFiles = dir.files!!
         dir.cache(su)
-        dir.files.forEachIndexed { index, it ->
+        dir.files!!.forEachIndexed { index, it ->
             val i = dirFiles.indexOf(it)
             val isNew = i == -1
             when {
                 isNew && it.file.isDirectory -> it.cache(su)
-                it.file.isDirectory -> dir.files[index] = dirFiles[i]
+                it.file.isDirectory -> dir.files!![index] = dirFiles[i]
             }
         }
 
         files.removeAll(dirFiles)
 
-        if (dir.opened && dir.files.isEmpty()) {
+        if (dir.opened && dir.files!!.isEmpty()) {
             dir.close()
         } else {
             val index = files.indexOf(dir)
-            files.addAll(index + 1, dir.files)
+            files.addAll(index + 1, dir.files!!)
         }
     }
 
@@ -64,7 +66,7 @@ class ExplorerService {
         }
         dir as MutableXFile
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
-        dir.files.filter { it.file.isDirectory }.forEach { it.cache(su) }
+        dir.files!!.filter { it.file.isDirectory }.forEach { it.cache(su) }
         callback(files)
     }
 
