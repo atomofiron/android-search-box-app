@@ -35,7 +35,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app) {
             item.opened -> explorerInteractor.closeDir(item) {
                 files.value = it
             }
-            else -> explorerInteractor.openDir(item) {
+            item.file.isDirectory -> explorerInteractor.openDir(item) {
                 files.value = it
             }
         }
