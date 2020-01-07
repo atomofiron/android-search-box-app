@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.screens.explorer.adapter
 
 import android.view.View
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import ru.atomofiron.regextool.R
@@ -15,18 +16,18 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     private val description = Knife<TextView>(itemView, R.id.item_tv_description)
     private val date = Knife<TextView>(itemView, R.id.item_tv_date)
     private val size = Knife<TextView>(itemView, R.id.item_tv_size)
-    private val checkbox = Knife<TextView>(itemView, R.id.item_cb)
+    private val checkbox = Knife<CheckBox>(itemView, R.id.item_cb)
 
-    var onItemClickCallback: ((position: Int) -> Unit)? = null
+    var onItemClickListener: ((position: Int) -> Unit)? = null
 
-    private var onItemClickListener: ((View) -> Unit) = {
-        onItemClickCallback?.invoke(adapterPosition)
+    private var onClickListener: ((View) -> Unit) = {
+        onItemClickListener?.invoke(adapterPosition)
     }
 
     override fun onBind(item: XFile, position: Int) {
         super.onBind(item, position)
 
-        itemView.setOnClickListener(onItemClickListener)
+        itemView.setOnClickListener(onClickListener)
 
         val type = when (item.file.isDirectory) {
             true -> R.drawable.ic_folder

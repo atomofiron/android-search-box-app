@@ -8,17 +8,22 @@ import ru.atomofiron.regextool.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.iss.service.model.XFile
 
 class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
-
-    init {
-        setHasStableIds(true)
+    companion object {
+        private const val VIEW_TYPE = 1
+        private const val VIEW_POOL_MAX_COUNT = 20
     }
+
+    private var onItemClickListener: ((position: Int) -> Unit)? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.itemAnimator = null
+        recyclerView.recycledViewPool.setMaxRecycledViews(VIEW_TYPE, VIEW_POOL_MAX_COUNT)
     }
 
-    private var onItemClickListener: ((position: Int) -> Unit)? = null
+    override fun getItemViewType(position: Int): Int = VIEW_TYPE
+
+    override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
 
     fun setOnItemClickListener(listener: ((position: Int) -> Unit)?) {
         onItemClickListener = listener
@@ -32,7 +37,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     }
 
     override fun onBindViewHolder(holder: ExplorerHolder, position: Int) {
-        holder.onItemClickCallback = onItemClickListener
+        holder.onItemClickListener = onItemClickListener
         super.onBindViewHolder(holder, position)
     }
 }

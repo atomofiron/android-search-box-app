@@ -27,11 +27,11 @@ class ExplorerService {
         if (dir.file.isFile) {
             return
         }
-        val cursor = findCursor(dir)
+        dir as MutableXFile
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
-        cursor.open(su)
-        val index = files.indexOf(cursor)
-        files.addAll(index + 1, cursor.files!!)
+        dir.open(su)
+        val index = files.indexOf(dir)
+        files.addAll(index + 1, dir.files!!)
         callback(files)
     }
 
@@ -39,14 +39,14 @@ class ExplorerService {
         if (!dir.file.isDirectory) {
             return
         }
-        val cursor = findCursor(dir)
+        dir as MutableXFile
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
-        cursor.files!!.filter { it.file.isDirectory }.forEach { it.cache(su) }
+        dir.files!!.filter { it.file.isDirectory }.forEach { it.cache(su) }
     }
 
     fun closeDir(dir: XFile, callback: (List<XFile>) -> Unit) {
-        val cursor = findCursor(dir)
-        cursor.close()
+        dir as MutableXFile
+        dir.close()
         removeAllChildren(dir)
 
         callback(files)
@@ -71,20 +71,5 @@ class ExplorerService {
                 break
             }
         }
-    }
-
-    private fun findCursor(dir: XFile): MutableXFile {
-        val path = dir.completedPath
-        var cursor = root
-
-        while (cursor.completedPath != path) {
-            cursor.files!!.forEach {
-                if (path.startsWith(it.completedPath)) {
-                    cursor = it
-                    return@forEach
-                }
-            }
-        }
-        return cursor
     }
 }
