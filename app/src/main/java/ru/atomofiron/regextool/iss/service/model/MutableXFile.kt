@@ -26,11 +26,7 @@ class MutableXFile : XFile {
     }
 
     override val completedParentPath: String by lazy {
-        if (file.parentFile.absolutePath.endsWith("/")) {
-            file.parentFile.absolutePath
-        } else {
-            file.parentFile.absolutePath + "/"
-        }
+        completedPath.replace(Regex("(?<=/)/*[^/]+/*$"), "")
     }
 
     override val file: File
@@ -85,9 +81,14 @@ class MutableXFile : XFile {
             val files = ArrayList<MutableXFile>()
 
             if (lines.isNotEmpty()) {
-                val first = if (lines[0].startsWith(TOTAL)) 1 else 0
-                for (i in first until lines.size) {
-                    if (lines[i].isNotEmpty() && !lines[i].endsWith(" ..") && !lines[i].endsWith(" .")) {
+                var start = 0
+                while ((lines[start].startsWith(TOTAL) ||
+                        lines[start].endsWith(" .") ||
+                        lines[start].endsWith(" ..")) && start < 3) {
+                    start++
+                }
+                for (i in start until lines.size) {
+                    if (lines[i].isNotEmpty()) {
                         val file = MutableXFile(completedPath, lines[i])
                         if (file.file.isDirectory) {
                             dirs.add(file)

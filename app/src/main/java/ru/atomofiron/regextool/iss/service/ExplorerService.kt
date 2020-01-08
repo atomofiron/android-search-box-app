@@ -5,12 +5,13 @@ import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.Util
 import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.utils.Const.ROOT
 import java.io.File
 import kotlin.collections.ArrayList
 
 class ExplorerService {
     private val files: MutableList<MutableXFile> = ArrayList()
-    private val root = MutableXFile(File("/sdcard/"))
+    private val root = MutableXFile(File(ROOT))
 
     private val sp = PreferenceManager.getDefaultSharedPreferences(App.context)
 
