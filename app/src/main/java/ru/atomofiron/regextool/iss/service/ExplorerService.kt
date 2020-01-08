@@ -56,7 +56,7 @@ class ExplorerService {
             dir.close()
         } else {
             val index = files.indexOf(dir)
-            files.addAll(index + 1, dir.files!!)
+            files.addAll(index.inc(), dir.files!!)
         }
     }
 
