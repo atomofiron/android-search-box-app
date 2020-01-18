@@ -32,7 +32,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         recyclerView {
             layoutManager = LinearLayoutManager(context).apply { stackFromEnd = true }
             adapter = explorerAdapter
-            explorerAdapter.setOnItemClickListener(viewModel::onItemClicked)
+            explorerAdapter.setOnItemActionListener(viewModel)
         }
 
         bottomOptionMenu {
@@ -59,5 +59,6 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     override fun onSubscribeData(owner: LifecycleOwner) {
         super.onSubscribeData(owner)
         viewModel.files.observe(owner, Observer { explorerAdapter.setItems(it) })
+        viewModel.notifyUpdated.observe(owner) { explorerAdapter.notifyItemChanged(it ?: return@observe) }
     }
 }

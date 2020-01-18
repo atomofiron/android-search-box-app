@@ -4,21 +4,39 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import ru.atomofiron.regextool.Util.log
 import ru.atomofiron.regextool.common.base.BaseViewModel
+import ru.atomofiron.regextool.common.util.LiveEvent
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.screens.explorer.adapter.ItemActionListener
 
-class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app) {
+class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), ItemActionListener {
     override val router = ExplorerRouter()
 
     private val explorerInteractor = ExplorerInteractor()
 
     val files = MutableLiveData<List<XFile>>()
+    val notifyUpdated = LiveEvent<XFile?>()
 
     override fun onCreate(context: Context, intent: Intent) {
         super.onCreate(context, intent)
 
-        files.value = explorerInteractor.getFiles()
+        explorerInteractor.observeFiles {
+            log("observeFiles... ${it.size}")
+            GlobalScope.launch(Dispatchers.Main) {
+                files.value = it
+            }
+        }
+        explorerInteractor.observeUpdates {
+            log("observeUpdates...")
+            GlobalScope.launch(Dispatchers.Main) {
+                notifyUpdated(it)
+            }
+        }
     }
 
     fun onSearchOptionSelected() = router.showFinder()
@@ -28,16 +46,15 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app) {
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onItemClicked(position: Int) {
-        val item = files.value!![position]
+    override fun onItemClick(item: XFile) {
         when {
             !item.file.isDirectory -> Unit
-            item.opened -> explorerInteractor.closeDir(item) {
-                files.value = it
-            }
-            item.file.isDirectory -> explorerInteractor.openDir(item) {
-                files.value = it
-            }
+            item.isOpened -> explorerInteractor.closeDir(item)
+            item.file.isDirectory -> explorerInteractor.openDir(item)
         }
+    }
+
+    override fun onItemVisible(item: XFile) {
+        explorerInteractor.cacheDir(item)
     }
 }

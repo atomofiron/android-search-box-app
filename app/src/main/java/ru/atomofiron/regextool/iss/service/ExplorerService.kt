@@ -1,102 +1,214 @@
 package ru.atomofiron.regextool.iss.service
 
 import android.preference.PreferenceManager
-import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.Util
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import ru.atomofiron.regextool.*
+import ru.atomofiron.regextool.common.util.KObservable
 import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.utils.Const.ROOT
+import ru.atomofiron.regextool.utils.Shell
 import java.io.File
+import java.io.FileOutputStream
 import kotlin.collections.ArrayList
 
 class ExplorerService {
-    private val files: MutableList<MutableXFile> = ArrayList()
-    private val root = MutableXFile(File(ROOT))
-
     private val sp = PreferenceManager.getDefaultSharedPreferences(App.context)
 
-    init {
-        files.add(root)
-        val su = sp.getBoolean(Util.PREF_USE_SU, false)
+    var flag = false
+    val mutex = Mutex()
+    private val files: MutableList<MutableXFile> = ArrayList()
+        get() {
+            require(!flag) { Exception("Oops") }
+            return field
+        }
+    private val root = MutableXFile(File(sp.getString(Util.PREF_STORAGE_PATH, ROOT)))
 
-        root.cache(su)
+    val store = KObservable<List<XFile>>(files)
+    val updates = KObservable<XFile?>(null)
+
+    init {
+        flag = false
+        GlobalScope.launch(Dispatchers.IO) {
+            copyToybox()
+
+            mutex.withLock {
+                files.add(root)
+                flag = false
+            }
+            cacheDir(root)
+
+            notifyFiles()
+            updates.notifyObservers(root)
+        }
     }
 
-    fun getFiles(): List<XFile> = files
+    private suspend fun notifyFiles() {
+        var items: List<XFile>? = null
+        mutex.withLock {
+            natik("one")
+            items = ArrayList(files)
+            natik("two ${items!!.size}")
+            flag = false
+        }
+        store.notifyObservers(items!!)
+    }
 
-    fun openDir(dir: XFile, callback: (List<XFile>) -> Unit) {
-        if (dir.file.isFile) {
+    private fun findFile(file: XFile): MutableXFile? {
+        val target = files.find { it == file }
+        if (target == null) {
+            log("Target file ($file) was not found!")
+        }
+        return target
+    }
+
+    suspend fun openDir(file: XFile) {
+        log("openDir $file")
+        if (!file.isDirectory) {
             return
         }
-        dir as MutableXFile
+        if (file.files == null) {
+            log("WARNING $file files is null")
+            return
+        }
+        val dir = findFile(file) ?: return
         dir.open()
         if (dir.files!!.isNotEmpty()) {
-            val index = files.indexOf(dir)
-            files.addAll(index.inc(), dir.files!!)
-            callback(files)
+            mutex.withLock {
+                val index = files.indexOf(dir)
+                flag = false
+                files.addAll(index.inc(), dir.files!!)
+                flag = false
+            }
         }
+        notifyFiles()
     }
 
-    fun updateDir(dir: XFile) {
-        dir as MutableXFile
+    suspend fun updateDir(file: XFile) {
+        log("updateDir ... $file")
+        val dir = findFile(file) ?: return
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
         val dirFiles = dir.files!!
         dir.cache(su)
-        dir.files!!.forEachIndexed { index, it ->
-            val i = dirFiles.indexOf(it)
-            val isNew = i == -1
-            when {
-                isNew && it.file.isDirectory -> it.cache(su)
-                it.file.isDirectory -> dir.files!![index] = dirFiles[i]
+        dir.files!!.forEachIndexed { index, new ->
+            if (new.isDirectory) {
+                val lastIndex = dirFiles.indexOf(new)
+                if (lastIndex != -1) {
+                    dir.files!![index].files = dirFiles[lastIndex].files
+                }
             }
         }
 
-        files.removeAll(dirFiles)
+        mutex.withLock {
+            files.removeAll(dirFiles)
+            flag = false
 
-        if (dir.opened && dir.files!!.isEmpty()) {
-            dir.close()
+            if (dir.isOpened && dir.files!!.isEmpty()) {
+                dir.close()
+            } else {
+                val index = files.indexOf(dir)
+                flag = false
+                files.addAll(index.inc(), dir.files!!)
+                flag = false
+            }
+        }
+        log("updateDir end...")
+        if (dirFiles.size != dir.files?.size || dirFiles.containsAll(dir.files!!)) {
+            notifyFiles()
         } else {
-            val index = files.indexOf(dir)
-            files.addAll(index.inc(), dir.files!!)
+            log("updateDir dirFiles.containsAll(dir.files)")
         }
     }
 
-    fun cacheChildrenDirs(dir: XFile, callback: (List<XFile>) -> Unit) {
-        if (!dir.file.isDirectory || !dir.opened) {
+    suspend fun cacheDir(file: XFile) {
+        if (file.isOpened || !file.isDirectory || file.isCached) {
+            log("cacheDir $file return")
             return
         }
-        dir as MutableXFile
+        log("cacheDir $file ...?")
+        val dir = findFile(file) ?: return
+        log("cacheDir nu $file")
+        Thread.sleep(100)
+        log("cacheDir sleep ok $file")
+        dir.cache()
+        log("cacheDir ok $file")
+        updates.notifyObservers(dir)
+    }
+
+    /*fun cacheChildrenDirs(dir: XFile, callback: (List<XFile>) -> Unit) {
+        if (!dir.file.isDirectory || !dir.isOpened) {
+            return
+        }
+        val dir = findFile(file) ?: return
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
         dir.files!!.filter { it.file.isDirectory }.forEach { it.cache(su) }
         callback(files)
-    }
+    }*/
 
-    fun closeDir(dir: XFile, callback: (List<XFile>) -> Unit) {
-        dir as MutableXFile
+    /*fun updateDirAndCacheChildren(dir: XFile, callback: (List<XFile>) -> Unit) {
+        if (!dir.file.isDirectory || !dir.isOpened) {
+            return
+        }
+        val dir = findFile(file) ?: return
+        files.removeAll(dir.files!!)
+        val su = sp.getBoolean(Util.PREF_USE_SU, false)
+        dir.cacheChildren(su)
+        val index = files.indexOf(dir)
+        files.addAll(index.inc(), dir.files!!)
+        log("cacheChildren end")
+        callback(files)
+    }*/
+
+    suspend fun closeDir(file: XFile) {
+        val dir = findFile(file) ?: return
         dir.close()
         removeAllChildren(dir)
 
-        callback(files)
+        notifyFiles()
     }
 
-    fun persistState() {
-        val vertexes = files.filter { file ->
-            file.opened && file.files?.find { child -> child.opened } == null
-        }
-    }
-
-    private fun removeAllChildren(dir: XFile) {
-        val path = dir.completedPath
-        val each = files.iterator()
-        var removed = false
-        while (each.hasNext()) {
-            val next = each.next()
-            if (next.completedParentPath.startsWith(path)) {
-                each.remove()
-                removed = true
-            } else if (removed) {
-                break
+    suspend fun persistState() {
+        mutex.withLock {
+            val vertexes = files.filter { file ->
+                file.isOpened && file.files?.find { child -> child.isOpened } == null
             }
+            flag = false
         }
+    }
+
+    private suspend fun removeAllChildren(dir: XFile) {
+        val path = dir.completedPath
+        mutex.withLock {
+            val each = files.iterator()
+            var removed = false
+            while (each.hasNext()) {
+                val next = each.next()
+                if (next.completedParentPath.startsWith(path)) {
+                    each.remove()
+                    removed = true
+                } else if (removed) {
+                    break
+                }
+            }
+            flag = false
+        }
+    }
+
+    private fun copyToybox() {
+        log("filesDir ${App.context.filesDir}")
+        val toyboxPath = "${App.context.filesDir}/toybox"
+        MutableXFile.toyboxPath = toyboxPath
+        val toybox = File(toyboxPath)
+        toybox.deleteRecursively()
+        toybox.parentFile.mkdirs()
+        val input = App.context.assets.open("toybox/toybox64")
+        val bytes = input.readBytes()
+        input.close()
+        val output = FileOutputStream(toybox)
+        output.write(bytes)
+        output.close()
+        Shell.exec(Shell.NATIVE_CHMOD_X.format(toyboxPath))
     }
 }

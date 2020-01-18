@@ -22,10 +22,10 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     private val size = Knife<TextView>(itemView, R.id.item_tv_size)
     private val checkbox = Knife<CheckBox>(itemView, R.id.item_cb)
 
-    var onItemClickListener: ((position: Int) -> Unit)? = null
+    var onItemActionListener: ItemActionListener? = null
 
     private var onClickListener: ((View) -> Unit) = {
-        onItemClickListener?.invoke(adapterPosition)
+        onItemActionListener?.onItemClick(item)
     }
 
     override fun onBind(item: XFile, position: Int) {
@@ -48,5 +48,6 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             item.file.isFile -> item.size
             else -> ""
         }
+        onItemActionListener?.onItemVisible(item)
     }
 }

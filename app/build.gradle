@@ -19,6 +19,7 @@ android {
         debug {
             applicationIdSuffix ".debug"
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
+            buildConfigField "String", "AUTHORITY", "\"${appId + applicationIdSuffix + fileProviderName}\""
         }
         release {
             minifyEnabled true

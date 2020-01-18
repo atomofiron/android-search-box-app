@@ -5,7 +5,9 @@ import java.io.File
 interface XFile {
     val file: File
     val files: List<XFile>?
-    val opened: Boolean
+    val isOpened: Boolean
+    var isCached: Boolean
+    val isDirectory: Boolean
 
     /* путь + / */
     val completedPath: String

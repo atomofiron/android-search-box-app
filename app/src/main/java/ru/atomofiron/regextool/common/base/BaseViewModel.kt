@@ -10,11 +10,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import ru.atomofiron.regextool.log
 
 abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewModel(app) {
     protected abstract val router: R
     protected var provider: ViewModelProvider? = null
+    val screenScope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Main.immediate)
 
     open fun onFragmentAttach(fragment: Fragment) {
         router.onFragmentAttach(fragment)
@@ -40,6 +45,7 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
     open fun onViewDestroy() = router.onViewDestroy()
 
     override fun onCleared() {
+        screenScope.cancel()
         provider = null
     }
 
