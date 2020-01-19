@@ -22,4 +22,5 @@ interface XFile {
     val date: String
     val time: String
     val name: String
+    val suffix: String
 }

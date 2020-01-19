@@ -6,6 +6,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object Shell {
+    private const val LOG_LIMIT = 128
     private const val SU = "su"
     private const val SH = "sh"
     private const val SUCCESS = 0
@@ -74,8 +75,8 @@ object Shell {
             output = inputStream.reader().readText()
             error = errorStream.reader().readText()
             tik("readText. $cmd")
-            if (output.length > 128) {
-                log("output: ${output.substring(output.length - 128, output.length)}")
+            if (output.length > LOG_LIMIT) {
+                log("output: ${output.substring(output.length - LOG_LIMIT, output.length)}")
             } else {
                 log("output: $output")
             }

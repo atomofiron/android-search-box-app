@@ -34,7 +34,7 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         itemView.setOnClickListener(onClickListener)
 
         val type = when {
-            !item.file.isDirectory -> R.drawable.ic_file_circle
+            !item.isDirectory -> R.drawable.ic_file_circle
             item.files?.isEmpty() == true -> R.drawable.ic_folder_empty
             else -> R.drawable.ic_folder
         }

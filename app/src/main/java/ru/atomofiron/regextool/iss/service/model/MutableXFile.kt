@@ -8,6 +8,7 @@ class MutableXFile : XFile {
     companion object {
         private const val TOTAL = "total"
         private const val DIR_CHAR = 'd'
+        private const val LINK_CHAR = 'l'
 
         var toyboxPath: String = ""
     }
@@ -15,7 +16,7 @@ class MutableXFile : XFile {
 
     override var isOpened: Boolean = false
     private set(value) {
-        require(file.isDirectory || !value) { "$completedPath is not a directory!" }
+        require(isDirectory || !value) { "$completedPath is not a directory!" }
         field = value
     }
 
@@ -43,11 +44,12 @@ class MutableXFile : XFile {
     override val date: String
     override val time: String
     override val name: String
+    override val suffix: String
 
     override val isDirectory: Boolean
 
-    constructor(file: File) {
-        this.file = file
+    constructor(path: String) {
+        this.file = File(path)
         access = ""
         owner = ""
         group = ""
@@ -55,12 +57,12 @@ class MutableXFile : XFile {
         date = ""
         time = ""
         name = file.name
+        suffix = ""
         isDirectory = file.isDirectory
     }
 
     constructor(parent: String, line: String) {
         val parts = line.split(Regex(" +"), 8)
-        file = File(parent, parts[7])
         access = parts[0]
         owner = parts[2]
         group = parts[3]
@@ -69,6 +71,12 @@ class MutableXFile : XFile {
         time = parts[6]
         name = parts[7]
         isDirectory = access[0] == DIR_CHAR
+        if (parts[7].contains('>')) {
+            log("LINK ${parts[7]}")
+        }
+
+        file = File(parent, parts[7])
+        suffix = ""
     }
 
     fun open() {
@@ -91,7 +99,7 @@ class MutableXFile : XFile {
     fun cache(su: Boolean = false): String? {
         isCaching = true
         log("cache() $this")
-        require(file.isDirectory) { UnsupportedOperationException("$this is not a directory!") }
+        require(isDirectory) { UnsupportedOperationException("$this is not a directory!") }
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         return if (output.success) {
             val lines = output.output.split("\n")
@@ -106,7 +114,7 @@ class MutableXFile : XFile {
                 for (i in start until lines.size) {
                     if (lines[i].isNotEmpty()) {
                         val file = MutableXFile(completedPath, lines[i])
-                        if (file.file.isDirectory) {
+                        if (file.isDirectory) {
                             dirs.add(file)
                         } else {
                             files.add(file)

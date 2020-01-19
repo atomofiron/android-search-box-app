@@ -22,7 +22,9 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
     fun setItem(item: D) {
         log("setItem $item")
         val index = items.indexOf(item)
-        items[index] = item
-        notifyItemChanged(index)
+        if (index != -1) {
+            items[index] = item
+            notifyItemChanged(index)
+        }
     }
 }
