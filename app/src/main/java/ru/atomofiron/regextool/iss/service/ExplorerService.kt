@@ -17,7 +17,7 @@ import kotlin.collections.ArrayList
 class ExplorerService {
     private val sp = PreferenceManager.getDefaultSharedPreferences(App.context)
 
-    var flag = false
+    var flag = false // todo remove
     val mutex = Mutex()
     private val files: MutableList<MutableXFile> = ArrayList()
         get() {
@@ -50,8 +50,8 @@ class ExplorerService {
         mutex.withLock {
             natik("one")
             items = ArrayList(files)
-            natik("two ${items!!.size}")
             flag = false
+            natik("two ${items!!.size}")
         }
         store.notifyObservers(items!!)
     }
@@ -66,14 +66,14 @@ class ExplorerService {
 
     suspend fun openDir(file: XFile) {
         log("openDir $file")
-        if (!file.isDirectory) {
-            return
-        }
-        if (file.files == null) {
-            log("WARNING $file files is null")
-            return
-        }
         val dir = findFile(file) ?: return
+        if (!dir.isDirectory) {
+            return
+        }
+        if (dir.files == null) {
+            log("WARNING $dir files is null")
+            return
+        }
         dir.open()
         if (dir.files!!.isNotEmpty()) {
             mutex.withLock {
@@ -89,19 +89,30 @@ class ExplorerService {
     suspend fun updateDir(file: XFile) {
         log("updateDir ... $file")
         val dir = findFile(file) ?: return
+        if (dir.isCaching) {
+            log("isCaching return $dir")
+            return
+        }
         val su = sp.getBoolean(Util.PREF_USE_SU, false)
         val dirFiles = dir.files!!
         dir.cache(su)
-        dir.files!!.forEachIndexed { index, new ->
+        val newFiles = dir.files ?: return
+        newFiles.forEachIndexed { index, new ->
             if (new.isDirectory) {
                 val lastIndex = dirFiles.indexOf(new)
                 if (lastIndex != -1) {
-                    dir.files!![index].files = dirFiles[lastIndex].files
+                    newFiles[index].files = dirFiles[lastIndex].files
                 }
             }
         }
 
         mutex.withLock {
+            if (!dir.isCached || !files.contains(dir)) {
+                flag = false
+                log("Oops, file lost! $dir")
+                return
+            }
+            flag = false
             files.removeAll(dirFiles)
             flag = false
 
@@ -115,25 +126,24 @@ class ExplorerService {
             }
         }
         log("updateDir end...")
-        if (dirFiles.size != dir.files?.size || dirFiles.containsAll(dir.files!!)) {
-            notifyFiles()
+        if (dirFiles.size == newFiles.size || dirFiles.containsAll(newFiles)) {
+            log("updateDir dirFiles == newFiles")
         } else {
-            log("updateDir dirFiles.containsAll(dir.files)")
+            notifyFiles()
         }
     }
 
     suspend fun cacheDir(file: XFile) {
-        if (file.isOpened || !file.isDirectory || file.isCached) {
+        val dir = findFile(file) ?: return
+        if (dir.isOpened || !dir.isDirectory || dir.isCached) {
             log("cacheDir $file return")
             return
         }
-        log("cacheDir $file ...?")
-        val dir = findFile(file) ?: return
-        log("cacheDir nu $file")
-        Thread.sleep(100)
-        log("cacheDir sleep ok $file")
+        log("cacheDir $dir ...?")
+        //Thread.sleep(1000)
+        //log("SLEEP 1000 $this")
         dir.cache()
-        log("cacheDir ok $file")
+        log("cacheDir ok $dir")
         updates.notifyObservers(dir)
     }
 
@@ -164,9 +174,11 @@ class ExplorerService {
     suspend fun closeDir(file: XFile) {
         val dir = findFile(file) ?: return
         dir.close()
-        removeAllChildren(dir)
 
+        removeAllChildren(dir)
         notifyFiles()
+
+        dir.clearChildren()
     }
 
     suspend fun persistState() {

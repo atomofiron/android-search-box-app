@@ -2,7 +2,7 @@ package ru.atomofiron.regextool.common.util
 
 import androidx.lifecycle.*
 import androidx.lifecycle.Lifecycle.State
-import ru.atomofiron.regextool.Util.log
+import ru.atomofiron.regextool.log
 
 class LiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
@@ -33,7 +33,6 @@ class LiveEvent<T> : LifecycleEventObserver {
     }
 
     private fun check() {
-        // todo fix the crash
         val notObserved = listener == null && parameterizedListener == null
         require(notObserved) { IllegalStateException("Already") }
     }

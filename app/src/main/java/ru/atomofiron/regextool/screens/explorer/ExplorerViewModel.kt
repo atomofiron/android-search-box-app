@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import ru.atomofiron.regextool.Util.log
+import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.common.base.BaseViewModel
 import ru.atomofiron.regextool.common.util.LiveEvent
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor

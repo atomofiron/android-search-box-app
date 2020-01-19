@@ -12,6 +12,7 @@ open class KObservable<T : Any?>(value: T) {
     fun addObserver(observer: (T) -> Unit) {
         if (!observers.contains(observer)) {
             observers.addElement(observer)
+            // todo check state
             observer.invoke(value)
         }
     }
@@ -19,6 +20,7 @@ open class KObservable<T : Any?>(value: T) {
     @Synchronized
     fun removeObserver(o: (T) -> Unit) = observers.removeElement(o)
 
+    @Synchronized
     fun notifyObservers(value: T) {
         this.value = value
         changed = true

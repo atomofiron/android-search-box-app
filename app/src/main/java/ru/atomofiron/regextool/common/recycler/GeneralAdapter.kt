@@ -1,7 +1,7 @@
 package ru.atomofiron.regextool.common.recycler
 
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.Util.log
+import ru.atomofiron.regextool.log
 
 abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adapter<H>() {
     protected val items: MutableList<D> = ArrayList()
@@ -19,9 +19,10 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         notifyDataSetChanged()
     }
 
-    fun notifyItemChanged(item: D) {
-        log("notifyItemChanged $item")
+    fun setItem(item: D) {
+        log("setItem $item")
         val index = items.indexOf(item)
+        items[index] = item
         notifyItemChanged(index)
     }
 }

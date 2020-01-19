@@ -12,10 +12,6 @@ class MutableXFile : XFile {
         var toyboxPath: String = ""
     }
     override var files: MutableList<MutableXFile>? = null
-        set(value) {
-            isCached = false
-            field = value
-        }
 
     override var isOpened: Boolean = false
     private set(value) {
@@ -23,8 +19,9 @@ class MutableXFile : XFile {
         field = value
     }
 
-    override var isCached: Boolean = false
-        get() = field || files != null
+    var isCaching: Boolean = false
+        private set
+    override val isCached: Boolean get() = isCaching || files != null
 
     override val completedPath: String by lazy {
         if (file.isFile || file.absolutePath.endsWith("/")) {
@@ -82,13 +79,17 @@ class MutableXFile : XFile {
 
     fun close() {
         log("close() $this")
-        files!!.forEach { it.clear() }
         isOpened = false
     }
 
-    // @return error or null //
+    fun clearChildren() {
+        log("clearChildren() $this")
+        files!!.forEach { it.clear() }
+    }
+
+    /** @return error or null */
     fun cache(su: Boolean = false): String? {
-        isCached = true
+        isCaching = true
         log("cache() $this")
         require(file.isDirectory) { UnsupportedOperationException("$this is not a directory!") }
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
@@ -104,7 +105,6 @@ class MutableXFile : XFile {
                 }
                 for (i in start until lines.size) {
                     if (lines[i].isNotEmpty()) {
-                        log("wat $this ${lines[i]}")
                         val file = MutableXFile(completedPath, lines[i])
                         if (file.file.isDirectory) {
                             dirs.add(file)
@@ -114,7 +114,7 @@ class MutableXFile : XFile {
                     }
                 }
             } else {
-                log("$this EMPTY")
+                log("empty $this")
             }
 
             dirs.sortBy { it.name }
@@ -122,55 +122,22 @@ class MutableXFile : XFile {
             files.addAll(0, dirs)
 
             this.files = files
-            log("cacheed $this ${files.size} files")
+            isCaching = false
+            log("cached $this ${files.size} files")
             null
         } else {
             log("output.error $completedPath ${output.error}")
             this.files = ArrayList()
+            isCaching = false
             output.error
         }
     }
 
-    ///** @return error or null */
-    /*private fun cacheChildren(su: Boolean = false): String? {
-        val depth = 2
-        require(file.isDirectory) { UnsupportedOperationException("$this is not a directory!") }
-        val output = Shell.exec(Shell.FIND.format(completedPath, depth), su)
-        return if (output.success) {
-            val lines = output.output.split("\n")
-            val files = ArrayList<MutableXFile>()
-            var lastSubDir: MutableXFile? = null
-
-            if (lines.isNotEmpty()) {
-                for (i in lines.indices) {
-                    if (lines[i].isNotEmpty()) {
-                        val file = MutableXFile("/", lines[i])
-                        when (completedPath) {
-                            file.completedPath -> log("kek ${file.completedPath}")
-                            file.completedParentPath -> {
-                                files.add(file)
-                                file.files = ArrayList()
-                                lastSubDir = file
-                            }
-                            else -> lastSubDir!!.files!!.add(file)
-                        }
-                    }
-                }
-            }
-
-            files.sortBy { it.name }
-            files.sortBy { !it.isDirectory }
-
-            this.files = files
-            null
-        } else {
-            log("output.error $completedPath ${output.error}")
-            this.files = ArrayList()
-            output.error
-        }
-    }*/
-
     private fun clear() {
+        if (files == null) {
+            return
+        }
+        log("clear() $this")
         files = null
         isOpened = false
     }
