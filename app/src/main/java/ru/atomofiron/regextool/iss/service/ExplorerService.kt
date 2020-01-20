@@ -20,7 +20,6 @@ class ExplorerService {
     val mutex = Mutex()
     private val files: MutableList<MutableXFile> = ArrayList()
     private val root = MutableXFile(sp.getString(Util.PREF_STORAGE_PATH, ROOT)!!)
-    // todo smart update
     private var currentOpenedDir: MutableXFile? = null
 
     val store = KObservable<List<XFile>>(files)
@@ -95,6 +94,29 @@ class ExplorerService {
             log2("openDir return $dir")
             return
         }
+        when {
+            dir == currentOpenedDir -> closeDir(dir)
+            dir.isOpened -> reopenDir(dir)
+            else -> openDir(dir)
+        }
+    }
+
+    private suspend fun reopenDir(dir: MutableXFile) {
+        log2("reopenDir $dir")
+        val anotherDir = findOpenedDirIn(dir.completedPath)
+        if (anotherDir != null) {
+            log2("reopenDir anotherDir != null $anotherDir")
+            anotherDir.close()
+            anotherDir.clearChildren()
+            removeAllChildren(anotherDir)
+            notifyFiles()
+        } else {
+            closeDir(dir)
+        }
+    }
+
+    private suspend fun openDir(dir: MutableXFile) {
+        require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         log2("openDir $dir")
         val anotherDir = findOpenedDirIn(dir.completedParentPath)
         if (anotherDir != null) {
@@ -155,7 +177,7 @@ class ExplorerService {
             log2("updateCurrentDir dir != currentOpenedDir $dir")
             return
         }
-        if (dir.isCaching) {
+        if (dir.isCaching || dir.isCacheActual) {
             log2("updateCurrentDir dir.isCaching $dir")
             return
         }

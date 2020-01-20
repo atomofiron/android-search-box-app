@@ -45,9 +45,8 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
 
     override fun onItemClick(item: XFile) {
         when {
-            !item.isDirectory -> Unit
-            item.isOpened -> explorerInteractor.closeDir(item)
-            else -> explorerInteractor.openDir(item)
+            item.isDirectory -> explorerInteractor.openDir(item)
+            else -> Unit
         }
     }
 

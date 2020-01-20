@@ -27,13 +27,6 @@ class ExplorerInteractor {
         }
     }
 
-    fun closeDir(dir: XFile) {
-        scope.launch {
-            service.closeDir(dir)
-            service.persistState()
-        }
-    }
-
     fun updateFile(file: XFile) {
         scope.launch {
             service.updateFile(file)
