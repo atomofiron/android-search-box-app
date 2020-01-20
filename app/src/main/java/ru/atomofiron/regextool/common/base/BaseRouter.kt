@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.common.base.util.OneTimeBackStackListener
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
@@ -84,17 +83,14 @@ abstract class BaseRouter {
                               addToBackStack: Boolean = true,
                               runOnCommit: (() -> Unit)? = null) {
         if (isDestroyed || isBlocked) {
-            log("isBlock...")
             return
         }
-        log("startScreen [0]: ${fragmentsArg[0]::class.java.simpleName}")
         manager {
             val addedFragments = fragments.map { it::class }
             if (fragment != null) {
                 val kClass = fragment!!::class
                 val indexFromEnd = addedFragments.lastIndex - addedFragments.indexOf(kClass)
                 if (indexFromEnd != this@BaseRouter.indexFromEnd) {
-                    log("${kClass.java.simpleName}'s indexFromEnd != indexFromEnd")
                     return@manager
                 }
             }
@@ -125,7 +121,6 @@ abstract class BaseRouter {
 
     protected fun switchScreen(addToBackStack: Boolean = true, predicate: (Fragment) -> Boolean) {
         if (isDestroyed || isBlocked) {
-            log("isBlock...")
             return
         }
         manager {

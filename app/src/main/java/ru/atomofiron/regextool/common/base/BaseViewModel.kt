@@ -14,7 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import ru.atomofiron.regextool.log
 
 abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewModel(app) {
     protected abstract val router: R
@@ -35,11 +34,10 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
         onCreate(context, Intent().putExtras(arguments ?: Bundle()))
     }
 
-    open fun onCreate(context: Context, intent: Intent) = log("onCreate")
+    open fun onCreate(context: Context, intent: Intent) = Unit
 
     open fun onShow() {
         //router.unblockUi()
-        log("onShow")
     }
 
     open fun onViewDestroy() = router.onViewDestroy()

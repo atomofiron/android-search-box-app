@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.common.base.BaseViewModel
 import ru.atomofiron.regextool.common.util.LiveEvent
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
@@ -26,13 +25,11 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         super.onCreate(context, intent)
 
         explorerInteractor.observeFiles {
-            log("observeFiles... ${it.size}")
             GlobalScope.launch(Dispatchers.Main) {
                 files.value = it
             }
         }
         explorerInteractor.observeUpdates {
-            log("observeUpdates...")
             GlobalScope.launch(Dispatchers.Main) {
                 notifyUpdated(it)
             }

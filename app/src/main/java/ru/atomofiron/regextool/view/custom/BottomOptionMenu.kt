@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.findBooleanByAttr
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.view.custom.menu.MenuImpl
 
 class BottomOptionMenu : LinearLayout {
@@ -32,7 +31,6 @@ class BottomOptionMenu : LinearLayout {
         isClickable = false
         isFocusable = false
 
-        log("wat ${context.findBooleanByAttr(R.attr.isDarkTheme)}")
     }
 
     val menu = MenuImpl(context)

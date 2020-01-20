@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProviders
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.common.util.findBooleanByAttr
 import kotlin.reflect.KClass
 
@@ -25,7 +24,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
     protected open val systemBarsLights: Boolean get() = !context.findBooleanByAttr(R.attr.isDarkTheme)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        log("onCreate")
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!).get(viewModelClass.java)
         viewModel.onFragmentAttach(this)
@@ -37,7 +35,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
                               savedInstanceState: Bundle?
     ): View? = LayoutInflater.from(context).inflate(layoutId, container, false)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        log("onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         viewModel.onShow()
         onSubscribeData(this)
@@ -46,7 +43,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
     open fun onBack(): Boolean = false
 
     override fun onStart() {
-        log("onStart")
         super.onStart()
 
         // todo bad idea do this in onStart()
@@ -55,7 +51,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
     }
 
     override fun onResume() {
-        log("onResume")
         super.onResume()
     }
 
@@ -64,7 +59,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
     open fun onUnsubscribeData(owner: LifecycleOwner) = Unit
 
     override fun onHiddenChanged(hidden: Boolean) {
-        log("onHiddenChanged $hidden")
         super.onHiddenChanged(hidden)
 
         if (!hidden) {
@@ -75,12 +69,10 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
     }
 
     override fun onDestroyView() {
-        log("onDestroyView")
         super.onDestroyView()
     }
 
     override fun onDestroy() {
-        log("onDestroy")
         viewModel.onViewDestroy()
         super.onDestroy()
     }

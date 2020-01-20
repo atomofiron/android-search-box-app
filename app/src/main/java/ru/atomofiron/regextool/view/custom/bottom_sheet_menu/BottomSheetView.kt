@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimationUtilsCompat
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.findColorByAttr
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.utils.loadAnimationWithDurationScale
 
 class BottomSheetView : FrameLayout, Animation.AnimationListener {
@@ -54,7 +53,6 @@ class BottomSheetView : FrameLayout, Animation.AnimationListener {
     private set
 
     fun show() {
-        log("show")
         isSheetShown = true
 
         overlay.animation?.cancel()
@@ -70,7 +68,6 @@ class BottomSheetView : FrameLayout, Animation.AnimationListener {
     }
 
     fun hide() {
-        log("hide")
         isSheetShown = false
 
         overlay.animation?.cancel()

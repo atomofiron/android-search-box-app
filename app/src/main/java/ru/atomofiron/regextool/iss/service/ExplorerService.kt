@@ -21,7 +21,7 @@ class ExplorerService {
     private val files: MutableList<MutableXFile> = ArrayList()
     private val root = MutableXFile(sp.getString(Util.PREF_STORAGE_PATH, ROOT)!!)
     // todo smart update
-    private var currentDir: MutableXFile? = null
+    private var currentOpenedDir: MutableXFile? = null
 
     val store = KObservable<List<XFile>>(files)
     val updates = KObservable<XFile?>(null)
@@ -36,14 +36,20 @@ class ExplorerService {
             mutex.withLock {
                 files.add(root)
             }
-            updateDir(root)
+            updateClosedDir(root)
 
             notifyFiles()
             updates.notifyObservers(root)
         }
     }
 
+    private fun notifyUpdate(file: XFile) {
+        log("notifyUpdate $file")
+        updates.notifyObservers(file)
+    }
+
     private suspend fun notifyFiles() {
+        log("notifyFiles")
         var items: List<XFile>? = null
         mutex.withLock {
             items = ArrayList(files)
@@ -63,7 +69,6 @@ class ExplorerService {
                 return file
             }
         }
-        log("Target file was not found! $completedPath")
         return null
     }
 
@@ -77,24 +82,23 @@ class ExplorerService {
                 return file
             }
         }
-        log("Opened subdirectory was not found! $completedParentPath")
         return null
     }
 
     fun persistState() {
-        sp.edit().putString(Util.PREF_CURRENT_DIR, currentDir?.completedPath).apply()
+        sp.edit().putString(Util.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
     }
 
     suspend fun openDir(f: XFile) {
-        log("openDir $f")
         val dir = findFile(f) ?: return
         if (!dir.isDirectory || !dir.isCached) {
-            log("openDir return $f")
+            log("openDir return $dir")
             return
         }
+        log("openDir $dir")
         val anotherDir = findOpenedDirIn(dir.completedParentPath)
         if (anotherDir != null) {
-            log("Force close $anotherDir")
+            log("openDir anotherDir != null $dir")
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
@@ -102,7 +106,7 @@ class ExplorerService {
 
         mutex.withLock {
             dir.open()
-            currentDir = dir
+            currentOpenedDir = dir
 
             val dirFiles = dir.files
             if (dirFiles?.isNotEmpty() == true) {
@@ -115,10 +119,11 @@ class ExplorerService {
 
     suspend fun closeDir(f: XFile) {
         val dir = findFile(f) ?: return
+        log("closeDir $dir")
         val parent = findFile(dir.completedParentPath)
         mutex.withLock {
             dir.close()
-            currentDir = parent
+            currentOpenedDir = parent
         }
 
         dir.clearChildren()
@@ -128,9 +133,11 @@ class ExplorerService {
 
     suspend fun updateFile(f: XFile) {
         val file = findFile(f) ?: return
+        log("updateFile $file")
         when {
-            file == currentDir -> updateCurrentDir(file)
-            file.isDirectory -> updateDir(file)
+            file == currentOpenedDir -> updateCurrentDir(file)
+            file.isOpened -> Unit
+            file.isDirectory -> updateClosedDir(file)
             else -> return updateFile(file)
         }
     }
@@ -144,62 +151,49 @@ class ExplorerService {
     }
 
     private suspend fun updateCurrentDir(dir: MutableXFile) {
-        if (dir != currentDir) {
+        if (dir != currentOpenedDir) {
+            log("updateCurrentDir dir != currentOpenedDir $dir")
             return
         }
-        log("updateCurrentDir")
         if (dir.isCaching) {
-            log("isCaching return $dir")
+            log("updateCurrentDir dir.isCaching $dir")
             return
         }
+        log("updateCurrentDir $dir")
         val dirFiles = dir.files
         val su = useSu()
-        val error = dir.cache(su)
+        val error = dir.updateCache(su)
         if (error != null) {
-            log("updateDir: $error")
+            log("updateCurrentDir error != null $dir")
             return
         }
         val newFiles = dir.files!!
-        if (dirFiles != null) {
-            newFiles.forEachIndexed { newIndex, new ->
-                if (new.isDirectory) {
-                    val lastIndex = dirFiles.indexOf(new)
-                    if (lastIndex != -1) {
-                        newFiles[newIndex] = dirFiles[lastIndex]
-                    }
-                }
-            }
-        }
 
         mutex.withLock {
-            if (!dir.isOpened || !dir.isCached || dir != currentDir || !files.contains(dir)) {
-                log("Oops, (parent) current dir closed?")
+            if (!dir.isOpened || !dir.isCached || dir != currentOpenedDir || !files.contains(dir)) {
                 return
             }
             if (dirFiles != null) {
                 files.removeAll(dirFiles)
             }
 
-            if (dir.files!!.isEmpty()) {
-                dir.close()
-            } else {
+            if (newFiles.isNotEmpty()) {
                 val index = files.indexOf(dir)
-                files.addAll(index.inc(), dir.files!!)
+                files.addAll(index.inc(), newFiles)
             }
         }
-        log("updateOpenedDir end...")
         when {
             newFiles.size != dirFiles?.size -> notifyFiles()
             !dirFiles.containsAll(newFiles) -> notifyFiles()
-            else -> log("updateDir dirFiles == newFiles")
+            else -> log("updateCurrentDir dirFiles == newFiles")
         }
     }
 
-    private fun updateDir(dir: MutableXFile) {
+    private fun updateClosedDir(dir: MutableXFile) {
         val su = useSu()
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         if (dir.isOpened || dir.isCaching || dir.isCacheActual) {
-            log("updateDir return $dir")
+            log("updateClosedDir $dir")
             return
         }
         log("updateClosedDir $dir")
@@ -207,10 +201,12 @@ class ExplorerService {
         val error = dir.cache(su)
 
         if (error != null) {
-            log("cacheDir: $error")
+            log("updateClosedDir error != null ${dir.completedPath}\n$error")
             return
         }
-        updates.notifyObservers(dir)
+        if (dir.files?.size != dirFiles?.size || dir.files != dirFiles) {
+            notifyUpdate(dir)
+        }
     }
 
     private suspend fun removeAllChildren(dir: XFile) {
@@ -233,7 +229,6 @@ class ExplorerService {
     }
 
     private fun copyToybox() {
-        log("filesDir ${App.context.filesDir}")
         val toyboxPath = "${App.context.filesDir}/toybox"
         MutableXFile.toyboxPath = toyboxPath
         val toybox = File(toyboxPath)

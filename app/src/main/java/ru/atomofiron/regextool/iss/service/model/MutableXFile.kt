@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.iss.service.model
 
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 
@@ -81,7 +80,6 @@ class MutableXFile : XFile {
         name = parts[7]
         isDirectory = access[0] == DIR_CHAR
         if (parts[7].contains('>')) {
-            log("LINK ${parts[7]}")
         }
 
         file = File(parent, parts[7])
@@ -89,18 +87,37 @@ class MutableXFile : XFile {
     }
 
     fun open() {
-        log("open() $this ${files?.isNotEmpty()}")
         isOpened = true
     }
 
     fun close() {
-        log("close() $this")
         isOpened = false
     }
 
     fun clearChildren() {
-        log("clearChildren() $this")
         files!!.forEach { it.clear() }
+    }
+
+    /** @return error or null */
+    fun updateCache(su: Boolean = false): String? {
+        val oldFiles = files
+        val error = cache(su)
+        if (error != null) {
+            return error
+        }
+
+        val newFiles = this.files!!
+        if (oldFiles != null) {
+            newFiles.forEachIndexed { newIndex, new ->
+                if (new.isDirectory) {
+                    val lastIndex = oldFiles.indexOf(new)
+                    if (lastIndex != -1) {
+                        newFiles[newIndex] = oldFiles[lastIndex]
+                    }
+                }
+            }
+        }
+        return null
     }
 
     /** @return error or null */
@@ -109,9 +126,7 @@ class MutableXFile : XFile {
             return "Cache in process. $this"
         }
         isCaching = true
-        log("cache() $this")
         Thread.sleep(1000)
-        log("SLEEP 1000 $this")
         require(isDirectory) { UnsupportedOperationException("$this is not a directory!") }
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         return if (output.success) {
@@ -135,7 +150,6 @@ class MutableXFile : XFile {
                     }
                 }
             } else {
-                log("empty $this")
             }
 
             dirs.sortBy { it.name }
@@ -144,10 +158,8 @@ class MutableXFile : XFile {
 
             this.files = files
             isCaching = false
-            log("cached $this ${files.size} files")
             null
         } else {
-            log("output.error $completedPath ${output.error}")
             this.files = ArrayList()
             isCaching = false
             output.error
@@ -162,7 +174,6 @@ class MutableXFile : XFile {
         if (files == null) {
             return
         }
-        log("clear() $this")
         files = null
         isOpened = false
     }

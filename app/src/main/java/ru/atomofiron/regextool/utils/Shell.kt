@@ -34,7 +34,6 @@ object Shell {
             ok = process.waitFor() == 0
         } catch (e: Exception) {
             ok = false
-            log(e.toString())
         } finally {
             try {
                 outputStream?.close()
@@ -45,7 +44,6 @@ object Shell {
     }
 
     fun exec(cmd: String, su: Boolean = false): Output {
-        tik("exec: $cmd")
         var success: Boolean
         var output = ""
         var error = ""
@@ -55,49 +53,33 @@ object Shell {
         var outputStream: OutputStream? = null
         var errorStream: InputStream? = null
 
-        tik("try $cmd")
         try {
-        tik("try. $cmd")
             process = Runtime.getRuntime().exec(if (su) SU else SH)
             inputStream = process.inputStream
             outputStream = process.outputStream
             errorStream = process.errorStream
             val osw = outputStream.writer()
 
-            tik("write $cmd")
             osw.write(String.format("%s\n", cmd))
-            tik("flush $cmd")
             osw.flush()
-            tik("close $cmd")
             osw.close()
-            tik("close. $cmd")
 
+            val tik = System.currentTimeMillis()
             output = inputStream.reader().readText()
             error = errorStream.reader().readText()
-            tik("readText. $cmd")
-            if (output.length > LOG_LIMIT) {
-                log("output: ${output.substring(output.length - LOG_LIMIT, output.length)}")
-            } else {
-                log("output: $output")
-            }
-            log("error: $error")
-            tik("waitFor $cmd")
             success = process.waitFor() == SUCCESS
-            tik("waitFor. $cmd")
+
+            log("waitFor ${System.currentTimeMillis() - tik} $cmd")
         } catch (e: Exception) {
             success = false
-            log(e.toString())
         } finally {
-            tik("finally $cmd")
             try {
                 inputStream?.close()
                 outputStream?.close()
                 errorStream?.close()
                 process?.destroy()
             } catch (e: Exception) {
-                log(e.toString())
             }
-            tik("finally. $cmd")
         }
         return Output(success, output, error)
     }

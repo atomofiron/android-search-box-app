@@ -2,7 +2,6 @@ package ru.atomofiron.regextool.common.base.util
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import ru.atomofiron.regextool.log
 import kotlin.reflect.KClass
 
 class BackStackWatcher(private val manager: FragmentManager) : FragmentManager.OnBackStackChangedListener {
@@ -20,7 +19,6 @@ class BackStackWatcher(private val manager: FragmentManager) : FragmentManager.O
     }
 
     override fun onBackStackChanged() {
-        log("onBackStackChanged")
         val newBackStack = manager.fragments.map { it::class }
         backStack
                 .filter { !newBackStack.contains(it) }

@@ -2,7 +2,6 @@ package ru.atomofiron.regextool.common.util
 
 import androidx.lifecycle.*
 import androidx.lifecycle.Lifecycle.State
-import ru.atomofiron.regextool.log
 
 class LiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
@@ -24,7 +23,6 @@ class LiveEvent<T> : LifecycleEventObserver {
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        log("onStateChanged $event")
         if (source.lifecycle.currentState == State.DESTROYED) {
             source.lifecycle.removeObserver(this)
             listener = null
