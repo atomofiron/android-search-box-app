@@ -108,6 +108,8 @@ class ExplorerService {
             log2("reopenDir anotherDir != null $anotherDir")
             anotherDir.close()
             anotherDir.clearChildren()
+            currentOpenedDir = dir
+
             removeAllChildren(anotherDir)
             notifyFiles()
         } else {
