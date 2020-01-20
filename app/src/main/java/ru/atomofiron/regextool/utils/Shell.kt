@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.utils
 
-import ru.atomofiron.regextool.log
-import ru.atomofiron.regextool.tik
+import ru.atomofiron.regextool.log2
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -69,7 +68,7 @@ object Shell {
             error = errorStream.reader().readText()
             success = process.waitFor() == SUCCESS
 
-            log("waitFor ${System.currentTimeMillis() - tik} $cmd")
+            log2("waitFor ${System.currentTimeMillis() - tik} $cmd")
         } catch (e: Exception) {
             success = false
         } finally {

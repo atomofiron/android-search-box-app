@@ -17,14 +17,15 @@ class MutableXFile : XFile {
     override var files: MutableList<MutableXFile>? = null
         set(value) {
             field = value
+            isCaching = false
             isCacheActual = value != null
         }
 
     override var isOpened: Boolean = false
-    private set(value) {
-        require(isDirectory || !value) { "$completedPath is not a directory!" }
-        field = value
-    }
+        private set(value) {
+            require(isDirectory || !value) { "$completedPath is not a directory!" }
+            field = value
+        }
 
     var isCaching: Boolean = false
         private set
@@ -80,6 +81,7 @@ class MutableXFile : XFile {
         name = parts[7]
         isDirectory = access[0] == DIR_CHAR
         if (parts[7].contains('>')) {
+            // todo links
         }
 
         file = File(parent, parts[7])
@@ -126,7 +128,7 @@ class MutableXFile : XFile {
             return "Cache in process. $this"
         }
         isCaching = true
-        Thread.sleep(1000)
+        //Thread.sleep(3000)
         require(isDirectory) { UnsupportedOperationException("$this is not a directory!") }
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         return if (output.success) {
@@ -149,7 +151,6 @@ class MutableXFile : XFile {
                         }
                     }
                 }
-            } else {
             }
 
             dirs.sortBy { it.name }
@@ -157,11 +158,9 @@ class MutableXFile : XFile {
             files.addAll(0, dirs)
 
             this.files = files
-            isCaching = false
             null
         } else {
-            this.files = ArrayList()
-            isCaching = false
+            files = ArrayList()
             output.error
         }
     }

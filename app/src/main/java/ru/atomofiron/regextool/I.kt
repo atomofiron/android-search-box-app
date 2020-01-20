@@ -7,11 +7,11 @@ private var nanotimestamp: Long = 0
 
 private const val stop = false
 
-fun Any.log1(s: String) {
+fun Any.log(s: String) {
     Log.e("regextool", "[${this.javaClass.simpleName}] $s")
 }
 
-fun Any.log(s: String) {
+fun Any.log2(s: String) {
     if (stop) return
 
     Log.e("regextool", "[${this.javaClass.simpleName}] $s")
