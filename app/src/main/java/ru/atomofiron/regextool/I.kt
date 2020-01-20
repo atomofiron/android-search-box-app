@@ -5,7 +5,11 @@ import android.util.Log
 private var timestamp: Long = 0
 private var nanotimestamp: Long = 0
 
-private const val stop = false
+private const val stop = true
+
+fun Any.log1(s: String) {
+    Log.e("regextool", "[${this.javaClass.simpleName}] $s")
+}
 
 fun Any.log(s: String) {
     if (stop) return

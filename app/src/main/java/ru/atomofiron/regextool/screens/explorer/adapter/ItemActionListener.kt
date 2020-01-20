@@ -5,4 +5,5 @@ import ru.atomofiron.regextool.iss.service.model.XFile
 interface ItemActionListener {
     fun onItemClick(item: XFile)
     fun onItemVisible(item: XFile)
+    fun onItemInvalidate(item: XFile)
 }

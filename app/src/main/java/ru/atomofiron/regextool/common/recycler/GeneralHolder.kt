@@ -6,7 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 open class GeneralHolder<D : Any>(view: View) : RecyclerView.ViewHolder(view) {
-    protected lateinit var item: D
+    lateinit var item: D
+        private set
 
     constructor(parent: ViewGroup, id: Int)
             : this(LayoutInflater.from(parent.context).inflate(id, parent, false))

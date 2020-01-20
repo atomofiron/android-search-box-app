@@ -6,13 +6,20 @@ import java.io.File
 
 class MutableXFile : XFile {
     companion object {
+        private const val SLASH = '/'
+        private const val ROOT = "/"
         private const val TOTAL = "total"
         private const val DIR_CHAR = 'd'
         private const val LINK_CHAR = 'l'
 
         var toyboxPath: String = ""
+        private val parentSuffix = Regex("(?<=/)/*[^/]+/*$")
     }
     override var files: MutableList<MutableXFile>? = null
+        set(value) {
+            field = value
+            isCacheActual = value != null
+        }
 
     override var isOpened: Boolean = false
     private set(value) {
@@ -22,19 +29,21 @@ class MutableXFile : XFile {
 
     var isCaching: Boolean = false
         private set
-    override val isCached: Boolean get() = isCaching || files != null
+    override val isCached: Boolean get() = files != null
+    override var isCacheActual: Boolean = false
+        private set
+    override var exists: Boolean = true
+        private set
 
     override val completedPath: String by lazy {
-        if (file.isFile || file.absolutePath.endsWith("/")) {
-            file.absolutePath
+        if (file.isDirectory && !file.absolutePath.endsWith(SLASH)) {
+            file.absolutePath + SLASH
         } else {
-            file.absolutePath + "/"
+            file.absolutePath
         }
     }
 
-    override val completedParentPath: String by lazy {
-        completedPath.replace(Regex("(?<=/)/*[^/]+/*$"), "")
-    }
+    override val completedParentPath: String by lazy { completedPath.replace(parentSuffix, "") }
 
     override val file: File
     override val access: String
@@ -80,9 +89,8 @@ class MutableXFile : XFile {
     }
 
     fun open() {
-        log("open() $this")
-        isOpened = files!!.isNotEmpty()
-        files!!.filter { it.isOpened }.forEach { it.close() }
+        log("open() $this ${files?.isNotEmpty()}")
+        isOpened = true
     }
 
     fun close() {
@@ -97,8 +105,13 @@ class MutableXFile : XFile {
 
     /** @return error or null */
     fun cache(su: Boolean = false): String? {
+        if (isCaching) {
+            return "Cache in process. $this"
+        }
         isCaching = true
         log("cache() $this")
+        Thread.sleep(1000)
+        log("SLEEP 1000 $this")
         require(isDirectory) { UnsupportedOperationException("$this is not a directory!") }
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         return if (output.success) {
@@ -139,6 +152,10 @@ class MutableXFile : XFile {
             isCaching = false
             output.error
         }
+    }
+
+    fun invalidateCache() {
+        isCacheActual = false
     }
 
     private fun clear() {

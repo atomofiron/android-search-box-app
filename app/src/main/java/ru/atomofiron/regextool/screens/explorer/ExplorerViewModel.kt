@@ -50,11 +50,11 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         when {
             !item.isDirectory -> Unit
             item.isOpened -> explorerInteractor.closeDir(item)
-            item.isDirectory -> explorerInteractor.openDir(item)
+            else -> explorerInteractor.openDir(item)
         }
     }
 
-    override fun onItemVisible(item: XFile) {
-        explorerInteractor.cacheDir(item)
-    }
+    override fun onItemVisible(item: XFile) = explorerInteractor.updateFile(item)
+
+    override fun onItemInvalidate(item: XFile) = explorerInteractor.invalidateFile(item)
 }

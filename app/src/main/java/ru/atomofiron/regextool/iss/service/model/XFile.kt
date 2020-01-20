@@ -7,7 +7,9 @@ interface XFile {
     val files: List<XFile>?
     val isOpened: Boolean
     val isCached: Boolean
+    val isCacheActual: Boolean
     val isDirectory: Boolean
+    val exists: Boolean
 
     /* путь + / */
     val completedPath: String

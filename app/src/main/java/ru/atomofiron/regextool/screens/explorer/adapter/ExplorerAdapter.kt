@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.iss.service.model.XFile
-import ru.atomofiron.regextool.log
 
 class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     companion object {
@@ -40,23 +39,21 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorerHolder {
-        log("onCreateViewHolder")
         val inflater = LayoutInflater.from(parent.context)
         val view = getNewView(inflater, parent)
 
-        return ExplorerHolder(view).apply {
-            val rv = parent as RecyclerView
-            itemView.setOnLongClickListener {
-                log("pool ${rv.recycledViewPool.getRecycledViewCount(VIEW_TYPE)}")
-                true
-            }
-        }
+        return ExplorerHolder(view)
     }
 
     override fun onBindViewHolder(holder: ExplorerHolder, position: Int) {
-        log("onBind")
         holder.onItemActionListener = onItemActionListener
         super.onBindViewHolder(holder, position)
+        onItemActionListener?.onItemVisible(holder.item)
+    }
+
+    override fun onViewDetachedFromWindow(holder: ExplorerHolder) {
+        super.onViewDetachedFromWindow(holder)
+        onItemActionListener?.onItemInvalidate(holder.item)
     }
 
     private fun getNewView(inflater: LayoutInflater, parent: ViewGroup): View {

@@ -23,6 +23,7 @@ public class Util {
     public static final String PREF_MAX_DEPTH = "max_depth";
     public static final String PREF_EXCLUDE_DIRS = "exclude_dirs";
     public static final String PREF_USE_SU = "pref_use_su";
+    public static final String PREF_CURRENT_DIR = "pref_current_dir";
 
     public static final String SEARCH_COUNT = "SEARCH_COUNT";
     public static final String SEARCH_LIST = "SEARCH_LIST";

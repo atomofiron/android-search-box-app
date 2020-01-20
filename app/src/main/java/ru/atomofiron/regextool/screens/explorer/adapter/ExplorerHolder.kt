@@ -33,12 +33,15 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
 
         itemView.setOnClickListener(onClickListener)
 
-        val type = when {
+        val image = when {
             !item.isDirectory -> R.drawable.ic_file_circle
             item.files?.isEmpty() == true -> R.drawable.ic_folder_empty
             else -> R.drawable.ic_folder
         }
-        icon.view.setImageResource(type)
+        icon {
+            setImageResource(image)
+            alpha = if (item.isDirectory && !item.isCached) .5f else 1f
+        }
         name.view.text = if (item.file.absolutePath == Const.ROOT) Const.ROOT else item.file.name
 
         description.view.text = String.format("%s %s %s", item.access, item.owner, item.group)
@@ -48,6 +51,5 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             item.file.isFile -> item.size
             else -> ""
         }
-        onItemActionListener?.onItemVisible(item)
     }
 }
