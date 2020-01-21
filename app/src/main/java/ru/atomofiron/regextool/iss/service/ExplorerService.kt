@@ -61,7 +61,7 @@ class ExplorerService {
         when {
             file == currentOpenedDir -> updateCurrentDir(file)
             !file.exists() -> dropFile(file)
-            file.isOpened -> Unit
+            file.isOpened -> Unit // todo look for new files in opened dir
             file.isDirectory -> updateClosedDir(file)
             else -> return updateTheFile(file)
         }
@@ -186,10 +186,7 @@ class ExplorerService {
     private suspend fun updateTheFile(file: MutableXFile) {
         log2("updateTheFile $file")
         when {
-            file.file.exists() -> {
-                file.updateCache()
-                notifyUpdate(file)
-            }
+            file.file.exists() -> file.updateCache() ?: notifyUpdate(file)
             else -> {
                 mutex.withLock {
                     files.remove(file)
@@ -204,16 +201,12 @@ class ExplorerService {
             log2("updateCurrentDir dir != currentOpenedDir $dir")
             return
         }
-        if (dir.isCaching || dir.isCacheActual) {
-            log2("updateCurrentDir dir.isCaching $dir")
-            return
-        }
         log2("updateCurrentDir $dir")
         val dirFiles = dir.files
         val su = useSu()
         val error = dir.updateCache(su)
         if (error != null) {
-            log2("updateCurrentDir error != null $dir")
+            log2("updateCurrentDir: $error")
             return
         }
         val newFiles = dir.files!!
@@ -250,8 +243,8 @@ class ExplorerService {
     private fun updateClosedDir(dir: MutableXFile) {
         val su = useSu()
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
-        if (dir.isOpened || dir.isCaching || dir.isCacheActual) {
-            log2("updateClosedDir return ${dir.isCaching} || ${dir.isCacheActual} $dir")
+        if (dir.isOpened) {
+            log2("updateClosedDir return $dir")
             return
         }
         log2("updateClosedDir $dir")
@@ -259,17 +252,18 @@ class ExplorerService {
 
         if (error != null) {
             log2("updateClosedDir error != null ${dir.completedPath}\n$error")
+        } else {
+            notifyUpdate(dir)
+            /*
+            нельзя не уведомлять, если файлы не изменились, потому что:
+            1 у дочерних папок isCached=true, updateCache(), isCaching=true
+            2 родительская папка закрывается, у дочерних папок clear(), files=null, isCached=false
+            3 родительская папка открывается
+            4 дочерние папки кешироваться не начинают, потому что isCaching=true
+            5 список отображает папки как isCached=false
+            5 по окончании кеширования может быть oldFiles==newFiles
+             */
         }
-        notifyUpdate(dir)
-        /*
-        нельзя не уведомлять, потому что:
-        1 у дочерних папок isCached=true, updateCache(), isCaching=true
-        2 родительская папка закрывается, у дочерних папок clear(), files=null, isCached=false
-        3 родительская папка открывается
-        4 дочерние папки кешироваться не начинают, потому что isCaching=true
-        5 список отображает папки как isCached=false
-        5 по окончании кеширования может быть oldFiles==newFiles
-         */
     }
 
     private suspend fun removeAllChildren(dir: XFile,
