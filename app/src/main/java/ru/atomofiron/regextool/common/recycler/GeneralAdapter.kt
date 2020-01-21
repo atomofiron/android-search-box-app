@@ -24,4 +24,16 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
             notifyItemChanged(index)
         }
     }
+
+    fun removeItem(item: D) {
+        val index = items.indexOf(item)
+        if (index != -1) {
+            items.remove(item)
+            notifyItemRemoved(index)
+        }
+    }
+
+    fun insertItem(item: D) {
+        // todo
+    }
 }

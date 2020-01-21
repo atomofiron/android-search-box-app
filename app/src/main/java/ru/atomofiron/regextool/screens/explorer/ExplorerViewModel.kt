@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.common.base.BaseViewModel
 import ru.atomofiron.regextool.common.util.LiveEvent
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
+import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemActionListener
 
@@ -19,7 +20,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     private val explorerInteractor = ExplorerInteractor()
 
     val files = MutableLiveData<List<XFile>>()
-    val notifyUpdated = LiveEvent<XFile?>()
+    val notifyUpdate = LiveEvent<XFile>()
+    val notifyRemove = LiveEvent<XFile>()
+    val notifyInsert = LiveEvent<XFile>()
 
     override fun onCreate(context: Context, intent: Intent) {
         super.onCreate(context, intent)
@@ -31,7 +34,11 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         }
         explorerInteractor.observeUpdates {
             GlobalScope.launch(Dispatchers.Main) {
-                notifyUpdated(it)
+                when (it) {
+                    is Change.Update -> notifyUpdate(it.file)
+                    is Change.Remove -> notifyRemove(it.file)
+                    is Change.Insert -> notifyInsert(it.file)
+                }
             }
         }
     }

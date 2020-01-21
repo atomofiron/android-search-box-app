@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.iss.service.ExplorerService
+import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.XFile
 
 class ExplorerInteractor {
@@ -15,7 +16,7 @@ class ExplorerInteractor {
         service.store.addObserver(observer)
     }
 
-    fun observeUpdates(observer: (XFile?) -> Unit) {
+    fun observeUpdates(observer: (Change) -> Unit) {
         service.updates.addObserver(observer)
     }
 

@@ -9,7 +9,6 @@ interface XFile {
     val isCached: Boolean
     val isCacheActual: Boolean
     val isDirectory: Boolean
-    val exists: Boolean
 
     /* путь + / */
     val completedPath: String
@@ -25,4 +24,6 @@ interface XFile {
     val time: String
     val name: String
     val suffix: String
+
+    fun exists(): Boolean
 }

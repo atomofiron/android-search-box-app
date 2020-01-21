@@ -58,7 +58,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
 
     override fun onSubscribeData(owner: LifecycleOwner) {
         super.onSubscribeData(owner)
-        viewModel.files.observe(owner, Observer { explorerAdapter.setItems(it) })
-        viewModel.notifyUpdated.observe(owner) { explorerAdapter.setItem(it ?: return@observe) }
+        viewModel.files.observe(owner, Observer(explorerAdapter::setItems))
+        viewModel.notifyUpdate.observe(owner, explorerAdapter::setItem)
+        viewModel.notifyRemove.observe(owner, explorerAdapter::removeItem)
     }
 }

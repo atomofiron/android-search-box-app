@@ -7,8 +7,20 @@ class LiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
     private var parameterizedListener: ((T) -> Unit)? = null
 
-    operator fun invoke() = listener?.invoke()
-    operator fun invoke(any: T) = parameterizedListener?.invoke(any)
+    operator fun invoke() {
+        if (isStarted) {
+            listener?.invoke()
+        }
+    }
+    operator fun invoke(any: T) {
+        if (isStarted) {
+            parameterizedListener?.invoke(any)
+        }
+    }
+
+    private var state: State = State.DESTROYED
+    // LiveData тоже отслеживает состояние STARTED
+    private val isStarted: Boolean get() = state.isAtLeast(State.STARTED)
 
     fun observeEvent(source: LifecycleOwner, listener: () -> Unit) {
         check()
@@ -23,7 +35,9 @@ class LiveEvent<T> : LifecycleEventObserver {
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        if (source.lifecycle.currentState == State.DESTROYED) {
+        val state = source.lifecycle.currentState
+        this.state = state
+        if (state == State.DESTROYED) {
             source.lifecycle.removeObserver(this)
             listener = null
             parameterizedListener = null

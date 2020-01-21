@@ -5,14 +5,26 @@ import java.io.File
 
 class MutableXFile : XFile {
     companion object {
-        private const val SLASH = '/'
+        private const val SLASH = "/"
         private const val ROOT = "/"
         private const val TOTAL = "total"
         private const val DIR_CHAR = 'd'
         private const val LINK_CHAR = 'l'
+        private val spaces = Regex(" +")
 
         var toyboxPath: String = ""
         private val parentSuffix = Regex("(?<=/)/*[^/]+/*$")
+        private val lastOneSlash = Regex("/*$")
+
+        fun completePathAsDir(absolutePath: String): String = absolutePath.replace(lastOneSlash, SLASH)
+
+        fun completePathIfDir(file: File): String {
+            return if (file.isDirectory) {
+                completePathAsDir(file.absolutePath)
+            } else {
+                file.absolutePath
+            }
+        }
     }
     override var files: MutableList<MutableXFile>? = null
         set(value) {
@@ -32,30 +44,23 @@ class MutableXFile : XFile {
     override val isCached: Boolean get() = files != null
     override var isCacheActual: Boolean = false
         private set
-    override var exists: Boolean = true
-        private set
+    override fun exists(): Boolean = file.exists()
 
-    override val completedPath: String by lazy {
-        if (file.isDirectory && !file.absolutePath.endsWith(SLASH)) {
-            file.absolutePath + SLASH
-        } else {
-            file.absolutePath
-        }
-    }
+    override val completedPath: String by lazy { completePathIfDir(file) }
 
     override val completedParentPath: String by lazy { completedPath.replace(parentSuffix, "") }
 
     override val file: File
-    override val access: String
-    override val owner: String
-    override val group: String
-    override val size: String
-    override val date: String
-    override val time: String
+    override var access: String private set
+    override var owner: String private set
+    override var group: String private set
+    override var size: String private set
+    override var date: String private set
+    override var time: String private set
     override val name: String
     override val suffix: String
 
-    override val isDirectory: Boolean
+    override var isDirectory: Boolean private set
 
     constructor(path: String) {
         this.file = File(path)
@@ -71,7 +76,7 @@ class MutableXFile : XFile {
     }
 
     constructor(parent: String, line: String) {
-        val parts = line.split(Regex(" +"), 8)
+        val parts = line.split(spaces, 8)
         access = parts[0]
         owner = parts[2]
         group = parts[3]
@@ -96,40 +101,34 @@ class MutableXFile : XFile {
         isOpened = false
     }
 
+    fun clear() {
+        files = null
+        isOpened = false
+    }
+
     fun clearChildren() {
         files!!.forEach { it.clear() }
     }
 
-    /** @return error or null */
-    fun updateCache(su: Boolean = false): String? {
-        val oldFiles = files
-        val error = cache(su)
-        if (error != null) {
-            return error
-        }
-
-        val newFiles = this.files!!
-        if (oldFiles != null) {
-            newFiles.forEachIndexed { newIndex, new ->
-                if (new.isDirectory) {
-                    val lastIndex = oldFiles.indexOf(new)
-                    if (lastIndex != -1) {
-                        newFiles[newIndex] = oldFiles[lastIndex]
-                    }
-                }
-            }
-        }
-        return null
+    fun invalidateCache() {
+        isCacheActual = false
     }
 
     /** @return error or null */
-    fun cache(su: Boolean = false): String? {
+    fun updateCache(su: Boolean = false): String? {
         if (isCaching) {
             return "Cache in process. $this"
         }
         isCaching = true
         //Thread.sleep(3000)
-        require(isDirectory) { UnsupportedOperationException("$this is not a directory!") }
+        return when {
+            !exists() -> "File does not exists! $this"
+            isDirectory -> cacheAsDir(su)
+            else -> cacheAsFile(su)
+        }
+    }
+
+    private fun cacheAsDir(su: Boolean = false): String? {
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         return if (output.success) {
             val lines = output.output.split("\n")
@@ -157,7 +156,9 @@ class MutableXFile : XFile {
             files.sortBy { it.name }
             files.addAll(0, dirs)
 
+            val oldFiles = this.files
             this.files = files
+            persistOldFiles(oldFiles)
             null
         } else {
             files = ArrayList()
@@ -165,16 +166,39 @@ class MutableXFile : XFile {
         }
     }
 
-    fun invalidateCache() {
-        isCacheActual = false
+    private fun persistOldFiles(oldFiles: MutableList<MutableXFile>?) {
+        val newFiles = this.files!!
+        if (oldFiles != null) {
+            newFiles.forEachIndexed { newIndex, new ->
+                if (new.isDirectory) {
+                    val lastIndex = oldFiles.indexOf(new)
+                    if (lastIndex != -1) {
+                        newFiles[newIndex].files = oldFiles[lastIndex].files
+                    }
+                }
+            }
+        }
     }
 
-    private fun clear() {
-        if (files == null) {
-            return
+    private fun cacheAsFile(su: Boolean = false): String? {
+        val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
+        val line = output.output.replace("\n", "")
+        if (output.success && line.isNotEmpty()) {
+            val parts = line.split(spaces, 8)
+            access = parts[0]
+            owner = parts[2]
+            group = parts[3]
+            size = parts[4]
+            date = parts[5]
+            time = parts[6]
+            isDirectory = access[0] == DIR_CHAR
         }
-        files = null
-        isOpened = false
+        isCaching = true
+
+        return when (output.success) {
+            true -> null
+            false -> output.error
+        }
     }
 
     override fun equals(other: Any?): Boolean {

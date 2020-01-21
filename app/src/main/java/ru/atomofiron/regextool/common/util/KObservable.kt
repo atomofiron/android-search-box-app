@@ -2,7 +2,7 @@ package ru.atomofiron.regextool.common.util
 
 import java.util.*
 
-open class KObservable<T : Any?>(value: T) {
+open class KObservable<T : Any?>(value: T, private val single: Boolean = false) {
     private var changed = false
     private val observers = Vector<(T) -> Unit>()
     var value: T = value
@@ -12,8 +12,9 @@ open class KObservable<T : Any?>(value: T) {
     fun addObserver(observer: (T) -> Unit) {
         if (!observers.contains(observer)) {
             observers.addElement(observer)
-            // todo check state
-            observer.invoke(value)
+            if (!single) {
+                observer.invoke(value)
+            }
         }
     }
 
