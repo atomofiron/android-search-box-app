@@ -48,7 +48,13 @@ class ExplorerService {
     }
 
     fun invalidateDir(f: XFile) {
-        findFile(f)?.invalidateCache()
+        val dir = findFile(f) ?: return
+        invalidateDir(dir)
+    }
+
+    private fun invalidateDir(dir: MutableXFile) {
+        log2("invalidateDir $dir")
+        dir.invalidateCache()
     }
 
     fun persistState() {
@@ -137,6 +143,7 @@ class ExplorerService {
             anotherDir.close()
             anotherDir.clearChildren()
             currentOpenedDir = dir
+            invalidateDir(dir)
 
             removeAllChildren(anotherDir)
             notifyFiles()
@@ -159,6 +166,7 @@ class ExplorerService {
         mutex.withLock {
             dir.open()
             currentOpenedDir = dir
+            invalidateDir(dir)
 
             val dirFiles = dir.files
             if (dirFiles?.isNotEmpty() == true) {
