@@ -32,8 +32,11 @@ class BottomSheetView : FrameLayout, Animation.AnimationListener {
         }
         menu.layoutManager = LinearLayoutManager(context)
         menu.adapter = BottomSheetViewAdapter()
-        menu.setBackgroundColor(context.findColorByAttr(R.attr.colorBackground))
-        menu.setPadding(0, 0, 0, resources.getDimensionPixelSize(R.dimen.action_bar_size))
+        //menu.setBackgroundColor(context.findColorByAttr(R.attr.colorBackground))
+        menu.setBackgroundResource(R.drawable.bg_bottom_sheet)
+        val top = resources.getDimensionPixelSize(R.dimen.menu_corner_radius)
+        val bottom = resources.getDimensionPixelSize(R.dimen.action_bar_size)
+        menu.setPadding(0, top, 0, bottom)
         menu.clipToPadding = false
         addView(menu)
 

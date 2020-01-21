@@ -9,6 +9,7 @@
     <attr name="colorNegative" format="color" />
     <attr name="colorAccentLite" format="color" />
     <attr name="colorFieldDivider" format="color" />
+    <attr name="colorBone" format="color" />
 
     <declare-styleable name="BottomOptionMenu">
         <attr name="menu" format="reference" />

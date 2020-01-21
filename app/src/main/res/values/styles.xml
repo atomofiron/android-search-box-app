@@ -24,6 +24,7 @@
 		<item name="colorFieldBackground">@color/light_grey</item>
 		<item name="colorCardBackground">@color/windowBackgroundWhite</item>
 		<item name="colorFieldDivider">@color/light_grey</item>
+		<item name="colorBone">@color/light_grey</item>
 	</style>
 	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
 		<item name="isDarkTheme">true</item>
@@ -50,6 +51,7 @@
 		<item name="colorFieldBackground">@color/windowBackgroundDarkLight</item>
 		<item name="colorCardBackground">@color/windowBackgroundDarkLight</item>
 		<item name="colorFieldDivider">@color/windowBackgroundDark</item>
+		<item name="colorBone">@color/windowBackgroundDarkLight</item>
 	</style>
 	<style name="AppTheme.Black" parent="@style/AppTheme.Dark">
 		<item name="android:windowBackground">@color/windowBackgroundBlack</item>
@@ -60,6 +62,7 @@
 		<item name="colorFieldBackground">@color/windowBackgroundDark</item>
 		<item name="colorCardBackground">@color/windowBackgroundDark</item>
 		<item name="colorFieldDivider">@color/windowBackgroundBlack</item>
+		<item name="colorBone">@color/light_grey</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>

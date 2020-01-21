@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.explorer.adapter
 
+import android.graphics.Typeface
 import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
@@ -42,7 +43,10 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             setImageResource(image)
             alpha = if (item.isDirectory && !item.isCached) .5f else 1f
         }
-        name.view.text = if (item.file.absolutePath == Const.ROOT) Const.ROOT else item.file.name
+        name {
+            text = if (item.file.absolutePath == Const.ROOT) Const.ROOT else item.file.name
+            typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
 
         description.view.text = String.format("%s %s %s", item.access, item.owner, item.group)
         date.view.text = String.format("%s %s", item.date, item.time)
