@@ -13,7 +13,7 @@
         android:width="24dp"
         android:height="4dp"
         android:gravity="center_horizontal"
-        android:top="8dp"
+        android:top="6dp"
         >
         <shape android:shape="rectangle">
             <solid android:color="?attr/colorBone" />
