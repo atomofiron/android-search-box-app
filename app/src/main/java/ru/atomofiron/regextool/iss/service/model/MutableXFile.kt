@@ -34,7 +34,7 @@ class MutableXFile : XFile {
             field = value
         }
 
-    private var isCleared: Boolean = false
+    private var dropCaching: Boolean = false
     var isCaching: Boolean = false
         private set
     override val isCached: Boolean get() = files != null
@@ -98,7 +98,7 @@ class MutableXFile : XFile {
     }
 
     fun clear() {
-        isCleared = true
+        dropCaching = true
         files = null
         isOpened = false
     }
@@ -117,7 +117,7 @@ class MutableXFile : XFile {
             isCaching -> return "Cache in process. $this"
             isCacheActual -> return "Cache is actual. $this"
         }
-        isCleared = false
+        dropCaching = false
         return when {
             !exists() -> "File does not exists! $this"
             isDirectory -> cacheAsDir(su)
@@ -127,50 +127,56 @@ class MutableXFile : XFile {
 
     private fun cacheAsDir(su: Boolean = false): String? {
         isCaching = true
-        Thread.sleep(3000)
+        sleep()
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
-        if (isCleared) {
-            return "Dir was cleared. $this"
-        }
-        return if (output.success) {
-            val lines = output.output.split("\n")
-            val dirs = ArrayList<MutableXFile>()
-            val files = ArrayList<MutableXFile>()
+        return when {
+            dropCaching -> {
+                isCaching = false
+                return "Dir was cleared. $this"
+            }
+            output.success -> {
+                val lines = output.output.split("\n")
+                val dirs = ArrayList<MutableXFile>()
+                val files = ArrayList<MutableXFile>()
 
-            if (lines.isNotEmpty()) {
-                var start = 0
-                if (lines[start].startsWith(TOTAL)) {
-                    start++
-                }
-                for (i in start until lines.size) {
-                    if (lines[i].isNotEmpty()) {
-                        val file = MutableXFile(completedPath, lines[i])
-                        if (file.isDirectory) {
-                            dirs.add(file)
-                        } else {
-                            files.add(file)
+                if (lines.isNotEmpty()) {
+                    var start = 0
+                    if (lines[start].startsWith(TOTAL)) {
+                        start++
+                    }
+                    for (i in start until lines.size) {
+                        if (lines[i].isNotEmpty()) {
+                            val file = MutableXFile(completedPath, lines[i])
+                            if (file.isDirectory) {
+                                dirs.add(file)
+                            } else {
+                                files.add(file)
+                            }
                         }
                     }
                 }
+
+                dirs.sortBy { it.name }
+                files.sortBy { it.name }
+                files.addAll(0, dirs)
+
+                val oldFiles = this.files
+                this.files = files
+                persistOldFiles(oldFiles)
+                isCaching = false
+                isCacheActual = true
+                null
             }
-
-            dirs.sortBy { it.name }
-            files.sortBy { it.name }
-            files.addAll(0, dirs)
-
-            val oldFiles = this.files
-            this.files = files
-            persistOldFiles(oldFiles)
-            isCaching = false
-            isCacheActual = true
-            null
-        } else {
-            files = ArrayList()
-            isCaching = false
-            isCacheActual = true
-            output.error
+            else -> {
+                files = ArrayList()
+                isCaching = false
+                isCacheActual = true
+                output.error
+            }
         }
     }
+
+    private fun sleep() = Thread.sleep(300 + (Math.random() * 700).toLong())
 
     private fun persistOldFiles(oldFiles: MutableList<MutableXFile>?) {
         val newFiles = this.files!!
@@ -188,6 +194,7 @@ class MutableXFile : XFile {
 
     private fun cacheAsFile(su: Boolean = false): String? {
         isCaching = true
+        sleep()
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         val line = output.output.replace("\n", "")
         if (output.success && line.isNotEmpty()) {
