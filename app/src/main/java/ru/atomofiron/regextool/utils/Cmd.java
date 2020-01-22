@@ -25,7 +25,7 @@ public class Cmd {
 			dos.close();
 			ok = process.waitFor() == 0;
 		} catch (Exception e) {
-			Util.log(e.toString());
+			Util.log9(e.toString());
 		} finally {
 			try {
 				if (execOs != null) execOs.close();
@@ -54,7 +54,7 @@ public class Cmd {
 
 			result = inputStream2String(execIs);
 		} catch (Exception e) {
-			Util.log(e.toString());
+			Util.log9(e.toString());
 		} finally {
 			try {
 				if (execIs != null) execIs.close();

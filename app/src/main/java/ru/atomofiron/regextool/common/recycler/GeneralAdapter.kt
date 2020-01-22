@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.common.recycler
 
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.Exception
 
 abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adapter<H>() {
     protected val items: MutableList<D> = ArrayList()
@@ -33,7 +34,24 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         }
     }
 
-    fun insertItem(item: D) {
-        // todo
+    fun insertItem(previous: D, item: D) {
+        val index = this.items.indexOf(previous).inc()
+        this.items.add(index, item)
+        notifyItemInserted(index)
+    }
+
+    fun removeItems(items: List<D>) {
+        val firstIndex = this.items.indexOf(items.first())
+        for (i in items.indices) {
+            val removed = this.items.removeAt(firstIndex)
+            require(removed == items[i]) { Exception() }
+        }
+        notifyItemRangeRemoved(firstIndex, items.size)
+    }
+
+    fun insertItems(previous: D, items: List<D>) {
+        val index = this.items.indexOf(previous).inc()
+        this.items.addAll(index, items)
+        notifyItemRangeInserted(index, items.size)
     }
 }

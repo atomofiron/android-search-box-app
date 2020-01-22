@@ -39,7 +39,7 @@ public class SearchService extends IntentService {
 
 	@Override
     protected void onHandleIntent(Intent intent) {
-        Util.log("onHandleIntent()");
+        Util.log9("onHandleIntent()");
 		Context co = getBaseContext();
 		SharedPreferences sp = Util.sp(co);
 
@@ -76,7 +76,7 @@ public class SearchService extends IntentService {
 			resultIntent.putExtra(Util.SEARCH_COUNT, results.size());
 			ResultsHolder.setResults(results);
         } catch (Exception e) {
-            Util.log(e.toString());
+            Util.log9(e.toString());
             resultIntent.putExtra(Util.SEARCH_COUNT, FinderFragment.Companion.getSEARCH_ERROR()).putExtra(FinderFragment.Companion.getKEY_ERROR_MESSAGE(), e.toString());
         }
 
@@ -176,7 +176,7 @@ public class SearchService extends IntentService {
 				try {
 					Thread.sleep(NOTICE_PERIOD);
 				} catch (Exception e) {
-					Util.log(e.toString());
+					Util.log9(e.toString());
 
 					broadcastManager.sendBroadcast(
 							new Intent(FinderFragment.Companion.getACTION_RESULTS())

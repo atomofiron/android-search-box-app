@@ -109,7 +109,7 @@ public class RFile extends File {
 			while ((line = br.readLine()) != null)
 				result = result.concat(line).concat("\n");
 		} catch (Exception e) {
-			Util.log(e.toString());
+			Util.log9(e.toString());
 		} finally {
 			try {
 				if (br != null) br.close();

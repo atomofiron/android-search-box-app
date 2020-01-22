@@ -22,7 +22,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     val files = MutableLiveData<List<XFile>>()
     val notifyUpdate = LiveEvent<XFile>()
     val notifyRemove = LiveEvent<XFile>()
-    val notifyInsert = LiveEvent<XFile>()
+    val notifyInsert = LiveEvent<Pair<XFile, XFile>>()
+    val notifyRemoveRange = LiveEvent<List<XFile>>()
+    val notifyInsertRange = LiveEvent<Pair<XFile, List<XFile>>>()
 
     override fun onCreate(context: Context, intent: Intent) {
         super.onCreate(context, intent)
@@ -37,7 +39,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
                 when (it) {
                     is Change.Update -> notifyUpdate(it.file)
                     is Change.Remove -> notifyRemove(it.file)
-                    is Change.Insert -> notifyInsert(it.file)
+                    is Change.Insert -> notifyInsert(Pair(it.previous, it.file))
+                    is Change.RemoveRange -> notifyRemoveRange(it.files)
+                    is Change.InsertRange -> notifyInsertRange(Pair(it.previous, it.files))
                 }
             }
         }

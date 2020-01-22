@@ -99,6 +99,7 @@ class MutableXFile : XFile {
 
     fun clear() {
         dropCaching = true
+        isCacheActual = false
         files = null
         isOpened = false
     }
@@ -114,11 +115,11 @@ class MutableXFile : XFile {
 
     /** @return error or null */
     fun updateCache(su: Boolean = false): String? {
-        dropCaching = false
         when {
             isCaching -> return "Cache in process. $this"
             isCacheActual -> return "Cache is actual. $this"
         }
+        dropCaching = false
         return when {
             !exists() -> "File does not exists! $this"
             isDirectory -> cacheAsDir(su)

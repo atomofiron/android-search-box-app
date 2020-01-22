@@ -17,9 +17,6 @@ import java.io.FileOutputStream
 import kotlin.collections.ArrayList
 
 class ExplorerService {
-    companion object {
-        private const val UNKNOWN = -1
-    }
     private val sp = PreferenceManager.getDefaultSharedPreferences(App.context)
 
     private val mutex = Mutex()
@@ -28,7 +25,7 @@ class ExplorerService {
     private var currentOpenedDir: MutableXFile? = null
 
     val store = KObservable<List<XFile>>(files)
-    val updates = KObservable<Change>(Insert(root), single = true)
+    val updates = KObservable<Change>(Nothing, single = true)
 
     // todo make storage
     private fun useSu() = sp.getBoolean(Util.PREF_USE_SU, false)
@@ -43,7 +40,6 @@ class ExplorerService {
             updateClosedDir(root)
 
             notifyFiles()
-            updates.notifyObservers(Update(root))
         }
     }
 
@@ -91,14 +87,24 @@ class ExplorerService {
         updates.notifyObservers(Update(file))
     }
 
-    private fun notifyInsert(file: XFile) {
-        log2("notifyInsert $file")
-        updates.notifyObservers(Insert(file))
-    }
-
     private fun notifyRemove(file: XFile) {
         log2("notifyRemove $file")
         updates.notifyObservers(Remove(file))
+    }
+
+    private fun notifyInsert(previous: XFile, file: XFile) {
+        log2("notifyInsert $file after $previous")
+        updates.notifyObservers(Insert(previous, file))
+    }
+
+    private fun notifyRemoveRange(files: List<XFile>) {
+        log2("notifyRemoveRange ${files.size}")
+        updates.notifyObservers(RemoveRange(files))
+    }
+
+    private fun notifyInsertRange(previous: XFile, files: List<XFile>) {
+        log2("notifyInsert ${files.size} after $previous")
+        updates.notifyObservers(InsertRange(previous, files))
     }
 
     private suspend fun notifyFiles() {
@@ -146,7 +152,6 @@ class ExplorerService {
             invalidateDir(dir)
 
             removeAllChildren(anotherDir)
-            notifyFiles()
         } else {
             closeDir(dir)
         }
@@ -172,9 +177,9 @@ class ExplorerService {
             if (dirFiles?.isNotEmpty() == true) {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), dirFiles)
+                notifyInsertRange(dir, dirFiles)
             }
         }
-        notifyFiles()
     }
 
     private suspend fun closeDir(f: XFile) {
@@ -188,7 +193,6 @@ class ExplorerService {
 
         dir.clearChildren()
         removeAllChildren(dir)
-        notifyFiles()
     }
 
     private suspend fun updateTheFile(file: MutableXFile) {
@@ -274,30 +278,38 @@ class ExplorerService {
         }
     }
 
-    private suspend fun removeAllChildren(dir: XFile,
-                                          cancelIf: ((List<MutableXFile>) -> Boolean)? = null) {
+    private suspend fun removeAllChildren(
+            dir: XFile,
+            cancelIf: ((List<MutableXFile>) -> Boolean)? = null
+    ) {
         removeAllChildren(dir.completedPath, cancelIf)
     }
 
-    private suspend fun removeAllChildren(path: String,
-                                          cancelIf: ((List<MutableXFile>) -> Boolean)? = null) {
-        mutex.withLock {
+    private suspend fun removeAllChildren(
+            path: String,
+            cancelIf: ((List<MutableXFile>) -> Boolean)? = null
+    ) {
+        val removed = mutex.withLock {
             if (cancelIf?.invoke(files) == true) {
                 return
             }
+            val removed = ArrayList<XFile>()
             val each = files.iterator()
-            var removed = false
             loop@ while (each.hasNext()) {
                 val next = each.next()
                 when {
                     next.completedPath == ROOT -> Unit
                     next.completedParentPath.startsWith(path) -> {
                         each.remove()
-                        removed = true
+                        removed.add(next)
                     }
-                    removed -> break@loop
+                    removed.isNotEmpty() -> break@loop
                 }
             }
+            removed
+        }
+        if (removed.isNotEmpty()) {
+            notifyRemoveRange(removed)
         }
     }
 

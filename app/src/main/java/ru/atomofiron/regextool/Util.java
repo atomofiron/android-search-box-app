@@ -38,7 +38,7 @@ public class Util {
     public static final String DEFAULT_EXTRA_FORMATS = "md mkd markdown cm ad adoc";
     public static final String DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $";
 
-    public static void log(String message) {
+    public static void log9(String message) {
         Log.e("atomofiron", message);
     }
 
@@ -55,7 +55,7 @@ public class Util {
             case "html":
             case "htm":
             case "smali":
-            case "log":
+            case "log9":
             case "js":
             case "css":
             case "json":
