@@ -30,7 +30,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView {
-            layoutManager = LinearLayoutManager(context).apply { stackFromEnd = true }
+            layoutManager = LinearLayoutManager(context)
             adapter = explorerAdapter
             explorerAdapter.setOnItemActionListener(viewModel)
         }

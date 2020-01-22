@@ -27,6 +27,7 @@ class MutableXFile : XFile {
         }
     }
     override var files: MutableList<MutableXFile>? = null
+        private set
 
     override var isOpened: Boolean = false
         private set(value) {
@@ -110,16 +111,15 @@ class MutableXFile : XFile {
 
     fun invalidateCache() {
         isCacheActual = false
-        dropCaching = false
     }
 
     /** @return error or null */
     fun updateCache(su: Boolean = false): String? {
+        dropCaching = false
         when {
             isCaching -> return "Cache in process. $this"
             isCacheActual -> return "Cache is actual. $this"
         }
-        dropCaching = false
         return when {
             !exists() -> "File does not exists! $this"
             isDirectory -> cacheAsDir(su)
@@ -187,7 +187,9 @@ class MutableXFile : XFile {
                 if (new.isDirectory) {
                     val lastIndex = oldFiles.indexOf(new)
                     if (lastIndex != -1) {
-                        newFiles[newIndex].files = oldFiles[lastIndex].files
+                        val last = oldFiles[lastIndex]
+                        last.updateData(new)
+                        newFiles[newIndex] = last
                     }
                 }
             }
@@ -216,6 +218,16 @@ class MutableXFile : XFile {
             true -> null
             false -> output.error
         }
+    }
+
+    private fun updateData(file: MutableXFile) {
+        access = file.access
+        owner = file.owner
+        group = file.group
+        size = file.size
+        date = file.date
+        time = file.time
+        isDirectory = file.isDirectory
     }
 
     override fun equals(other: Any?): Boolean {

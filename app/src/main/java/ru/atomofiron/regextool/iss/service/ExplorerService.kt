@@ -173,8 +173,8 @@ class ExplorerService {
             currentOpenedDir = dir
             invalidateDir(dir)
 
-            val dirFiles = dir.files
-            if (dirFiles?.isNotEmpty() == true) {
+            val dirFiles = dir.files!!
+            if (dirFiles.isNotEmpty()) {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), dirFiles)
                 notifyInsertRange(dir, dirFiles)
