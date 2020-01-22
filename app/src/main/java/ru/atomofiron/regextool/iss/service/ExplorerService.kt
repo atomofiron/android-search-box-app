@@ -317,7 +317,7 @@ class ExplorerService {
         when {
             file.isOpened -> dropOpenedDir(file)
             else -> {
-                log("dropFile $file")
+                log2("dropFile $file")
                 file.clear()
                 mutex.withLock {
                     files.remove(file)
@@ -352,11 +352,11 @@ class ExplorerService {
         }
 
         if (targetFound) {
-            log("dropOpenedDir $dirToRemovePath")
+            log2("dropOpenedDir $dirToRemovePath")
             currentOpenedDir = findFile(MutableXFile.completePathAsDir(dir.absolutePath))
             notifyFiles()
         } else {
-            log("Target opened dir was already dropped! $dirToRemovePath")
+            log2("Target opened dir was already dropped! $dirToRemovePath")
         }
     }
 
