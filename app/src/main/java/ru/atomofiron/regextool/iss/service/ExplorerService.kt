@@ -170,7 +170,6 @@ class ExplorerService {
             removeAllChildren(anotherDir)
         }
 
-
         mutex.withLock {
             dir.open()
             currentOpenedDir = dir
@@ -202,13 +201,8 @@ class ExplorerService {
     private suspend fun updateTheFile(file: MutableXFile) {
         log2("updateTheFile $file")
         when {
-            file.file.exists() -> file.updateCache() ?: notifyUpdate(file)
-            else -> {
-                mutex.withLock {
-                    files.remove(file)
-                }
-                notifyRemove(file)
-            }
+            file.updateCache() == null -> notifyUpdate(file)
+            !file.exists -> dropEntity(file)
         }
     }
 
@@ -222,6 +216,9 @@ class ExplorerService {
         val su = useSu()
         val error = dir.updateCache(su)
         if (error != null) {
+            if (!dir.exists) {
+                dropOpenedDir(dir)
+            }
             log2("updateCurrentDir: $error")
             return
         }
@@ -288,7 +285,7 @@ class ExplorerService {
         }
     }
 
-    private fun updateClosedDir(dir: MutableXFile) {
+    private suspend fun updateClosedDir(dir: MutableXFile) {
         val su = useSu()
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         if (dir.isOpened) {
@@ -300,6 +297,9 @@ class ExplorerService {
 
         if (error != null) {
             log2("updateClosedDir error != null ${dir.completedPath}\n$error")
+            if (!dir.exists) {
+                dropEntity(dir)
+            }
         } else {
             notifyUpdate(dir)
             /*
@@ -349,20 +349,6 @@ class ExplorerService {
         }
     }
 
-    private suspend fun dropFile(file: MutableXFile) {
-        when {
-            file.isOpened -> dropOpenedDir(file)
-            else -> {
-                log2("dropFile $file")
-                file.clear()
-                mutex.withLock {
-                    files.remove(file)
-                }
-                notifyRemove(file)
-            }
-        }
-    }
-
     private suspend fun dropOpenedDir(d: MutableXFile) {
         var dirToRemove = d.file
         var dir = d.file.parentFile
@@ -394,6 +380,15 @@ class ExplorerService {
         } else {
             log2("Target opened dir was already dropped! $dirToRemovePath")
         }
+    }
+
+    private suspend fun dropEntity(entity: MutableXFile) {
+        log("dropEntity $entity")
+        entity.clear()
+        mutex.withLock {
+            files.remove(entity)
+        }
+        notifyRemove(entity)
     }
 
     private fun copyToybox() {

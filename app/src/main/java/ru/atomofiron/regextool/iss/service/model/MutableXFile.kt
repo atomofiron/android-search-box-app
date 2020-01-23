@@ -2,6 +2,8 @@ package ru.atomofiron.regextool.iss.service.model
 
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MutableXFile : XFile {
     companion object {
@@ -10,14 +12,15 @@ class MutableXFile : XFile {
         private const val TOTAL = "total"
         private const val DIR_CHAR = 'd'
         private const val LINK_CHAR = 'l'
-        private val spaces = Regex(" +")
+        private const val NO_SUCH_FILE = "ls: %s: No such file or directory\n"
 
         var toyboxPath: String = ""
+        private val spaces = Regex(" +")
         private val parentSuffix = Regex("(?<=/)/*[^/]+/*$")
         private val lastOneSlash = Regex("/*$")
 
         fun completePathAsDir(absolutePath: String): String {
-            return if (absolutePath == SLASH) SLASH else absolutePath.replace(lastOneSlash, SLASH)
+            return if (absolutePath == ROOT) ROOT else absolutePath.replace(lastOneSlash, SLASH)
         }
 
         fun completePathIfDir(file: File): String {
@@ -57,6 +60,8 @@ class MutableXFile : XFile {
     override var time: String private set
     override val name: String
     override val suffix: String
+    override var exists: Boolean = true
+        private set
 
     override var isDirectory: Boolean private set
 
@@ -158,8 +163,8 @@ class MutableXFile : XFile {
                     }
                 }
 
-                dirs.sortBy { it.name }
-                files.sortBy { it.name }
+                dirs.sortBy { it.name.toLowerCase(Locale.ROOT) }
+                files.sortBy { it.name.toLowerCase(Locale.ROOT) }
                 files.addAll(0, dirs)
 
                 val oldFiles = this.files
@@ -170,6 +175,7 @@ class MutableXFile : XFile {
                 null
             }
             else -> {
+                parseDoesExists(output.error)
                 files = ArrayList()
                 isCaching = false
                 isCacheActual = true
@@ -216,7 +222,16 @@ class MutableXFile : XFile {
 
         return when (output.success) {
             true -> null
-            false -> output.error
+            false -> {
+                parseDoesExists(output.error)
+                output.error
+            }
+        }
+    }
+
+    private fun parseDoesExists(error: String) {
+        if (error == NO_SUCH_FILE.format(completedPath)) {
+            exists = false
         }
     }
 
