@@ -60,7 +60,7 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
             val theLastIteration = forIndex == items.size.dec()
             if (index == UNKNOWN || theLastIteration) {
                 if (firstIndex != UNKNOWN) {
-                    notifyItemRangeRemoved(firstIndex, lastIndex - firstIndex.inc())
+                    notifyItemRangeRemoved(firstIndex, lastIndex - firstIndex.dec())
                 }
             }
         }
