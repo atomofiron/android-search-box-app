@@ -24,6 +24,4 @@ interface XFile {
     val time: String
     val name: String
     val suffix: String
-
-    fun exists(): Boolean
 }

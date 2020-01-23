@@ -1,9 +1,11 @@
 package ru.atomofiron.regextool.common.recycler
 
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.Exception
 
 abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adapter<H>() {
+    companion object {
+        private const val UNKNOWN = -1
+    }
     protected val items: MutableList<D> = ArrayList()
 
     override fun getItemCount(): Int = items.size
@@ -20,7 +22,7 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
 
     fun setItem(item: D) {
         val index = items.indexOf(item)
-        if (index != -1) {
+        if (index != UNKNOWN) {
             items[index] = item
             notifyItemChanged(index)
         }
@@ -28,7 +30,7 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
 
     fun removeItem(item: D) {
         val index = items.indexOf(item)
-        if (index != -1) {
+        if (index != UNKNOWN) {
             items.remove(item)
             notifyItemRemoved(index)
         }
@@ -41,12 +43,27 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
     }
 
     fun removeItems(items: List<D>) {
-        val firstIndex = this.items.indexOf(items.first())
-        for (i in items.indices) {
-            val removed = this.items.removeAt(firstIndex)
-            require(removed == items[i]) { Exception("removeItems: $removed != ${items[i]}") }
+        var firstIndex = UNKNOWN
+        var lastIndex = UNKNOWN
+        // вместо offset лучше удалять с конца
+        var offset = 0
+        items.forEachIndexed { forIndex, it ->
+            val index = this.items.indexOf(it)
+            if (index != UNKNOWN) {
+                lastIndex = index + offset
+                if (firstIndex == UNKNOWN) {
+                    firstIndex = index + offset
+                }
+                this.items.removeAt(index)
+                offset++
+            }
+            val theLastIteration = forIndex == items.size.dec()
+            if (index == UNKNOWN || theLastIteration) {
+                if (firstIndex != UNKNOWN) {
+                    notifyItemRangeRemoved(firstIndex, lastIndex - firstIndex.inc())
+                }
+            }
         }
-        notifyItemRangeRemoved(firstIndex, items.size)
     }
 
     fun insertItems(previous: D, items: List<D>) {

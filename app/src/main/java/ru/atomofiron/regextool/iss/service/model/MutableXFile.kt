@@ -16,7 +16,9 @@ class MutableXFile : XFile {
         private val parentSuffix = Regex("(?<=/)/*[^/]+/*$")
         private val lastOneSlash = Regex("/*$")
 
-        fun completePathAsDir(absolutePath: String): String = absolutePath.replace(lastOneSlash, SLASH)
+        fun completePathAsDir(absolutePath: String): String {
+            return if (absolutePath == SLASH) SLASH else absolutePath.replace(lastOneSlash, SLASH)
+        }
 
         fun completePathIfDir(file: File): String {
             return if (file.isDirectory) {
@@ -41,7 +43,6 @@ class MutableXFile : XFile {
     override val isCached: Boolean get() = files != null
     override var isCacheActual: Boolean = false
         private set
-    override fun exists(): Boolean = file.exists()
 
     override val completedPath: String by lazy { completePathIfDir(file) }
 
@@ -121,7 +122,6 @@ class MutableXFile : XFile {
             isCacheActual -> return "Cache is actual. $this"
         }
         return when {
-            !exists() -> "File does not exists! $this"
             isDirectory -> cacheAsDir(su)
             else -> cacheAsFile(su)
         }

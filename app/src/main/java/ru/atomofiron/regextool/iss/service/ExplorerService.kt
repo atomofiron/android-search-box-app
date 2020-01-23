@@ -62,7 +62,6 @@ class ExplorerService {
         log2("updateFile $file")
         when {
             file.isOpened -> Unit // todo look for new files in opened dir
-            !file.exists() -> dropFile(file)
             file.isDirectory -> updateClosedDir(file)
             else -> return updateTheFile(file)
         }
@@ -190,7 +189,7 @@ class ExplorerService {
     private suspend fun closeDir(f: XFile) {
         val dir = findFile(f) ?: return
         log2("closeDir $dir")
-        val parent = findFile(dir.completedParentPath)
+        val parent = if (dir.completedPath == ROOT) null else findFile(dir.completedParentPath)
         mutex.withLock {
             dir.close()
             currentOpenedDir = parent
