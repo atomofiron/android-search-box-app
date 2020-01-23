@@ -383,7 +383,7 @@ class ExplorerService {
     }
 
     private suspend fun dropEntity(entity: MutableXFile) {
-        log("dropEntity $entity")
+        log2("dropEntity $entity")
         entity.clear()
         mutex.withLock {
             files.remove(entity)
