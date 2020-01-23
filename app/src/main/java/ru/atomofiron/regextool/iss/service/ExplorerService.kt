@@ -61,9 +61,8 @@ class ExplorerService {
         val file = findFile(f) ?: return
         log2("updateFile $file")
         when {
-            file == currentOpenedDir -> updateCurrentDir(file)
-            !file.exists() -> dropFile(file)
             file.isOpened -> Unit // todo look for new files in opened dir
+            !file.exists() -> dropFile(file)
             file.isDirectory -> updateClosedDir(file)
             else -> return updateTheFile(file)
         }
@@ -71,9 +70,12 @@ class ExplorerService {
 
     suspend fun openDir(f: XFile) {
         val dir = findFile(f) ?: return
-        if (!dir.isDirectory || !dir.isCached) {
+        if (!dir.isDirectory) {
             log2("openDir return $dir")
             return
+        }
+        if (!dir.isCached) {
+            return updateClosedDir(dir)
         }
         when {
             dir == currentOpenedDir -> closeDir(dir)
@@ -152,6 +154,7 @@ class ExplorerService {
             invalidateDir(dir)
 
             removeAllChildren(anotherDir)
+            updateCurrentDir(dir)
         } else {
             closeDir(dir)
         }
@@ -162,11 +165,12 @@ class ExplorerService {
         log2("openDir $dir")
         val anotherDir = findOpenedDirIn(dir.completedParentPath)
         if (anotherDir != null) {
-            log2("openDir anotherDir != null $dir")
+            log2("openDir $dir anotherDir == $anotherDir")
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
         }
+
 
         mutex.withLock {
             dir.open()
@@ -180,6 +184,7 @@ class ExplorerService {
                 notifyInsertRange(dir, dirFiles)
             }
         }
+        updateCurrentDir(dir)
     }
 
     private suspend fun closeDir(f: XFile) {
@@ -229,7 +234,7 @@ class ExplorerService {
                 return
             }
             if (!dir.isOpened) {
-                log2("updateCurrentDir isOpened $dir")
+                log2("updateCurrentDir !isOpened $dir")
                 return notifyUpdate(dir)
             }
             if (dir != currentOpenedDir) {
@@ -244,11 +249,43 @@ class ExplorerService {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), newFiles)
             }
+            notifyCurrentDirChanges(dir, dirFiles, newFiles)
         }
+    }
+
+    private fun notifyCurrentDirChanges(dir: MutableXFile, dirFiles: List<XFile>?, newFiles: List<MutableXFile>) {
+        val wasNullOrEmpty = dirFiles.isNullOrEmpty()
+        val nowIsEmpty = newFiles.isEmpty()
         when {
-            newFiles.size != dirFiles?.size -> notifyFiles()
-            !dirFiles.containsAll(newFiles) -> notifyFiles()
-            else -> log2("updateCurrentDir dirFiles == newFiles")
+            wasNullOrEmpty && !nowIsEmpty -> notifyInsertRange(dir, newFiles)
+            !wasNullOrEmpty && nowIsEmpty -> notifyRemoveRange(dirFiles!!)
+            !wasNullOrEmpty && !nowIsEmpty -> {
+                dirFiles!!
+                val news = newFiles.iterator()
+                val olds = dirFiles.iterator()
+                var previous: XFile = dir
+                while (news.hasNext() || olds.hasNext()) {
+                    var new: MutableXFile? = news.next()
+                    var old: XFile? = olds.next()
+                    while (old != new) {
+                        if (old != null && !newFiles.contains(old)) {
+                            notifyRemove(old)
+                            old = if (olds.hasNext()) olds.next() else null
+                        }
+                        if (new != null && !dirFiles.contains(new)) {
+                            notifyInsert(previous, new)
+                            previous = new
+                            new = if (news.hasNext()) news.next() else null
+                        }
+                    }
+
+                    if (new != null) {
+                        previous = new
+                        new.invalidateCache()
+                        notifyUpdate(new)
+                    }
+                }
+            }
         }
     }
 

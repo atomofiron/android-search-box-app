@@ -44,7 +44,7 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         val firstIndex = this.items.indexOf(items.first())
         for (i in items.indices) {
             val removed = this.items.removeAt(firstIndex)
-            require(removed == items[i]) { Exception() }
+            require(removed == items[i]) { Exception("removeItems: $removed != ${items[i]}") }
         }
         notifyItemRangeRemoved(firstIndex, items.size)
     }
