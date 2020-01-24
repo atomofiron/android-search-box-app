@@ -328,22 +328,18 @@ class ExplorerService {
             var first: XFile? = null
             var last: XFile? = null
             val each = files.iterator()
-            loop@ while (each.hasNext()) {
-                val next = each.next()
+            loop@while (each.hasNext()) {
+                val it = each.next()
                 when {
-                    next.completedPath == ROOT -> Unit
-                    next.completedParentPath.startsWith(path) -> {
+                    it.completedParentPath.startsWith(path) -> {
                         each.remove()
-                        if (first == null) {
-                            first = next
-                        } else {
-                            last = next
-                        }
+                        first = first ?: it
+                        last = it
                     }
                     first != null -> break@loop
                 }
             }
-            Pair(first, last ?: first)
+            Pair(first, last)
         }
         when (removed.first) {
             null -> log2("removeAllChildren not found $path")
