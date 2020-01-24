@@ -99,8 +99,14 @@ class ExplorerService {
     }
 
     private fun notifyRemoveRange(files: List<XFile>) {
-        log2("notifyRemoveRange ${files.size}")
-        updates.notifyObservers(RemoveRange(files))
+        notifyRemoveRange(Pair(files.first(), files.last()))
+    }
+
+    private fun notifyRemoveRange(firstAndLast: Pair<XFile?, XFile?>) {
+        require(firstAndLast.first != null) { NullPointerException("First file to remove is null!") }
+        require(firstAndLast.second != null) { NullPointerException("Second file to remove is null!") }
+        log2("notifyRemoveRange ${firstAndLast.first} .. ${firstAndLast.second}")
+        updates.notifyObservers(RemoveRange(firstAndLast.first!!, firstAndLast.second!!))
     }
 
     private fun notifyInsertRange(previous: XFile, files: List<XFile>) {
@@ -314,22 +320,13 @@ class ExplorerService {
         }
     }
 
-    private suspend fun removeAllChildren(
-            dir: XFile,
-            cancelIf: ((List<MutableXFile>) -> Boolean)? = null
-    ) {
-        removeAllChildren(dir.completedPath, cancelIf)
-    }
+    private suspend fun removeAllChildren(dir: XFile) = removeAllChildren(dir.completedPath)
 
-    private suspend fun removeAllChildren(
-            path: String,
-            cancelIf: ((List<MutableXFile>) -> Boolean)? = null
-    ) {
+    private suspend fun removeAllChildren(path: String) {
+        log2("removeAllChildren $path")
         val removed = mutex.withLock {
-            if (cancelIf?.invoke(files) == true) {
-                return
-            }
-            val removed = ArrayList<XFile>()
+            var first: XFile? = null
+            var last: XFile? = null
             val each = files.iterator()
             loop@ while (each.hasNext()) {
                 val next = each.next()
@@ -337,15 +334,20 @@ class ExplorerService {
                     next.completedPath == ROOT -> Unit
                     next.completedParentPath.startsWith(path) -> {
                         each.remove()
-                        removed.add(next)
+                        if (first == null) {
+                            first = next
+                        } else {
+                            last = next
+                        }
                     }
-                    removed.isNotEmpty() -> break@loop
+                    first != null -> break@loop
                 }
             }
-            removed
+            Pair(first, last ?: first)
         }
-        if (removed.isNotEmpty()) {
-            notifyRemoveRange(removed)
+        when (removed.first) {
+            null -> log2("removeAllChildren not found $path")
+            else -> notifyRemoveRange(removed)
         }
     }
 

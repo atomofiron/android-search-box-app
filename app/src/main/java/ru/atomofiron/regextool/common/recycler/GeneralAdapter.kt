@@ -42,28 +42,15 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         notifyItemInserted(index)
     }
 
-    fun removeItems(items: List<D>) {
-        var firstIndex = UNKNOWN
-        var lastIndex = UNKNOWN
-        // вместо offset лучше удалять с конца
-        var offset = 0
-        items.forEachIndexed { forIndex, it ->
-            val index = this.items.indexOf(it)
-            if (index != UNKNOWN) {
-                lastIndex = index + offset
-                if (firstIndex == UNKNOWN) {
-                    firstIndex = index + offset
-                }
-                this.items.removeAt(index)
-                offset++
-            }
-            val theLastIteration = forIndex == items.size.dec()
-            if (index == UNKNOWN || theLastIteration) {
-                if (firstIndex != UNKNOWN) {
-                    notifyItemRangeRemoved(firstIndex, lastIndex - firstIndex.dec())
-                }
-            }
+    fun removeItems(first: D, last: D) {
+        val indexFirst = items.indexOf(first)
+        val indexLast = items.indexOf(last)
+
+        for (index in indexFirst..indexLast) {
+            items.removeAt(indexFirst)
         }
+
+        notifyItemRangeRemoved(indexFirst, indexLast.inc() - indexFirst)
     }
 
     fun insertItems(previous: D, items: List<D>) {
