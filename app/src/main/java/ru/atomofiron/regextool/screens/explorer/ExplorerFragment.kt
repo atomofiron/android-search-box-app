@@ -62,7 +62,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         viewModel.notifyUpdate.observe(owner, explorerAdapter::setItem)
         viewModel.notifyRemove.observe(owner, explorerAdapter::removeItem)
         viewModel.notifyInsert.observe(owner) { explorerAdapter.insertItem(it.first, it.second) }
-        viewModel.notifyRemoveRange.observe(owner) { explorerAdapter.removeItems(it.first, it.second) }
+        viewModel.notifyRemoveRange.observe(owner, explorerAdapter::removeItems)
         viewModel.notifyInsertRange.observe(owner) { explorerAdapter.insertItems(it.first, it.second) }
     }
 }

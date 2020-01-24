@@ -99,14 +99,8 @@ class ExplorerService {
     }
 
     private fun notifyRemoveRange(files: List<XFile>) {
-        notifyRemoveRange(Pair(files.first(), files.last()))
-    }
-
-    private fun notifyRemoveRange(firstAndLast: Pair<XFile?, XFile?>) {
-        require(firstAndLast.first != null) { NullPointerException("First file to remove is null!") }
-        require(firstAndLast.second != null) { NullPointerException("Second file to remove is null!") }
-        log2("notifyRemoveRange ${firstAndLast.first} .. ${firstAndLast.second}")
-        updates.notifyObservers(RemoveRange(firstAndLast.first!!, firstAndLast.second!!))
+        log2("notifyRemoveRange ${files.size}")
+        updates.notifyObservers(RemoveRange(files))
     }
 
     private fun notifyInsertRange(previous: XFile, files: List<XFile>) {
@@ -325,25 +319,23 @@ class ExplorerService {
     private suspend fun removeAllChildren(path: String) {
         log2("removeAllChildren $path")
         val removed = mutex.withLock {
-            var first: XFile? = null
-            var last: XFile? = null
+            val removed = ArrayList<XFile>()
             val each = files.iterator()
-            loop@while (each.hasNext()) {
-                val it = each.next()
+            loop@ while (each.hasNext()) {
+                val next = each.next()
                 when {
-                    it.completedParentPath.startsWith(path) -> {
+                    next.completedParentPath.startsWith(path) -> {
                         each.remove()
-                        first = first ?: it
-                        last = it
+                        removed.add(next)
                     }
-                    first != null -> break@loop
+                    removed.isNotEmpty() -> break@loop
                 }
             }
-            Pair(first, last)
+            removed
         }
-        when (removed.first) {
-            null -> log2("removeAllChildren not found $path")
-            else -> notifyRemoveRange(removed)
+        when (removed.isEmpty()) {
+            true -> log2("removeAllChildren not found $path")
+            false -> notifyRemoveRange(removed)
         }
     }
 
