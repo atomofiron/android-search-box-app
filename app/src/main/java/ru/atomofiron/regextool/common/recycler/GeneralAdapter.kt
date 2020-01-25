@@ -45,13 +45,14 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
     fun removeItems(items: List<D>) {
         var indexFirst = UNKNOWN
         var indexLast = UNKNOWN
+        val lastCount = items.size.dec()
 
         for (i in items.indices) {
             if (indexFirst == UNKNOWN) {
                 indexFirst = this.items.indexOf(items[i])
             }
             if (indexLast == UNKNOWN) {
-                indexLast = this.items.indexOf(items[items.size.dec() - i])
+                indexLast = this.items.indexOf(items[lastCount - i])
             }
         }
 
