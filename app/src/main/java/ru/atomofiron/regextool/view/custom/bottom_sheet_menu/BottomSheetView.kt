@@ -233,13 +233,17 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
 
     override fun onAnimationUpdate(animation: ValueAnimator) {
         val value = animation.animatedValue as Int
-        val nextTopBySpeed = menu.top + speedPerFrame.toInt()
-        val overrideClose = state == State.CLOSE && value < nextTopBySpeed
-        val overrideOpen = state == State.OPEN && value > nextTopBySpeed
-        if (speedPerFrame != 0f && (overrideClose || overrideOpen)) {
-            setMenuTop(nextTopBySpeed)
-        } else {
+        if (speedPerFrame == 0f) {
             setMenuTop(value)
+        } else {
+            val nextTopBySpeed = menu.top + speedPerFrame.toInt()
+            val overrideOpen = state == State.OPEN && value > nextTopBySpeed
+            val overrideClose = state == State.CLOSE && value < nextTopBySpeed
+            if (overrideOpen || overrideClose) {
+                setMenuTop(nextTopBySpeed)
+            } else {
+                setMenuTop(value)
+            }
         }
     }
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
