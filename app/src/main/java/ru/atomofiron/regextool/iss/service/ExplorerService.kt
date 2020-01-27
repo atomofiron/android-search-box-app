@@ -23,6 +23,10 @@ class ExplorerService {
     private val files: MutableList<MutableXFile> = ArrayList()
     private val root = MutableXFile.byPath(sp.getString(Util.PREF_STORAGE_PATH, ROOT)!!)
     private var currentOpenedDir: MutableXFile? = null
+        set(value) {
+            field = value
+            notifyCurrent(value)
+        }
 
     val store = KObservable<List<XFile>>(files)
     val updates = KObservable<Change>(Nothing, single = true)
@@ -57,63 +61,6 @@ class ExplorerService {
         sp.edit().putString(Util.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
     }
 
-    suspend fun updateFile(f: XFile) {
-        val file = findFile(f) ?: return
-        log2("updateFile $file")
-        when {
-            file.isOpened -> Unit // todo look for new files in opened dir
-            file.isDirectory -> updateClosedDir(file)
-            else -> return updateTheFile(file)
-        }
-    }
-
-    suspend fun openDir(f: XFile) {
-        val dir = findFile(f) ?: return
-        if (!dir.isDirectory) {
-            log2("openDir return $dir")
-            return
-        }
-        if (!dir.isCached) {
-            return updateClosedDir(dir)
-        }
-        when {
-            dir == currentOpenedDir -> closeDir(dir)
-            dir.isOpened -> reopenDir(dir)
-            else -> openDir(dir)
-        }
-    }
-
-    private fun notifyUpdate(file: XFile) {
-        log2("notifyUpdate $file")
-        updates.notifyObservers(Update(file))
-    }
-
-    private fun notifyRemove(file: XFile) {
-        log2("notifyRemove $file")
-        updates.notifyObservers(Remove(file))
-    }
-
-    private fun notifyInsert(previous: XFile, file: XFile) {
-        log2("notifyInsert $file after $previous")
-        updates.notifyObservers(Insert(previous, file))
-    }
-
-    private fun notifyRemoveRange(files: List<XFile>) {
-        log2("notifyRemoveRange ${files.size}")
-        updates.notifyObservers(RemoveRange(files))
-    }
-
-    private fun notifyInsertRange(previous: XFile, files: List<XFile>) {
-        log2("notifyInsert ${files.size} after $previous")
-        updates.notifyObservers(InsertRange(previous, files))
-    }
-
-    private suspend fun notifyFiles() {
-        log2("notifyFiles")
-        val items = mutex.withLock { ArrayList(files) }
-        store.notifyObservers(items)
-    }
-
     private fun findFile(f: XFile): MutableXFile? = findFile(f.completedPath)
 
     private fun findFile(completedPath: String): MutableXFile? {
@@ -142,6 +89,33 @@ class ExplorerService {
         return null
     }
 
+    suspend fun updateFile(f: XFile) {
+        val file = findFile(f) ?: return
+        log2("updateFile $file")
+        when {
+            file.isOpened && file == currentOpenedDir -> updateCurrentDir(file)
+            file.isOpened -> Unit
+            file.isDirectory -> updateClosedDir(file)
+            else -> return updateTheFile(file)
+        }
+    }
+
+    suspend fun openDir(f: XFile) {
+        val dir = findFile(f) ?: return
+        if (!dir.isDirectory) {
+            log2("openDir return $dir")
+            return
+        }
+        if (!dir.isCached) {
+            return updateClosedDir(dir)
+        }
+        when {
+            dir == currentOpenedDir -> closeDir(dir)
+            dir.isOpened -> reopenDir(dir)
+            else -> openDir(dir)
+        }
+    }
+
     private suspend fun reopenDir(dir: MutableXFile) {
         log2("reopenDir $dir")
         val anotherDir = findOpenedDirIn(dir.completedPath)
@@ -153,6 +127,7 @@ class ExplorerService {
             invalidateDir(dir)
 
             removeAllChildren(anotherDir)
+            notifyUpdate(anotherDir)
             updateCurrentDir(dir)
         } else {
             closeDir(dir)
@@ -168,9 +143,10 @@ class ExplorerService {
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
+            notifyUpdate(anotherDir)
         }
 
-        mutex.withLock {
+        val dirFiles = mutex.withLock {
             dir.open()
             currentOpenedDir = dir
             invalidateDir(dir)
@@ -179,8 +155,12 @@ class ExplorerService {
             if (dirFiles.isNotEmpty()) {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), dirFiles)
-                notifyInsertRange(dir, dirFiles)
             }
+            dirFiles
+        }
+        notifyUpdate(dir)
+        if (dirFiles.isNotEmpty()) {
+            notifyInsertRange(dir, dirFiles)
         }
         updateCurrentDir(dir)
     }
@@ -194,6 +174,7 @@ class ExplorerService {
             currentOpenedDir = parent
         }
 
+        notifyUpdate(dir)
         dir.clearChildren()
         removeAllChildren(dir)
     }
@@ -245,6 +226,7 @@ class ExplorerService {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), newFiles)
             }
+            notifyUpdate(dir)
             notifyCurrentDirChanges(dir, dirFiles, newFiles)
         }
     }
@@ -375,11 +357,13 @@ class ExplorerService {
 
         if (droppedFiles.isNotEmpty()) {
             log2("dropOpenedDir $dirToDropPath")
-            currentOpenedDir = targetDir
             notifyRemoveRange(droppedFiles)
         } else {
             log2("Dir to drop was not found! $dirToDropPath")
         }
+        currentOpenedDir = targetDir
+        targetDir.open()
+        notifyUpdate(targetDir)
     }
 
     private suspend fun dropEntity(entity: MutableXFile) {
@@ -404,5 +388,41 @@ class ExplorerService {
         output.write(bytes)
         output.close()
         Shell.exec(Shell.NATIVE_CHMOD_X.format(toyboxPath))
+    }
+
+    private fun notifyCurrent(file: XFile?) {
+        log2("notifyCurrent $file")
+        updates.notifyObservers(Current(file))
+    }
+
+    private fun notifyUpdate(file: XFile) {
+        log2("notifyUpdate $file")
+        updates.notifyObservers(Update(file))
+    }
+
+    private fun notifyRemove(file: XFile) {
+        log2("notifyRemove $file")
+        updates.notifyObservers(Remove(file))
+    }
+
+    private fun notifyInsert(previous: XFile, file: XFile) {
+        log2("notifyInsert $file after $previous")
+        updates.notifyObservers(Insert(previous, file))
+    }
+
+    private fun notifyRemoveRange(files: List<XFile>) {
+        log2("notifyRemoveRange ${files.size}")
+        updates.notifyObservers(RemoveRange(files))
+    }
+
+    private fun notifyInsertRange(previous: XFile, files: List<XFile>) {
+        log2("notifyInsert ${files.size} after $previous")
+        updates.notifyObservers(InsertRange(previous, files))
+    }
+
+    private suspend fun notifyFiles() {
+        log2("notifyFiles")
+        val items = mutex.withLock { ArrayList(files) }
+        store.notifyObservers(items)
     }
 }

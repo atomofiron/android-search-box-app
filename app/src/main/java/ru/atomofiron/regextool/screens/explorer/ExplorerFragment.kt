@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +29,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         super.onCreate(savedInstanceState)
 
         viewModel.files.observe(this, Observer(explorerAdapter::setItems))
+        viewModel.notifyCurrent.observe(this, explorerAdapter::setCurrentDir)
         viewModel.notifyUpdate.observe(this, explorerAdapter::setItem)
         viewModel.notifyRemove.observe(this, explorerAdapter::removeItem)
         viewModel.notifyInsert.observe(this) { explorerAdapter.insertItem(it.first, it.second) }

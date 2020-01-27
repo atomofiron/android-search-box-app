@@ -20,6 +20,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     private val explorerInteractor = ExplorerInteractor()
 
     val files = MutableLiveData<List<XFile>>()
+    val notifyCurrent = LiveEvent<XFile?>()
     val notifyUpdate = LiveEvent<XFile>()
     val notifyRemove = LiveEvent<XFile>()
     val notifyInsert = LiveEvent<Pair<XFile, XFile>>()
@@ -37,6 +38,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         explorerInteractor.observeUpdates {
             GlobalScope.launch(Dispatchers.Main) {
                 when (it) {
+                    is Change.Current -> notifyCurrent(it.file)
                     is Change.Update -> notifyUpdate(it.file)
                     is Change.Remove -> notifyRemove(it.file)
                     is Change.Insert -> notifyInsert(Pair(it.previous, it.file))

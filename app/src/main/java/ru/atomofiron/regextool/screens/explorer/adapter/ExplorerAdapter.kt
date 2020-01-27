@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
+import ru.atomofiron.regextool.screens.explorer.adapter.ItemShadowDecorator.Shadow
 
 class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     companion object {
@@ -16,6 +18,42 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     private var onItemActionListener: ItemActionListener? = null
     private var viewPool: Array<View?>? = null
+
+    private var currentDir: XFile? = null
+
+    private val spaceDecorator = ItemSpaceDecorator { i ->
+        val item = items[i]
+        when {
+            item.isOpened && item.files.isNullOrEmpty() -> Divider.BIG
+            item.isOpened -> Divider.SMALL
+            i.inc() >= items.size -> Divider.NO
+            item.completedParentPath != items[i.inc()].completedParentPath -> Divider.SMALL
+            else -> Divider.NO
+        }
+    }
+
+    private val highlightDecorator = ItemShadowDecorator { i ->
+        val currentDir = currentDir ?: return@ItemShadowDecorator Shadow.NO
+
+        val item = items[i]
+        val isCurrent = item.completedPath == currentDir.completedPath
+        val isCurrentChild = item.completedParentPath == currentDir.completedPath
+        if (!isCurrent && !isCurrentChild) {
+            return@ItemShadowDecorator Shadow.NO
+        }
+
+        when {
+            item.isOpened && item.files.isNullOrEmpty() -> Shadow.DOUBLE
+            item.isOpened -> Shadow.TOP
+            i.inc() == items.size -> Shadow.BOTTOM
+            item.completedParentPath != items[i.inc()].completedParentPath -> Shadow.BOTTOM
+            else -> Shadow.NO
+        }
+    }
+
+    fun setCurrentDir(dir: XFile?) {
+        currentDir = dir
+    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -27,6 +65,16 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         for (i in viewPool!!.indices) {
             viewPool!![i] = inflateNewView(inflater, recyclerView)
         }
+
+        recyclerView.addItemDecoration(spaceDecorator)
+        recyclerView.addItemDecoration(highlightDecorator)
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+
+        recyclerView.removeItemDecoration(spaceDecorator)
+        recyclerView.removeItemDecoration(highlightDecorator)
     }
 
     override fun getItemViewType(position: Int): Int = VIEW_TYPE
