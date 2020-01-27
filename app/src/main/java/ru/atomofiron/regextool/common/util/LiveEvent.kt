@@ -28,10 +28,20 @@ class LiveEvent<T> : LifecycleEventObserver {
         this.listener = listener
     }
 
+    fun unobserveEvent(source: LifecycleOwner) {
+        source.lifecycle.removeObserver(this)
+        this.listener = null
+    }
+
     fun observe(source: LifecycleOwner, listener: (T) -> Unit) {
         check()
         source.lifecycle.addObserver(this)
         this.parameterizedListener = listener
+    }
+
+    fun unobserve(source: LifecycleOwner) {
+        source.lifecycle.removeObserver(this)
+        this.parameterizedListener = null
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

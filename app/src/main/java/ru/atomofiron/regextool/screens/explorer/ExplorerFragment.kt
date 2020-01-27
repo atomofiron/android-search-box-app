@@ -26,6 +26,17 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
 
     private val explorerAdapter = ExplorerAdapter()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel.files.observe(this, Observer(explorerAdapter::setItems))
+        viewModel.notifyUpdate.observe(this, explorerAdapter::setItem)
+        viewModel.notifyRemove.observe(this, explorerAdapter::removeItem)
+        viewModel.notifyInsert.observe(this) { explorerAdapter.insertItem(it.first, it.second) }
+        viewModel.notifyRemoveRange.observe(this, explorerAdapter::removeItems)
+        viewModel.notifyInsertRange.observe(this) { explorerAdapter.insertItems(it.first, it.second) }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,15 +65,5 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         } else {
             false
         }
-    }
-
-    override fun onSubscribeData(owner: LifecycleOwner) {
-        super.onSubscribeData(owner)
-        viewModel.files.observe(owner, Observer(explorerAdapter::setItems))
-        viewModel.notifyUpdate.observe(owner, explorerAdapter::setItem)
-        viewModel.notifyRemove.observe(owner, explorerAdapter::removeItem)
-        viewModel.notifyInsert.observe(owner) { explorerAdapter.insertItem(it.first, it.second) }
-        viewModel.notifyRemoveRange.observe(owner, explorerAdapter::removeItems)
-        viewModel.notifyInsertRange.observe(owner) { explorerAdapter.insertItems(it.first, it.second) }
     }
 }
