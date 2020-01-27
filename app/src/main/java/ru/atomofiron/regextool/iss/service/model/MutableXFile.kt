@@ -12,6 +12,7 @@ class MutableXFile : XFile {
         private const val TOTAL = "total"
         private const val DIR_CHAR = 'd'
         private const val LINK_CHAR = 'l'
+        private const val FILE_CHAR = '-'
         private const val NO_SUCH_FILE = "ls: %s: No such file or directory\n"
 
         var toyboxPath: String = ""
@@ -19,16 +20,40 @@ class MutableXFile : XFile {
         private val parentSuffix = Regex("(?<=/)/*[^/]+/*$")
         private val lastOneSlash = Regex("/*$")
 
-        fun completePathAsDir(absolutePath: String): String {
-            return if (absolutePath == ROOT) ROOT else absolutePath.replace(lastOneSlash, SLASH)
+        fun completePath(absolutePath: String, isDirectory: Boolean = true): String {
+            return when {
+                absolutePath == ROOT -> ROOT
+                isDirectory -> absolutePath.replace(lastOneSlash, SLASH)
+                else -> absolutePath
+            }
         }
 
-        fun completePathIfDir(file: File): String {
-            return if (file.isDirectory) {
-                completePathAsDir(file.absolutePath)
-            } else {
-                file.absolutePath
+        fun completePathAsDir(absolutePath: String): String = completePath(absolutePath)
+
+        fun byPath(absolutePath: String): MutableXFile {
+            val file = File(absolutePath)
+            return MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath)
+        }
+
+        private fun parse(completedParentPath: String, line: String): MutableXFile {
+            val parts = line.split(spaces, 8)
+            val access = parts[0]
+            val owner = parts[2]
+            val group = parts[3]
+            val size = parts[4]
+            val date = parts[5]
+            val time = parts[6]
+            val name = parts[7]
+            val isDirectory = access[0] == DIR_CHAR
+
+            if (parts[7].contains('>')) {
+                // todo links
             }
+
+            val suffix = ""
+            val absolutePath = completedParentPath + name
+
+            return MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath)
         }
     }
     override var files: MutableList<MutableXFile>? = null
@@ -41,17 +66,14 @@ class MutableXFile : XFile {
         }
 
     private var dropCaching: Boolean = false
-    var isCaching: Boolean = false
-        private set
+    private var isCaching: Boolean = false
     override val isCached: Boolean get() = files != null
     override var isCacheActual: Boolean = false
         private set
 
-    override val completedPath: String by lazy { completePathIfDir(file) }
+    override var completedPath: String private set
+    override var completedParentPath: String private set
 
-    override val completedParentPath: String by lazy { completedPath.replace(parentSuffix, "") }
-
-    override val file: File
     override var access: String private set
     override var owner: String private set
     override var group: String private set
@@ -64,36 +86,24 @@ class MutableXFile : XFile {
         private set
 
     override var isDirectory: Boolean private set
+    override var isFile: Boolean private set
 
-    constructor(path: String) {
-        this.file = File(path)
-        access = ""
-        owner = ""
-        group = ""
-        size = ""
-        date = ""
-        time = ""
-        name = file.name
-        suffix = ""
-        isDirectory = file.isDirectory
-    }
+    @Suppress("ConvertSecondaryConstructorToPrimary")
+    constructor(access: String, owner: String, group: String, size: String, date: String, time: String,
+                name: String, suffix: String, isDirectory: Boolean, absolutePath: String) {
+        this.access = access
+        this.owner = owner
+        this.group = group
+        this.size = size
+        this.date = date
+        this.time = time
+        this.name = name
+        this.suffix = suffix
+        this.isDirectory = isDirectory
+        this.isFile = !isDirectory && (access.isEmpty() || access[0] == FILE_CHAR)
 
-    constructor(parent: String, line: String) {
-        val parts = line.split(spaces, 8)
-        access = parts[0]
-        owner = parts[2]
-        group = parts[3]
-        size = parts[4]
-        date = parts[5]
-        time = parts[6]
-        name = parts[7]
-        isDirectory = access[0] == DIR_CHAR
-        if (parts[7].contains('>')) {
-            // todo links
-        }
-
-        file = File(parent, parts[7])
-        suffix = ""
+        completedPath = completePath(absolutePath, isDirectory)
+        completedParentPath = completedPath.replace(parentSuffix, "")
     }
 
     fun open() {
@@ -153,7 +163,7 @@ class MutableXFile : XFile {
                     }
                     for (i in start until lines.size) {
                         if (lines[i].isNotEmpty()) {
-                            val file = MutableXFile(completedPath, lines[i])
+                            val file = parse(completedPath, lines[i])
                             if (file.isDirectory) {
                                 dirs.add(file)
                             } else {
@@ -216,6 +226,7 @@ class MutableXFile : XFile {
             date = parts[5]
             time = parts[6]
             isDirectory = access[0] == DIR_CHAR
+            isFile = !isDirectory && access[0] == FILE_CHAR
         }
         isCaching = false
         isCacheActual = true
@@ -243,6 +254,7 @@ class MutableXFile : XFile {
         date = file.date
         time = file.time
         isDirectory = file.isDirectory
+        isFile = !isDirectory && (access.isEmpty() || access[0] == FILE_CHAR)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -250,7 +262,7 @@ class MutableXFile : XFile {
             other == null -> false
             other !is MutableXFile -> false
             other.isDirectory != isDirectory -> false
-            else -> other.file.absolutePath == file.absolutePath
+            else -> other.completedPath == completedPath
         }
     }
 

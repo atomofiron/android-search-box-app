@@ -44,15 +44,15 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             alpha = if (item.isDirectory && !item.isCached) .5f else 1f
         }
         name {
-            text = if (item.file.absolutePath == Const.ROOT) Const.ROOT else item.file.name
+            text = if (item.completedPath == Const.ROOT) Const.ROOT else item.name
             typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         }
 
         description.view.text = String.format("%s %s %s", item.access, item.owner, item.group)
         date.view.text = String.format("%s %s", item.date, item.time)
         size.view.text = when {
-            item.file.isFile && item.size.length == 1 -> item.size + BYTE_LETTER
-            item.file.isFile -> item.size
+            item.isFile && item.size.length == 1 -> item.size + BYTE_LETTER
+            item.isFile -> item.size
             else -> ""
         }
     }

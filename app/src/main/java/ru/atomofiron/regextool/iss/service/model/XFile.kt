@@ -1,14 +1,12 @@
 package ru.atomofiron.regextool.iss.service.model
 
-import java.io.File
-
 interface XFile {
-    val file: File
     val files: List<XFile>?
     val isOpened: Boolean
     val isCached: Boolean
     val isCacheActual: Boolean
     val isDirectory: Boolean
+    val isFile: Boolean
     val exists: Boolean
 
     /* путь + / */

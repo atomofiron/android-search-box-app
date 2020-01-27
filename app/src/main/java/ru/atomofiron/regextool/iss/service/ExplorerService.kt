@@ -21,7 +21,7 @@ class ExplorerService {
 
     private val mutex = Mutex()
     private val files: MutableList<MutableXFile> = ArrayList()
-    private val root = MutableXFile(sp.getString(Util.PREF_STORAGE_PATH, ROOT)!!)
+    private val root = MutableXFile.byPath(sp.getString(Util.PREF_STORAGE_PATH, ROOT)!!)
     private var currentOpenedDir: MutableXFile? = null
 
     val store = KObservable<List<XFile>>(files)
@@ -262,7 +262,7 @@ class ExplorerService {
                 var previous: XFile = dir
                 while (news.hasNext() || olds.hasNext()) {
                     var new: MutableXFile? = news.next()
-                    var old: XFile? = olds.next()
+                    var old: XFile? = olds.next() // todo NoSuchElementException
                     while (old != new) {
                         if (old != null && !newFiles.contains(old)) {
                             notifyRemove(old)
@@ -340,35 +340,45 @@ class ExplorerService {
     }
 
     private suspend fun dropOpenedDir(d: MutableXFile) {
-        var dirToRemove = d.file
-        var dir = d.file.parentFile
-        while (!dir.exists() || !dir.isDirectory) {
-            dirToRemove = dir
-            dir = dir.parentFile
-        }
+        val su = useSu()
+        var dirToDrop: XFile
+        var targetDir = d
+        do {
+            dirToDrop = targetDir
+            targetDir = findFile(targetDir.completedParentPath)!!
+            targetDir.invalidateCache()
+            targetDir.updateCache(su)
+        } while (!targetDir.exists || !targetDir.isDirectory)
 
-        val dirToRemovePath = MutableXFile.completePathAsDir(dirToRemove.absolutePath)
-        val targetFound = mutex.withLock {
-            var targetFound = false
+        val dirToDropPath = dirToDrop.completedPath
+        val droppedFiles = mutex.withLock {
+            val droppedFiles = ArrayList<XFile>()
+            var droppedLast = false
+            var dirToDropFound = false
             val each = files.iterator()
-            while (each.hasNext()) {
+            while (!droppedLast && each.hasNext()) {
                 val next = each.next()
-                if (!targetFound) {
-                    targetFound = next.completedPath == dirToRemovePath
-                }
-                if (next.completedPath.startsWith(dirToRemovePath)) {
-                    each.remove()
+                when {
+                    !dirToDropFound && next.completedPath == dirToDropPath -> {
+                        dirToDropFound = true
+                        droppedFiles.add(next)
+                    }
+                    dirToDropFound && next.completedPath.startsWith(dirToDropPath) -> {
+                        each.remove()
+                        droppedFiles.add(next)
+                    }
+                    dirToDropFound -> droppedLast = true
                 }
             }
-            targetFound
+            droppedFiles
         }
 
-        if (targetFound) {
-            log2("dropOpenedDir $dirToRemovePath")
-            currentOpenedDir = findFile(MutableXFile.completePathAsDir(dir.absolutePath))
-            notifyFiles()
+        if (droppedFiles.isNotEmpty()) {
+            log2("dropOpenedDir $dirToDropPath")
+            currentOpenedDir = targetDir
+            notifyRemoveRange(droppedFiles)
         } else {
-            log2("Target opened dir was already dropped! $dirToRemovePath")
+            log2("Dir to drop was not found! $dirToDropPath")
         }
     }
 

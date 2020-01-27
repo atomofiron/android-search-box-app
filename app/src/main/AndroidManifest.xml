@@ -20,6 +20,7 @@
 			android:launchMode="singleTask"
 			android:screenOrientation="portrait"
 			android:windowSoftInputMode="adjustPan"
+			android:configChanges="orientation|screenLayout|screenSize|keyboard|fontScale|navigation"
 			android:theme="@style/AppTheme.White">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
