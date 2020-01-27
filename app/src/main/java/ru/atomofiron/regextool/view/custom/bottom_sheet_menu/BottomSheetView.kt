@@ -162,8 +162,12 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
         animator.start()
     }
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return false//super.onTouchEvent(event)
+    }
+
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-        val default = super.onInterceptTouchEvent(event)
+        val default = false//super.onInterceptTouchEvent(event)
         if (event.getPointerId(event.actionIndex) != FIRST) {
             return default
         }
@@ -180,7 +184,11 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
                 setState(State.REOPEN)
             }
             animator.isStarted -> Unit
-            event.action == MotionEvent.ACTION_UP -> hideIfSlideDown(event.y < minTop)
+            event.action == MotionEvent.ACTION_UP -> {
+                hideIfSlideDown(event.y < minTop)
+                // to avoid click on a menu item
+                return direction != Slide.UNDEFINED
+            }
             event.action == MotionEvent.ACTION_MOVE -> {
                 if (System.currentTimeMillis() - lastMove > frameTime) {
                     lastMove = System.currentTimeMillis()

@@ -10,7 +10,6 @@
     android:layout_marginBottom="@dimen/common_half_margin"
     app:cardCornerRadius="@dimen/common_half_size"
     app:cardBackgroundColor="?attr/colorCardBackground"
-    app:cardElevation="4dp"
     >
     <ru.atomofiron.regextool.view.custom.RegexText
         android:id="@+id/regex_text"
