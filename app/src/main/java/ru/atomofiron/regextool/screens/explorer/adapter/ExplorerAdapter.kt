@@ -26,8 +26,9 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         when {
             item.isOpened && item.files.isNullOrEmpty() -> Divider.BIG
             item.isOpened -> Divider.SMALL
-            i.inc() >= items.size -> Divider.NO
-            item.completedParentPath != items[i.inc()].completedParentPath -> Divider.SMALL
+            i.inc() > items.size -> Divider.NO
+            i.inc() == items.size && item.completedParentPath == currentDir?.completedPath -> Divider.SMALL
+            i.inc() != items.size && item.completedParentPath != items[i.inc()].completedParentPath -> Divider.SMALL
             else -> Divider.NO
         }
     }
