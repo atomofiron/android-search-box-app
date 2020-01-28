@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.adapters;
+package ru.atomofiron.regextool.screens.finder.history.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import ru.atomofiron.regextool.Util;
+import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.R;
 
 public class HistoryAdapter extends BaseAdapter implements View.OnClickListener {

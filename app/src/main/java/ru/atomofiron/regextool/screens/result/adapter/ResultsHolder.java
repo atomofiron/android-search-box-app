@@ -1,6 +1,8 @@
-package ru.atomofiron.regextool.models;
+package ru.atomofiron.regextool.screens.result.adapter;
 
 import java.util.ArrayList;
+
+import ru.atomofiron.regextool.utils.finder.Result;
 
 public final class ResultsHolder {
 	private static ArrayList<Result> results = null;

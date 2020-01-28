@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.models;
+package ru.atomofiron.regextool.utils.finder;
 
 import androidx.annotation.NonNull;
 
@@ -9,9 +9,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import ru.atomofiron.regextool.Util;
-import ru.atomofiron.regextool.utils.Cmd;
+import ru.atomofiron.regextool.utils.Util;
 
+// К ЗАБВЕНИЮ
 public class RFile extends File {
 	public final static String ROOT = "/";
 
@@ -58,10 +58,10 @@ public class RFile extends File {
 		if (list != null && list.length != 0)
 			return true;
 
-		if (!super.canRead() && useSu) {
+		/*if (!super.canRead() && useSu) {
 			String ans = Cmd.exec(formatLs(getAbsolutePath()));
 			return !ans.isEmpty() && !ans.equals(".\n..\n");
-		} else
+		} else*/
 			return false;
 	}
 
@@ -83,8 +83,7 @@ public class RFile extends File {
 		if (super.canRead() || !isDirectory() || !useSu)
 			return super.list();
 
-		return Cmd.exec(formatLs(getAbsolutePath()))
-				.replace(".\n..\n", "").split("\n");
+		return "".split("\n");
 	}
 
 	private static String formatLs(String path) {
@@ -93,7 +92,7 @@ public class RFile extends File {
 
 	public String readText() {
 		if (!super.canRead())
-			return useSu ? Cmd.exec(String.format("cat \"%s\"", getAbsolutePath())) : "";
+			return useSu ? "" : "";
 
 		String result = "";
 

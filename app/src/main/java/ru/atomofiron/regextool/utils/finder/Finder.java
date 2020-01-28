@@ -1,11 +1,11 @@
-package ru.atomofiron.regextool.models;
+package ru.atomofiron.regextool.utils.finder;
 
 import androidx.annotation.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ru.atomofiron.regextool.Util;
+import ru.atomofiron.regextool.utils.Util;
 
 public class Finder {
 	private int maxSize = 0;

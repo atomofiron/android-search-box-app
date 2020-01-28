@@ -16,10 +16,11 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.models.Finder;
-import ru.atomofiron.regextool.models.RFile;
-import ru.atomofiron.regextool.models.Result;
+import ru.atomofiron.regextool.utils.finder.Finder;
+import ru.atomofiron.regextool.utils.finder.RFile;
+import ru.atomofiron.regextool.utils.finder.Result;
 import ru.atomofiron.regextool.screens.root.RootActivityWhite;
+import ru.atomofiron.regextool.utils.Util;
 
 public class SearchService extends IntentService {
 	private static final int FOREGROUND_NOTIFICATION_ID = 1;

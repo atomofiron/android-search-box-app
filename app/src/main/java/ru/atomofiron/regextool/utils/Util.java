@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool;
+package ru.atomofiron.regextool.utils;
 
 
 import android.content.SharedPreferences;
@@ -9,6 +9,8 @@ import android.util.Log;
 import androidx.appcompat.app.AlertDialog;
 
 import java.util.Collection;
+
+import ru.atomofiron.regextool.R;
 
 public class Util {
 

@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.findColorByAttr
-import ru.atomofiron.regextool.utils.calculateDurationWithScale
+import ru.atomofiron.regextool.common.util.calculateDurationWithScale
 import kotlin.math.max
 import kotlin.math.min
 

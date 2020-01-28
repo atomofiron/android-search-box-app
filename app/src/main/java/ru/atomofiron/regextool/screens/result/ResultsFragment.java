@@ -27,11 +27,11 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.adapters.ResultAdapter;
-import ru.atomofiron.regextool.Util;
-import ru.atomofiron.regextool.models.ResultsHolder;
+import ru.atomofiron.regextool.screens.result.adapter.ResultAdapter;
+import ru.atomofiron.regextool.utils.Util;
+import ru.atomofiron.regextool.screens.result.adapter.ResultsHolder;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.models.Result;
+import ru.atomofiron.regextool.utils.finder.Result;
 import ru.atomofiron.regextool.utils.SnackbarHelper;
 
 public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.adapters;
+package ru.atomofiron.regextool.screens.result.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import ru.atomofiron.regextool.Util;
+import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.R;
 
 public class ListAdapter extends BaseAdapter implements CompoundButton.OnCheckedChangeListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener { // Почему BaseAdapter, потому что он прост и выполняет свою задачу
@@ -27,8 +27,8 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
     protected final ArrayList<String> pathsList = new ArrayList<>();
 	private final ArrayList<String> checkedPathsList = new ArrayList<>();
 
-    boolean counted = false;
-    boolean checkable = true;
+    protected boolean counted = false;
+    protected boolean checkable = true;
 
     public ListAdapter(Context context) {
         co = context;
@@ -127,10 +127,10 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 	}
 
 	protected static class ViewHolder {
-        TextView text;
-        TextView count;
-        ImageView icon;
-        CheckBox check;
+        public TextView text;
+		public TextView count;
+		public ImageView icon;
+		public CheckBox check;
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

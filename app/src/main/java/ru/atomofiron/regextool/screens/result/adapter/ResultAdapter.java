@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.adapters;
+package ru.atomofiron.regextool.screens.result.adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.models.Result;
+import ru.atomofiron.regextool.utils.finder.Result;
 
 public class ResultAdapter extends ListAdapter {
 	private final ArrayList<Result> resultsList = new ArrayList<>();

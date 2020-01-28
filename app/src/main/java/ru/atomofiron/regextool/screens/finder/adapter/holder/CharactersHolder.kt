@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.Util
+import ru.atomofiron.regextool.utils.Util
 import ru.atomofiron.regextool.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.screens.finder.adapter.FinderItem
 

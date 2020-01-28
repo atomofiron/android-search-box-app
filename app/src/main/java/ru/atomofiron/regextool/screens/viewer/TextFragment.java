@@ -18,10 +18,10 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
-import ru.atomofiron.regextool.Util;
-import ru.atomofiron.regextool.models.RFile;
-import ru.atomofiron.regextool.models.Result;
-import ru.atomofiron.regextool.models.ResultsHolder;
+import ru.atomofiron.regextool.utils.Util;
+import ru.atomofiron.regextool.utils.finder.RFile;
+import ru.atomofiron.regextool.utils.finder.Result;
+import ru.atomofiron.regextool.screens.result.adapter.ResultsHolder;
 import ru.atomofiron.regextool.R;
 
 public class TextFragment extends Fragment implements View.OnClickListener {

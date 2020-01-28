@@ -21,4 +21,7 @@ open class RootActivityWhite : BaseActivity<RootViewModel>() {
             onBackPressed()
         }
     }
+
+    // todo onNewIntent ACTION_SHOW_RESULT, ACTION_SHOW_RESULTS
+    // todo setRequestedOrientation Util.PREF_ORIENTATION
 }

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.models;
+package ru.atomofiron.regextool.utils.finder;
 
 import android.os.Parcel;
 import android.os.Parcelable;

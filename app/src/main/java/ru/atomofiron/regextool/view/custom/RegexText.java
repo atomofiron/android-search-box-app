@@ -14,10 +14,10 @@ import android.widget.EditText;
 
 import androidx.appcompat.widget.AppCompatEditText;
 
-import ru.atomofiron.regextool.Util;
-import ru.atomofiron.regextool.models.Finder;
+import ru.atomofiron.regextool.utils.Util;
+import ru.atomofiron.regextool.utils.finder.Finder;
 import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.models.Result;
+import ru.atomofiron.regextool.utils.finder.Result;
 
 public class RegexText extends AppCompatEditText implements TextWatcher {
 	private static final int DELAY_AFTER_TYPING_MS = 300;
