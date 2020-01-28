@@ -243,8 +243,8 @@ class ExplorerService {
                 val olds = dirFiles.iterator()
                 var previous: XFile = dir
                 while (news.hasNext() || olds.hasNext()) {
-                    var new: MutableXFile? = news.next()
-                    var old: XFile? = olds.next() // todo NoSuchElementException
+                    var new: MutableXFile? = if (news.hasNext()) news.next() else null
+                    var old: XFile? = if (olds.hasNext()) olds.next() else null
                     while (old != new) {
                         if (old != null && !newFiles.contains(old)) {
                             notifyRemove(old)
