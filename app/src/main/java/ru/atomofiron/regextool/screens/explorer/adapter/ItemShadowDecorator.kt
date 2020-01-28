@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.explorer.adapter
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -22,7 +23,7 @@ class ItemShadowDecorator(private val shadowType: (Int) -> Shadow) : RecyclerVie
     private var topShadowSize = 0
     private var bottomShadowSize = 0
 
-    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         initShadow(parent.context)
 
         getChildren(parent).forEach {
@@ -30,23 +31,29 @@ class ItemShadowDecorator(private val shadowType: (Int) -> Shadow) : RecyclerVie
             val position = parent.getChildLayoutPosition(child)
             when (shadowType(position)) {
                 Shadow.NO -> Unit
-                Shadow.TOP -> drawTop(child, canvas)
-                Shadow.BOTTOM -> drawBottom(child, canvas, child.measuredHeight / 2)
+                Shadow.TOP -> drawTop(canvas, child)
+                Shadow.BOTTOM -> {
+                    val rect = Rect()
+                    parent.getDecoratedBoundsWithMargins(child, rect)
+                    drawBottom(canvas, rect)
+                }
                 Shadow.DOUBLE -> {
-                    drawTop(child, canvas)
-                    drawBottom(child, canvas, child.measuredHeight)
+                    val rect = Rect()
+                    parent.getDecoratedBoundsWithMargins(child, rect)
+                    drawTop(canvas, child)
+                    drawBottom(canvas, rect)
                 }
             }
         }
     }
 
-    private fun drawTop(child: View, canvas: Canvas) {
-        topShadow.setBounds(0, child.bottom, child.measuredWidth, child.bottom + topShadowSize)
+    private fun drawTop(canvas: Canvas, child: View) {
+        topShadow.setBounds(child.left, child.bottom, child.right, child.bottom + topShadowSize)
         topShadow.draw(canvas)
     }
 
-    private fun drawBottom(child: View, canvas: Canvas, spaceSize: Int) {
-        bottomShadow.setBounds(0, child.bottom + spaceSize - bottomShadowSize, child.measuredWidth, child.bottom + spaceSize)
+    private fun drawBottom(canvas: Canvas, rect: Rect) {
+        bottomShadow.setBounds(rect.left, rect.bottom - bottomShadowSize, rect.right, rect.bottom)
         bottomShadow.draw(canvas)
     }
 

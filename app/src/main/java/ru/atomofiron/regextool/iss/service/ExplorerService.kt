@@ -256,7 +256,6 @@ class ExplorerService {
                     }
                     previous = next
                 }
-                // todo test
             }
         }
     }
