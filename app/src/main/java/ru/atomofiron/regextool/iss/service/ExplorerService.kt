@@ -242,27 +242,21 @@ class ExplorerService {
                 val news = newFiles.iterator()
                 val olds = dirFiles.iterator()
                 var previous: XFile = dir
-                while (news.hasNext() || olds.hasNext()) {
-                    var new: MutableXFile? = if (news.hasNext()) news.next() else null
-                    var old: XFile? = if (olds.hasNext()) olds.next() else null
-                    while (old != new) {
-                        if (old != null && !newFiles.contains(old)) {
-                            notifyRemove(old)
-                            old = if (olds.hasNext()) olds.next() else null
-                        }
-                        if (new != null && !dirFiles.contains(new)) {
-                            notifyInsert(previous, new)
-                            previous = new
-                            new = if (news.hasNext()) news.next() else null
-                        }
-                    }
 
-                    if (new != null) {
-                        previous = new
-                        new.invalidateCache()
-                        notifyUpdate(new)
+                while (olds.hasNext()) {
+                    val next = olds.next()
+                    if (!newFiles.contains(next)) {
+                        notifyRemove(next)
                     }
                 }
+                while (news.hasNext()) {
+                    val next = news.next()
+                    if (!dirFiles.contains(next)) {
+                        notifyInsert(previous, next)
+                    }
+                    previous = next
+                }
+                // todo test
             }
         }
     }
