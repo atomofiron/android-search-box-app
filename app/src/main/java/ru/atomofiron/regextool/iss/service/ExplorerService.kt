@@ -271,22 +271,22 @@ class ExplorerService {
         log2("updateClosedDir $dir")
         val error = dir.updateCache(su)
 
-        if (error != null) {
-            log2("updateClosedDir error != null ${dir.completedPath}\n$error")
-            if (!dir.exists) {
-                dropEntity(dir)
+        when {
+            !dir.exists -> dropEntity(dir)
+            error != null -> log2("updateClosedDir error != null ${dir.completedPath}\n$error")
+            else -> {
+                notifyUpdate(dir)
+                /*
+                нельзя не уведомлять, если файлы не изменились, потому что:
+                1 у дочерних папок isCached=true, updateCache(), isCaching=true
+                2 родительская папка закрывается, у дочерних папок clear(), files=null, isCached=false
+                3 родительская папка открывается
+                4 дочерние папки кешироваться не начинают, потому что isCaching=true
+                5 список отображает папки как isCached=false
+                6 по окончании кеширования может быть oldFiles==newFiles
+                todo перепроверить
+                 */
             }
-        } else {
-            notifyUpdate(dir)
-            /*
-            нельзя не уведомлять, если файлы не изменились, потому что:
-            1 у дочерних папок isCached=true, updateCache(), isCaching=true
-            2 родительская папка закрывается, у дочерних папок clear(), files=null, isCached=false
-            3 родительская папка открывается
-            4 дочерние папки кешироваться не начинают, потому что isCaching=true
-            5 список отображает папки как isCached=false
-            6 по окончании кеширования может быть oldFiles==newFiles
-             */
         }
     }
 
