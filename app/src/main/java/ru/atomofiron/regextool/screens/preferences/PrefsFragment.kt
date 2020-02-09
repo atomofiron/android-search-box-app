@@ -54,7 +54,7 @@ class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) = Unit
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
         val result = update(preference, newValue)
