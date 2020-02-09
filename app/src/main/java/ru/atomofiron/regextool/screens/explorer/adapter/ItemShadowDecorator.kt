@@ -12,6 +12,7 @@ import ru.atomofiron.regextool.R
 class ItemShadowDecorator(private val shadowType: (position: Int) -> Shadow) : RecyclerView.ItemDecoration() {
     companion object {
         private const val SHADOW_ALPHA = 50
+        private const val SHADOW_ALPHA_DIF = 20
     }
     enum class Shadow {
         NO, TOP, BOTTOM, DOUBLE
@@ -56,6 +57,7 @@ class ItemShadowDecorator(private val shadowType: (position: Int) -> Shadow) : R
 
     private fun drawTop(canvas: Canvas, child: View, dynamicOffset: Int) {
         topShadow.setBounds(child.left, child.bottom, child.right, child.bottom + topShadowSize + dynamicOffset)
+        topShadow.alpha = SHADOW_ALPHA - (SHADOW_ALPHA_DIF * (dynamicOffset.toFloat() / topShadowSize)).toInt()
         topShadow.draw(canvas)
     }
 
