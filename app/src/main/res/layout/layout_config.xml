@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_margin="@dimen/common_half_margin">
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/case_sense"
@@ -13,7 +13,7 @@
         android:ellipsize="none"
         android:singleLine="true"
         />
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/simple_search"
@@ -21,7 +21,7 @@
         android:ellipsize="none"
         android:singleLine="true"
         />
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/in_files"
@@ -29,7 +29,7 @@
         android:ellipsize="none"
         android:singleLine="true"
         />
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/multiline"
@@ -38,7 +38,7 @@
         android:singleLine="true"
         android:enabled="false"
         />
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/enable_replace"

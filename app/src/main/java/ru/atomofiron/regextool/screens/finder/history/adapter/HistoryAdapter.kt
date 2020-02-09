@@ -78,10 +78,10 @@ class HistoryAdapter(
         val nextIndex = if (item.pinned) items.indexOfLast { it.pinned } else FIRST
         item.pinned = !item.pinned
         dao.update(item)
+
+        notifyItemChanged(lastIndex)
         items.removeAt(lastIndex)
         items.add(nextIndex, item)
-        notifyItemChanged(lastIndex)
-        notifyItemChanged(nextIndex)
         notifyItemMoved(lastIndex, nextIndex)
     }
 
