@@ -9,8 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.base.BaseFragment
 import ru.atomofiron.regextool.common.util.Knife
+import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
-import ru.atomofiron.regextool.screens.finder.adapter.FinderItem
+import ru.atomofiron.regextool.screens.finder.adapter.OnFinderActionListener
+import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem.SomeItem
+import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem.FieldItem
+import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import kotlin.reflect.KClass
 
@@ -19,32 +23,50 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     override val layoutId: Int = R.layout.fragment_finder
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.finder_rv)
+    private val viewHistory = Knife<RecyclerView>(this, R.id.finder_rv_history)
     private val bottomOptionMenu = Knife<BottomOptionMenu>(this, R.id.finder_bom)
     private val drawer = Knife<DrawerLayout>(this, R.id.finder_dl)
+
+    private val adapter: HistoryAdapter = HistoryAdapter(object : HistoryAdapter.OnItemClickListener {
+        override fun onItemClick(node: String?) {
+            log("onItemClick $node")
+        }
+    })
+    private val onFinderActionListener: OnFinderActionListener
+            by lazy { FinderAdapterDelegate(adapter, viewModel) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val items = listOf(
-                FinderItem(R.layout.layout_field_find),
-                FinderItem(R.layout.layout_characters),
-                FinderItem(R.layout.layout_config),
-                FinderItem(R.layout.layout_test),
-                FinderItem(R.layout.layout_progress),
-                FinderItem(R.layout.item_finder_file),
-                FinderItem(R.layout.item_finder_file),
-                FinderItem(R.layout.item_finder_file),
-                FinderItem(R.layout.item_finder_file),
-                FinderItem(R.layout.item_finder_file),
-                FinderItem(R.layout.item_finder_file),
-                FinderItem(R.layout.item_finder_file)
+                FieldItem(R.layout.layout_field_find, replace = false),
+                SomeItem(R.layout.layout_characters),
+                SomeItem(R.layout.layout_config),
+                SomeItem(R.layout.layout_test),
+                SomeItem(R.layout.layout_progress),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file),
+                SomeItem(R.layout.item_finder_file)
         )
 
         recyclerView {
             val linearLayoutManager = LinearLayoutManager(context!!)
             layoutManager = linearLayoutManager
             linearLayoutManager.reverseLayout = true
-            val mainAdapter = FinderAdapter()
+            val mainAdapter = FinderAdapter(onFinderActionListener)
             mainAdapter.setItems(items)
             adapter = mainAdapter
         }
@@ -57,5 +79,8 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
                 R.id.menu_settings -> viewModel.onSettingsOptionSelected()
             }
         }
+
+        viewHistory.view.adapter = adapter
     }
+
 }

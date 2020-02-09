@@ -28,9 +28,10 @@ import java.io.File;
 import java.util.ArrayList;
 
 import ru.atomofiron.regextool.screens.result.adapter.ResultAdapter;
-import ru.atomofiron.regextool.utils.Util;
+import ru.atomofiron.regextool.utils.Const;
 import ru.atomofiron.regextool.screens.result.adapter.ResultsHolder;
 import ru.atomofiron.regextool.R;
+import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.utils.finder.Result;
 import ru.atomofiron.regextool.utils.SnackbarHelper;
 
@@ -170,7 +171,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		File file = new File(listAdapter.getItem(position));
 		String format = Util.getFormat(file.getName());
-		String[] extra = Util.sp(getActivity()).getString(Util.PREF_EXTRA_FORMATS, Util.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+");
+		String[] extra = Util.sp(getActivity()).getString(Const.PREF_EXTRA_FORMATS, Const.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+");
 
 		if (Util.isTextFile(format, extra)) {
 			ResultsHolder.setResult(resultsList.get(position));

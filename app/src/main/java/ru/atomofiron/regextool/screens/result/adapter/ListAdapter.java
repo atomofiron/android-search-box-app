@@ -17,8 +17,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import ru.atomofiron.regextool.utils.Util;
+import ru.atomofiron.regextool.utils.Const;
 import ru.atomofiron.regextool.R;
+import ru.atomofiron.regextool.utils.Util;
 
 public class ListAdapter extends BaseAdapter implements CompoundButton.OnCheckedChangeListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener { // Почему BaseAdapter, потому что он прост и выполняет свою задачу
 
@@ -56,7 +57,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		checkedPathsList.remove(pathsList.remove(i));
 
 		Set<String> set = new HashSet<>(pathsList);
-		sp.edit().putStringSet(Util.SELECTED_LIST, set).apply();
+		sp.edit().putStringSet(Const.SELECTED_LIST, set).apply();
 
 		notifyDataSetChanged();
 		return true;
@@ -64,7 +65,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 
 	public void update() {
 		pathsList.clear();
-		Set<String> set = sp.getStringSet(Util.SELECTED_LIST, null);
+		Set<String> set = sp.getStringSet(Const.SELECTED_LIST, null);
 		if (set != null)
 			for (String path : set)
 				if (new File(path).exists())

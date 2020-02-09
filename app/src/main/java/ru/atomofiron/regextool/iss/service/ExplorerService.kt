@@ -12,7 +12,7 @@ import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.utils.Const.ROOT
 import ru.atomofiron.regextool.utils.Shell
-import ru.atomofiron.regextool.utils.Util
+import ru.atomofiron.regextool.utils.Const
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.collections.ArrayList
@@ -22,7 +22,7 @@ class ExplorerService {
 
     private val mutex = Mutex()
     private val files: MutableList<MutableXFile> = ArrayList()
-    private val root = MutableXFile.byPath(sp.getString(Util.PREF_STORAGE_PATH, ROOT)!!)
+    private val root = MutableXFile.byPath(sp.getString(Const.PREF_STORAGE_PATH, ROOT)!!)
     private var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
@@ -33,7 +33,7 @@ class ExplorerService {
     val updates = KObservable<Change>(Nothing, single = true)
 
     // todo make storage
-    private fun useSu() = sp.getBoolean(Util.PREF_USE_SU, false)
+    private fun useSu() = sp.getBoolean(Const.PREF_USE_SU, false)
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
@@ -59,7 +59,7 @@ class ExplorerService {
     }
 
     fun persistState() {
-        sp.edit().putString(Util.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
+        sp.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
     }
 
     private fun findFile(f: XFile): MutableXFile? = findFile(f.completedPath)

@@ -194,7 +194,7 @@ class MutableXFile : XFile {
         }
     }
 
-    private fun sleep() = Thread.sleep(300 + (Math.random() * 700).toLong())
+    private fun sleep() = Unit//Thread.sleep(300 + (Math.random() * 700).toLong())
 
     private fun persistOldFiles(oldFiles: MutableList<MutableXFile>?) {
         val newFiles = this.files!!

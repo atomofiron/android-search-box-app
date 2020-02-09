@@ -4,15 +4,17 @@ import android.view.ViewGroup
 import ru.atomofiron.regextool.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.screens.finder.adapter.holder.*
+import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem
+import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItemType
 
-class FinderAdapter : GeneralAdapter<GeneralHolder<FinderItem>, FinderItem>() {
-    override fun onBindViewHolder(holder: GeneralHolder<FinderItem>, position: Int) {
-    }
+class FinderAdapter(
+        private val onFinderActionListener: OnFinderActionListener
+) : GeneralAdapter<GeneralHolder<FinderItem>, FinderItem>() {
+    private val onSearchClickListener: (String) -> Unit = onFinderActionListener::onSearchClick
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GeneralHolder<FinderItem> {
         return when (viewType) {
-            FinderItemType.REPLACE.id -> FieldHolder(parent, viewType)
-            FinderItemType.FIND.id -> FieldHolder(parent, viewType)
+            FinderItemType.FIND.id -> FieldHolder(parent, viewType, onSearchClickListener)
             FinderItemType.CHARACTERS.id -> CharactersHolder(parent, viewType)
             FinderItemType.CONFIGS.id -> ConfigHolder(parent, viewType)
             FinderItemType.TEST.id -> TestHolder(parent, viewType)

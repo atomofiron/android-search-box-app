@@ -16,11 +16,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 
+import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.utils.finder.Finder;
 import ru.atomofiron.regextool.utils.finder.RFile;
 import ru.atomofiron.regextool.utils.finder.Result;
 import ru.atomofiron.regextool.screens.root.RootActivityWhite;
-import ru.atomofiron.regextool.utils.Util;
+import ru.atomofiron.regextool.utils.Const;
 
 public class SearchService extends IntentService {
 	private static final int FOREGROUND_NOTIFICATION_ID = 1;
@@ -44,20 +45,20 @@ public class SearchService extends IntentService {
 		Context co = getBaseContext();
 		SharedPreferences sp = Util.sp(co);
 
-		maxDepth = sp.getInt(Util.PREF_MAX_DEPTH, 1024);
-		boolean useSu = sp.getBoolean(Util.PREF_USE_SU, false);
-		excludeDirs = sp.getBoolean(Util.PREF_EXCLUDE_DIRS, false);
-		boolean inTheContent = intent.getBooleanExtra(Util.SEARCH_IN_FILES, false);
+		maxDepth = sp.getInt(Const.PREF_MAX_DEPTH, 1024);
+		boolean useSu = sp.getBoolean(Const.PREF_USE_SU, false);
+		excludeDirs = sp.getBoolean(Const.PREF_EXCLUDE_DIRS, false);
+		boolean inTheContent = intent.getBooleanExtra(Const.SEARCH_IN_FILES, false);
 		finder = new Finder();
-		finder.setExtraFormats(sp.getString(Util.PREF_EXTRA_FORMATS, Util.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+"));
-		finder.setQuery(intent.getStringExtra(Util.QUERY));
-		finder.setCaseSense(intent.getBooleanExtra(Util.CASE_SENSE, false));
-		finder.setMultiline(intent.getBooleanExtra(Util.MULTILINE, false));
-        if (!finder.setRegex(intent.getBooleanExtra(Util.SEARCH_REGEX, false))) {
+		finder.setExtraFormats(sp.getString(Const.PREF_EXTRA_FORMATS, Const.DEFAULT_EXTRA_FORMATS).trim().split("[ ]+"));
+		finder.setQuery(intent.getStringExtra(Const.QUERY));
+		finder.setCaseSense(intent.getBooleanExtra(Const.CASE_SENSE, false));
+		finder.setMultiline(intent.getBooleanExtra(Const.MULTILINE, false));
+        if (!finder.setRegex(intent.getBooleanExtra(Const.SEARCH_REGEX, false))) {
 			Toast.makeText(co, finder.getLastException(), Toast.LENGTH_LONG).show();
 			return;
 		}
-		finder.setMaxSize(Util.sp(co).getInt(Util.PREF_MAX_SIZE, 10485760));
+		finder.setMaxSize(Util.sp(co).getInt(Const.PREF_MAX_SIZE, 10485760));
 
 		startForeground();
 		needToSendResults = true;
@@ -68,17 +69,17 @@ public class SearchService extends IntentService {
 
 		/*Intent resultIntent = new Intent(FinderFragment.Companion.getACTION_RESULTS());
         try {
-            for (String path : intent.getStringArrayListExtra(Util.SEARCH_LIST))
+            for (String path : intent.getStringArrayListExtra(Const.SEARCH_LIST))
                 if (inTheContent)
                 	searchInTheContent(new RFile(path, useSu), 0);
 				else
 					search(new RFile(path, useSu), 0);
 
-			resultIntent.putExtra(Util.SEARCH_COUNT, results.size());
+			resultIntent.putExtra(Const.SEARCH_COUNT, results.size());
 			ResultsHolder.setResults(results);
         } catch (Exception e) {
             Util.log9(e.toString());
-            resultIntent.putExtra(Util.SEARCH_COUNT, FinderFragment.Companion.getSEARCH_ERROR()).putExtra(FinderFragment.Companion.getKEY_ERROR_MESSAGE(), e.toString());
+            resultIntent.putExtra(Const.SEARCH_COUNT, FinderFragment.Companion.getSEARCH_ERROR()).putExtra(FinderFragment.Companion.getKEY_ERROR_MESSAGE(), e.toString());
         }
 
         stopForeground(true);
@@ -131,12 +132,12 @@ public class SearchService extends IntentService {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
 					.createNotificationChannel(new NotificationChannel(
-							Util.NOTIFICATION_CHANNEL_ID,
-							Util.NOTIFICATION_CHANNEL_ID,
+							Const.NOTIFICATION_CHANNEL_ID,
+							Const.NOTIFICATION_CHANNEL_ID,
 							NotificationManager.IMPORTANCE_DEFAULT)
 					);
 		}
-		startForeground(FOREGROUND_NOTIFICATION_ID, new NotificationCompat.Builder(this, Util.NOTIFICATION_CHANNEL_ID)
+		startForeground(FOREGROUND_NOTIFICATION_ID, new NotificationCompat.Builder(this, Const.NOTIFICATION_CHANNEL_ID)
 				.setContentTitle(getString(R.string.searching))
 				.setSmallIcon(R.drawable.ic_search_file)
 				.setColor(getResources().getColor(R.color.colorPrimaryLight))

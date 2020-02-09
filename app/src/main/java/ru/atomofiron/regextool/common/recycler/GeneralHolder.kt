@@ -17,5 +17,5 @@ open class GeneralHolder<D : Any>(view: View) : RecyclerView.ViewHolder(view) {
         onBind(item, position)
     }
 
-    open fun onBind(item: D, position: Int) = Unit
+    protected open fun onBind(item: D, position: Int) = Unit
 }

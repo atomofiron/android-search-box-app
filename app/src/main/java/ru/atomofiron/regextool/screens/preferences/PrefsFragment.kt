@@ -9,6 +9,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.utils.Shell.checkSu
+import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Util
 import java.util.*
 
@@ -58,14 +59,14 @@ class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
         val result = update(preference, newValue)
         when (preference.key) {
-            Util.PREF_THEME, Util.PREF_ORIENTATION -> activity!!.recreate()
-            Util.PREF_MAX_SIZE -> update(preference, newValue)
+            Const.PREF_THEME, Const.PREF_ORIENTATION -> activity!!.recreate()
+            Const.PREF_MAX_SIZE -> update(preference, newValue)
         }
         // чтобы можно было проверить факт изменения определённой конфигурации
         // и совершить необходимые действия
         // todo переделать по-человечески
         when (val key = preference.key) {
-            Util.PREF_SPECIAL_CHARACTERS -> changedPrefs.add(key)
+            Const.PREF_SPECIAL_CHARACTERS -> changedPrefs.add(key)
         }
         return result
     }
@@ -73,25 +74,25 @@ class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
     private fun update(pref: Preference, newValue: Any?): Boolean {
         val value = newValue?.toString()
         when (val key = pref.key) {
-            Util.PREF_STORAGE_PATH, Util.PREF_EXTRA_FORMATS -> {
+            Const.PREF_STORAGE_PATH, Const.PREF_EXTRA_FORMATS -> {
                 pref.summary = value ?: sp!!.getString(key, "")
             }
-            Util.PREF_SPECIAL_CHARACTERS -> {
-                pref.summary = value ?: sp!!.getString(Util.PREF_SPECIAL_CHARACTERS, Util.DEFAULT_SPECIAL_CHARACTERS)
+            Const.PREF_SPECIAL_CHARACTERS -> {
+                pref.summary = value ?: sp!!.getString(Const.PREF_SPECIAL_CHARACTERS, Const.DEFAULT_SPECIAL_CHARACTERS)
             }
-            Util.PREF_THEME -> {
+            Const.PREF_THEME -> {
                 val i = value?.toInt() ?: sp!!.getString(key, "0")!!.toInt()
                 pref.summary = resources.getStringArray(R.array.theme_var)[i]
             }
-            Util.PREF_ORIENTATION -> {
+            Const.PREF_ORIENTATION -> {
                 val i = value?.toInt() ?: sp!!.getString(key, "2")!!.toInt()
                 pref.summary = resources.getStringArray(R.array.orientation_var)[i]
             }
-            Util.PREF_USE_SU -> when (value) {
+            Const.PREF_USE_SU -> when (value) {
                 null -> if (sp!!.getBoolean(key, false) && !checkSu()) (pref as SwitchPreferenceCompat).isChecked = false
                 "true" -> return checkSu()
             }
-            Util.PREF_MAX_SIZE -> {
+            Const.PREF_MAX_SIZE -> {
                 val maxSize = newValue ?: sp!!.getInt(key, 0)
                 val view = view
                 if (view != null) {

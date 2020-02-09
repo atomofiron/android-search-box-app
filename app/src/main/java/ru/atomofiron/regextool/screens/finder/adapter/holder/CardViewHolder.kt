@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.recycler.GeneralHolder
-import ru.atomofiron.regextool.screens.finder.adapter.FinderItem
+import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem
 
 abstract class CardViewHolder(parent: ViewGroup, id: Int)
     : GeneralHolder<FinderItem>(wrapWithCard(parent, id)) {

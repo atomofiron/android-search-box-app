@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.atomofiron.regextool.utils.Const;
 import ru.atomofiron.regextool.utils.Util;
 
 public class Finder {

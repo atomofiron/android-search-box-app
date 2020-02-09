@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.widget.AppCompatEditText;
 
+import ru.atomofiron.regextool.utils.Const;
 import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.utils.finder.Finder;
 import ru.atomofiron.regextool.R;

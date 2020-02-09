@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.utils.Util
+import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.common.recycler.GeneralHolder
-import ru.atomofiron.regextool.screens.finder.adapter.FinderItem
+import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem
 
 class CharactersHolder(parent: ViewGroup, id: Int) : GeneralHolder<FinderItem>(parent, id) {
 
@@ -17,7 +17,7 @@ class CharactersHolder(parent: ViewGroup, id: Int) : GeneralHolder<FinderItem>(p
         itemView.removeAllViews()
         val sp = PreferenceManager.getDefaultSharedPreferences(context)
 
-        val characters = sp!!.getString(Util.PREF_SPECIAL_CHARACTERS, Util.DEFAULT_SPECIAL_CHARACTERS)!!
+        val characters = sp!!.getString(Const.PREF_SPECIAL_CHARACTERS, Const.DEFAULT_SPECIAL_CHARACTERS)!!
                 .trim { it <= ' ' }.split("[ ]+".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         if (characters.isNotEmpty() && characters[0].isNotEmpty()) {

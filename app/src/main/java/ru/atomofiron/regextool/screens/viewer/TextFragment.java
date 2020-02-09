@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
+import ru.atomofiron.regextool.utils.Const;
 import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.utils.finder.RFile;
 import ru.atomofiron.regextool.utils.finder.Result;
@@ -75,7 +76,7 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		view.findViewById(R.id.fab_prev).setOnClickListener(this);
 		view.findViewById(R.id.fab_next).setOnClickListener(this);
 		//((NestedScrollView)findViewById(R.id.scroll_text)).setOnScrollChangeListener(listener);
-		final RFile file = new RFile(result.path, Util.sp(getContext()).getBoolean(Util.PREF_USE_SU, false));
+		final RFile file = new RFile(result.path, Util.sp(getContext()).getBoolean(Const.PREF_USE_SU, false));
 
 		if (file.canRead())
 			new Thread(new Runnable() {

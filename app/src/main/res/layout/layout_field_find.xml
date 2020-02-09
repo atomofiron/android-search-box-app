@@ -12,7 +12,7 @@
     app:cardBackgroundColor="?attr/colorCardBackground"
     >
     <ru.atomofiron.regextool.view.custom.RegexText
-        android:id="@+id/regex_text"
+        android:id="@+id/item_find_rt_find"
         android:layout_width="match_parent"
         android:layout_height="@dimen/common_size"
         android:maxLines="1"
@@ -25,6 +25,7 @@
         android:background="@color/transparent"
         />
     <ImageButton
+        android:id="@+id/item_find_ib_find"
         android:layout_width="@dimen/common_size"
         android:layout_height="@dimen/common_size"
         android:background="@drawable/bg_transparent_ripple"
@@ -32,6 +33,7 @@
         android:layout_gravity="end"
         />
     <include
+        android:id="@+id/item_find_i_replace"
         layout="@layout/layout_field_replace"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -60,12 +60,10 @@
 				android:text="@string/history"
 				android:layout_margin="8dp"
 				/>
-			<ListView
+			<androidx.recyclerview.widget.RecyclerView
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:id="@+id/rv_history"
-				android:divider="@null"
-				android:dividerHeight="0dp"
+				android:id="@+id/finder_rv_history"
 				/>
 		</LinearLayout>
 	</com.google.android.material.navigation.NavigationView>

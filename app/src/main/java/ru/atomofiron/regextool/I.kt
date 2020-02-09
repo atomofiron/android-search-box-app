@@ -5,20 +5,22 @@ import android.util.Log
 private var timestamp: Long = 0
 private var nanotimestamp: Long = 0
 
-private const val stop = false
+private const val mute = false
 
-fun Any.log(s: String) {
-    Log.e("regextool", "[${this.javaClass.simpleName}] $s")
+fun Any.log(s: String) = log(this.javaClass.simpleName, s)
+
+fun Any.log(label: String, s: String) {
+    Log.e("regextool", "[$label] $s")
 }
 
 fun Any.log2(s: String) {
-    if (stop) return
+    if (mute) return
 
     Log.e("regextool", "[${this.javaClass.simpleName}] $s")
 }
 
 fun Any.tik(s: String) {
-    if (stop) return
+    if (mute) return
 
     val now = System.currentTimeMillis()
     val dif = now - timestamp
@@ -27,7 +29,7 @@ fun Any.tik(s: String) {
 }
 
 fun Any.natik(s: String) {
-    if (stop) return
+    if (mute) return
 
     val now = System.nanoTime()
     val dif = now - nanotimestamp

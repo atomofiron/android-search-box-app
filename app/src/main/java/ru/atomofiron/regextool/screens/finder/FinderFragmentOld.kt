@@ -89,7 +89,7 @@ class MainFragment2 : Fragment(), View.OnClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         if (fragmentView != null) {
-            if (PrefsFragment.changedPrefs.remove(Util.PREF_SPECIAL_CHARACTERS))
+            if (PrefsFragment.changedPrefs.remove(Const.PREF_SPECIAL_CHARACTERS))
                 initCharacterButtons(fragmentView!!.findViewById<View>(R.id.characters_pane) as ViewGroup)
 
             return fragmentView
@@ -161,7 +161,7 @@ class MainFragment2 : Fragment(), View.OnClickListener {
     private fun initCharacterButtons(pane: ViewGroup) {
         pane.removeAllViews()
 
-        val characters = sp!!.getString(Util.PREF_SPECIAL_CHARACTERS, Util.DEFAULT_SPECIAL_CHARACTERS)!!
+        val characters = sp!!.getString(Const.PREF_SPECIAL_CHARACTERS, Const.DEFAULT_SPECIAL_CHARACTERS)!!
                 .trim { it <= ' ' }.split("[ ]+".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         if (characters.size > 0 && !characters[0].isEmpty())
@@ -231,7 +231,7 @@ class MainFragment2 : Fragment(), View.OnClickListener {
             else if (requestCode == REQUEST_FOR_PROVIDER)
                 (filesListView!!.adapter as FilesAdapter).refresh()
         } else if (requestCode == REQUEST_FOR_PROVIDER)
-            if (!sp!!.getBoolean(Util.PREF_USE_SU, false))
+            if (!sp!!.getBoolean(Const.PREF_USE_SU, false))
                 viewPager!!.currentItem = 1
     }
 
@@ -240,12 +240,12 @@ class MainFragment2 : Fragment(), View.OnClickListener {
         resultReceiver!!.processDialog.alpha_show()
 
         co!!.startService(Intent(co, SearchService::class.java)
-                .putExtra(Util.CASE_SENSE, caseToggle!!.isChecked)
-                .putExtra(Util.SEARCH_LIST, selectedListAdapter!!.checkedPathArray)
-                .putExtra(Util.QUERY, regexText!!.text!!.toString())
-                .putExtra(Util.SEARCH_IN_FILES, contentToggle!!.isChecked)
-                .putExtra(Util.SEARCH_REGEX, regexToggle!!.isChecked)
-                .putExtra(Util.MULTILINE, multilineToggle!!.isChecked))
+                .putExtra(Const.CASE_SENSE, caseToggle!!.isChecked)
+                .putExtra(Const.SEARCH_LIST, selectedListAdapter!!.checkedPathArray)
+                .putExtra(Const.QUERY, regexText!!.text!!.toString())
+                .putExtra(Const.SEARCH_IN_FILES, contentToggle!!.isChecked)
+                .putExtra(Const.SEARCH_REGEX, regexToggle!!.isChecked)
+                .putExtra(Const.MULTILINE, multilineToggle!!.isChecked))
     }
 
     override fun onDestroy() {
@@ -314,7 +314,7 @@ class MainFragment2 : Fragment(), View.OnClickListener {
                 processDialog.cancel()
 
                 val text: String
-                val count = intent.getIntExtra(Util.SEARCH_COUNT, SEARCH_ERROR)
+                val count = intent.getIntExtra(Const.SEARCH_COUNT, SEARCH_ERROR)
                 when (count) {
                     SEARCH_ERROR -> {
                         snackbarHelper!!.alpha_show(intent.getStringExtra(KEY_ERROR_MESSAGE))
@@ -346,13 +346,13 @@ class MainFragment2 : Fragment(), View.OnClickListener {
             if (notifier != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     notifier.createNotificationChannel(NotificationChannel(
-                            Util.NOTIFICATION_CHANNEL_ID,
-                            Util.NOTIFICATION_CHANNEL_ID,
+                            Const.NOTIFICATION_CHANNEL_ID,
+                            Const.NOTIFICATION_CHANNEL_ID,
                             NotificationManager.IMPORTANCE_DEFAULT)
                     )
                 }
 
-                notifier.notify(NOTIFICATION_ID, NotificationCompat.Builder(co!!, Util.NOTIFICATION_CHANNEL_ID)
+                notifier.notify(NOTIFICATION_ID, NotificationCompat.Builder(co!!, Const.NOTIFICATION_CHANNEL_ID)
                         .setTicker(getString(R.string.search_completed))
                         .setContentTitle(getString(R.string.search_completed))
                         .setContentText(text)
