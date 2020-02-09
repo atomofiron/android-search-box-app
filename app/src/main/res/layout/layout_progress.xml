@@ -40,7 +40,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="SpUsage"
         />
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/progress_btn_look"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,14 +50,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/progress_btn_spinner"
         app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+        style="@style/TextAppearance.MaterialComponents.Button"
         />
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/progress_btn_stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/stop"
-        android:background="@drawable/bg_colored_ripple"
+        app:cornerRadius="@dimen/infinity"
+        app:backgroundTint="@color/colorAccent"
         android:textColor="@color/white"
         android:paddingStart="@dimen/common_margin"
         android:paddingEnd="@dimen/common_margin"

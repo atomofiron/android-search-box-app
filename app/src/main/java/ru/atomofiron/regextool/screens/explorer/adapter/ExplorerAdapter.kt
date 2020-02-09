@@ -26,17 +26,17 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         when {
             item.isOpened && item.files.isNullOrEmpty() -> Divider.BIG
             item.isOpened -> Divider.SMALL
-            i.inc() > items.size -> Divider.NO
+            i.inc() >= items.size -> Divider.NO // не делаем отступ у последнего элемента
             i.inc() == items.size && item.completedParentPath == currentDir?.completedPath -> Divider.SMALL
             i.inc() != items.size && item.completedParentPath != items[i.inc()].completedParentPath -> Divider.SMALL
             else -> Divider.NO
         }
     }
 
-    private val highlightDecorator = ItemShadowDecorator { i ->
+    private val highlightDecorator = ItemShadowDecorator { position ->
         val currentDir = currentDir ?: return@ItemShadowDecorator Shadow.NO
 
-        val item = items[i]
+        val item = items[position]
         val isCurrent = item.completedPath == currentDir.completedPath
         val isCurrentChild = item.completedParentPath == currentDir.completedPath
         if (!isCurrent && !isCurrentChild) {
@@ -46,8 +46,8 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         when {
             item.isOpened && item.files.isNullOrEmpty() -> Shadow.DOUBLE
             item.isOpened -> Shadow.TOP
-            i.inc() == items.size -> Shadow.BOTTOM
-            item.completedParentPath != items[i.inc()].completedParentPath -> Shadow.BOTTOM
+            position.inc() == items.size -> Shadow.NO // не рисуем тень под последним элементом
+            item.completedParentPath != items[position.inc()].completedParentPath -> Shadow.BOTTOM
             else -> Shadow.NO
         }
     }

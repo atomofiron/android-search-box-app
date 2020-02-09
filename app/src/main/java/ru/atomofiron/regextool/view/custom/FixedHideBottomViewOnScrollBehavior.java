@@ -34,12 +34,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.animation.AnimationUtils;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomappbar.BottomAppBar;
 
 /**
  * The {@link Behavior} for a View within a {@link CoordinatorLayout} to hide the view off the
  * bottom of the screen when scrolling down, and alpha_show it when scrolling up.
  */
-public class FixedHideBottomViewOnScrollBehavior<V extends View> extends CoordinatorLayout.Behavior<V> {
+public class FixedHideBottomViewOnScrollBehavior extends BottomAppBar.Behavior {
 
   protected static final int ENTER_ANIMATION_DURATION = 225;
   protected static final int EXIT_ANIMATION_DURATION = 175;
@@ -60,7 +62,7 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
 
   @Override
   public boolean onLayoutChild(
-          @NonNull CoordinatorLayout parent, @NonNull V child, int layoutDirection) {
+          @NonNull CoordinatorLayout parent, @NonNull BottomAppBar child, int layoutDirection) {
     ViewGroup.MarginLayoutParams paramsCompat =
             (ViewGroup.MarginLayoutParams) child.getLayoutParams();
     height = child.getMeasuredHeight() + paramsCompat.bottomMargin;
@@ -73,7 +75,7 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
    * @param child the child view that is hidden by this behavior
    * @param offset the additional offset in pixels that should be added when the view slides away
    */
-  public void setAdditionalHiddenOffsetY(@NonNull V child, @Dimension int offset) {
+  public void setAdditionalHiddenOffsetY(@NonNull BottomAppBar child, @Dimension int offset) {
     additionalHiddenOffsetY = offset;
 
     if (currentState == STATE_SCROLLED_OFF) {
@@ -84,7 +86,7 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
   @Override
   public boolean onStartNestedScroll(
           @NonNull CoordinatorLayout coordinatorLayout,
-          @NonNull V child,
+          @NonNull BottomAppBar child,
           @NonNull View directTargetChild,
           @NonNull View target,
           int nestedScrollAxes,
@@ -95,13 +97,13 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
   @Override
   public void onNestedScroll(
           CoordinatorLayout coordinatorLayout,
-          @NonNull V child,
+          @NonNull BottomAppBar child,
           @NonNull View target,
           int dxConsumed,
           int dyConsumed,
           int dxUnconsumed,
-          int dyUnconsumed,
-          int type/*,
+          int dyUnconsumed/*,
+          int type,
           @NonNull int[] consumed*/) {
     if (dyConsumed != 0) {
       boolean isTargetReversed = isTargetReverced(target);
@@ -117,7 +119,7 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
    * Perform an animation that will slide the child from it's current position to be totally on the
    * screen.
    */
-  public void slideStart(@NonNull V child) {
+  public void slideStart(@NonNull BottomAppBar child) {
     if (currentState == STATE_SCROLLED_START) {
       return;
     }
@@ -132,7 +134,7 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
   }
 
   @Deprecated
-  public void slideUp(@NonNull V child) {
+  public void slideUp(@NonNull BottomAppBar child) {
     slideStart(child);
   }
 
@@ -140,7 +142,7 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
    * Perform an animation that will slide the child from it's current position to be totally off the
    * screen.
    */
-  public void slideOff(@NonNull V child) {
+  public void slideOff(@NonNull BottomAppBar child) {
     if (currentState == STATE_SCROLLED_OFF) {
       return;
     }
@@ -158,12 +160,12 @@ public class FixedHideBottomViewOnScrollBehavior<V extends View> extends Coordin
   }
 
   @Deprecated
-  public void slideDown(@NonNull V child) {
+  public void slideDown(@NonNull BottomAppBar child) {
     slideOff(child);
   }
 
   private void animateChildTo(
-          @NonNull V child, int targetY, long duration, TimeInterpolator interpolator) {
+          @NonNull BottomAppBar child, int targetY, long duration, TimeInterpolator interpolator) {
     currentAnimator =
             child
                     .animate()

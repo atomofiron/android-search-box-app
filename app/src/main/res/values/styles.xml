@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-	<style name="AppTheme.White" parent="Theme.AppCompat.Light.NoActionBar">
+	<style name="AppTheme.White" parent="Theme.MaterialComponents.Light.NoActionBar">
 		<item name="isDarkTheme">false</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
@@ -27,7 +27,7 @@
 		<item name="colorBone">@color/light_grey</item>
 		<item name="colorOverlay">@color/overlay_black</item>
 	</style>
-	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
 		<item name="isDarkTheme">true</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
@@ -67,9 +67,9 @@
 		<item name="colorBone">@color/light_grey</item>
 	</style>
 
-	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
 
-	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
 
 	<!--<style name="AppCompat.NoActionBar">
 		<item name="windowActionBar">false</item>

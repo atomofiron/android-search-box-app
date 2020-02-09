@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.findBooleanByAttr
@@ -30,7 +32,7 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity!!).get(viewModelClass.java)
+        viewModel = ViewModelProvider(activity!!).get(viewModelClass.java)
         viewModel.onFragmentAttach(this)
         viewModel.onCreate(context!!, arguments)
     }

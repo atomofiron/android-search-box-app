@@ -12,7 +12,6 @@ import android.os.Build;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 
@@ -62,10 +61,10 @@ public class SearchService extends IntentService {
 
 		startForeground();
 		needToSendResults = true;
-
+/*
 		LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(co);
 		noticer = new Noticer(broadcastManager, results);
-		noticer.execute();
+		noticer.execute();*/
 
 		/*Intent resultIntent = new Intent(FinderFragment.Companion.getACTION_RESULTS());
         try {
@@ -160,16 +159,18 @@ public class SearchService extends IntentService {
 
 	private static class Noticer extends AsyncTask<Void, Void, Void> {
 		private static final long NOTICE_PERIOD = 100L;
+/*
 
 		private final LocalBroadcastManager broadcastManager;
 		private final ArrayList<Result> results;
+*/
 
 		long count = 0L;
 		String current = "";
 
-		Noticer(LocalBroadcastManager broadcastManager, ArrayList<Result> results) {
+		Noticer(/*LocalBroadcastManager broadcastManager, ArrayList<Result> results*/) {/*
 			this.broadcastManager = broadcastManager;
-			this.results = results;
+			this.results = results;*/
 		}
 
 		@Override
