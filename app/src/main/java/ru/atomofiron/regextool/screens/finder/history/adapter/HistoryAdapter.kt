@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.history.dao.AppDatabase
 import ru.atomofiron.regextool.screens.finder.history.dao.HistoryDao
 import ru.atomofiron.regextool.screens.finder.history.dao.ItemHistory
@@ -65,7 +64,6 @@ class HistoryAdapter(
 
     override fun onBindViewHolder(holder: HistoryHolder, position: Int) {
         val item = items[position]
-        log("onBindViewHolder ${item.pinned}")
         holder.onBind(item.title, item.pinned)
     }
 

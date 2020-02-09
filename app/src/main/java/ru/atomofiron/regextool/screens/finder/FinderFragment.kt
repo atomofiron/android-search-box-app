@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.base.BaseFragment
 import ru.atomofiron.regextool.common.util.Knife
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.adapter.OnFinderActionListener
 import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem.SomeItem
@@ -29,7 +28,6 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
 
     private val adapter: HistoryAdapter = HistoryAdapter(object : HistoryAdapter.OnItemClickListener {
         override fun onItemClick(node: String?) {
-            log("onItemClick $node")
         }
     })
     private val onFinderActionListener: OnFinderActionListener

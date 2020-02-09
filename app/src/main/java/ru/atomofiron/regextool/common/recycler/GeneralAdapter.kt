@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.common.recycler
 
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.log
 
 abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adapter<H>() {
     companion object {

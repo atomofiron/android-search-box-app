@@ -6,7 +6,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.recycler.GeneralHolder
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem
 
 class FieldHolder(parent: ViewGroup, id: Int, onSubmitListener: (String) -> Unit) :
@@ -18,14 +17,12 @@ class FieldHolder(parent: ViewGroup, id: Int, onSubmitListener: (String) -> Unit
 
     init {
         btnFind.setOnClickListener {
-            log("FieldHolder", "etFind ${etFind.text}")
             onSubmitListener(etFind.text.toString())
         }
     }
 
     override fun onBind(item: FinderItem, position: Int) {
         item as FinderItem.FieldItem
-        log("onBind ${item.replace}")
         viewReplace.visibility = if (item.replace) View.VISIBLE else View.GONE
         etFind.imeOptions = if (item.replace) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_SEARCH
     }
