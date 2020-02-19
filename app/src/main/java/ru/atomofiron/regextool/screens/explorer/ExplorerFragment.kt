@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.base.BaseFragment
 import ru.atomofiron.regextool.common.util.Knife
+import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetView

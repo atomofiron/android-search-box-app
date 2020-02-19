@@ -9,8 +9,16 @@ class RootRouter : BaseRouter() {
     override var fragmentContainerId: Int = R.id.root_fl
 
     fun showMain() {
-        startScreen(ExplorerFragment(), addToBackStack = false) {
-            startScreen(FinderFragment(), addToBackStack = false)
+        startScreen(FinderFragment(), addToBackStack = false) {
+            startScreen(ExplorerFragment(), addToBackStack = false) {
+                switchScreen(addToBackStack = false) { it is FinderFragment }
+            }
+        }
+    }
+
+    fun closeApp() {
+        activity {
+            finish()
         }
     }
 }

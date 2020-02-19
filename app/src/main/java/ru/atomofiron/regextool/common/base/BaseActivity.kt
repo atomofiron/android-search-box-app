@@ -17,5 +17,7 @@ abstract class BaseActivity<M : BaseViewModel<*>> : AppCompatActivity() {
         viewModel.onCreate(this, intent)
     }
 
-    override fun onBackPressed() = viewModel.onBackButtonClick()
+    override fun onBackPressed() {
+        viewModel.onBackButtonClick()
+    }
 }

@@ -30,8 +30,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="36/96"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
         android:textSize="12dp"
         android:gravity="center_horizontal"
         app:layout_constraintLeft_toLeftOf="parent"

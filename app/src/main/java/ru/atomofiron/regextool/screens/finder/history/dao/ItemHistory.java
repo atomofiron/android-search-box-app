@@ -9,9 +9,9 @@ public class ItemHistory {
 
    @PrimaryKey(autoGenerate = true)
    public long id;
- 
+
    public String title;
- 
+
    public boolean pinned;
 
    @Override

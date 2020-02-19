@@ -5,7 +5,6 @@ import ru.atomofiron.regextool.screens.finder.FinderFragment
 import ru.atomofiron.regextool.screens.preferences.PrefsFragment
 
 class ExplorerRouter : BaseRouter() {
-    override val indexFromEnd: Int = 1
 
     fun showFinder() {
         switchScreen(addToBackStack = false) {

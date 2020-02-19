@@ -57,10 +57,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
         fixSystemBars(systemBarsLights)
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     open fun onSubscribeData(owner: LifecycleOwner) = Unit
 
     open fun onUnsubscribeData(owner: LifecycleOwner) = Unit

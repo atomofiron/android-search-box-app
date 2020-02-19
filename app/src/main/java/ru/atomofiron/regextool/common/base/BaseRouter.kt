@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import ru.atomofiron.regextool.common.base.util.OneTimeBackStackListener
+import ru.atomofiron.regextool.log
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
@@ -45,10 +46,10 @@ abstract class BaseRouter {
         manager = manager ?: activityReference.get()?.supportFragmentManager
         manager!!.action()
     }
-    protected fun manager(action: FragmentManager.() -> Unit) {
-        var manager = fragmentReference.get()?.fragmentManager
-        manager = manager ?: activityReference.get()?.supportFragmentManager
-        manager!!.action()
+    protected fun <T> manager(action: FragmentManager.() -> T): T {
+        //var manager = fragmentReference.get()?.parentFragmentManager
+        val manager = activityReference.get()?.supportFragmentManager
+        return manager!!.action()
     }
 
     protected fun nextIntent(clazz: KClass<out Activity>): Intent {
@@ -149,52 +150,24 @@ abstract class BaseRouter {
         }
     }
 
-    fun closeScreen() {
-        if (isDestroyed) {
-            return
-        }
-        val fragment = fragment
-        val activity = activity
-
-        manager {
-            onViewDestroy()
-            when (fragment) {
-                null -> activity?.finish()
-                else -> closeScreen(fragment)
-            }
-        }
-    }
-
-    fun onBack() {
-        manager {
-            @Suppress("MoveVariableDeclarationIntoWhen")
+    fun onBack(): Boolean {
+        return manager {
             val lastVisible = fragments.findLast { !it.isHidden }
-            val consumed = when (lastVisible) {
-                null -> false
-                is BaseFragment<*> -> lastVisible.onBack()
-                else -> {
-                    closeScreen(lastVisible)
-                    return@manager
-                }
-            }
-            if (!consumed) {
-                closeScreen()
-            }
-        }
-    }
-
-    private fun closeScreen(lastVisible: Fragment) {
-        manager {
             when {
-                backStackEntryCount > 0 -> popBackStack()
-                fragments.size > 1 -> {
+                (lastVisible as? BaseFragment<*>)?.onBack() == true -> true
+                backStackEntryCount > 0 -> {
+                    popBackStack()
+                    true
+                }
+                fragments.size > 1 && fragments[0] != lastVisible -> {
                     beginTransaction().apply {
-                        remove(lastVisible)
-                        fragments.findLast { it !== fragment }?.let(::show)
+                        hide(lastVisible!!)
+                        show(fragments[fragments.indexOf(lastVisible).dec()])
                         commit()
                     }
+                    true
                 }
-                else -> activity?.finish()
+                else -> false
             }
         }
     }

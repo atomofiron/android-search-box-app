@@ -13,7 +13,7 @@
 		android:layout_width="@dimen/joystick_size"
 		android:layout_height="@dimen/joystick_size"
 		android:background="@drawable/ic_circle_states"
-		android:src="@drawable/ic_close"
+		android:src="@drawable/ic_esc"
 		android:layout_gravity="bottom|center_horizontal"
 		android:layout_marginBottom="@dimen/common_nano_margin"
 		android:padding="12dp"

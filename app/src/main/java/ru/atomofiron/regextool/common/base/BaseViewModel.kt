@@ -47,5 +47,5 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
         provider = null
     }
 
-    fun onBackButtonClick() = router.onBack()
+    open fun onBackButtonClick(): Boolean = router.onBack()
 }
