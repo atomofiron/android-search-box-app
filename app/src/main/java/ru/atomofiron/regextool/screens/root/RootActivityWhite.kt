@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.root
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
@@ -14,6 +15,7 @@ open class RootActivityWhite : BaseActivity<RootViewModel>() {
     override val viewModelClass: KClass<RootViewModel> = RootViewModel::class
 
     private val joystick = Knife<View>(this, R.id.root_iv_joystick)
+    private val anchor = Knife<View>(this, R.id.root_v_anchor)
     private lateinit var sbExit: Snackbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +31,8 @@ open class RootActivityWhite : BaseActivity<RootViewModel>() {
         }
 
         sbExit = Snackbar.make(joystick.view, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
-                .setAnchorView(joystick.view)
+                .setAnchorView(anchor.view)
+                .setActionTextColor(ContextCompat.getColor(this, R.color.colorAccent))
                 .setAction(R.string.exit) { viewModel.onExitClick() }
                 .addCallback(ExitSnackbarCallback())
     }

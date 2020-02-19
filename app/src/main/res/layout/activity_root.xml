@@ -18,4 +18,10 @@
 		android:layout_marginBottom="@dimen/common_nano_margin"
 		android:padding="12dp"
 		/>
+	<View
+		android:id="@+id/root_v_anchor"
+		android:layout_width="0dp"
+		android:layout_height="56dp"
+		android:layout_gravity="bottom|center_horizontal"
+		/>
 </FrameLayout>
