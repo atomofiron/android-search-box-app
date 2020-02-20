@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="ru.atomofiron.regextool.MainActivity">
     <item
-        android:id="@+id/menu_bookmark"
-        android:title="@string/bookmarks"
-        android:icon="@drawable/ic_bookmark"
+        android:id="@+id/menu_tasks"
+        android:title="@string/tasks"
+        android:icon="@drawable/ic_sand"
         />
     <item
         android:id="@+id/menu_search"

@@ -10,7 +10,6 @@ import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell.checkSu
 import ru.atomofiron.regextool.utils.Util
-import java.util.*
 
 class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
 
@@ -22,7 +21,7 @@ class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_preferences, menu)
+        inflater.inflate(R.menu.preferences, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

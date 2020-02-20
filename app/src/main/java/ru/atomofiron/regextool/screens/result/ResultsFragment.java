@@ -8,10 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,16 +20,21 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+
 import java.io.File;
 import java.util.ArrayList;
 
-import ru.atomofiron.regextool.screens.result.adapter.ResultAdapter;
-import ru.atomofiron.regextool.utils.Const;
-import ru.atomofiron.regextool.screens.result.adapter.ResultsHolder;
 import ru.atomofiron.regextool.R;
+import ru.atomofiron.regextool.screens.result.adapter.ResultAdapter;
+import ru.atomofiron.regextool.screens.result.adapter.ResultsHolder;
+import ru.atomofiron.regextool.utils.Const;
+import ru.atomofiron.regextool.utils.SnackbarHelper;
 import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.utils.finder.Result;
-import ru.atomofiron.regextool.utils.SnackbarHelper;
 
 public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
@@ -67,7 +68,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		super.onCreateOptionsMenu(menu, inflater);
 
 		if (resultsList != null)
-			inflater.inflate(R.menu.menu_results, menu);
+			inflater.inflate(R.menu.results, menu);
 	}
 
 	@Override

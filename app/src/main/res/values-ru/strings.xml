@@ -33,7 +33,7 @@
     <string name="config">Параметры</string>
     <string name="files">Файлы</string>
     <string name="replace">Заменить</string>
-    <string name="bookmarks">Закладки</string>
+    <string name="tasks">Задачи</string>
     <string name="settings">Настройки</string>
     <string name="share">Поделиться</string>
     <string name="pref_storage_path">Путь к хранилищу</string>
@@ -59,4 +59,5 @@
     <string name="enable_replace">Замена текста</string>
     <string name="exit">Exit</string>
     <string name="click_back_to_exit">Click Back to close the App</string>
+    <string name="remove">Remove</string>
 </resources>

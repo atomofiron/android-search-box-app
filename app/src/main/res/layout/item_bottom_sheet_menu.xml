@@ -14,13 +14,13 @@
     android:focusable="true"
     >
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/item_iv_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_settings"
         />
     <TextView
-        android:id="@+id/label"
+        android:id="@+id/item_tv_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Item"

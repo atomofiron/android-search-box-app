@@ -37,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_gravity="bottom"
-                    app:menu="@menu/menu_nav_explorer"
+                    app:menu="@menu/nav_explorer"
                     />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </ru.atomofiron.regextool.view.custom.FixedBottomAppBar>
@@ -45,6 +45,7 @@
             android:id="@+id/explorer_bsv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:menu="@menu/file_options"
             />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <com.google.android.material.navigation.NavigationView
@@ -60,7 +61,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/bookmarks"
+                android:text="@string/tasks"
                 android:layout_margin="8dp"
                 />
             <ListView

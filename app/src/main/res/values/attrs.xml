@@ -12,7 +12,12 @@
     <attr name="colorBone" format="color" />
     <attr name="colorOverlay" format="color" />
 
+    <attr name="menu" format="reference" />
     <declare-styleable name="BottomOptionMenu">
-        <attr name="menu" format="reference" />
+        <attr name="menu" />
+    </declare-styleable>
+
+    <declare-styleable name="BottomSheetView">
+        <attr name="menu" />
     </declare-styleable>
 </resources>

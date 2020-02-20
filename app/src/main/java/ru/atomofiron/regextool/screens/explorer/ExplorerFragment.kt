@@ -51,7 +51,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         bottomOptionMenu {
             setOnMenuItemClickListener { id ->
                 when (id) {
-                    R.id.menu_bookmark -> drawer.view.openDrawer(GravityCompat.START, true)
+                    R.id.menu_tasks -> drawer.view.openDrawer(GravityCompat.START, true)
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
                     R.id.menu_config -> bottomSheetView.view.show()
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
