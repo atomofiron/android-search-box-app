@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.base.BaseFragment
+import ru.atomofiron.regextool.common.util.DrawerStateListenerImpl
 import ru.atomofiron.regextool.common.util.Knife
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
@@ -23,6 +24,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.explorer_bsv)
     private val drawer = Knife<DrawerLayout>(this, R.id.explorer_dv)
 
+    private val drawerStateListener = DrawerStateListenerImpl()
     private val explorerAdapter = ExplorerAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +58,20 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 }
             }
         }
+        drawer.view.addDrawerListener(drawerStateListener)
     }
 
-    override fun onBack(): Boolean = bottomSheetView.view.hide()
+    override fun onBack(): Boolean {
+        val consumed = drawer(default = false) {
+            when {
+                drawerStateListener.isOpened -> {
+                    closeDrawer(GravityCompat.START)
+                    true
+                }
+                bottomSheetView.view.hide() -> true
+                else -> false
+            }
+        }
+        return consumed || super.onBack()
+    }
 }

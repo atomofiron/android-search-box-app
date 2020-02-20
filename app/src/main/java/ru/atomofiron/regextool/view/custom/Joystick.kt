@@ -17,7 +17,7 @@ class Joystick @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : AppCompatImageView(context, attrs, defStyleAttr) {
-    private val image = ContextCompat.getDrawable(context, R.drawable.ic_circle)
+    private val image = ContextCompat.getDrawable(context, R.drawable.ic_circle)!!
 
     private val blurPaint = Paint()
     private val defaultPaint = Paint()
@@ -31,7 +31,7 @@ class Joystick @JvmOverloads constructor(
     init {
         background = ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_circle
+                R.drawable.ic_circle_states
         )
         setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_esc))
         defaultPaint.color = ContextCompat.getColor(context, R.color.red_soft)
@@ -83,7 +83,8 @@ class Joystick @JvmOverloads constructor(
         if (brightnes != 0f) {
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val mCanvas = Canvas(bitmap)
-            background.draw(mCanvas)
+            image.setBounds(0, 0, width, height)
+            image.draw(mCanvas)
             blurPaint.maskFilter = BlurMaskFilter(maxBlurRadius * brightnes, BlurMaskFilter.Blur.NORMAL)
             val glow = bitmap.extractAlpha(blurPaint, IntArray(2))
             canvas.drawBitmap(glow, (width - glow.width).toFloat() / 2, (height - glow.height).toFloat() / 2, defaultPaint)
