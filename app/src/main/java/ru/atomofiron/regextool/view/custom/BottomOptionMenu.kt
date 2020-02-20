@@ -30,7 +30,6 @@ class BottomOptionMenu : LinearLayout {
         orientation = HORIZONTAL
         isClickable = false
         isFocusable = false
-
     }
 
     val menu = MenuImpl(context)
@@ -50,7 +49,7 @@ class BottomOptionMenu : LinearLayout {
         for (i in 0 until menu.size()) {
             val item = menu.getItem(i)
             val id = item.itemId
-            val view = inflater.inflate(R.layout.layout_bottom_item, this, false)
+            val view = inflater.inflate(R.layout.item_bottom_tab, this, false)
             view.findViewById<ImageView>(R.id.iv_icon).setImageDrawable(item.icon)
             view.findViewById<TextView>(R.id.tv_label).text = item.title
             view.setOnClickListener { onMenuItemClickListener?.invoke(id) }
