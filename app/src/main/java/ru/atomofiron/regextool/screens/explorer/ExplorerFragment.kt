@@ -58,12 +58,5 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         }
     }
 
-    override fun onBack(): Boolean {
-        return if (bottomSheetView.view.isSheetShown) {
-            bottomSheetView.view.hide()
-            true
-        } else {
-            false
-        }
-    }
+    override fun onBack(): Boolean = bottomSheetView.view.hide()
 }

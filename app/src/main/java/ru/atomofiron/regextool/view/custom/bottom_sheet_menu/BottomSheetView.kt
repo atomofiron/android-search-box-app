@@ -7,16 +7,16 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.animation.Interpolator
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.util.findColorByAttr
 import ru.atomofiron.regextool.common.util.calculateDurationWithScale
+import ru.atomofiron.regextool.common.util.findColorByAttr
 import kotlin.math.max
 import kotlin.math.min
 
@@ -75,7 +75,12 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
 
     fun show() = setState(State.OPEN)
 
-    fun hide() = setState(State.CLOSE)
+    /** @return sheet was opened */
+    fun hide(): Boolean {
+        val wasSheetShown = isSheetShown
+        setState(State.CLOSE)
+        return wasSheetShown && !isSheetShown
+    }
 
     private var state = State.CLOSED
 
