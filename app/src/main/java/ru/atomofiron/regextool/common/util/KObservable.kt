@@ -22,7 +22,7 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
     fun removeObserver(o: (T) -> Unit) = observers.removeElement(o)
 
     @Synchronized
-    fun notifyObservers(value: T) {
+    fun setAndNotify(value: T) {
         this.value = value
         changed = true
         notifyObservers()

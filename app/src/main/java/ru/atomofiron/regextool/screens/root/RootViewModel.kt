@@ -4,12 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import ru.atomofiron.regextool.common.base.BaseViewModel
-import ru.atomofiron.regextool.common.util.LiveEvent
+import ru.atomofiron.regextool.common.util.SingleLiveEvent
 
 class RootViewModel(app: Application) : BaseViewModel<RootRouter>(app) {
     override val router = RootRouter()
 
-    val showExitSnackbar = LiveEvent<Unit>()
+    val showExitSnackbar = SingleLiveEvent<Unit>()
     var sbExitIsShown: Boolean = false
 
     override fun onCreate(context: Context, intent: Intent) {

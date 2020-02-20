@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.base.BaseFragment
 import ru.atomofiron.regextool.common.util.Knife
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetView
@@ -30,12 +29,12 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         super.onCreate(savedInstanceState)
 
         viewModel.files.observe(this, Observer(explorerAdapter::setItems))
-        viewModel.notifyCurrent.observe(this, explorerAdapter::setCurrentDir)
-        viewModel.notifyUpdate.observe(this, explorerAdapter::setItem)
-        viewModel.notifyRemove.observe(this, explorerAdapter::removeItem)
-        viewModel.notifyInsert.observe(this) { explorerAdapter.insertItem(it.first, it.second) }
-        viewModel.notifyRemoveRange.observe(this, explorerAdapter::removeItems)
-        viewModel.notifyInsertRange.observe(this) { explorerAdapter.insertItems(it.first, it.second) }
+        viewModel.notifyCurrent.observeData(this, explorerAdapter::setCurrentDir)
+        viewModel.notifyUpdate.observeData(this, explorerAdapter::setItem)
+        viewModel.notifyRemove.observeData(this, explorerAdapter::removeItem)
+        viewModel.notifyInsert.observeData(this) { explorerAdapter.insertItem(it.first, it.second) }
+        viewModel.notifyRemoveRange.observeData(this, explorerAdapter::removeItems)
+        viewModel.notifyInsertRange.observeData(this) { explorerAdapter.insertItems(it.first, it.second) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.common.base.BaseViewModel
-import ru.atomofiron.regextool.common.util.LiveEvent
+import ru.atomofiron.regextool.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.XFile
@@ -20,12 +20,12 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     private val explorerInteractor = ExplorerInteractor()
 
     val files = MutableLiveData<List<XFile>>()
-    val notifyCurrent = LiveEvent<XFile?>()
-    val notifyUpdate = LiveEvent<XFile>()
-    val notifyRemove = LiveEvent<XFile>()
-    val notifyInsert = LiveEvent<Pair<XFile, XFile>>()
-    val notifyRemoveRange = LiveEvent<List<XFile>>()
-    val notifyInsertRange = LiveEvent<Pair<XFile, List<XFile>>>()
+    val notifyCurrent = SingleLiveEvent<XFile?>()
+    val notifyUpdate = SingleLiveEvent<XFile>()
+    val notifyRemove = SingleLiveEvent<XFile>()
+    val notifyInsert = SingleLiveEvent<Pair<XFile, XFile>>()
+    val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
+    val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
 
     override fun onCreate(context: Context, intent: Intent) {
         super.onCreate(context, intent)

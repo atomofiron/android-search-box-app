@@ -1,9 +1,11 @@
 package ru.atomofiron.regextool.common.util
 
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 
-class LiveEvent<T> : LifecycleEventObserver {
+class SingleLiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
     private var parameterizedListener: ((T) -> Unit)? = null
 
@@ -28,20 +30,10 @@ class LiveEvent<T> : LifecycleEventObserver {
         this.listener = listener
     }
 
-    fun unobserveEvent(source: LifecycleOwner) {
-        source.lifecycle.removeObserver(this)
-        this.listener = null
-    }
-
-    fun observe(source: LifecycleOwner, listener: (T) -> Unit) {
+    fun observeData(source: LifecycleOwner, listener: (T) -> Unit) {
         check()
         source.lifecycle.addObserver(this)
         this.parameterizedListener = listener
-    }
-
-    fun unobserve(source: LifecycleOwner) {
-        source.lifecycle.removeObserver(this)
-        this.parameterizedListener = null
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

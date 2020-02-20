@@ -1,39 +1,43 @@
 package ru.atomofiron.regextool.iss.service
 
 import android.preference.PreferenceManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.atomofiron.regextool.*
+import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.common.util.KObservable
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.Change.*
+import ru.atomofiron.regextool.iss.service.model.Change.Nothing
 import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Const.ROOT
 import ru.atomofiron.regextool.utils.Shell
-import ru.atomofiron.regextool.utils.Const
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.collections.ArrayList
 
 class ExplorerService {
     private val sp = PreferenceManager.getDefaultSharedPreferences(App.context)
 
     private val mutex = Mutex()
     private val files: MutableList<MutableXFile> = ArrayList()
-    private val root = MutableXFile.byPath(sp.getString(Const.PREF_STORAGE_PATH, ROOT)!!)
+    private val root = MutableXFile.byPath(SettingsStore.storagePath.value)
     private var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
             notifyCurrent(value)
+
         }
 
     val store = KObservable<List<XFile>>(files)
     val updates = KObservable<Change>(Nothing, single = true)
 
-    // todo make storage
-    private fun useSu() = sp.getBoolean(Const.PREF_USE_SU, false)
+    private val useSu: Boolean get() = SettingsStore.useSu.value
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
@@ -195,8 +199,7 @@ class ExplorerService {
         }
         log2("updateCurrentDir $dir")
         val dirFiles = dir.files
-        val su = useSu()
-        val error = dir.updateCache(su)
+        val error = dir.updateCache(useSu)
         if (error != null) {
             if (!dir.exists) {
                 dropOpenedDir(dir)
@@ -262,14 +265,13 @@ class ExplorerService {
     }
 
     private suspend fun updateClosedDir(dir: MutableXFile) {
-        val su = useSu()
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         if (dir.isOpened) {
             log2("updateClosedDir return $dir")
             return
         }
         log2("updateClosedDir $dir")
-        val error = dir.updateCache(su)
+        val error = dir.updateCache(useSu)
 
         when {
             !dir.exists -> dropEntity(dir)
@@ -316,14 +318,13 @@ class ExplorerService {
     }
 
     private suspend fun dropOpenedDir(d: MutableXFile) {
-        val su = useSu()
         var dirToDrop: XFile
         var targetDir = d
         do {
             dirToDrop = targetDir
             targetDir = findFile(targetDir.completedParentPath)!!
             targetDir.invalidateCache()
-            targetDir.updateCache(su)
+            targetDir.updateCache(useSu)
         } while (!targetDir.exists || !targetDir.isDirectory)
 
         val dirToDropPath = dirToDrop.completedPath
@@ -386,37 +387,37 @@ class ExplorerService {
 
     private fun notifyCurrent(file: XFile?) {
         log2("notifyCurrent $file")
-        updates.notifyObservers(Current(file))
+        updates.setAndNotify(Current(file))
     }
 
     private fun notifyUpdate(file: XFile) {
         log2("notifyUpdate $file")
-        updates.notifyObservers(Update(file))
+        updates.setAndNotify(Update(file))
     }
 
     private fun notifyRemove(file: XFile) {
         log2("notifyRemove $file")
-        updates.notifyObservers(Remove(file))
+        updates.setAndNotify(Remove(file))
     }
 
     private fun notifyInsert(previous: XFile, file: XFile) {
         log2("notifyInsert $file after $previous")
-        updates.notifyObservers(Insert(previous, file))
+        updates.setAndNotify(Insert(previous, file))
     }
 
     private fun notifyRemoveRange(files: List<XFile>) {
         log2("notifyRemoveRange ${files.size}")
-        updates.notifyObservers(RemoveRange(files))
+        updates.setAndNotify(RemoveRange(files))
     }
 
     private fun notifyInsertRange(previous: XFile, files: List<XFile>) {
         log2("notifyInsert ${files.size} after $previous")
-        updates.notifyObservers(InsertRange(previous, files))
+        updates.setAndNotify(InsertRange(previous, files))
     }
 
     private suspend fun notifyFiles() {
         log2("notifyFiles")
         val items = mutex.withLock { ArrayList(files) }
-        store.notifyObservers(items)
+        store.setAndNotify(items)
     }
 }

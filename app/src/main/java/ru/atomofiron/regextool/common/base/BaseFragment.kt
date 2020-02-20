@@ -8,10 +8,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.log2

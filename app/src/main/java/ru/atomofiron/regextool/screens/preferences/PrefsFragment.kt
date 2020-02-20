@@ -1,29 +1,23 @@
 package ru.atomofiron.regextool.screens.preferences
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.utils.Shell.checkSu
+import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
+import ru.atomofiron.regextool.utils.Shell.checkSu
 import ru.atomofiron.regextool.utils.Util
 import java.util.*
 
 class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
-    companion object {
-        val changedPrefs = ArrayList<String>()
-    }
-    private var sp: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
         setHasOptionsMenu(true)
-        sp = Util.sp(activity)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -47,7 +41,7 @@ class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
                 for (j in 0 until prefCategory.preferenceCount) {
                     pref = prefCategory.getPreference(j)
                     pref.onPreferenceChangeListener = this
-                    update(pref, null)
+                    updatePreference(pref, null)
                 }
             }
         }
@@ -57,43 +51,53 @@ class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-        val result = update(preference, newValue)
-        when (preference.key) {
-            Const.PREF_THEME, Const.PREF_ORIENTATION -> activity!!.recreate()
-            Const.PREF_MAX_SIZE -> update(preference, newValue)
-        }
-        // чтобы можно было проверить факт изменения определённой конфигурации
-        // и совершить необходимые действия
-        // todo переделать по-человечески
-        when (val key = preference.key) {
-            Const.PREF_SPECIAL_CHARACTERS -> changedPrefs.add(key)
-        }
-        return result
+        return updatePreference(preference, newValue)
     }
 
-    private fun update(pref: Preference, newValue: Any?): Boolean {
-        val value = newValue?.toString()
-        when (val key = pref.key) {
-            Const.PREF_STORAGE_PATH, Const.PREF_EXTRA_FORMATS -> {
-                pref.summary = value ?: sp!!.getString(key, "")
+    private fun updatePreference(pref: Preference, newValue: Any?): Boolean {
+        when (pref.key) {
+            Const.PREF_STORAGE_PATH -> {
+                pref.summary = newValue as? String
+                if (newValue is String) {
+                    SettingsStore.storagePath.notify(newValue)
+                }
+            }
+            Const.PREF_EXTRA_FORMATS -> {
+                pref.summary = newValue as? String
+                if (newValue is String) {
+                    SettingsStore.extraFormats.notify(newValue)
+                }
             }
             Const.PREF_SPECIAL_CHARACTERS -> {
-                pref.summary = value ?: sp!!.getString(Const.PREF_SPECIAL_CHARACTERS, Const.DEFAULT_SPECIAL_CHARACTERS)
+                pref.summary = newValue as? String
+                if (newValue is String) {
+                    SettingsStore.specialCharacters.notify(newValue)
+                }
             }
-            Const.PREF_THEME -> {
-                val i = value?.toInt() ?: sp!!.getString(key, "0")!!.toInt()
+            Const.PREF_APP_THEME -> {
+                val i = newValue as? Int ?: SettingsStore.appTheme.value.ordinal
                 pref.summary = resources.getStringArray(R.array.theme_var)[i]
+                if (newValue is Int) {
+                    SettingsStore.appTheme.notifyByOriginal(i)
+                }
             }
-            Const.PREF_ORIENTATION -> {
-                val i = value?.toInt() ?: sp!!.getString(key, "2")!!.toInt()
+            Const.PREF_APP_ORIENTATION -> {
+                val i = newValue as? Int ?: SettingsStore.appOrientation.value.ordinal
                 pref.summary = resources.getStringArray(R.array.orientation_var)[i]
+                if (newValue is Int) {
+                    SettingsStore.appOrientation.notifyByOriginal(i)
+                }
             }
-            Const.PREF_USE_SU -> when (value) {
-                null -> if (sp!!.getBoolean(key, false) && !checkSu()) (pref as SwitchPreferenceCompat).isChecked = false
-                "true" -> return checkSu()
+            Const.PREF_USE_SU -> {
+                val use = newValue as? Boolean ?: SettingsStore.useSu.value
+                val allow = !use || checkSu()
+                if (allow && newValue is Boolean) {
+                    SettingsStore.useSu.notify(newValue)
+                }
+                return allow
             }
             Const.PREF_MAX_SIZE -> {
-                val maxSize = newValue ?: sp!!.getInt(key, 0)
+                val maxSize = newValue ?: SettingsStore.maxFileSizeForSearch.value
                 val view = view
                 if (view != null) {
                     val intValue = maxSize as Int
@@ -102,6 +106,9 @@ class PrefsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
                         val suffixes = resources.getStringArray(R.array.size_suffix_arr)
                         pref.summary = Util.intToHumanReadable(intValue, suffixes)
                     })
+                }
+                if (newValue is Int) {
+                    SettingsStore.maxFileSizeForSearch.notify(newValue)
                 }
             }
         }

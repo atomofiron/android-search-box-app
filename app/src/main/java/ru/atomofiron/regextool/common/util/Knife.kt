@@ -48,6 +48,8 @@ class Knife<T : View> {
     }
 
     operator fun invoke(body: T.() -> Unit) {
-        view.apply(body)
+        viewOrNull?.run(body)
     }
+
+    operator fun <R> invoke(default: R, body: T.() -> R) = viewOrNull?.run(body) ?: default
 }

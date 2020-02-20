@@ -2,12 +2,12 @@ package ru.atomofiron.regextool.view.custom
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.view.custom.menu.MenuImpl
 
 class BottomOptionMenu : LinearLayout {
@@ -37,7 +37,7 @@ class BottomOptionMenu : LinearLayout {
     private var onMenuItemClickListener: ((id: Int) -> Unit)? = null
 
     private fun onMenuChanged() {
-        // todo
+        // todo wtf?
     }
 
     fun setOnMenuItemClickListener(listener: (id: Int) -> Unit) {

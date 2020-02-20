@@ -31,9 +31,7 @@ class MenuItemUnused(private val context: Context) : MenuItem {
 
     override fun getItemId(): Int = id
 
-    override fun getAlphabeticShortcut(): Char {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAlphabeticShortcut(): Char = Char.MIN_VALUE
 
     override fun setEnabled(enabled: Boolean): MenuItem {
         isEnabled = enabled
