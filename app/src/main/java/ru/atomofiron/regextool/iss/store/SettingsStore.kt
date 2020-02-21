@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.iss.store
 
+import android.view.Gravity
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
 import ru.atomofiron.regextool.utils.Const
@@ -18,6 +19,11 @@ object SettingsStore {
     val openedDirPath = PreferenceStore.forNullableString<String>(
             key = Const.PREF_OPENED_DIR_PATH,
             default = null
+    )
+
+    val dockGravity = PreferenceStore.forInt<Int>(
+            key = Const.PREF_DOCK_GRAVITY,
+            default = Gravity.START
     )
 
     val specialCharacters = PreferenceStore.forString<String>(

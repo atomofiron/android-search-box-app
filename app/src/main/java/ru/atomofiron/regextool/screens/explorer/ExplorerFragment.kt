@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.explorer
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +56,13 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 }
             }
         }
+        dockView {
+            onGravityChangeListener = viewModel::onDockGravityChange
+        }
+    }
+
+    override fun onSubscribeData(owner: LifecycleOwner) {
+        viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
     }
 
     override fun onBack(): Boolean {

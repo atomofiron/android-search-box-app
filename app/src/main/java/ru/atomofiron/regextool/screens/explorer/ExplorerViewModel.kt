@@ -12,6 +12,7 @@ import ru.atomofiron.regextool.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemActionListener
 
 class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), ItemActionListener {
@@ -19,6 +20,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
 
     private val explorerInteractor = ExplorerInteractor()
 
+    val historyDrawerGravity = MutableLiveData<Int>()
     val files = MutableLiveData<List<XFile>>()
     val notifyCurrent = SingleLiveEvent<XFile?>()
     val notifyUpdate = SingleLiveEvent<XFile>()
@@ -26,6 +28,10 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     val notifyInsert = SingleLiveEvent<Pair<XFile, XFile>>()
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
+
+    private val dockGravityChanged: (Int) -> Unit = { gravity ->
+        historyDrawerGravity.value = gravity
+    }
 
     override fun onCreate(context: Context, intent: Intent) {
         super.onCreate(context, intent)
@@ -47,6 +53,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
                 }
             }
         }
+        SettingsStore
+                .dockGravity
+                .addObserver(onClearedCallback, dockGravityChanged)
     }
 
     fun onSearchOptionSelected() = router.showFinder()
@@ -55,6 +64,8 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
+
+    fun onDockGravityChange(gravity: Int) = SettingsStore.dockGravity.push(gravity)
 
     override fun onItemClick(item: XFile) {
         when {

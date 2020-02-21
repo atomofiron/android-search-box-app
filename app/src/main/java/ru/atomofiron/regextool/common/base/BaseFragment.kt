@@ -39,10 +39,11 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?
     ): View? = LayoutInflater.from(context).inflate(layoutId, container, false)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.onShow()
-        onSubscribeData(this)
+        onSubscribeData(viewLifecycleOwner)
     }
 
     open fun onBack(): Boolean = false
@@ -57,8 +58,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
 
     open fun onSubscribeData(owner: LifecycleOwner) = Unit
 
-    open fun onUnsubscribeData(owner: LifecycleOwner) = Unit
-
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
@@ -67,10 +66,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
             setStatusBarColor(systemBarsColorId)
             fixSystemBars(systemBarsLights)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
     }
 
     override fun onDestroy() {

@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.view.custom
 
 import android.content.Context
-import android.preference.PreferenceManager
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -13,24 +12,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.DrawerStateListenerImpl
-import ru.atomofiron.regextool.utils.Const
 
 class VerticalDockView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : NavigationView(context, attrs, defStyleAttr) {
-    companion object {
-        private const val PREFERENCE_GRAVITY_KEY = Const.PREF_DOCK_GRAVITY
-    }
     private val ibDockSide: ImageButton
     val recyclerView: RecyclerView
     val isOpened: Boolean get() = drawerStateListener.isOpened
 
-    private val gravity: Int get() = (layoutParams as? DrawerLayout.LayoutParams)?.gravity ?: Gravity.NO_GRAVITY
-    private val drawerStateListener = DrawerStateListenerImpl()
+    var gravity: Int
+        get() = (layoutParams as? DrawerLayout.LayoutParams)?.gravity ?: Gravity.NO_GRAVITY
+        set(value) = updateGravity(value)
 
-    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val drawerStateListener = DrawerStateListenerImpl()
+    var onGravityChangeListener: ((gravity: Int) -> Unit)? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_drawer_navigation, this, true)
@@ -39,10 +36,8 @@ class VerticalDockView @JvmOverloads constructor(
 
         ibDockSide = findViewById(R.id.drawer_ib_dock_side)
         ibDockSide.setOnClickListener {
-            layoutParams = (layoutParams as? DrawerLayout.LayoutParams)?.apply {
-                gravity = if (gravity == Gravity.START) Gravity.END else Gravity.START
-                preferences.edit().putInt(PREFERENCE_GRAVITY_KEY, gravity).apply()
-            }
+            val gravity = if (gravity == Gravity.START) Gravity.END else Gravity.START
+            updateGravity(gravity)
         }
 
         val tvTitle = findViewById<TextView>(R.id.drawer_tv_title)
@@ -55,7 +50,8 @@ class VerticalDockView @JvmOverloads constructor(
         super.setLayoutParams(params)
 
         val gravity = (params as? DrawerLayout.LayoutParams)?.gravity ?: Gravity.START
-        ibDockSide.setImageResource(if (gravity == Gravity.START) R.drawable.ic_dock_end else R.drawable.ic_dock_start)
+        val icDock = if (gravity == Gravity.START) R.drawable.ic_dock_end else R.drawable.ic_dock_start
+        ibDockSide.setImageResource(icDock)
     }
 
     fun open() = (parent as DrawerLayout).openDrawer(gravity)
@@ -66,9 +62,15 @@ class VerticalDockView @JvmOverloads constructor(
         super.onAttachedToWindow()
 
         (parent as DrawerLayout).addDrawerListener(drawerStateListener)
+    }
 
-        layoutParams = (layoutParams as? DrawerLayout.LayoutParams)!!.apply {
-            gravity = preferences.getInt(PREFERENCE_GRAVITY_KEY, Gravity.START)
+    private fun updateGravity(gravity: Int) {
+        layoutParams = (layoutParams as? DrawerLayout.LayoutParams)?.apply {
+            val changed = this.gravity != gravity
+            this.gravity = gravity
+            if (changed) {
+                onGravityChangeListener?.invoke(gravity)
+            }
         }
     }
 }

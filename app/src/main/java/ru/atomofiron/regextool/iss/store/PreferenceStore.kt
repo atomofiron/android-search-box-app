@@ -42,7 +42,7 @@ class PreferenceStore<E, V> private constructor(
     private val toValue: ((E) -> V) = getValue ?: { it as V }
     private val fromValue: ((V) -> E) = fromValue ?: { it as E }
 
-    val observable = KObservable(pull())
+    private val observable = KObservable(pull())
 
     val value: E get() = observable.value
 
@@ -66,6 +66,10 @@ class PreferenceStore<E, V> private constructor(
     fun notify(value: E) = observable.setAndNotify(value)
 
     fun notifyByOriginal(value: V) = observable.setAndNotify(fromValue(value))
+
+    fun addObserver(removeCallback: KObservable.RemoveObserverCallback, observer: (E) -> Unit) {
+        observable.addObserver(removeCallback, observer)
+    }
 
     private enum class Type {
         INT, STRING, BOOLEAN

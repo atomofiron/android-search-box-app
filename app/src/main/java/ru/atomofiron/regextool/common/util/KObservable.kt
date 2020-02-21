@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.common.util
 
+import ru.atomofiron.regextool.log
 import java.util.*
 
 open class KObservable<T : Any?>(value: T, private val single: Boolean = false) {
@@ -7,6 +8,15 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
     private val observers = Vector<(T) -> Unit>()
     var value: T = value
         private set
+
+    fun addObserver(removeCallback: RemoveObserverCallback, observer: (T) -> Unit) {
+        addObserver(observer)
+
+        removeCallback.addOneTimeObserver {
+            log("addOneTimeObserver")
+            removeObserver(observer)
+        }
+    }
 
     @Synchronized
     fun addObserver(observer: (T) -> Unit) {
@@ -51,4 +61,17 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
 
     @Synchronized
     fun size(): Int = observers.size
+
+    class RemoveObserverCallback {
+        private val observers = Vector<() -> Unit>()
+
+        fun addOneTimeObserver(observer: () -> Unit) {
+            observers.addElement(observer)
+        }
+
+        fun removeAll() {
+            observers.forEach { it() }
+            observers.clear()
+        }
+    }
 }
