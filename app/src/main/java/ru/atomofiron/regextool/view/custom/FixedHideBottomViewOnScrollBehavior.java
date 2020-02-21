@@ -20,21 +20,21 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
 import android.content.Context;
-import androidx.annotation.Dimension;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+
+import androidx.annotation.Dimension;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.animation.AnimationUtils;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomappbar.BottomAppBar;
 
 /**
@@ -105,9 +105,9 @@ public class FixedHideBottomViewOnScrollBehavior extends BottomAppBar.Behavior {
           int dyUnconsumed/*,
           int type,
           @NonNull int[] consumed*/) {
-    if (dyConsumed != 0) {
-      boolean isTargetReversed = isTargetReverced(target);
-      if (isTargetReversed ^ dyConsumed > 0) {
+    if (dyConsumed != 0 || dyUnconsumed != 0) {
+      boolean isTargetReversed = isTargetReversed(target);
+      if (isTargetReversed ^ (dyConsumed > 0 || dyUnconsumed > 0)) {
         slideOff(child);
       } else {
         slideStart(child);
@@ -181,7 +181,7 @@ public class FixedHideBottomViewOnScrollBehavior extends BottomAppBar.Behavior {
                             });
   }
 
-  private boolean isTargetReverced(View target) {
+  private boolean isTargetReversed(View target) {
     if (target instanceof RecyclerView) {
       RecyclerView.LayoutManager layoutManager = ((RecyclerView) target).getLayoutManager();
       if (layoutManager instanceof LinearLayoutManager) {
