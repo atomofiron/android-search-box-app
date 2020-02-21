@@ -50,7 +50,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 when (id) {
                     R.id.menu_tasks -> dockView { open() }
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
-                    R.id.menu_config -> bottomSheetView.view.show()
+                    R.id.menu_config -> bottomSheetView { show() }
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
                 }
             }
