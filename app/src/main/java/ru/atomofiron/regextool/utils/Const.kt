@@ -6,6 +6,7 @@ object Const {
     const val PREF_FIRST_START = "PREF_FIRST_START"
     const val PREF_STORAGE_PATH = "pref_storage_path"
     const val PREF_OPENED_DIR_PATH = "pref_opened_dir_path"
+    const val PREF_DOCK_GRAVITY = "pref_drawer_gravity"
     const val PREF_SPECIAL_CHARACTERS = "pref_special_characters"
     const val PREF_EXTRA_FORMATS = "pref_extra_formats"
     const val PREF_APP_ORIENTATION = "pref_app_orientation"

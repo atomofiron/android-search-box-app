@@ -57,7 +57,7 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
             gravity = Gravity.BOTTOM
         }
         val top = resources.getDimensionPixelSize(R.dimen.menu_corner_radius)
-        val bottom = resources.getDimensionPixelSize(R.dimen.action_bar_size)
+        val bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
         rvMenu.setPadding(0, top, 0, bottom)
         addView(rvMenu)
     }

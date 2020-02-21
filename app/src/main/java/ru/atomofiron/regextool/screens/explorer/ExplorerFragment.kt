@@ -2,17 +2,15 @@ package ru.atomofiron.regextool.screens.explorer
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.base.BaseFragment
-import ru.atomofiron.regextool.common.util.DrawerStateListenerImpl
 import ru.atomofiron.regextool.common.util.Knife
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
+import ru.atomofiron.regextool.view.custom.VerticalDockView
 import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetView
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
@@ -22,9 +20,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
     private val bottomOptionMenu = Knife<BottomOptionMenu>(this, R.id.explorer_bom)
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.explorer_bsv)
-    private val drawer = Knife<DrawerLayout>(this, R.id.explorer_dv)
+    private val dockView = Knife<VerticalDockView>(this, R.id.explorer_dv)
 
-    private val drawerStateListener = DrawerStateListenerImpl()
     private val explorerAdapter = ExplorerAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,24 +48,23 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         bottomOptionMenu {
             setOnMenuItemClickListener { id ->
                 when (id) {
-                    R.id.menu_tasks -> drawer.view.openDrawer(GravityCompat.START, true)
+                    R.id.menu_tasks -> dockView { open() }
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
                     R.id.menu_config -> bottomSheetView.view.show()
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
                 }
             }
         }
-        drawer.view.addDrawerListener(drawerStateListener)
     }
 
     override fun onBack(): Boolean {
-        val consumed = drawer(default = false) {
+        val consumed = dockView(default = false) {
             when {
-                drawerStateListener.isOpened -> {
-                    closeDrawer(GravityCompat.START)
+                isOpened -> {
+                    close()
                     true
                 }
-                bottomSheetView.view.hide() -> true
+                bottomSheetView(default = false) { hide() } -> true
                 else -> false
             }
         }

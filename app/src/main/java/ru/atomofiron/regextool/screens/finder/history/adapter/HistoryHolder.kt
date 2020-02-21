@@ -26,6 +26,7 @@ class HistoryHolder(itemView: View, onItemActionListener: OnItemActionListener) 
     fun onBind(title: String, pinned: Boolean) {
         btnPinned.isActivated = pinned
         tvTitle.text = title
+        btnRemove.visibility = if (pinned) View.GONE else View.VISIBLE
     }
 
     interface OnItemActionListener {

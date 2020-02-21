@@ -20,4 +20,8 @@
     <declare-styleable name="BottomSheetView">
         <attr name="menu" />
     </declare-styleable>
+
+    <declare-styleable name="VerticalDockView">
+        <attr name="title" format="string" />
+    </declare-styleable>
 </resources>

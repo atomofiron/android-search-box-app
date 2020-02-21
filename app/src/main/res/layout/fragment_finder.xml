@@ -25,7 +25,7 @@
 
 		<ru.atomofiron.regextool.view.custom.FixedBottomAppBar
 			android:layout_width="match_parent"
-			android:layout_height="@dimen/action_bar_size"
+			android:layout_height="@dimen/bottom_tab_bar_height"
 			android:layout_gravity="bottom"
 			app:backgroundTint="?attr/colorBackground"
 			app:hideOnScroll="true"
@@ -45,27 +45,12 @@
 		</ru.atomofiron.regextool.view.custom.FixedBottomAppBar>
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
-	<com.google.android.material.navigation.NavigationView
+	<ru.atomofiron.regextool.view.custom.VerticalDockView
+		android:id="@+id/finder_dv"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
 		android:background="?attr/colorBackground"
-		android:layout_gravity="start">
-
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="vertical">
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/history"
-				android:layout_margin="8dp"
-				/>
-			<androidx.recyclerview.widget.RecyclerView
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:id="@+id/finder_rv_history"
-				/>
-		</LinearLayout>
-	</com.google.android.material.navigation.NavigationView>
+		app:title="@string/history"
+		android:layout_gravity="start"
+		/>
 </androidx.drawerlayout.widget.DrawerLayout>
