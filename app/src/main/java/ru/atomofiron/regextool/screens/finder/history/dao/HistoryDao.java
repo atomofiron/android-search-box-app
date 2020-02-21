@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface HistoryDao {
  
-   @Query("SELECT * FROM ItemHistory order by pinned desc")
+   @Query("SELECT * FROM ItemHistory order by pinned desc, id desc")
    List<ItemHistory> getAll();
  
    @Query("SELECT * FROM ItemHistory WHERE id = :id")
@@ -19,9 +19,9 @@ public interface HistoryDao {
 
    @Query("SELECT COUNT(*) FROM ItemHistory")
    int count();
- 
+
    @Insert
-   void insert(ItemHistory employee);
+   long insert(ItemHistory employee);
  
    @Update
    void update(ItemHistory employee);
