@@ -11,7 +11,6 @@
     <string name="cancel">Cancel</string>
     <string name="stop">Stop</string>
     <string name="no_activity">You have no application able to open a file of this type</string>
-    <string name="tips_message">The list of selected dirs:\nLong press to delete the record, checkbox to use.\n\nOn the selection list of the directory:\nShort press - go, checkbox to choose.\n\nOn the results screen:\nShort - open, long - show the absolute path.</string>
     <string name="results">Your search returned %d results</string>
     <string name="find">Find</string>
     <string name="search_in_the_content">Search in the files content</string>
@@ -57,7 +56,7 @@
     <string name="pref_special_characters">Special characters</string>
     <string name="search">Search</string>
     <string name="use_regular_expression">Use regular expression</string>
-    <string name="enable_replace">Замена текста</string>
+    <string name="enable_replace">Replace the text</string>
     <string name="exit">Exit</string>
     <string name="click_back_to_exit">Click Back to close the App</string>
     <string name="remove">Remove</string>

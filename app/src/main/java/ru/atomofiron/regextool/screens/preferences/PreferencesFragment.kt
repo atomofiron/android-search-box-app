@@ -1,9 +1,6 @@
 package ru.atomofiron.regextool.screens.preferences
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -25,18 +22,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
         setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.preferences, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.tips) {
-            Util.showHelp(context)
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit

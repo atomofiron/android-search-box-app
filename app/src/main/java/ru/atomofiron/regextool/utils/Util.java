@@ -1,17 +1,13 @@
 package ru.atomofiron.regextool.utils;
 
 
-import android.content.SharedPreferences;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import androidx.appcompat.app.AlertDialog;
-
 import java.util.Collection;
 import java.util.Locale;
-
-import ru.atomofiron.regextool.R;
 
 public class Util {
 
@@ -62,14 +58,6 @@ public class Util {
     }
 
     public static void sleep(int sec) { try { Thread.sleep(sec * 1000); } catch (Exception ignored) {} }
-
-    public static void showHelp(Context co) {
-        new AlertDialog.Builder(co)
-                .setTitle(co.getString(R.string.tips))
-                .setMessage(co.getString(R.string.tips_message))
-                .setNegativeButton("Ok", null)
-                .create().show();
-    }
 
     public static boolean equivalent(Collection a, Collection b) {
         if (a.size() != b.size())

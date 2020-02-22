@@ -11,7 +11,6 @@
     <string name="cancel">Отмена</string>
     <string name="stop">Остановить</string>
     <string name="no_activity">У вас нет приложения, способного открыть файл этого типа</string>
-    <string name="tips_message">В списке выбранных директорий:\nДолгое нажатие - стереть запись, галочка - задействовать.\n\nВ списке выбора директории:\nКороткое нажатие - перейти, галочка - выбрать.\n\nНа экране результатов:\nКороткое - открыть, долгое - показать абсолютный путь.</string>
     <string name="results">Поиск дал %d результатов</string>
     <string name="find">Найти</string>
     <string name="search_in_the_content">Искать по содержимому файлов</string>
@@ -55,11 +54,11 @@
     <string name="data_was_lost">Данные были утеряны</string>
     <string name="search_completed">Поиск завершён</string>
     <string name="pref_special_characters">Специальные символы</string>
-    <string name="search">Search</string>
-    <string name="use_regular_expression">Use regular expression</string>
+    <string name="search">Поиск</string>
+    <string name="use_regular_expression">Использовать regexp</string>
     <string name="enable_replace">Замена текста</string>
-    <string name="exit">Exit</string>
-    <string name="click_back_to_exit">Click Back to close the App</string>
-    <string name="remove">Remove</string>
-    <string name="not_allowed">Not allowed</string>
+    <string name="exit">Выйти</string>
+    <string name="click_back_to_exit">Нажмите Назад, чтобы закрыть приложение</string>
+    <string name="remove">Удалить</string>
+    <string name="not_allowed">Не позволено</string>
 </resources>
