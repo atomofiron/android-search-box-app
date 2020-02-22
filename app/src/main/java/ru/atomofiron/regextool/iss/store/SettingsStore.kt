@@ -31,9 +31,11 @@ object SettingsStore {
             default = Const.DEFAULT_SPECIAL_CHARACTERS
     )
 
-    val extraFormats = PreferenceStore.forString<String>(
+    val extraFormats = PreferenceStore.forString(
             key = Const.PREF_EXTRA_FORMATS,
-            default = Const.DEFAULT_EXTRA_FORMATS
+            default = Const.DEFAULT_EXTRA_FORMATS,
+            toValue = { it.joinToString(separator = " ") },
+            fromValue = { it.split(" ").toTypedArray() }
     )
 
     val maxFileSizeForSearch = PreferenceStore.forInt<Int>(

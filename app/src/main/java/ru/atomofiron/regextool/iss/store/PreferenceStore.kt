@@ -44,7 +44,14 @@ class PreferenceStore<E, V> private constructor(
 
     private val observable = KObservable(pull())
 
-    val value: E get() = observable.value
+    val value: V get() = toValue(observable.value)
+    val entity: E get() = observable.value
+
+    init {
+        if (type == Type.STRING && default != null && sp.getString(key, null) == null) {
+            sp.edit().putString(key, default as String).apply()
+        }
+    }
 
     private fun pull(): E {
         return when (type) {

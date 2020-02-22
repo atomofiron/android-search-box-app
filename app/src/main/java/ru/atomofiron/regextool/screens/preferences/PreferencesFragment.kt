@@ -67,7 +67,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
             Const.PREF_EXTRA_FORMATS -> {
                 preference.summary = newValue as? String ?: SettingsStore.extraFormats.value
                 if (newValue is String) {
-                    SettingsStore.extraFormats.notify(newValue)
+                    SettingsStore.extraFormats.notifyByOriginal(newValue)
                 }
             }
             Const.PREF_SPECIAL_CHARACTERS -> {
@@ -77,14 +77,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
                 }
             }
             Const.PREF_APP_THEME -> {
-                val i = newValue as? Int ?: SettingsStore.appTheme.value.ordinal
+                val i = newValue as? Int ?: SettingsStore.appTheme.value
                 preference.summary = resources.getStringArray(R.array.theme_var)[i]
                 if (newValue is Int) {
                     SettingsStore.appTheme.notifyByOriginal(i)
                 }
             }
             Const.PREF_APP_ORIENTATION -> {
-                val i = newValue as? Int ?: SettingsStore.appOrientation.value.ordinal
+                val i = newValue as? Int ?: SettingsStore.appOrientation.value
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
                 if (newValue is Int) {
                     SettingsStore.appOrientation.notifyByOriginal(i)
