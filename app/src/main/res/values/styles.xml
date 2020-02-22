@@ -21,10 +21,10 @@
 		<item name="colorAccentLite">@color/colorAccentLight</item>
 
 		<item name="colorBackground">@color/windowBackgroundWhite</item>
-		<item name="colorFieldBackground">@color/light_grey</item>
+		<item name="colorFieldBackground">@color/grey_light</item>
 		<item name="colorCardBackground">@color/windowBackgroundWhite</item>
-		<item name="colorFieldDivider">@color/light_grey</item>
-		<item name="colorBone">@color/light_grey</item>
+		<item name="colorFieldDivider">@color/grey_light</item>
+		<item name="colorBone">@color/grey_light</item>
 		<item name="colorOverlay">@color/overlay_black</item>
 	</style>
 	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
@@ -43,7 +43,7 @@
 		<item name="colorAccent">@color/colorAccent</item>
 		<item name="colorControlHighlight">@color/colorAccent</item>
 
-		<item name="colorContent">@color/white_dark</item>
+		<item name="colorContent">@color/grey_light</item>
 		<item name="colorPositive">@color/white</item>
 		<item name="colorNegative">@color/windowBackgroundDark</item>
 		<item name="colorAccentLite">@color/colorAccentDark</item>
@@ -64,7 +64,7 @@
 		<item name="colorFieldBackground">@color/windowBackgroundDark</item>
 		<item name="colorCardBackground">@color/windowBackgroundDark</item>
 		<item name="colorFieldDivider">@color/windowBackgroundBlack</item>
-		<item name="colorBone">@color/light_grey</item>
+		<item name="colorBone">@color/grey_light</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
