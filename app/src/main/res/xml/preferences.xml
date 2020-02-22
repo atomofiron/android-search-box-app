@@ -22,8 +22,9 @@
         <CheckBoxPreference
             app:title="@string/exclude_dirs"
             android:key="exclude_dirs"
+            android:summary="@string/exclude_dirs_summary"
             />
-        <SwitchPreferenceCompat
+        <androidx.preference.SwitchPreferenceCompat
             app:title="@string/pref_use_su"
             app:key="pref_use_su"
             app:defaultValue="false"

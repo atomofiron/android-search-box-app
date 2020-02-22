@@ -2,7 +2,7 @@ package ru.atomofiron.regextool.screens.explorer
 
 import ru.atomofiron.regextool.common.base.BaseRouter
 import ru.atomofiron.regextool.screens.finder.FinderFragment
-import ru.atomofiron.regextool.screens.preferences.PrefsFragment
+import ru.atomofiron.regextool.screens.preferences.PreferencesFragment
 
 class ExplorerRouter : BaseRouter() {
 
@@ -12,5 +12,5 @@ class ExplorerRouter : BaseRouter() {
         }
     }
 
-    fun showSettings() = startScreen(PrefsFragment())
+    fun showSettings() = startScreen(PreferencesFragment())
 }

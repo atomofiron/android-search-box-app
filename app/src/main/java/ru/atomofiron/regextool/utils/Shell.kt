@@ -16,30 +16,36 @@ object Shell {
     const val FOR_LS = "for f in `ls -A \"%s\"`; do echo \$f; ls -lAh \"%s\$f\"; done"
     //for f in `ls -A "/sdcard/"`; do ls -ld "/sdcard/$f"; if [ -d /sdcard/$f ]; then ls -lAh "/sdcard/$f"; fi; done
 
-    fun checkSu(): Boolean {
-        var ok: Boolean
+    fun checkSu(): Output {
+        var success: Boolean
+        var error = ""
         var process: Process? = null
         var outputStream: OutputStream? = null
+        var errorStream: InputStream? = null
 
         try {
             process = Runtime.getRuntime().exec(SU)
             outputStream = process.outputStream
+            errorStream = process.errorStream
             val osw = outputStream.writer()
 
             osw.write(SU)
             osw.flush()
             osw.close()
 
-            ok = process.waitFor() == 0
+            success = process.waitFor() == 0
+            error = errorStream.reader().readText()
         } catch (e: Exception) {
-            ok = false
+            success = false
+            error = e.message ?: e.toString()
         } finally {
             try {
                 outputStream?.close()
+                errorStream?.close()
                 process?.destroy()
             } catch (e: Exception) { }
         }
-        return ok
+        return Output(success, "", error)
     }
 
     fun exec(cmd: String, su: Boolean = false): Output {

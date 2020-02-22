@@ -44,7 +44,8 @@
     <string name="max_depth">Max depth of the search</string>
     <string name="max_size">Max file size</string>
     <string name="max_size_sum">If search in the content</string>
-    <string name="exclude_dirs">Exclude dirs from search results</string>
+    <string name="exclude_dirs">Exclude directories</string>
+    <string name="exclude_dirs_summary">From search results</string>
     <string name="pref_use_su">Use super user</string>
     <string name="preferences">Preferences</string>
     <string name="app">Application</string>
@@ -60,4 +61,5 @@
     <string name="exit">Exit</string>
     <string name="click_back_to_exit">Click Back to close the App</string>
     <string name="remove">Remove</string>
+    <string name="not_allowed">Not allowed</string>
 </resources>
