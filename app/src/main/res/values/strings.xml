@@ -61,4 +61,9 @@
     <string name="click_back_to_exit">Click Back to close the App</string>
     <string name="remove">Remove</string>
     <string name="not_allowed">Not allowed</string>
+    <string name="pref_export_import">Export/Import</string>
+    <string name="export_btn">Export</string>
+    <string name="import_btn">Import</string>
+    <string name="successful">Successful</string>
+    <string name="more">More</string>
 </resources>

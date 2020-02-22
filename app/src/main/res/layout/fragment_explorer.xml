@@ -40,7 +40,7 @@
                     />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </ru.atomofiron.regextool.view.custom.FixedBottomAppBar>
-        <ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetView
+        <ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetMenu
             android:id="@+id/explorer_bsv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

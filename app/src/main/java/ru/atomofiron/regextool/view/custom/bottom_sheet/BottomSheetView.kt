@@ -1,10 +1,10 @@
-package ru.atomofiron.regextool.view.custom.bottom_sheet_menu
+package ru.atomofiron.regextool.view.custom.bottom_sheet
 
 import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.MenuInflater
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -13,7 +13,6 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import android.widget.FrameLayout
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.calculateDurationWithScale
@@ -21,7 +20,11 @@ import ru.atomofiron.regextool.common.util.findColorByAttr
 import kotlin.math.max
 import kotlin.math.min
 
-class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
+open class BottomSheetView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr), ValueAnimator.AnimatorUpdateListener {
     companion object {
         private const val DURATION = 512L
         private const val FIRST = 0
@@ -29,41 +32,8 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
         private const val VISIBLE = 1f
     }
 
-    constructor(context: Context) : this(context, null)
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        val styled = context.obtainStyledAttributes(attrs, R.styleable.BottomSheetView, defStyleAttr, 0)
-        val menuId = styled.getResourceId(R.styleable.BottomSheetView_menu, 0)
-        styled.recycle()
-
-        overlay = View(context)
-        overlay.isFocusable = true
-        overlay.isClickable = true
-        overlay.setBackgroundColor(context.findColorByAttr(R.attr.colorOverlay))
-        overlay.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
-        overlay.alpha = TRANSPARENT
-        addView(overlay)
-
-        rvMenu = RecyclerView(context)
-        rvMenu.setBackgroundResource(R.drawable.bg_bottom_sheet)
-        rvMenu.isNestedScrollingEnabled = false
-        rvMenu.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-        rvMenu.layoutManager = LinearLayoutManager(context)
-        rvMenu.adapter = BottomSheetViewAdapter(context).apply {
-            MenuInflater(context).inflate(menuId, menu)
-        }
-        rvMenu.clipToPadding = false
-        rvMenu.layoutParams = LayoutParams(MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-            gravity = Gravity.BOTTOM
-        }
-        val top = resources.getDimensionPixelSize(R.dimen.menu_corner_radius)
-        val bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
-        rvMenu.setPadding(0, top, 0, bottom)
-        addView(rvMenu)
-    }
-
-    private val overlay: View
-    private val rvMenu: RecyclerView
+    private val overlay: View = View(context)
+    private lateinit var view: View
 
     private var lastY = 0f
     private var speedSum = 0f
@@ -79,6 +49,52 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
     }
 
     private var animator = ValueAnimator.ofFloat(0f, 1f)
+    private var state = State.CLOSED
+
+    private val menuHeight: Int get() = view.measuredHeight
+    private val minTop: Int get() = measuredHeight - view.measuredHeight
+    private val maxTop: Int get() = measuredHeight
+    private val curTop: Int get() = view.top
+
+    private val accelerateInterpolator = AccelerateInterpolator()
+    private val decelerateInterpolator = DecelerateInterpolator()
+    private val accelerateDecelerateInterpolator = AccelerateDecelerateInterpolator()
+
+    private var lastMove = 0L
+    private val duration: Long get() = context.calculateDurationWithScale(DURATION)
+    private var frameTime: Long = 0L
+
+    init {
+        overlay.isFocusable = true
+        overlay.isClickable = true
+        overlay.setBackgroundColor(context.findColorByAttr(R.attr.colorOverlay))
+        overlay.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        overlay.alpha = TRANSPARENT
+        addView(overlay)
+    }
+
+    fun setView(id: Int) {
+        val view = LayoutInflater.from(context).inflate(id, null, false)
+        setView(view)
+    }
+
+    fun setView(view: View) {
+        this.view = view
+        view.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        view.setBackgroundResource(R.drawable.bg_bottom_sheet)
+        view.isNestedScrollingEnabled = false
+
+        val widthPixels = resources.displayMetrics.widthPixels
+        val maxWidth = resources.getDimensionPixelOffset(R.dimen.bottom_sheet_view_max_width)
+        val width = Math.min(widthPixels, maxWidth)
+        view.layoutParams = LayoutParams(width, LayoutParams.WRAP_CONTENT).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+        }
+        val top = resources.getDimensionPixelSize(R.dimen.menu_corner_radius)
+        val bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
+        view.setPadding(0, top, 0, bottom)
+        addView(view)
+    }
 
     fun show() = setState(State.OPEN)
 
@@ -89,25 +105,10 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
         return wasSheetShown && !isSheetShown
     }
 
-    private var state = State.CLOSED
-
-    private val menuHeight: Int get() = rvMenu.measuredHeight
-    private val minTop: Int get() = measuredHeight - rvMenu.measuredHeight
-    private val maxTop: Int get() = measuredHeight
-    private val curTop: Int get() = rvMenu.top
-
-    private val accelerateInterpolator = AccelerateInterpolator()
-    private val decelerateInterpolator = DecelerateInterpolator()
-    private val accelerateDecelerateInterpolator = AccelerateDecelerateInterpolator()
-
-    private var lastMove = 0L
-    private val duration: Long get() = context.calculateDurationWithScale(DURATION)
-    private var frameTime: Long = 0L
-
     private fun setState(state: State) {
         val fromState = this.state
         this.state = state
-        if (determineState(rvMenu.top)) {
+        if (determineState(view.top)) {
             return
         }
 
@@ -217,7 +218,7 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
                     else -> direction
                 }
 
-                setMenuTop(rvMenu.top + speed.toInt())
+                setMenuTop(view.top + speed.toInt())
             }
         }
 
@@ -228,8 +229,8 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
         when {
             direction == Slide.UP -> setState(State.OPEN)
             outside -> setState(State.CLOSE)
-            rvMenu.top == minTop -> setState(State.OPENED)
-            rvMenu.top == maxTop -> setState(State.CLOSED)
+            view.top == minTop -> setState(State.OPENED)
+            view.top == maxTop -> setState(State.CLOSED)
             direction != Slide.UP -> setState(State.CLOSE)
         }
     }
@@ -241,12 +242,12 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
         val minTop = minTop
         val maxTop = maxTop
         val top = max(minTop, min(maxTop, top))
-        if (rvMenu.top != top) {
-            rvMenu.top = top
+        if (view.top != top) {
+            view.top = top
         }
 
         overlay.alpha = (parentHeight - curTop).toFloat() / height
-        rvMenu.alpha = VISIBLE
+        view.alpha = VISIBLE
 
         determineState(top)
     }
@@ -256,7 +257,7 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
         if (speedPerFrame == 0f) {
             setMenuTop(value)
         } else {
-            val nextTopBySpeed = rvMenu.top + speedPerFrame.toInt()
+            val nextTopBySpeed = view.top + speedPerFrame.toInt()
             val overrideOpen = state == State.OPEN && value > nextTopBySpeed
             val overrideClose = state == State.CLOSE && value < nextTopBySpeed
             if (overrideOpen || overrideClose) {
@@ -269,7 +270,7 @@ class BottomSheetView : FrameLayout, ValueAnimator.AnimatorUpdateListener {
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         if (state == State.CLOSED) {
-            rvMenu.top = maxTop
+            view.top = maxTop
         }
     }
 

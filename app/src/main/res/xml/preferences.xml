@@ -60,5 +60,9 @@
             app:entries="@array/orientation_var"
             app:entryValues="@array/orientation_val"
             />
+        <Preference
+            app:title="@string/pref_export_import"
+            app:key="pref_export_import"
+            />
     </PreferenceCategory>
 </PreferenceScreen>

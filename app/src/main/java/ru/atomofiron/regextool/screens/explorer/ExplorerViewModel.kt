@@ -70,7 +70,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     override fun onItemClick(item: XFile) {
         when {
             item.isDirectory -> explorerInteractor.openDir(item)
-            else -> Unit
+            else -> router.showFile(item)
         }
     }
 

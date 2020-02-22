@@ -16,6 +16,7 @@ object Const {
     const val PREF_EXCLUDE_DIRS = "exclude_dirs"
     const val PREF_USE_SU = "pref_use_su"
     const val PREF_CURRENT_DIR = "pref_current_dir"
+    const val PREF_EXPORT_IMPORT = "pref_export_import"
 
     const val SEARCH_COUNT = "SEARCH_COUNT"
     const val SEARCH_LIST = "SEARCH_LIST"

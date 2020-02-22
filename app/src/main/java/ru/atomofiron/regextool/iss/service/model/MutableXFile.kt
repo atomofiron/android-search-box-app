@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.iss.service.model
 
+import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.util.*
@@ -15,7 +16,7 @@ class MutableXFile : XFile {
         private const val FILE_CHAR = '-'
         private const val NO_SUCH_FILE = "ls: %s: No such file or directory\n"
 
-        var toyboxPath: String = ""
+        private val toyboxPath: String by lazy { App.pathToybox }
         private val spaces = Regex(" +")
         private val parentSuffix = Regex("(?<=/)/*[^/]+/*$")
         private val lastOneSlash = Regex("/*$")

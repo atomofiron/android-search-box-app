@@ -371,9 +371,8 @@ class ExplorerService {
     }
 
     private fun copyToybox() {
-        val toyboxPath = "${App.context.filesDir}/toybox"
-        MutableXFile.toyboxPath = toyboxPath
-        val toybox = File(toyboxPath)
+        val pathToybox = App.pathToybox
+        val toybox = File(pathToybox)
         toybox.deleteRecursively()
         toybox.parentFile.mkdirs()
         val input = App.context.assets.open("toybox/toybox64")
@@ -382,7 +381,7 @@ class ExplorerService {
         val output = FileOutputStream(toybox)
         output.write(bytes)
         output.close()
-        Shell.exec(Shell.NATIVE_CHMOD_X.format(toyboxPath))
+        Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
     }
 
     private fun notifyCurrent(file: XFile?) {

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom.bottom_sheet_menu
+package ru.atomofiron.regextool.view.custom.bottom_sheet
 
 import android.content.Context
 import android.view.LayoutInflater

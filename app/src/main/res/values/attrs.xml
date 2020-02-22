@@ -17,7 +17,7 @@
         <attr name="menu" />
     </declare-styleable>
 
-    <declare-styleable name="BottomSheetView">
+    <declare-styleable name="BottomSheetMenu">
         <attr name="menu" />
     </declare-styleable>
 

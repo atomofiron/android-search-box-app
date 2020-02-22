@@ -12,7 +12,7 @@ import ru.atomofiron.regextool.common.util.Knife
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.VerticalDockView
-import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetView
+import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     override val viewModelClass = ExplorerViewModel::class

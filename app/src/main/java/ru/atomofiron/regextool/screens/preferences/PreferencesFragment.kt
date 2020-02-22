@@ -17,11 +17,24 @@ import ru.atomofiron.regextool.utils.Util
 class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
 
     private val anchorView: View get() = activity!!.findViewById(R.id.root_iv_joystick)
+    private lateinit var exportImportDelegate: ExportImportDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
         setHasOptionsMenu(true)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        exportImportDelegate = ExportImportDelegate(view, anchorView)
+        exportImportDelegate.onImportPreferencesListener = {
+            // todo NOW
+        }
+        exportImportDelegate.onImportHistoryListener = {
+            // todo NOW
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
@@ -96,6 +109,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
                 return onUpdateUseSu(newValue)
             }
             Const.PREF_MAX_SIZE -> onUpdateMaxSize(preference, newValue)
+            Const.PREF_EXPORT_IMPORT -> {
+                preference.isEnabled = ExportImportDelegate.isAvailable
+                preference.setOnPreferenceClickListener {
+                    exportImportDelegate.show()
+                    true
+                }
+            }
         }
         return true
     }
