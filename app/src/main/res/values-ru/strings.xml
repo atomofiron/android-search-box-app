@@ -5,7 +5,7 @@
     <string name="case_sens">Учитывать регистр</string>
     <string name="storage_err">Ошибка доступа к памяти</string>
     <string name="searching">Поиск…</string>
-    <string name="error">Ошибка(</string>
+    <string name="error">Ошибка :(</string>
     <string name="nothing">Ничего не найдено</string>
     <string name="warning">Вы не выбрали ни одной директории. Поиск будет произведён по всему корневому разделу</string>
     <string name="cancel">Отмена</string>

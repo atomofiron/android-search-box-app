@@ -53,33 +53,27 @@ class ExportImportDelegate(
     private fun onButtonClick() {
         val packageName = context.packageName
         val toybox = App.pathToybox
+        val internalPath = context.applicationInfo.dataDir
+        val externalPath = context.getExternalFilesDir(null)!!.absolutePath
 
         val output = when (rgAction.checkedRadioButtonId) {
-            R.id.lei_rb_export -> {
-                val srcPath = context.applicationInfo.dataDir
-                val dstPath = context.getExternalFilesDir(null)!!.absolutePath
-                when (rgTarget.checkedRadioButtonId) {
-                    R.id.lei_rb_preferences -> exportPreferences(toybox, srcPath, dstPath, packageName)
-                    R.id.lei_rb_history -> exportHistory(toybox, srcPath, dstPath)
-                    else -> throw IllegalArgumentException()
-                }
+            R.id.lei_rb_export -> when (rgTarget.checkedRadioButtonId) {
+                R.id.lei_rb_preferences -> exportPreferences(toybox, internalPath, externalPath, packageName)
+                R.id.lei_rb_history -> exportHistory(toybox, internalPath, externalPath)
+                else -> throw IllegalArgumentException()
             }
-            R.id.lei_rb_import -> {
-                val srcPath = context.getExternalFilesDir(null)!!.absolutePath
-                val dstPath = context.applicationInfo.dataDir
-                when (rgTarget.checkedRadioButtonId) {
-                    R.id.lei_rb_preferences -> importPreferences(toybox, srcPath, dstPath, packageName).apply {
-                        if (success) {
-                            onImportPreferencesListener.invoke()
-                        }
+            R.id.lei_rb_import -> when (rgTarget.checkedRadioButtonId) {
+                R.id.lei_rb_preferences -> importPreferences(toybox, internalPath, externalPath, packageName).apply {
+                    if (success) {
+                        onImportPreferencesListener.invoke()
                     }
-                    R.id.lei_rb_history -> importHistory(toybox, srcPath, dstPath).apply {
-                        if (success) {
-                            onImportHistoryListener.invoke()
-                        }
-                    }
-                    else -> throw IllegalArgumentException()
                 }
+                R.id.lei_rb_history -> importHistory(toybox, internalPath, externalPath).apply {
+                    if (success) {
+                        onImportHistoryListener.invoke()
+                    }
+                }
+                else -> throw IllegalArgumentException()
             }
             else -> throw IllegalArgumentException()
         }
@@ -92,20 +86,20 @@ class ExportImportDelegate(
         exportSheet.show()
     }
 
-    private fun exportPreferences(toybox: String, srcPath: String, dstPath: String, packageName: String): Shell.Output {
-        return Shell.exec("$toybox cp -Rf $srcPath/shared_prefs/${packageName}_preferences.xml $dstPath/")
+    private fun exportPreferences(toybox: String, internalPath: String, externalPath: String, packageName: String): Shell.Output {
+        return Shell.exec("$toybox cp -f $internalPath/shared_prefs/${packageName}_preferences.xml $externalPath/")
     }
 
-    private fun exportHistory(toybox: String, srcPath: String, dstPath: String): Shell.Output {
-        return Shell.exec("$toybox cp -Rf $srcPath/databases/history* $dstPath/")
+    private fun exportHistory(toybox: String, internalPath: String, externalPath: String): Shell.Output {
+        return Shell.exec("$toybox cp -f $internalPath/databases/history* $externalPath/")
     }
 
-    private fun importPreferences(toybox: String, srcPath: String, dstPath: String, packageName: String): Shell.Output {
-        return Shell.exec("$toybox cp -Rf $srcPath/${packageName}_preferences.xml $dstPath/shared_prefs/")
+    private fun importPreferences(toybox: String, internalPath: String, externalPath: String, packageName: String): Shell.Output {
+        return Shell.exec("$toybox cp -f $externalPath/${packageName}_preferences.xml $internalPath/shared_prefs/")
     }
 
-    private fun importHistory(toybox: String, srcPath: String, dstPath: String): Shell.Output {
-        return Shell.exec("$toybox cp -Rf $srcPath/history* $dstPath/databases/")
+    private fun importHistory(toybox: String, internalPath: String, externalPath: String): Shell.Output {
+        return Shell.exec("$toybox cp -f $externalPath/history* $internalPath/databases/")
     }
 
     private fun showOutput(output: Shell.Output) {
