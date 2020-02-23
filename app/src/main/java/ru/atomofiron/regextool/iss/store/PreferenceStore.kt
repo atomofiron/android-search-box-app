@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.iss.store
 
+import android.content.SharedPreferences
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.common.util.KObservable
 import ru.atomofiron.regextool.utils.sp
@@ -42,7 +43,7 @@ class PreferenceStore<E, V> private constructor(
     private val toValue: ((E) -> V) = getValue ?: { it as V }
     private val fromValue: ((V) -> E) = fromValue ?: { it as E }
 
-    private val observable = KObservable(pullInternally())
+    private val observable = KObservable(pull())
 
     val value: V get() = toValue(observable.value)
     val entity: E get() = observable.value
@@ -51,15 +52,16 @@ class PreferenceStore<E, V> private constructor(
         if (type == Type.STRING && default != null && sp.getString(key, null) == null) {
             sp.edit().putString(key, default as String).apply()
         }
+        // registerOnSharedPreferenceChangeListener() does not work :(
     }
 
-    fun pull() = observable.setAndNotify(pullInternally())
+    private fun pull(): E = fromValue(pullOriginal(sp))
 
-    private fun pullInternally(): E {
+    private fun pullOriginal(sp: SharedPreferences): V {
         return when (type) {
-            Type.INT -> fromValue(sp.getInt(key, default as Int) as V)
-            Type.STRING -> fromValue(sp.getString(key, default as String?) as V)
-            Type.BOOLEAN -> fromValue(sp.getBoolean(key, default as Boolean) as V)
+            Type.INT -> sp.getInt(key, default as Int) as V
+            Type.STRING -> sp.getString(key, default as String?) as V
+            Type.BOOLEAN -> sp.getBoolean(key, default as Boolean) as V
         }
     }
 
