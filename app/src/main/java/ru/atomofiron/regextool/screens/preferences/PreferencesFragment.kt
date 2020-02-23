@@ -9,6 +9,7 @@ import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell.checkSu
@@ -33,7 +34,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
             // todo NOW
         }
         exportImportDelegate.onImportHistoryListener = {
-            // todo NOW
+            PreferencesChannel.historyImportedEvent.justNotify()
         }
     }
 

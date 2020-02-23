@@ -8,6 +8,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +49,7 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
     override fun onCleared() {
         screenScope.cancel()
         provider = null
-        onClearedCallback.removeAll()
+        onClearedCallback.invoke()
     }
 
     open fun onBackButtonClick(): Boolean = router.onBack()

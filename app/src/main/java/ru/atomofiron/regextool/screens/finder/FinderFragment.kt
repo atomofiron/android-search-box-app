@@ -86,6 +86,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
 
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
+        viewModel.reloadHistory.observeEvent(owner, historyAdapter::reload)
     }
 
     override fun onBack(): Boolean {

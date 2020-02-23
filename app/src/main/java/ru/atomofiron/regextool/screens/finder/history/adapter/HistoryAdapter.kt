@@ -32,8 +32,7 @@ class HistoryAdapter(
                 .allowMainThreadQueries()
                 .build()
         dao = db.historyDao()
-        items = ArrayList(dao.all)
-        notifyDataSetChanged()
+        reload()
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
@@ -52,6 +51,11 @@ class HistoryAdapter(
         items.add(index, item)
         dao.insert(item)
         notifyItemInserted(index)
+    }
+
+    fun reload() {
+        items = ArrayList(dao.all)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryHolder {

@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.common.util
 
-import ru.atomofiron.regextool.log
 import java.util.*
 
 open class KObservable<T : Any?>(value: T, private val single: Boolean = false) {
@@ -13,7 +12,6 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
         addObserver(observer)
 
         removeCallback.addOneTimeObserver {
-            log("addOneTimeObserver")
             removeObserver(observer)
         }
     }
@@ -34,6 +32,12 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
     @Synchronized
     fun setAndNotify(value: T) {
         this.value = value
+        changed = true
+        notifyObservers()
+    }
+
+    @Synchronized
+    fun justNotify() {
         changed = true
         notifyObservers()
     }
@@ -69,7 +73,7 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
             observers.addElement(observer)
         }
 
-        fun removeAll() {
+        fun invoke() {
             observers.forEach { it() }
             observers.clear()
         }
