@@ -25,6 +25,7 @@ class ExportImportDelegate(
     }
 
     private val context = rootView.context
+    private val externalPath = context.getExternalFilesDir(null)!!.absolutePath
     private val exportSheet = BottomSheetView(context).apply {
         setView(R.layout.layout_export_import)
     }
@@ -33,7 +34,6 @@ class ExportImportDelegate(
     private val rgAction = exportSheet.findViewById<RadioGroup>(R.id.lei_rg_action)
     private val button = exportSheet.findViewById<Button>(R.id.lei_btn)
 
-    lateinit var onImportPreferencesListener: () -> Unit
     lateinit var onImportHistoryListener: () -> Unit
 
     init {
@@ -48,13 +48,13 @@ class ExportImportDelegate(
             button.setText(id)
         }
         button.setOnClickListener { onButtonClick() }
+        tvPath.text = externalPath
     }
 
     private fun onButtonClick() {
         val packageName = context.packageName
         val toybox = App.pathToybox
         val internalPath = context.applicationInfo.dataDir
-        val externalPath = context.getExternalFilesDir(null)!!.absolutePath
 
         val output = when (rgAction.checkedRadioButtonId) {
             R.id.lei_rb_export -> when (rgTarget.checkedRadioButtonId) {
@@ -63,11 +63,7 @@ class ExportImportDelegate(
                 else -> throw IllegalArgumentException()
             }
             R.id.lei_rb_import -> when (rgTarget.checkedRadioButtonId) {
-                R.id.lei_rb_preferences -> importPreferences(toybox, internalPath, externalPath, packageName).apply {
-                    if (success) {
-                        onImportPreferencesListener.invoke()
-                    }
-                }
+                R.id.lei_rb_preferences -> importPreferences(toybox, internalPath, externalPath, packageName)
                 R.id.lei_rb_history -> importHistory(toybox, internalPath, externalPath).apply {
                     if (success) {
                         onImportHistoryListener.invoke()
@@ -81,10 +77,7 @@ class ExportImportDelegate(
         showOutput(output)
     }
 
-    fun show() {
-        tvPath.text = context.getExternalFilesDir(null)!!.absolutePath
-        exportSheet.show()
-    }
+    fun show() = exportSheet.show()
 
     private fun exportPreferences(toybox: String, internalPath: String, externalPath: String, packageName: String): Shell.Output {
         return Shell.exec("$toybox cp -f $internalPath/shared_prefs/${packageName}_preferences.xml $externalPath/")
@@ -103,23 +96,26 @@ class ExportImportDelegate(
     }
 
     private fun showOutput(output: Shell.Output) {
-        if (output.success) {
-            Snackbar.make(rootView, R.string.successful, Snackbar.LENGTH_SHORT)
-                    .setAnchorView(anchorView)
-                    .show()
-        } else {
-            Snackbar.make(rootView, R.string.error, Snackbar.LENGTH_SHORT)
-                    .setAnchorView(anchorView)
-                    .apply {
-                        if (output.error.isNotEmpty()) {
-                            setAction(R.string.more) {
-                                AlertDialog.Builder(context)
-                                        .setMessage(output.error)
-                                        .show()
+        val snackbar = when {
+            output.success &&
+                    rgTarget.checkedRadioButtonId == R.id.lei_rb_preferences &&
+                    rgAction.checkedRadioButtonId == R.id.lei_rb_import -> {
+                Snackbar.make(rootView, R.string.successful_with_restart, Snackbar.LENGTH_LONG)
+            }
+            output.success -> Snackbar.make(rootView, R.string.successful, Snackbar.LENGTH_SHORT)
+            else -> {
+                Snackbar.make(rootView, R.string.error, Snackbar.LENGTH_SHORT)
+                        .apply {
+                            if (output.error.isNotEmpty()) {
+                                setAction(R.string.more) {
+                                    AlertDialog.Builder(context)
+                                            .setMessage(output.error)
+                                            .show()
+                                }
                             }
                         }
-                    }
-                    .show()
+            }
         }
+        snackbar.setAnchorView(anchorView).show()
     }
 }

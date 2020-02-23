@@ -65,5 +65,6 @@
     <string name="export_btn">Export</string>
     <string name="import_btn">Import</string>
     <string name="successful">Successful</string>
+    <string name="successful_with_restart">Successful. Restart the App process</string>
     <string name="more">More</string>
 </resources>

@@ -16,7 +16,7 @@ object SettingsStore {
             default = Const.ROOT
     )
 
-    val openedDirPath = PreferenceStore.forNullableString<String>(
+    val openedDirPath = PreferenceStore.forNullableString<String?>(
             key = Const.PREF_OPENED_DIR_PATH,
             default = null
     )

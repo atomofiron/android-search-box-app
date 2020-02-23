@@ -42,7 +42,7 @@ class PreferenceStore<E, V> private constructor(
     private val toValue: ((E) -> V) = getValue ?: { it as V }
     private val fromValue: ((V) -> E) = fromValue ?: { it as E }
 
-    private val observable = KObservable(pull())
+    private val observable = KObservable(pullInternally())
 
     val value: V get() = toValue(observable.value)
     val entity: E get() = observable.value
@@ -53,7 +53,9 @@ class PreferenceStore<E, V> private constructor(
         }
     }
 
-    private fun pull(): E {
+    fun pull() = observable.setAndNotify(pullInternally())
+
+    private fun pullInternally(): E {
         return when (type) {
             Type.INT -> fromValue(sp.getInt(key, default as Int) as V)
             Type.STRING -> fromValue(sp.getString(key, default as String?) as V)

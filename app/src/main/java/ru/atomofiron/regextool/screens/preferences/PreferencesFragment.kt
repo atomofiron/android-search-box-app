@@ -30,9 +30,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
         super.onViewCreated(view, savedInstanceState)
 
         exportImportDelegate = ExportImportDelegate(view, anchorView)
-        exportImportDelegate.onImportPreferencesListener = {
-            // todo NOW
-        }
         exportImportDelegate.onImportHistoryListener = {
             PreferencesChannel.historyImportedEvent.justNotify()
         }

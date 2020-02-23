@@ -201,7 +201,7 @@ open class BottomSheetView @JvmOverloads constructor(
                 lastY = event.y
                 direction = when {
                     speed < 0 -> Slide.UP
-                    speed > 0 -> Slide.DOWN
+                    speed > 16 -> Slide.DOWN
                     else -> direction
                 }
             }
@@ -230,7 +230,8 @@ open class BottomSheetView @JvmOverloads constructor(
             outside -> setState(State.CLOSE)
             view.top == minTop -> setState(State.OPENED)
             view.top == maxTop -> setState(State.CLOSED)
-            direction != Slide.UP -> setState(State.CLOSE)
+            direction == Slide.DOWN -> setState(State.CLOSE)
+            direction == Slide.UNDEFINED -> setState(State.OPEN)
         }
     }
 
@@ -268,10 +269,7 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        if (state != State.OPEN) {
-            // если убрать условие, onLayout() каждый раз вызывается и ломает view.top
-            super.onLayout(changed, left, top, right, bottom)
-        }
+        super.onLayout(changed, left, top, right, bottom)
         if (state == State.CLOSED) {
             view.top = maxTop
         }
