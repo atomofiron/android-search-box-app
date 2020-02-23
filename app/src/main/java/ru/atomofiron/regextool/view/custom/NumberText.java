@@ -71,7 +71,7 @@ public class NumberText extends AppCompatEditText implements View.OnClickListene
 		if (value.length() > 1 && value.startsWith("0")) {
 			int start = getSelectionStart();
 
-			setText(value.substring(1, value.length()));
+			setText(value.substring(1));
 
 			setSelection(start == 0 ? 0 : start - 1);
 		} else if (value.length() == 0) {
