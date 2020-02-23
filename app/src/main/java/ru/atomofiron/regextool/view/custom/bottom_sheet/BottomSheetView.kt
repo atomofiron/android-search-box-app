@@ -26,6 +26,7 @@ open class BottomSheetView @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), ValueAnimator.AnimatorUpdateListener {
     companion object {
+        private const val SECOND = 1000L
         private const val DURATION = 512L
         private const val FIRST = 0
         private const val TRANSPARENT = 0f
@@ -48,6 +49,7 @@ open class BottomSheetView @JvmOverloads constructor(
         State.CLOSED -> false
     }
 
+    private var loop = ValueAnimator.ofFloat(0f, 1f)
     private var animator = ValueAnimator.ofFloat(0f, 1f)
     private var state = State.CLOSED
 
@@ -60,9 +62,7 @@ open class BottomSheetView @JvmOverloads constructor(
     private val decelerateInterpolator = DecelerateInterpolator()
     private val accelerateDecelerateInterpolator = AccelerateDecelerateInterpolator()
 
-    private var lastMove = 0L
     private val duration: Long get() = context.calculateDurationWithScale(DURATION)
-    private var frameTime: Long = 0L
 
     init {
         overlay.isFocusable = true
@@ -71,6 +71,12 @@ open class BottomSheetView @JvmOverloads constructor(
         overlay.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         overlay.alpha = TRANSPARENT
         addView(overlay)
+
+        loop.duration = SECOND
+        loop.repeatMode = ValueAnimator.RESTART
+        loop.repeatCount = ValueAnimator.INFINITE
+        loop.addUpdateListener { loop() }
+        loop.start()
     }
 
     fun setView(id: Int) {
@@ -149,12 +155,6 @@ open class BottomSheetView @JvmOverloads constructor(
                 State.REOPEN -> Unit
             }
         }
-
-        if (state == State.OPENED || state == State.CLOSED) {
-            speedPerFrame = 0f
-            speedSum = 0f
-            frameTime = (1000f / display.refreshRate).toLong()
-        }
     }
 
     /** @return state was determined */
@@ -190,25 +190,12 @@ open class BottomSheetView @JvmOverloads constructor(
 
         when {
             event.action == MotionEvent.ACTION_DOWN -> {
-                speedPerFrame = 0f
-                speedSum = 0f
                 lastY = event.y
                 direction = Slide.UNDEFINED
                 setState(State.REOPEN)
             }
             animator.isStarted -> Unit
-            event.action == MotionEvent.ACTION_UP -> {
-                hideIfSlideDown(event.y < minTop)
-                // to avoid click on a menu item
-                return direction != Slide.UNDEFINED
-            }
             event.action == MotionEvent.ACTION_MOVE -> {
-                if (System.currentTimeMillis() - lastMove > frameTime) {
-                    lastMove = System.currentTimeMillis()
-                    speedPerFrame = speedSum
-                    speedSum = 0f
-                }
-
                 val speed = event.y - lastY
                 speedSum += speed
                 lastY = event.y
@@ -217,12 +204,24 @@ open class BottomSheetView @JvmOverloads constructor(
                     speed > 0 -> Slide.DOWN
                     else -> direction
                 }
-
-                setMenuTop(view.top + speed.toInt())
+            }
+            event.action == MotionEvent.ACTION_UP -> {
+                hideIfSlideDown(event.y < minTop)
+                // to avoid click on a menu item
+                return direction != Slide.UNDEFINED
             }
         }
 
         return default
+    }
+
+    private fun loop() {
+        speedPerFrame = speedSum
+        speedSum = 0f
+
+        if (state == State.REOPEN) {
+            setMenuTop(view.top + speedPerFrame.toInt())
+        }
     }
 
     private fun hideIfSlideDown(outside: Boolean = true) {
