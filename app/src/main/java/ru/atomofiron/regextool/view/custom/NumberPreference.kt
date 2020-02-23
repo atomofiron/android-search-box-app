@@ -6,10 +6,9 @@ import android.util.AttributeSet
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.view.custom.NumberText.OnInputListener
 
-class NumberPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs), OnInputListener {
-    private lateinit var editText: NumberText
+class NumberPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs) {
+    private lateinit var editText: NumberTextField
     private var value = 0
 
     init {
@@ -25,16 +24,16 @@ class NumberPreference(context: Context, attrs: AttributeSet) : Preference(conte
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         if (!::editText.isInitialized) {
-            editText = holder.findViewById(R.id.number) as NumberText
+            editText = holder.findViewById(R.id.number) as NumberTextField
             editText.isFocusable = false
-            editText.setOnInputListener(this)
+            editText.setOnInputListener(::onInput)
             editText.setText(value.toString())
         }
     }
 
     public override fun onClick() = editText.onClick(editText)
 
-    override fun onInput(value: Int) {
+    private fun onInput(value: Int) {
         callChangeListener(value)
         persistInt(value)
         this.value = value

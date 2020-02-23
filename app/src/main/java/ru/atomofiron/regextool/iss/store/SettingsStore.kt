@@ -43,17 +43,17 @@ object SettingsStore {
             default = Const.DEFAULT_MAX_SIZE
     )
 
-    val appTheme = PreferenceStore.forInt(
+    val appTheme = PreferenceStore.forString(
             key = Const.PREF_APP_THEME,
-            default = AppTheme.WHITE.ordinal,
-            toValue = { it.ordinal },
-            fromValue = { AppTheme.values()[it] }
+            default = AppTheme.WHITE.ordinal.toString(),
+            toValue = { it.ordinal.toString() },
+            fromValue = { AppTheme.values()[it.toInt()] }
     )
 
-    val appOrientation = PreferenceStore.forInt(
+    val appOrientation = PreferenceStore.forString(
             Const.PREF_APP_ORIENTATION,
-            AppOrientation.UNDEFINED.ordinal,
-            toValue = { it.ordinal },
-            fromValue = { AppOrientation.values()[it] }
+            AppOrientation.UNDEFINED.ordinal.toString(),
+            toValue = { it.ordinal.toString() },
+            fromValue = { AppOrientation.values()[it.toInt()] }
     )
 }
