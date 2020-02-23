@@ -267,8 +267,12 @@ open class BottomSheetView @JvmOverloads constructor(
             }
         }
     }
+
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
+        if (state != State.OPEN) {
+            // если убрать условие, onLayout() каждый раз вызывается и ломает view.top
+            super.onLayout(changed, left, top, right, bottom)
+        }
         if (state == State.CLOSED) {
             view.top = maxTop
         }
