@@ -17,7 +17,9 @@ open class TextField @JvmOverloads constructor(
         attrs: AttributeSet? = null
 ) : AppCompatEditText(context, attrs), View.OnClickListener, TextWatcher {
     private var inputMethodManager: InputMethodManager? = null
-    private var onInputListener: ((String) -> Unit)? = null
+    private var onSubmitListener: ((String) -> Unit)? = null
+
+    private var submittedValue: CharSequence = ""
 
     init {
         inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -30,17 +32,26 @@ open class TextField @JvmOverloads constructor(
         setHintTextColor(0)
     }
 
-    open fun setOnInputListener(listener: ((String) -> Unit)?) {
-        onInputListener = listener
+    override fun setText(text: CharSequence?, type: BufferType?) {
+        super.setText(text, type)
+
+        submittedValue = text ?: ""
+    }
+
+    open fun setOnSubmitListener(listener: ((String) -> Unit)?) {
+        onSubmitListener = listener
+    }
+
+    open fun onSubmit(value: String) {
+        onSubmitListener?.invoke(value)
     }
 
     override fun isSuggestionsEnabled(): Boolean = false
 
-    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-    override fun afterTextChanged(editable: Editable) {
-        onInputListener?.invoke(text.toString())
-    }
+    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
+    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
+
+    override fun afterTextChanged(editable: Editable) = Unit
 
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK && hasFocus()) {
@@ -53,6 +64,8 @@ open class TextField @JvmOverloads constructor(
     override fun onEditorAction(actionCode: Int) {
         super.onEditorAction(actionCode)
         if (actionCode == EditorInfo.IME_ACTION_DONE) {
+            submittedValue = text.toString()
+            onSubmit(text.toString())
             isFocusable = false
         }
     }
@@ -65,6 +78,7 @@ open class TextField @JvmOverloads constructor(
         } else {
             inputMethodManager!!.hideSoftInputFromWindow(windowToken, InputMethodManager.RESULT_UNCHANGED_SHOWN)
             isFocusable = false
+            setText(submittedValue, BufferType.NORMAL)
         }
     }
 

@@ -12,7 +12,7 @@ class NumberTextField @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null
 ) : TextField(context, attrs) {
-    private var onInputListener: ((Int) -> Unit)? = null
+    private var onSubmitListener: ((Int) -> Unit)? = null
 
     init {
         filters = arrayOf<InputFilter>(LengthFilter(9))
@@ -21,8 +21,12 @@ class NumberTextField @JvmOverloads constructor(
         hint = "_____"
     }
 
-    fun setOnInputListener(listener: ((Int) -> Unit)?) {
-        onInputListener = listener
+    fun setOnSubmitListener(listener: ((Int) -> Unit)?) {
+        onSubmitListener = listener
+    }
+
+    override fun onSubmit(value: String) {
+        onSubmitListener?.invoke(value.toInt())
     }
 
     override fun afterTextChanged(editable: Editable) {
@@ -38,7 +42,6 @@ class NumberTextField @JvmOverloads constructor(
                 setText("0")
                 setSelection(1)
             }
-            else -> onInputListener?.invoke(value.toInt())
         }
     }
 }

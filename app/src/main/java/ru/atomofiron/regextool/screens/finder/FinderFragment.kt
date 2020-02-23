@@ -14,6 +14,7 @@ import ru.atomofiron.regextool.screens.finder.adapter.OnFinderActionListener
 import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem.FieldItem
 import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem.SomeItem
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
+import ru.atomofiron.regextool.screens.finder.model.FinderState
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import kotlin.reflect.KClass
@@ -87,6 +88,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
         viewModel.reloadHistory.observeEvent(owner, historyAdapter::reload)
+        viewModel.state.observe(owner, Observer(::onStateChange))
     }
 
     override fun onBack(): Boolean {
@@ -96,5 +98,9 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
             }
         }
         return consumed || super.onBack()
+    }
+
+    private fun onStateChange(state: FinderState) {
+
     }
 }

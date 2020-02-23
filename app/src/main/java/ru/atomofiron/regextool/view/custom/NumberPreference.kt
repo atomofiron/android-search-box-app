@@ -26,14 +26,14 @@ class NumberPreference(context: Context, attrs: AttributeSet) : Preference(conte
         if (!::editText.isInitialized) {
             editText = holder.findViewById(R.id.number) as NumberTextField
             editText.isFocusable = false
-            editText.setOnInputListener(::onInput)
+            editText.setOnSubmitListener(::onSubmit)
             editText.setText(value.toString())
         }
     }
 
     public override fun onClick() = editText.onClick(editText)
 
-    private fun onInput(value: Int) {
+    private fun onSubmit(value: Int) {
         callChangeListener(value)
         persistInt(value)
         this.value = value

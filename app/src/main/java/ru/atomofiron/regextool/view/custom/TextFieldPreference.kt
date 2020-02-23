@@ -24,7 +24,7 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
     init {
         editText.visibility = View.GONE
         editText.isFocusable = false
-        editText.setOnInputListener(::onInput)
+        editText.setOnSubmitListener(::onSubmit)
         editText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 summary.alpha = VISIBLE
@@ -57,7 +57,7 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
         editText.onClick(editText)
     }
 
-    private fun onInput(value: String) {
+    private fun onSubmit(value: String) {
         callChangeListener(value)
         persistString(value)
         this.value = value
