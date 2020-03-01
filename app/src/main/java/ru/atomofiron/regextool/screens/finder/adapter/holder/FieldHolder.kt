@@ -31,6 +31,19 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         item as SearchAndReplaceItem
         viewReplace.visibility = if (item.replaceEnabled) View.VISIBLE else View.GONE
         etFind.imeOptions = if (item.replaceEnabled) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_SEARCH
+        updateWarning(etFind.text.toString())
+    }
+
+    private fun updateWarning(query: String) {
+        when {
+            params.useRegexp -> try {
+                Pattern.compile(query)
+                etFind.isActivated = false
+            } catch (e: Exception) {
+                etFind.isActivated = true
+            }
+            else -> etFind.isActivated = false
+        }
     }
 
     interface OnActionListener {
@@ -44,16 +57,7 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
         override fun afterTextChanged(s: Editable) {
             val value = s.toString()
-
-            when {
-                params.useRegexp -> try {
-                    Pattern.compile(value)
-                    etFind.isActivated = false
-                } catch (e: Exception) {
-                    etFind.isActivated = true
-                }
-                else -> etFind.isActivated = false
-            }
+            updateWarning(value)
             listener.onSearchChange(value)
         }
     }
