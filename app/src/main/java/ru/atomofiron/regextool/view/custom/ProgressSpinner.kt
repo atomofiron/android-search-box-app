@@ -13,6 +13,10 @@ class ProgressSpinner : AppCompatImageView {
 
     init {
         setImageResource(R.drawable.ic_progress)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
         startAnimation(AnimationUtils.loadAnimation(context!!, R.anim.rotate))
     }
 }

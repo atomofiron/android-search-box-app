@@ -17,11 +17,11 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GeneralHolder<FinderStateItem> {
         return when (viewType) {
             FinderItemType.FIND.id -> FieldHolder(parent, viewType, onFinderActionListener)
-            FinderItemType.CHARACTERS.id -> CharactersHolder(parent, viewType)
+            FinderItemType.CHARACTERS.id -> CharactersHolder(parent, viewType, onFinderActionListener)
             FinderItemType.CONFIGS.id -> ConfigHolder(parent, viewType, onFinderActionListener)
             FinderItemType.TEST.id -> TestHolder(parent, viewType)
-            FinderItemType.PROGRESS.id -> ProgressHolder(parent, viewType)
-            FinderItemType.RESULT.id -> ResultHolder(parent, viewType)
+            FinderItemType.PROGRESS.id -> ProgressHolder(parent, viewType, onFinderActionListener)
+            FinderItemType.RESULT.id -> ResultHolder(parent, viewType, onFinderActionListener)
             else -> throw IllegalArgumentException("viewType = $viewType")
         }
     }
@@ -34,7 +34,6 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
             FieldHolder.OnActionListener,
             CharactersHolder.OnActionListener,
             ConfigHolder.OnActionListener,
-            TestHolder.OnActionListener,
             ProgressHolder.OnActionListener,
             ResultHolder.OnActionListener
 }

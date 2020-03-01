@@ -26,6 +26,7 @@
 	<color name="grey_dark">#ff333333</color>
 	<color name="grey_light">#ffcccccc</color>
 	<color name="red">#ffff0000</color>
+	<color name="red_transparent">#33ff0000</color>
 	<color name="red_soft">#ffff5252</color>
 	<color name="red_soft_pressed">#ffff7070</color>
 	<color name="spanBlue">#5f4f60c0</color>

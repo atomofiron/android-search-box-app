@@ -15,7 +15,7 @@
     <string name="find">Найти</string>
     <string name="search_in_the_content">Искать по содержимому файлов</string>
     <string name="regex">Поиск по шаблону</string>
-    <string name="multiline">Мультистрочный поиск</string>
+    <string name="multiline">Флаг \'multiline\'</string>
     <string name="bad_ex">Неверное регулярное выражение</string>
     <string name="reset">Сбросить</string>
     <string name="no_checked">Вы не выбрали ни одну директорию!</string>
@@ -55,7 +55,7 @@
     <string name="search_completed">Поиск завершён</string>
     <string name="pref_special_characters">Специальные символы</string>
     <string name="search">Поиск</string>
-    <string name="use_regular_expression">Использовать regexp</string>
+    <string name="use_regular_expression">Использовать регулярное выражение</string>
     <string name="enable_replace">Замена текста</string>
     <string name="exit">Выйти</string>
     <string name="click_back_to_exit">Нажмите Назад, чтобы закрыть приложение</string>

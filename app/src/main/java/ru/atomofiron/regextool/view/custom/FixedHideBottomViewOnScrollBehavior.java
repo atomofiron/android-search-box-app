@@ -105,13 +105,20 @@ public class FixedHideBottomViewOnScrollBehavior extends BottomAppBar.Behavior {
           int dyUnconsumed/*,
           int type,
           @NonNull int[] consumed*/) {
-    if (dyConsumed != 0 || dyUnconsumed != 0) {
-      boolean isTargetReversed = isTargetReversed(target);
-      if (isTargetReversed ^ (dyConsumed > 0 || dyUnconsumed > 0)) {
-        slideOff(child);
-      } else {
-        slideStart(child);
-      }
+    if (dyConsumed == 0 && dyUnconsumed == 0) {
+      return;
+    }
+    boolean isTargetReversed = isTargetReversed(target);
+    if (isTargetReversed) {
+      dyConsumed *= -1;
+      dyUnconsumed *= -1;
+    }
+    if (dyConsumed < 0) {
+      slideStart(child);
+    } if (dyConsumed > 0) {
+      slideOff(child);
+    } if (dyUnconsumed < 0) {
+      slideStart(child);
     }
   }
 

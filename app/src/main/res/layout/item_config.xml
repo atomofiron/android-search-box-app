@@ -6,42 +6,43 @@
     android:orientation="vertical"
     android:layout_margin="@dimen/common_half_margin">
     <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/config_cb_case_sense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/case_sense"
         android:text="@string/case_sens"
         android:ellipsize="none"
         android:singleLine="true"
+        android:checked="true"
         />
     <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/config_cb_use_regexp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/simple_search"
         android:text="@string/use_regular_expression"
         android:ellipsize="none"
         android:singleLine="true"
         />
     <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/config_cb_multiline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/in_files"
-        android:text="@string/search_in_the_content"
-        android:ellipsize="none"
-        android:singleLine="true"
-        />
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/multiline"
         android:text="@string/multiline"
         android:ellipsize="none"
         android:singleLine="true"
         android:enabled="false"
         />
     <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/config_cb_in_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/search_in_the_content"
+        android:ellipsize="none"
+        android:singleLine="true"
+        />
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/config_cb_replace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/enable_replace"
         android:ellipsize="none"
         android:singleLine="true"
