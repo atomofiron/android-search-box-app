@@ -16,8 +16,7 @@ class FinderActionListenerDelegate(
     override fun onReplaceClick(value: String) {
     }
 
-    override fun onCharacterClick(value: String) {
-    }
+    override fun onCharacterClick(value: String) = viewModel.onCharacterClick(value)
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.onConfigChange(item)
 

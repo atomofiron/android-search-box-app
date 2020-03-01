@@ -12,7 +12,7 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     }
     class SearchAndReplaceItem(val replaceEnabled: Boolean = false,
                                val useRegexp: Boolean = false)
-        : FinderStateItem(SEARCH_POSITION.inc().toLong(), R.layout.item_field_result)
+        : FinderStateItem(SEARCH_POSITION.inc().toLong(), R.layout.item_field_search)
     class SpecialCharactersItem(val characters: Array<String>)
         : FinderStateItem(CHARACTERS_POSITION.inc().toLong(), R.layout.item_characters)
     class ConfigItem(val ignoreCase: Boolean = false,
@@ -47,5 +47,5 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     class ProgressItem(val id: Long, val status: String)
         : FinderStateItem(id, R.layout.item_progress)
     class ResultItem(val id: Long, val target: XFile)
-        : FinderStateItem(id, R.layout.item_finder_file)
+        : FinderStateItem(id, R.layout.item_finder_result)
 }

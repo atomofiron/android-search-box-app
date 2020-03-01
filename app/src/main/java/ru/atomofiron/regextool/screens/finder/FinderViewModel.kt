@@ -18,6 +18,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     val historyDrawerGravity = MutableLiveData<Int>()
     val state = ReadyLiveData<List<FinderStateItem>>()
     val reloadHistory = SingleLiveEvent<Unit>()
+    val insertInQuery = SingleLiveEvent<String>()
 
     init {
         val items = ArrayList<FinderStateItem>()
@@ -71,6 +72,8 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
             }
         }
     }
+
+    fun onCharacterClick(value: String) = insertInQuery.invoke(value)
 
     fun onSearchChange(value: String) {
         updateItem(FinderStateItem.TEST_POSITION) {

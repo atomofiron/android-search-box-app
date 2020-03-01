@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.finder
 
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -66,6 +67,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
         viewModel.reloadHistory.observeEvent(owner, historyAdapter::reload)
+        viewModel.insertInQuery.observeData(owner, ::insertInQuery)
         viewModel.state.observe(owner, Observer(::onStateChange))
     }
 
@@ -79,4 +81,10 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     }
 
     private fun onStateChange(state: List<FinderStateItem>) = finderAdapter.setItems(state)
+
+    private fun insertInQuery(value: String) {
+        view?.findViewById<EditText>(R.id.item_find_rt_find)?.apply {
+            text.replace(selectionStart, selectionEnd, value)
+        }
+    }
 }
