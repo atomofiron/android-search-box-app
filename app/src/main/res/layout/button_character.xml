@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:textAllCaps="false"
+    android:maxLines="1"
     android:lines="1"
     android:background="?attr/selectableItemBackgroundBorderless"
     />

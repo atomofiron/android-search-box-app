@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.screens.finder.history.dao.AppDatabase
+import ru.atomofiron.regextool.screens.finder.history.dao.HistoryDatabase
 import ru.atomofiron.regextool.screens.finder.history.dao.HistoryDao
 import ru.atomofiron.regextool.screens.finder.history.dao.ItemHistory
 
@@ -19,7 +19,7 @@ class HistoryAdapter(
         private const val FIRST = 0
     }
 
-    private lateinit var db: AppDatabase
+    private lateinit var db: HistoryDatabase
     private lateinit var dao: HistoryDao
     private lateinit var items: ArrayList<ItemHistory>
 
@@ -28,7 +28,7 @@ class HistoryAdapter(
 
         recyclerView.layoutManager ?: { recyclerView.layoutManager = LinearLayoutManager(recyclerView.context) }()
 
-        db = Room.databaseBuilder(recyclerView.context, AppDatabase::class.java, DB_NAME)
+        db = Room.databaseBuilder(recyclerView.context, HistoryDatabase::class.java, DB_NAME)
                 .allowMainThreadQueries()
                 .build()
         dao = db.historyDao()

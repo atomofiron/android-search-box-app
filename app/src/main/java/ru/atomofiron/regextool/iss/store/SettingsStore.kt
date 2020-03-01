@@ -26,9 +26,11 @@ object SettingsStore {
             default = Gravity.START
     )
 
-    val specialCharacters = PreferenceStore.forString<String>(
+    val specialCharacters = PreferenceStore.forString(
             key = Const.PREF_SPECIAL_CHARACTERS,
-            default = Const.DEFAULT_SPECIAL_CHARACTERS
+            default = Const.DEFAULT_SPECIAL_CHARACTERS,
+            toValue = { it.joinToString(separator = " ") },
+            fromValue = { it.split(" ").toTypedArray() }
     )
 
     val extraFormats = PreferenceStore.forString(

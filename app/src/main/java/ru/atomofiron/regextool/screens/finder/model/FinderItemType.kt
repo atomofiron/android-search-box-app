@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.screens.finder.adapter.item
+package ru.atomofiron.regextool.screens.finder.model
 
 import ru.atomofiron.regextool.R
 
@@ -8,5 +8,5 @@ enum class FinderItemType(val id: Int) {
     CONFIGS(R.layout.layout_config),
     TEST(R.layout.layout_test),
     PROGRESS(R.layout.layout_progress),
-    FILE(R.layout.item_finder_file)
+    RESULT(R.layout.item_finder_file)
 }

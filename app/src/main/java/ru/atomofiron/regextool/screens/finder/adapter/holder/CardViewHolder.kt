@@ -5,10 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.recycler.GeneralHolder
-import ru.atomofiron.regextool.screens.finder.adapter.item.FinderItem
+import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 abstract class CardViewHolder(parent: ViewGroup, id: Int)
-    : GeneralHolder<FinderItem>(wrapWithCard(parent, id)) {
+    : GeneralHolder<FinderStateItem>(wrapWithCard(parent, id)) {
     companion object {
         fun wrapWithCard(parent: ViewGroup, id: Int): View {
             val inflater = LayoutInflater.from(parent.context)

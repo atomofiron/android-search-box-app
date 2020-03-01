@@ -8,17 +8,26 @@ import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.common.base.BaseViewModel
 import ru.atomofiron.regextool.common.util.ReadyLiveData
 import ru.atomofiron.regextool.common.util.SingleLiveEvent
+import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
-import ru.atomofiron.regextool.screens.finder.model.FinderState
+import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
+import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
 
 class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     override val router = FinderRouter()
     val historyDrawerGravity = MutableLiveData<Int>()
-    val state = ReadyLiveData<FinderState>()
+    val state = ReadyLiveData<List<FinderStateItem>>()
     val reloadHistory = SingleLiveEvent<Unit>()
 
     init {
-        state.value = FinderState(false, arrayOf(), false, ArrayList(), ArrayList())
+        val items = ArrayList<FinderStateItem>()
+        items.add(SearchAndReplace())
+        val characters = SettingsStore.specialCharacters.entity
+        items.add(SpecialCharacters(characters))
+        items.add(Config())
+        items.add(ProgressItem(777, "9/36"))
+        items.add(ResultItem(777, MutableXFile("-rwxrwxrwx", "atomofiron", "atomofiron", "7B", "DATE", "TIME", "some_file", "", false, "/sdcard/search/path/")))
+        state.value = items
     }
 
     override fun onCreate(context: Context, intent: Intent) {
@@ -30,15 +39,15 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
                     historyDrawerGravity.value = gravity
                 }
         SettingsStore.specialCharacters.addObserver(onClearedCallback) {
-            state.value = state.value.copy(characters = it.split(" ").toTypedArray())
+            updateItem(FinderStateItem.CHARACTERS_POSITION, SpecialCharacters(it))
         }
         PreferencesChannel.historyImportedEvent.addObserver(onClearedCallback) {
             reloadHistory.invoke()
         }
     }
 
-    fun onRepleceEnabledClick() {
-        state.value = state.value.copy(replaceEnabled = !state.value.replaceEnabled)
+    fun onConfigChange(item: Config) {
+        updateItem(FinderStateItem.SEARCH_POSITION, SearchAndReplace(item.replaceEnabled))
     }
 
     fun onDockGravityChange(gravity: Int) = SettingsStore.dockGravity.push(gravity)
@@ -48,8 +57,17 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     }
 
     fun onConfigOptionSelected() {
-        state.value = state.value.copy(configVisible = !state.value.configVisible)
+        var item = state.value[FinderStateItem.CONFIG_POSITION] as Config
+        item = item.copy(configVisible = item.configVisible)
+        updateItem(FinderStateItem.CONFIG_POSITION, item)
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
+
+    private fun updateItem(index: Int, item: FinderStateItem) {
+        val items = ArrayList<FinderStateItem>(state.value)
+        items.removeAt(index)
+        items.add(index, item)
+        state.value = items
+    }
 }

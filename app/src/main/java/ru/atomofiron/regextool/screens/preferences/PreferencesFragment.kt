@@ -84,7 +84,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
             Const.PREF_SPECIAL_CHARACTERS -> {
                 preference.summary = newValue as? String ?: SettingsStore.specialCharacters.value
                 if (newValue is String) {
-                    SettingsStore.specialCharacters.notify(newValue)
+                    SettingsStore.specialCharacters.notifyByOriginal(newValue)
                 }
             }
             Const.PREF_APP_THEME -> {
