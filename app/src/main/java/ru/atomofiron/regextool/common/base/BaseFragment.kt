@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.common.util.findBooleanByAttr
+import ru.atomofiron.regextool.common.util.hideKeyboard
 import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
 
@@ -23,6 +24,10 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
     protected abstract val layoutId: Int
     protected open val systemBarsColorId: Int = R.color.transparent
     protected open val systemBarsLights: Boolean get() = !context.findBooleanByAttr(R.attr.isDarkTheme)
+
+    protected val theContext get() = requireContext()
+    protected val theActivity get() = requireActivity()
+    protected val theView get() = requireView()
 
     init {
         log2("init")
@@ -46,7 +51,10 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
         onSubscribeData(viewLifecycleOwner)
     }
 
-    open fun onBack(): Boolean = false
+    open fun onBack(): Boolean {
+        val viewWithFocus = view?.findFocus()
+        return viewWithFocus?.hideKeyboard() != null
+    }
 
     override fun onStart() {
         super.onStart()
