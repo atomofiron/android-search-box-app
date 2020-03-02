@@ -21,6 +21,17 @@ class RootRouter : BaseRouter() {
         }
     }
 
+    fun reattachFragments() {
+        manager {
+            val transaction = beginTransaction()
+            fragments.forEach {
+                transaction.detach(it)
+                transaction.attach(it)
+            }
+            transaction.commit()
+        }
+    }
+
     fun closeApp() {
         activity {
             finish()

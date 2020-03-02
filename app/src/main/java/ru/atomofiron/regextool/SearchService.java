@@ -19,7 +19,7 @@ import ru.atomofiron.regextool.utils.Util;
 import ru.atomofiron.regextool.utils.finder.Finder;
 import ru.atomofiron.regextool.utils.finder.RFile;
 import ru.atomofiron.regextool.utils.finder.Result;
-import ru.atomofiron.regextool.screens.root.RootActivityWhite;
+import ru.atomofiron.regextool.screens.root.RootActivity;
 import ru.atomofiron.regextool.utils.Const;
 
 public class SearchService extends IntentService {
@@ -143,7 +143,7 @@ public class SearchService extends IntentService {
 				.setContentIntent(PendingIntent.getActivity(
 						this,
 						0,
-						new Intent(this, RootActivityWhite.class),
+						new Intent(this, RootActivity.class),
 						PendingIntent.FLAG_UPDATE_CURRENT
 				)).build()
 		);

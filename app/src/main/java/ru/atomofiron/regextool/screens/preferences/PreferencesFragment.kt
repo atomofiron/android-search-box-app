@@ -90,15 +90,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
             Const.PREF_APP_THEME -> {
                 val i = (newValue as? String ?: SettingsStore.appTheme.value).toInt()
                 preference.summary = resources.getStringArray(R.array.theme_var)[i]
-                if (newValue is Int) {
-                    SettingsStore.appTheme.notifyByOriginal(i.toString())
+                if (newValue is String) {
+                    SettingsStore.appTheme.notifyByOriginal(newValue)
                 }
             }
             Const.PREF_APP_ORIENTATION -> {
                 val i = (newValue as? String ?: SettingsStore.appOrientation.value).toInt()
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
-                if (newValue is Int) {
-                    SettingsStore.appOrientation.notifyByOriginal(i.toString())
+                if (newValue is String) {
+                    SettingsStore.appOrientation.notifyByOriginal(newValue)
                 }
             }
             Const.PREF_USE_SU -> {
