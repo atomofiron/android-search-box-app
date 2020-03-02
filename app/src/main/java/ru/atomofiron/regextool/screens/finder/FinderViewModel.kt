@@ -12,6 +12,7 @@ import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
+import kotlin.reflect.KClass
 
 class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     override val router = FinderRouter()
@@ -20,16 +21,17 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     val reloadHistory = SingleLiveEvent<Unit>()
     val insertInQuery = SingleLiveEvent<String>()
 
+    private var configItem: ConfigItem? = ConfigItem()
+
     init {
         val items = ArrayList<FinderStateItem>()
         items.add(SearchAndReplaceItem())
         val characters = SettingsStore.specialCharacters.entity
         items.add(SpecialCharactersItem(characters))
-        items.add(ConfigItem())
         items.add(TestItem())
         items.add(ProgressItem(777, "9/36"))
         for (i in 1L..30L)
-        items.add(ResultItem(i, MutableXFile("-rwxrwxrwx", "atomofiron", "atomofiron", "7B", "DATE", "TIME", "some_file", "", false, "/sdcard/search/path/some_file")))
+        items.add(ResultItem(i + 900L, MutableXFile("-rwxrwxrwx", "atomofiron", "atomofiron", "7B", "DATE", "TIME", "some_file", "", false, "/sdcard/search/path/some_file")))
         state.value = items
     }
 
@@ -41,8 +43,8 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
                 .addObserver(onClearedCallback) { gravity ->
                     historyDrawerGravity.value = gravity
                 }
-        SettingsStore.specialCharacters.addObserver(onClearedCallback) {
-            updateItem(FinderStateItem.CHARACTERS_POSITION, SpecialCharactersItem(it))
+        SettingsStore.specialCharacters.addObserver(onClearedCallback) { chs ->
+            updateItem(SpecialCharactersItem(chs), SpecialCharactersItem::class)
         }
         PreferencesChannel.historyImportedEvent.addObserver(onClearedCallback) {
             reloadHistory.invoke()
@@ -58,14 +60,13 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
         if (replaceEnabledChanged || useRegexpChanged) {
             val it = SearchAndReplaceItem(newItem.replaceEnabled, newItem.useRegexp)
-            updateItem(FinderStateItem.SEARCH_POSITION, it)
+            updateItem(it, SearchAndReplaceItem::class)
         }
 
-        updateItem(FinderStateItem.CONFIG_POSITION) { newItem }
+        updateItem(newItem, ConfigItem::class)
 
         if (ignoreCaseChanged || replaceEnabledChanged || useRegexpChanged) {
-            updateItem(FinderStateItem.TEST_POSITION) {
-                it as TestItem
+            updateItem(TestItem::class) {
                 it.copy(useRegexp = newItem.useRegexp,
                         ignoreCase = newItem.ignoreCase,
                         multilineSearch = newItem.multilineSearch)
@@ -76,8 +77,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     fun onCharacterClick(value: String) = insertInQuery.invoke(value)
 
     fun onSearchChange(value: String) {
-        updateItem(FinderStateItem.TEST_POSITION) {
-            it as TestItem
+        updateItem(TestItem::class) {
             it.copy(searchQuery = value)
         }
     }
@@ -89,20 +89,34 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     }
 
     fun onConfigOptionSelected() {
-        updateItem(FinderStateItem.CONFIG_POSITION) {
-            it as ConfigItem
-            it.copy(configVisible = !it.configVisible)
+        val configItem = configItem
+        val items = ArrayList<FinderStateItem>(state.value)
+        when (configItem) {
+            null -> this.configItem = items.removeAt(FinderStateItem.CONFIG_POSITION) as ConfigItem
+            else -> {
+                items.add(FinderStateItem.CONFIG_POSITION, configItem)
+                this.configItem = null
+            }
         }
+        state.value = items
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    private fun updateItem(index: Int, item: FinderStateItem) = updateItem(index) { item }
-
-    private fun updateItem(index: Int, action: (FinderStateItem) -> FinderStateItem) {
+    private fun <I : FinderStateItem> updateItem(item: I, klass: KClass<I>) {
         val items = ArrayList<FinderStateItem>(state.value)
+        val index = items.indexOfFirst { it::class == klass }
+        items.removeAt(index)
+        items.add(index, item)
+        state.value = items
+    }
+
+    private fun <I : FinderStateItem> updateItem(klass: KClass<I>, action: (I) -> I) {
+        val items = ArrayList<FinderStateItem>(state.value)
+        val index = items.indexOfFirst { it::class == klass }
         val removed = items.removeAt(index)
-        items.add(index, action(removed))
+        @Suppress("UNCHECKED_CAST")
+        items.add(index, action(removed as I))
         state.value = items
     }
 }
