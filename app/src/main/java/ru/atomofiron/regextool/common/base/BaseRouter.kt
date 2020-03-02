@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import ru.atomofiron.regextool.common.base.util.OneTimeBackStackListener
+import ru.atomofiron.regextool.log2
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
@@ -28,7 +29,6 @@ abstract class BaseRouter {
         return arguments!!
     }
 
-    protected open val indexFromEnd: Int = 0
     protected open var fragmentContainerId: Int = 0
         get() {
             if (field == 0) {
@@ -74,11 +74,6 @@ abstract class BaseRouter {
         activityReference.clear()
     }
 
-    fun recreateActivity() {
-        val activity = activity ?: fragment!!.activity!!
-        activity.recreate()
-    }
-
     protected fun startScreen(vararg fragmentsArg: Fragment,
                               addToBackStack: Boolean = true,
                               runOnCommit: (() -> Unit)? = null) {
@@ -86,13 +81,9 @@ abstract class BaseRouter {
             return
         }
         manager {
-            val addedFragments = fragments.map { it::class }
-            if (fragment != null) {
-                val kClass = fragment!!::class
-                val indexFromEnd = addedFragments.lastIndex - addedFragments.indexOf(kClass)
-                if (indexFromEnd != this@BaseRouter.indexFromEnd) {
-                    return@manager
-                }
+            val filteredFragments = filterAddedFragments(this, fragmentsArg)
+            if (filteredFragments.isEmpty()) {
+                return@manager
             }
             isBlocked = true
             val current = fragments.find { !it.isHidden }
@@ -101,7 +92,10 @@ abstract class BaseRouter {
                 if (current != null) {
                     hide(current)
                 }
-                fragmentsArg.forEach { add(fragmentContainerId, it) }
+                filteredFragments.forEach {
+                    val tag = it.javaClass.simpleName
+                    add(fragmentContainerId, it, tag)
+                }
                 if (addToBackStack) {
                     addToBackStack(null)
                     OneTimeBackStackListener(this@manager) {
@@ -115,6 +109,19 @@ abstract class BaseRouter {
                     }
                 }
                 commit()
+            }
+        }
+    }
+
+    private fun filterAddedFragments(manager: FragmentManager, fragments: Array<out Fragment>): List<Fragment> {
+        return fragments.filter {
+            val tag = it.javaClass.simpleName
+            when (manager.fragments.find { added -> added.tag == tag } == null) {
+                true -> true
+                else -> {
+                    log2("Fragment with tag = $tag is already added!")
+                    false
+                }
             }
         }
     }

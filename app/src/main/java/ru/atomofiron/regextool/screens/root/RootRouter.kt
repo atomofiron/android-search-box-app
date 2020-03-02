@@ -1,9 +1,11 @@
 package ru.atomofiron.regextool.screens.root
 
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.common.base.BaseFragment
 import ru.atomofiron.regextool.common.base.BaseRouter
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.finder.FinderFragment
+import ru.atomofiron.regextool.screens.preferences.PreferencesFragment
 
 class RootRouter : BaseRouter() {
     override var fragmentContainerId: Int = R.id.root_fl
@@ -24,10 +26,12 @@ class RootRouter : BaseRouter() {
     fun reattachFragments() {
         manager {
             val transaction = beginTransaction()
-            fragments.forEach {
-                transaction.detach(it)
-                transaction.attach(it)
-            }
+            fragments
+                    .filter { it is BaseFragment<*> || it is PreferencesFragment }
+                    .forEach {
+                        transaction.detach(it)
+                        transaction.attach(it)
+                    }
             transaction.commit()
         }
     }
