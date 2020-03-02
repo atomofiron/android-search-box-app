@@ -1,7 +1,9 @@
 package ru.atomofiron.regextool.screens.finder
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -14,6 +16,7 @@ import ru.atomofiron.regextool.screens.finder.adapter.FinderActionListenerDelega
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
+import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import kotlin.reflect.KClass
@@ -44,8 +47,9 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
 
         rvContent {
             val linearLayoutManager = LinearLayoutManager(context!!)
-            layoutManager = linearLayoutManager
             linearLayoutManager.reverseLayout = true
+            layoutManager = linearLayoutManager
+            itemAnimator = null
             adapter = finderAdapter
         }
 
@@ -64,11 +68,23 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        if (hidden) {
+            view?.let {
+                val inputMethodManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
+            }
+        }
+    }
+
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
         viewModel.reloadHistory.observeEvent(owner, historyAdapter::reload)
         viewModel.insertInQuery.observeData(owner, ::insertInQuery)
         viewModel.state.observe(owner, Observer(::onStateChange))
+        viewModel.updateContent.observeData(owner, ::onContentUpdate)
     }
 
     override fun onBack(): Boolean {
@@ -81,6 +97,14 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     }
 
     private fun onStateChange(state: List<FinderStateItem>) = finderAdapter.setItems(state)
+
+    private fun onContentUpdate(event: FinderStateItemUpdate) {
+        when (event) {
+            is FinderStateItemUpdate.Changed -> finderAdapter.setItem(event.index, event.item)
+            is FinderStateItemUpdate.Inserted -> finderAdapter.insertItem(event.index, event.item)
+            is FinderStateItemUpdate.Removed -> finderAdapter.removeItem(event.index)
+        }
+    }
 
     private fun insertInQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)?.apply {
