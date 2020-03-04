@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.util.findColorByAttr
+import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.model.AppTheme
 import kotlin.reflect.KClass
