@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.base.util
+package ru.atomofiron.regextool.common.util
 
 import androidx.fragment.app.FragmentManager
 

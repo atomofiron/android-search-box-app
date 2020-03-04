@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import ru.atomofiron.regextool.common.base.util.OneTimeBackStackListener
+import ru.atomofiron.regextool.common.util.OneTimeBackStackListener
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
