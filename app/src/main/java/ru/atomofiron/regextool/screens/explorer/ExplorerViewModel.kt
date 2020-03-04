@@ -100,8 +100,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     fun onDockGravityChange(gravity: Int) = SettingsStore.dockGravity.push(gravity)
 
     override fun onItemClick(item: XFile) {
+        val useSu = SettingsStore.useSu.value
         when {
-            !readStorageGranted -> permissions
+            !useSu && !readStorageGranted -> permissions
                     .check(Manifest.permission.READ_EXTERNAL_STORAGE)
                     .granted {
                         readStorageGranted = true
