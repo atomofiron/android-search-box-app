@@ -26,12 +26,11 @@ class ExplorerService {
 
     private val mutex = Mutex()
     private val files: MutableList<MutableXFile> = ArrayList()
-    private val root = MutableXFile.byPath(SettingsStore.storagePath.value)
+    private lateinit var root: MutableXFile
     private var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
             notifyCurrent(value)
-
         }
 
     val store = KObservable<List<XFile>>(files)
@@ -41,15 +40,21 @@ class ExplorerService {
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
-            copyToybox()
-
             mutex.withLock {
-                files.add(root)
+                copyToybox()
             }
-            updateClosedDir(root)
-
-            notifyFiles()
         }
+    }
+
+    suspend fun setRoot(path: String) {
+        root = MutableXFile.byPath(path)
+
+        mutex.withLock {
+            files.clear()
+            files.add(root)
+        }
+        updateClosedDir(root)
+        notifyFiles()
     }
 
     fun invalidateDir(f: XFile) {

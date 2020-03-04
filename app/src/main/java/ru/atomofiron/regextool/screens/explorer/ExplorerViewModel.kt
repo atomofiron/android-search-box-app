@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
@@ -29,10 +30,6 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
 
-    private val dockGravityChanged: (Int) -> Unit = { gravity ->
-        historyDrawerGravity.value = gravity
-    }
-
     override fun onCreate(context: Context, intent: Intent) {
         super.onCreate(context, intent)
 
@@ -55,8 +52,23 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         }
         SettingsStore
                 .dockGravity
-                .addObserver(onClearedCallback, dockGravityChanged)
+                .addObserver(onClearedCallback, ::onDockGravityChanged)
+        SettingsStore
+                .storagePath
+                .addObserver(onClearedCallback, ::onStoragePathChanged)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        explorerInteractor.scope.cancel("${this.javaClass.simpleName}.onCleared()")
+    }
+
+    private fun onDockGravityChanged(gravity: Int) {
+        historyDrawerGravity.value = gravity
+    }
+
+    private fun onStoragePathChanged(path: String) = explorerInteractor.setRoot(path)
 
     fun onSearchOptionSelected() = router.showFinder()
 

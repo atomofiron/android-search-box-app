@@ -12,7 +12,8 @@ class Knife<T : View> private constructor(
 ) {
     private var viewNullable: T? = null
         get() {
-            if (field == null) {
+            val detached = field?.isAttachedToWindow != true
+            if (field == null || detached) {
                 field = when {
                     activity != null -> activity.findViewById(id)
                     fragment != null -> fragment.view?.findViewById(id)

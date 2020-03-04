@@ -10,7 +10,13 @@ import ru.atomofiron.regextool.iss.service.model.XFile
 class ExplorerInteractor {
     private val service = ExplorerService()
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+    val scope = CoroutineScope(Dispatchers.IO)
+
+    fun setRoot(path: String) {
+        scope.launch {
+            service.setRoot(path)
+        }
+    }
 
     fun observeFiles(observer: (List<XFile>) -> Unit) {
         service.store.addObserver(observer)
@@ -34,9 +40,5 @@ class ExplorerInteractor {
         }
     }
 
-    fun invalidateFile(file: XFile) {
-        scope.launch {
-            service.invalidateDir(file)
-        }
-    }
+    fun invalidateFile(file: XFile) = service.invalidateDir(file)
 }

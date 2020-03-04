@@ -16,37 +16,11 @@
         android:windowSoftInputMode="adjustResize"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".screens.root.RootActivityWhite"
+            android:name=".screens.root.RootActivity"
             android:configChanges="orientation|screenLayout|screenSize|keyboard|fontScale|navigation"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.White">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".screens.root.RootActivityDark"
-            android:label="RF Dark"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:targetActivity=".screens.root.RootActivityWhite"
-            android:theme="@style/AppTheme.Dark">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".screens.root.RootActivityBlack"
-            android:label="RF Black"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:targetActivity=".screens.root.RootActivityWhite"
+            android:screenOrientation="unspecified"
             android:theme="@style/AppTheme.Black">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

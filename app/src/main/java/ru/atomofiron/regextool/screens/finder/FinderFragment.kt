@@ -53,12 +53,14 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
             adapter = finderAdapter
         }
 
-        bottomOptionMenu.view.setOnMenuItemClickListener { id ->
-            when (id) {
-                R.id.menu_history -> dockView { open() }
-                R.id.menu_explorer -> viewModel.onExplorerOptionSelected()
-                R.id.menu_config -> viewModel.onConfigOptionSelected()
-                R.id.menu_settings -> viewModel.onSettingsOptionSelected()
+        bottomOptionMenu {
+            setOnMenuItemClickListener { id ->
+                when (id) {
+                    R.id.menu_history -> dockView { open() }
+                    R.id.menu_explorer -> viewModel.onExplorerOptionSelected()
+                    R.id.menu_config -> viewModel.onConfigOptionSelected()
+                    R.id.menu_settings -> viewModel.onSettingsOptionSelected()
+                }
             }
         }
 
