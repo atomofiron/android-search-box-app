@@ -10,9 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import ru.atomofiron.regextool.R
-import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.findBooleanByAttr
+import app.atomofiron.common.util.hideKeyboard
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
 
@@ -28,6 +28,9 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
     protected val theContext get() = requireContext()
     protected val theActivity get() = requireActivity()
     protected val theView get() = requireView()
+
+    protected val anchorView: View get() = activity!!.findViewById(R.id.root_iv_joystick)
+    private val visibilityWatcher = VisibilityWatcher()
 
     init {
         log2("init")
@@ -47,7 +50,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.onShow()
         onSubscribeData(viewLifecycleOwner)
     }
 
@@ -64,21 +66,37 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
         fixSystemBars(systemBarsLights)
     }
 
+    override fun onResume() {
+        super.onResume()
+        visibilityWatcher.resumed = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        visibilityWatcher.resumed = false
+    }
+
     open fun onSubscribeData(owner: LifecycleOwner) = Unit
+
+    open fun onVisibleChanged(visible: Boolean) = viewModel.onVisibleChanged(visible)
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 
         if (!hidden) {
-            viewModel.onShow()
             setStatusBarColor(systemBarsColorId)
             fixSystemBars(systemBarsLights)
         }
+        visibilityWatcher.hidden = hidden
     }
 
     override fun onDestroy() {
         viewModel.onViewDestroy()
         super.onDestroy()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        viewModel.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun setStatusBarColor(colorId: Int) {
@@ -106,5 +124,24 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
                 }
             }
         }
+    }
+
+    private inner class VisibilityWatcher {
+        private val visible: Boolean get() = !hidden && resumed
+
+        var hidden = false
+            set(value) {
+                if (field == value) return
+                val state = visible
+                field = value
+                if (state != visible) onVisibleChanged(visible)
+            }
+        var resumed = false
+            set(value) {
+                if (field == value) return
+                val state = visible
+                field = value
+                if (state != visible) onVisibleChanged(visible)
+            }
     }
 }

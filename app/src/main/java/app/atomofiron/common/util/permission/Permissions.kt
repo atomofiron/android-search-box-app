@@ -97,6 +97,7 @@ open class Permissions private constructor(
 
     interface Granted {
         infix fun denied(action: (String) -> Unit): Denied
+        infix fun forbidden(action: (String) -> Unit): Unit?
     }
 
     interface Denied {

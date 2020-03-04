@@ -67,4 +67,6 @@
     <string name="successful">Successful</string>
     <string name="successful_with_restart">Successful. Restart the App process</string>
     <string name="more">More</string>
+    <string name="access_to_storage_forbidden">Access to the storage is forbidden</string>
+    <string name="allow">Allow</string>
 </resources>

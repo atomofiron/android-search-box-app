@@ -67,4 +67,6 @@
     <string name="successful">Успешно</string>
     <string name="successful_with_restart">Успешно. Убейте процесс приложения</string>
     <string name="more">Подробнее</string>
+    <string name="access_to_storage_forbidden">Доступ к хранилищу запрещён</string>
+    <string name="allow">Разрешить</string>
 </resources>

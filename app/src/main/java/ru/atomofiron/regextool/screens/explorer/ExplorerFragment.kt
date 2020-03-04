@@ -6,9 +6,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.R
 import app.atomofiron.common.base.BaseFragment
 import app.atomofiron.common.util.Knife
+import com.google.android.material.snackbar.Snackbar
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.VerticalDockView
@@ -35,6 +36,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         viewModel.notifyInsert.observeData(this) { explorerAdapter.insertItem(it.first, it.second) }
         viewModel.notifyRemoveRange.observeData(this, explorerAdapter::removeItems)
         viewModel.notifyInsertRange.observeData(this) { explorerAdapter.insertItems(it.first, it.second) }
+        viewModel.permissionRequiredWarning.observeEvent(this, ::showPermissionRequiredWarning)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,5 +79,12 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
             }
         }
         return consumed || super.onBack()
+    }
+
+    private fun showPermissionRequiredWarning() {
+        Snackbar.make(view!!, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
+                .setAnchorView(anchorView)
+                .setAction(R.string.allow) { viewModel.onAllowStorageClick() }
+                .show()
     }
 }

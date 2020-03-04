@@ -3,6 +3,7 @@ package ru.atomofiron.regextool.screens.explorer
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.base.BaseRouter
+import app.atomofiron.common.util.permission.Permissions
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.FinderFragment
@@ -29,6 +30,12 @@ class ExplorerRouter : BaseRouter() {
                 val intent = Intent(Intent.ACTION_VIEW)
 
             }
+        }
+    }
+
+    fun showSystemPermissionsAppSettings() {
+        activity {
+            startActivity(Permissions.settingsIntent)
         }
     }
 }

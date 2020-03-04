@@ -5,15 +5,16 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
+import app.atomofiron.common.util.KObservable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import app.atomofiron.common.util.KObservable
 
 abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewModel(app) {
     protected abstract val router: R
@@ -38,9 +39,7 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
 
     open fun onCreate(context: Context, intent: Intent) = Unit
 
-    open fun onShow() {
-        //router.unblockUi()
-    }
+    open fun onVisibleChanged(visible: Boolean) = Unit
 
     open fun onViewDestroy() = router.onViewDestroy()
 
@@ -51,4 +50,6 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
     }
 
     open fun onBackButtonClick(): Boolean = router.onBack()
+
+    open fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) = Unit
 }

@@ -9,7 +9,10 @@ internal class GrantedImpl(
         return denied
     }
 
+    override infix fun forbidden(action: (String) -> Unit): Unit? = callback?.setForbidden(action)
+
     interface Callback {
         fun setDenied(action: (String) -> Unit)
+        fun setForbidden(action: (String) -> Unit)
     }
 }
