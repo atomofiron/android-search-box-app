@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.recycler.GeneralHolder
+import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 abstract class CardViewHolder(parent: ViewGroup, id: Int)

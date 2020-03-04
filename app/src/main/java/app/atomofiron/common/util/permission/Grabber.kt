@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.util.permission
+package app.atomofiron.common.util.permission
 
 class Grabber(
     private val permission: String,

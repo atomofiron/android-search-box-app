@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import ru.atomofiron.regextool.common.base.BaseViewModel
-import ru.atomofiron.regextool.common.util.SingleLiveEvent
+import app.atomofiron.common.base.BaseViewModel
+import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.XFile

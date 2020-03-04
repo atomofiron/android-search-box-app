@@ -10,8 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.base.BaseFragment
-import ru.atomofiron.regextool.common.util.Knife
+import app.atomofiron.common.base.BaseFragment
+import app.atomofiron.common.util.Knife
 import ru.atomofiron.regextool.screens.finder.adapter.FinderActionListenerDelegate
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter

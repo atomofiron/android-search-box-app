@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.util.permission
+package app.atomofiron.common.util.permission
 
 import android.annotation.TargetApi
 import android.app.Activity

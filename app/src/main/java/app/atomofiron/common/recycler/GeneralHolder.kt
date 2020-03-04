@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.recycler
+package app.atomofiron.common.recycler
 
 import android.view.LayoutInflater
 import android.view.View

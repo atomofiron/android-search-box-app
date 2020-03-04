@@ -2,7 +2,7 @@ package ru.atomofiron.regextool.screens.explorer
 
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import ru.atomofiron.regextool.common.base.BaseRouter
+import app.atomofiron.common.base.BaseRouter
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.FinderFragment

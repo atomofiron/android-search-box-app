@@ -6,8 +6,8 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.recycler.GeneralHolder
-import ru.atomofiron.regextool.common.util.Knife
+import app.atomofiron.common.recycler.GeneralHolder
+import app.atomofiron.common.util.Knife
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.utils.Const
 

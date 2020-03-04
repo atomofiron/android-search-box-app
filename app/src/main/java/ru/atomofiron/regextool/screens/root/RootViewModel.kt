@@ -3,8 +3,8 @@ package ru.atomofiron.regextool.screens.root
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import ru.atomofiron.regextool.common.base.BaseViewModel
-import ru.atomofiron.regextool.common.util.SingleLiveEvent
+import app.atomofiron.common.base.BaseViewModel
+import app.atomofiron.common.util.SingleLiveEvent
 
 class RootViewModel(app: Application) : BaseViewModel<RootRouter>(app) {
     override val router = RootRouter()

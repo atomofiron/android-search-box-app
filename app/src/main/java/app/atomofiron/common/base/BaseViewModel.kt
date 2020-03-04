@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.base
+package app.atomofiron.common.base
 
 import android.app.Activity
 import android.app.Application
@@ -8,14 +8,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import ru.atomofiron.regextool.common.util.KObservable
+import app.atomofiron.common.util.KObservable
 
 abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewModel(app) {
     protected abstract val router: R

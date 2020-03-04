@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.recycler.GeneralHolder
+import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 class CharactersHolder(

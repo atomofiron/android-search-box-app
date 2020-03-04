@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.recycler
+package app.atomofiron.common.recycler
 
 import androidx.recyclerview.widget.RecyclerView
 

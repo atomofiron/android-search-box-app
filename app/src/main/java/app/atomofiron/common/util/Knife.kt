@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.util
+package app.atomofiron.common.util
 
 import android.app.Activity
 import android.view.View

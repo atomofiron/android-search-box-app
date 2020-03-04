@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.recycler.GeneralHolder
+import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.SearchAndReplaceItem
 import java.util.regex.Pattern

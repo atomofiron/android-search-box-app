@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.base
+package app.atomofiron.common.base
 
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.util.findBooleanByAttr
+import app.atomofiron.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
 

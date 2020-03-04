@@ -5,8 +5,8 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.base.BaseActivity
-import ru.atomofiron.regextool.common.util.Knife
+import app.atomofiron.common.base.BaseActivity
+import app.atomofiron.common.util.Knife
 import ru.atomofiron.regextool.screens.root.util.ExitSnackbarCallback
 import kotlin.reflect.KClass
 

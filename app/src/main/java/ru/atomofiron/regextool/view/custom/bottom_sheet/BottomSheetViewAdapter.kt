@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.util.Knife
+import app.atomofiron.common.util.Knife
 import ru.atomofiron.regextool.view.custom.menu.MenuImpl
 
 class BottomSheetViewAdapter(context: Context) : RecyclerView.Adapter<BottomSheetViewAdapter.Holder>() {

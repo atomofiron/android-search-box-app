@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import ru.atomofiron.regextool.channel.PreferencesChannel
-import ru.atomofiron.regextool.common.base.BaseViewModel
-import ru.atomofiron.regextool.common.util.ReadyLiveData
-import ru.atomofiron.regextool.common.util.SingleLiveEvent
+import app.atomofiron.common.base.BaseViewModel
+import app.atomofiron.common.util.ReadyLiveData
+import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem

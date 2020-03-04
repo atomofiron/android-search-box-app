@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.common.util.KObservable
+import app.atomofiron.common.util.KObservable
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.Change.*
 import ru.atomofiron.regextool.iss.service.model.Change.Nothing

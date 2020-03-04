@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.base
+package app.atomofiron.common.base
 
 import android.app.Activity
 import android.content.Context
@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import ru.atomofiron.regextool.common.util.OneTimeBackStackListener
+import app.atomofiron.common.util.OneTimeBackStackListener
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 

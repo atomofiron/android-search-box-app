@@ -2,7 +2,7 @@ package ru.atomofiron.regextool.iss.store
 
 import android.content.SharedPreferences
 import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.common.util.KObservable
+import app.atomofiron.common.util.KObservable
 import ru.atomofiron.regextool.utils.sp
 
 class PreferenceStore<E, V> private constructor(

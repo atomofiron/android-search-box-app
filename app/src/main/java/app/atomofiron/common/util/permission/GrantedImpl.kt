@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.common.util.permission
+package app.atomofiron.common.util.permission
 
 internal class GrantedImpl(
         private val callback: Callback?,

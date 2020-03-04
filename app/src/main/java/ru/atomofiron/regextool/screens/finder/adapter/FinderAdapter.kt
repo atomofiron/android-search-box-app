@@ -1,8 +1,8 @@
 package ru.atomofiron.regextool.screens.finder.adapter
 
 import android.view.ViewGroup
-import ru.atomofiron.regextool.common.recycler.GeneralAdapter
-import ru.atomofiron.regextool.common.recycler.GeneralHolder
+import app.atomofiron.common.recycler.GeneralAdapter
+import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.screens.finder.adapter.holder.*
 import ru.atomofiron.regextool.screens.finder.model.FinderItemType
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem

@@ -15,8 +15,8 @@ import android.view.animation.Interpolator
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.util.calculateDurationWithScale
-import ru.atomofiron.regextool.common.util.findColorByAttr
+import app.atomofiron.common.util.calculateDurationWithScale
+import app.atomofiron.common.util.findColorByAttr
 import kotlin.math.max
 import kotlin.math.min
 

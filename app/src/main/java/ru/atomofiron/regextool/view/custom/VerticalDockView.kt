@@ -11,7 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.util.DrawerStateListenerImpl
+import app.atomofiron.common.util.DrawerStateListenerImpl
 
 class VerticalDockView @JvmOverloads constructor(
         context: Context,

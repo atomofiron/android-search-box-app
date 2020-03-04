@@ -7,8 +7,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.common.base.BaseFragment
-import ru.atomofiron.regextool.common.util.Knife
+import app.atomofiron.common.base.BaseFragment
+import app.atomofiron.common.util.Knife
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.VerticalDockView
