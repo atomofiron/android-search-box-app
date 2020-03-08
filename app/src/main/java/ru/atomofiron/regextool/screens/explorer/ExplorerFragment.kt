@@ -51,7 +51,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         bottomOptionMenu {
             setOnMenuItemClickListener { id ->
                 when (id) {
-                    R.id.menu_tasks -> dockView { open() }
+                    R.id.menu_places -> dockView { open() }
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
                     R.id.menu_config -> bottomSheetView { show() }
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()

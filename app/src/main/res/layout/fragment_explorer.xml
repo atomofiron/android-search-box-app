@@ -53,6 +53,6 @@
         android:layout_height="match_parent"
         android:background="?attr/colorBackground"
         android:layout_gravity="start"
-        app:title="@string/tasks"
+        app:title="@string/places"
         />
 </androidx.drawerlayout.widget.DrawerLayout>

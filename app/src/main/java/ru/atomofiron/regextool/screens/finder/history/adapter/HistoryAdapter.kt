@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.screens.finder.history.dao.HistoryDatabase
 import ru.atomofiron.regextool.screens.finder.history.dao.HistoryDao
+import ru.atomofiron.regextool.screens.finder.history.dao.HistoryDatabase
 import ru.atomofiron.regextool.screens.finder.history.dao.ItemHistory
 
 class HistoryAdapter(
@@ -42,6 +42,9 @@ class HistoryAdapter(
     }
 
     fun add(string: String) {
+        if (string.isEmpty()) {
+            return
+        }
         var index = items.indexOfFirst { !it.pinned }
         if (index == UNDEFINED) {
             index = items.size

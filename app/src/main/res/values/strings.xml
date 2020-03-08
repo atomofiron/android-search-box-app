@@ -69,4 +69,5 @@
     <string name="more">More</string>
     <string name="access_to_storage_forbidden">Access to the storage is forbidden</string>
     <string name="allow">Allow</string>
+    <string name="places">Places</string>
 </resources>

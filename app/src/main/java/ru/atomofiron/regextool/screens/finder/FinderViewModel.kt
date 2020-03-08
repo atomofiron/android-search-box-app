@@ -3,18 +3,21 @@ package ru.atomofiron.regextool.screens.finder
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Debug
 import androidx.lifecycle.MutableLiveData
-import ru.atomofiron.regextool.channel.PreferencesChannel
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.ReadyLiveData
 import app.atomofiron.common.util.SingleLiveEvent
+import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate.*
 import kotlin.reflect.KClass
+
 
 class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     override val router = FinderRouter()
@@ -105,6 +108,10 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
                 this.configItem = null
             }
         }
+
+        val memoryInfo: Debug.MemoryInfo = Debug.MemoryInfo()
+        Debug.getMemoryInfo(memoryInfo)
+        log("totalPss ${memoryInfo.totalPss.toFloat() / 1024}")
     }
 
     fun onSettingsOptionSelected() = router.showSettings()

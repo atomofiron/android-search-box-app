@@ -69,4 +69,5 @@
     <string name="more">Подробнее</string>
     <string name="access_to_storage_forbidden">Доступ к хранилищу запрещён</string>
     <string name="allow">Разрешить</string>
+    <string name="places">Places</string>
 </resources>
