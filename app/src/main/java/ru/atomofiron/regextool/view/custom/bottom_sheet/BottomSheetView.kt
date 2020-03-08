@@ -14,9 +14,9 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.R
 import app.atomofiron.common.util.calculateDurationWithScale
 import app.atomofiron.common.util.findColorByAttr
+import ru.atomofiron.regextool.R
 import kotlin.math.max
 import kotlin.math.min
 
@@ -154,6 +154,11 @@ open class BottomSheetView @JvmOverloads constructor(
                 State.CLOSE -> startAnimator(curTop + menuHeight, accelerateInterpolator)
                 State.REOPEN -> Unit
             }
+        }
+
+        when (state) {
+            State.REOPEN -> loop.resume()
+            else -> loop.pause()
         }
     }
 
