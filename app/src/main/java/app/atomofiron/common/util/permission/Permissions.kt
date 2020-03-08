@@ -76,24 +76,33 @@ open class Permissions private constructor(
     fun check(permission: String): Checker = when {
         checkPermission(context, permission) -> {
             val grabber = Grabber(permission, isGranted = true, isForbidden = false)
-            CheckerImpl(grabber, GrantedImpl(null, DeniedImpl(null)))
+            val denied = DeniedImpl(null)
+            CheckerImpl(grabber, GrantedImpl(null, denied), denied)
         }
         shouldShowRequestPermissionRationale(permission) -> {
             val grabber = Grabber(permission, isGranted = false, isForbidden = false)
             val requestCode = nextRequestCode
             map[requestCode] = grabber
             requestPermission(permission, requestCode)
-            CheckerImpl(grabber, GrantedImpl(grabber, DeniedImpl(grabber)))
+            val denied = DeniedImpl(grabber)
+            CheckerImpl(grabber, GrantedImpl(grabber, denied), denied)
         }
         else -> {
             val grabber = Grabber(permission, isGranted = false, isForbidden = true)
-            CheckerImpl(grabber, GrantedImpl(grabber, DeniedImpl(grabber)))
+            val denied = DeniedImpl(grabber)
+            CheckerImpl(grabber, GrantedImpl(grabber, denied), denied)
         }
     }
 
     interface Checker {
         @Throws(Grabber.AlreadyDefinedException::class)
         infix fun granted(action: () -> Unit): Granted
+
+        @Throws(Grabber.AlreadyDefinedException::class)
+        infix fun denied(action: (String) -> Unit): Denied
+
+        @Throws(Grabber.AlreadyDefinedException::class)
+        infix fun forbidden(action: (String) -> Unit): Unit?
     }
 
     interface Granted {
