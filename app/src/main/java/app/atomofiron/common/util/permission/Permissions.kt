@@ -92,15 +92,20 @@ open class Permissions private constructor(
     }
 
     interface Checker {
+        @Throws(Grabber.AlreadyDefinedException::class)
         infix fun granted(action: () -> Unit): Granted
     }
 
     interface Granted {
+        @Throws(Grabber.AlreadyDefinedException::class)
         infix fun denied(action: (String) -> Unit): Denied
+
+        @Throws(Grabber.AlreadyDefinedException::class)
         infix fun forbidden(action: (String) -> Unit): Unit?
     }
 
     interface Denied {
+        @Throws(Grabber.AlreadyDefinedException::class)
         infix fun forbidden(action: (String) -> Unit): Unit?
     }
 }

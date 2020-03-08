@@ -9,22 +9,35 @@ class Grabber(
     private var denied: ((String) -> Unit)? = null
     private var forbidden: ((String) -> Unit)? = null
 
+    @Throws(AlreadyDefinedException::class)
     override fun setGranted(action: () -> Unit) {
-        if (isGranted)
-            action()
-        else
-            granted = action
+        when {
+            granted != null -> throw AlreadyDefinedException()
+            isGranted -> action()
+            else -> granted = action
+        }
     }
 
+    @Throws(AlreadyDefinedException::class)
     override fun setDenied(action: (String) -> Unit) {
-        denied = action
+        granted = granted ?: { }
+        when {
+            isGranted -> return
+            granted != null -> throw AlreadyDefinedException()
+            else -> denied = action
+        }
     }
 
+    @Throws(AlreadyDefinedException::class)
     override fun setForbidden(action: (String) -> Unit) {
-        if (isForbidden)
-            action(permission)
-        else
-            forbidden = action
+        granted = granted ?: { }
+        denied = denied ?: { }
+        when {
+            isGranted -> return
+            forbidden != null -> throw AlreadyDefinedException()
+            isForbidden -> action(permission)
+            else -> forbidden = action
+        }
     }
 
     fun onGranted() = granted?.invoke()
@@ -32,4 +45,6 @@ class Grabber(
     fun onDenied(permission: String) = denied?.invoke(permission)
 
     fun onForbidden(permission: String) = forbidden?.invoke(permission)
+
+    class AlreadyDefinedException : Exception()
 }
