@@ -51,6 +51,8 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
         onClearedCallback.invoke()
     }
 
+    fun onAttachChildFragment(childFragment: Fragment) = router.onAttachChildFragment(childFragment)
+
     open fun onBackButtonClick(): Boolean = router.onBack()
 
     open fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) = Unit

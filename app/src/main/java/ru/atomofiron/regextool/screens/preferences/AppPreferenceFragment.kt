@@ -7,32 +7,21 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.base.Backable
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell.checkSu
 import ru.atomofiron.regextool.utils.Util
 
-class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
-
+class AppPreferenceFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Backable {
     private val anchorView: View get() = activity!!.findViewById(R.id.root_iv_joystick)
-    private lateinit var exportImportDelegate: ExportImportDelegate
+    private lateinit var output: Output
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        exportImportDelegate = ExportImportDelegate(view, anchorView)
-        exportImportDelegate.onImportHistoryListener = {
-            PreferencesChannel.historyImportedEvent.justNotify()
-        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
@@ -44,6 +33,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
         return onUpdatePreference(preference, newValue)
+    }
+
+    override fun onBack(): Boolean = output.onBack()
+
+    fun setAppPreferenceFragmentOutput(output: Output) {
+        this.output = output
     }
 
     private fun onUpdateScreen(screen: PreferenceScreen) {
@@ -110,7 +105,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
             Const.PREF_EXPORT_IMPORT -> {
                 preference.isEnabled = ExportImportDelegate.isAvailable
                 preference.setOnPreferenceClickListener {
-                    exportImportDelegate.show()
+                    output.onExportImportClick()
                     true
                 }
             }
@@ -154,5 +149,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
         if (newValue is Int) {
             SettingsStore.maxFileSizeForSearch.notify(newValue)
         }
+    }
+
+    interface Output: Backable {
+        override fun onBack(): Boolean
+        fun onExportImportClick()
     }
 }

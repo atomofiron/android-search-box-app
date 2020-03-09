@@ -74,6 +74,8 @@ abstract class BaseRouter {
         activityReference.clear()
     }
 
+    open fun onAttachChildFragment(childFragment: Fragment) = Unit
+
     protected fun startScreen(vararg fragmentsArg: Fragment,
                               addToBackStack: Boolean = true,
                               runOnCommit: (() -> Unit)? = null) {
@@ -158,9 +160,11 @@ abstract class BaseRouter {
 
     fun onBack(): Boolean {
         return manager {
-            val lastVisible = fragments.findLast { !it.isHidden }
+            val lastVisible = fragments
+                    .filter { it is Fragment && it is Backable }
+                    .findLast { !it.isHidden }
             when {
-                (lastVisible as? BaseFragment<*>)?.onBack() == true -> true
+                (lastVisible as Backable?)?.onBack() == true -> true
                 backStackEntryCount > 0 -> {
                     popBackStack()
                     true

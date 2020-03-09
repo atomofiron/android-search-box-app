@@ -16,7 +16,7 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
 
-abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
+abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     protected abstract val viewModelClass: KClass<M>
     protected lateinit var viewModel: M
     protected val dataProvider: M get() = viewModel
@@ -53,7 +53,7 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
         onSubscribeData(viewLifecycleOwner)
     }
 
-    open fun onBack(): Boolean {
+    override fun onBack(): Boolean {
         val viewWithFocus = view?.findFocus()
         return viewWithFocus?.hideKeyboard() != null
     }
@@ -75,6 +75,8 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment() {
         super.onPause()
         visibilityWatcher.resumed = false
     }
+
+    override fun onAttachFragment(childFragment: Fragment) = viewModel.onAttachChildFragment(childFragment)
 
     open fun onSubscribeData(owner: LifecycleOwner) = Unit
 

@@ -14,7 +14,7 @@ import ru.atomofiron.regextool.utils.Shell
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
 
 class ExportImportDelegate(
-        private val rootView: View,
+        private val rootView: ViewGroup,
         private val anchorView: View
 ) {
     companion object {
@@ -37,7 +37,7 @@ class ExportImportDelegate(
     lateinit var onImportHistoryListener: () -> Unit
 
     init {
-        rootView.findViewById<ViewGroup>(LIST_CONTAINER_ID).addView(exportSheet)
+        rootView.addView(exportSheet)
 
         rgAction.setOnCheckedChangeListener { _, checkedId ->
             val id = when (checkedId) {
@@ -78,6 +78,8 @@ class ExportImportDelegate(
     }
 
     fun show() = exportSheet.show()
+
+    fun hide() = exportSheet.hide()
 
     private fun exportPreferences(toybox: String, internalPath: String, externalPath: String, packageName: String): Shell.Output {
         return Shell.exec("$toybox cp -f $internalPath/shared_prefs/${packageName}_preferences.xml $externalPath/")

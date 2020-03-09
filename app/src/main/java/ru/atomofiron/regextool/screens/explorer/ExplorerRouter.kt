@@ -7,7 +7,7 @@ import app.atomofiron.common.util.permission.Permissions
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.FinderFragment
-import ru.atomofiron.regextool.screens.preferences.PreferencesFragment
+import ru.atomofiron.regextool.screens.preferences.PreferenceFragment
 import ru.atomofiron.regextool.utils.Util
 
 class ExplorerRouter : BaseRouter() {
@@ -19,7 +19,7 @@ class ExplorerRouter : BaseRouter() {
         }
     }
 
-    fun showSettings() = startScreen(PreferencesFragment())
+    fun showSettings() = startScreen(PreferenceFragment())
 
     fun showFile(item: XFile) {
         val extraFormats = SettingsStore.extraFormats.entity
