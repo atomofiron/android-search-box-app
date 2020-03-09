@@ -27,7 +27,7 @@ class RootRouter : BaseRouter() {
         manager {
             val transaction = beginTransaction()
             fragments
-                    .filter { it is BaseFragment<*> || it is InternalPreferenceFragment }
+                    .filterIsInstance<BaseFragment<*>>()
                     .forEach {
                         transaction.detach(it)
                         transaction.attach(it)

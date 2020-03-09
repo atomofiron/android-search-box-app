@@ -42,6 +42,8 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
         }
     }
 
+    fun getCurrentValue(key: String): Any? = SettingsStore.getCurrentValue(key)
+
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun onUpdateUseSu(newValue: Boolean): Boolean {
         val allowed = when {

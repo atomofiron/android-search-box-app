@@ -19,6 +19,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
         private const val DOES_NOT_MATTER = true
     }
     private lateinit var output: Output
+    private lateinit var provider: Provider
     private lateinit var sp: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +44,10 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
         this.output = output
     }
 
+    fun setAppPreferenceFragmentProvider(provider: Provider) {
+        this.provider = provider
+    }
+
     private fun onUpdateScreen(screen: PreferenceScreen) {
         for (i in 0 until screen.preferenceCount) {
             var preference = screen.getPreference(i)
@@ -65,30 +70,35 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     }
 
     private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
-        return when (val key = preference.key) {
+        val key = preference.key
+        val currentValue = when (newValue) {
+            null -> provider.getCurrentValue(key)
+            else -> null
+        }
+        return when (key) {
             Const.PREF_STORAGE_PATH -> {
-                preference.summary = newValue as? String ?: getCurrentValue(key) as String
+                preference.summary = newValue as? String ?: currentValue as String
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
                     else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_EXTRA_FORMATS -> {
-                preference.summary = newValue as? String ?: getCurrentValue(key) as String
+                preference.summary = newValue as? String ?: currentValue as String
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
                     else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_SPECIAL_CHARACTERS -> {
-                preference.summary = newValue as? String ?: getCurrentValue(key) as String
+                preference.summary = newValue as? String ?: currentValue as String
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
                     else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_APP_THEME -> {
-                val i = (newValue as? String ?: getCurrentValue(key) as String).toInt()
+                val i = (newValue as? String ?: currentValue as String).toInt()
                 preference.summary = resources.getStringArray(R.array.theme_var)[i]
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
@@ -96,7 +106,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
                 }
             }
             Const.PREF_APP_ORIENTATION -> {
-                val i = (newValue as? String ?: getCurrentValue(key) as String).toInt()
+                val i = (newValue as? String ?: currentValue as String).toInt()
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
@@ -135,7 +145,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     }
 
     private fun onUpdateMaxSize(preference: Preference, newValue: Any?) {
-        val maxSize = newValue ?: getCurrentValue(preference.key)
+        val maxSize = newValue ?: provider.getCurrentValue(preference.key)
         val view = view
         if (view != null) {
             val intValue = maxSize as Int
@@ -144,20 +154,8 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
         }
     }
 
-    private fun getCurrentValue(key: String): Any? {
-        // NO ANOTHER WAY... parentFragment = null
-        return when (key) {
-            Const.PREF_STORAGE_PATH -> SettingsStore.storagePath.value
-            Const.PREF_EXTRA_FORMATS -> SettingsStore.extraFormats.value
-            Const.PREF_SPECIAL_CHARACTERS -> SettingsStore.specialCharacters.value
-            Const.PREF_APP_THEME -> SettingsStore.appTheme.value
-            Const.PREF_APP_ORIENTATION -> SettingsStore.appOrientation.value
-
-            Const.PREF_MAX_SIZE -> SettingsStore.maxFileSizeForSearch.value
-
-            Const.PREF_USE_SU -> SettingsStore.useSu.value
-            else -> throw Exception("Key = $key.")
-        }
+    interface Provider {
+        fun getCurrentValue(key: String): Any?
     }
 
     interface Output : Backable {

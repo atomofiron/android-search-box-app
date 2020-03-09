@@ -4,8 +4,24 @@ import android.view.Gravity
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
 import ru.atomofiron.regextool.utils.Const
+import java.lang.Exception
 
 object SettingsStore {
+    fun getCurrentValue(key: String): Any? {
+        return when (key) {
+            Const.PREF_STORAGE_PATH -> storagePath.value
+            Const.PREF_EXTRA_FORMATS -> extraFormats.value
+            Const.PREF_SPECIAL_CHARACTERS -> specialCharacters.value
+            Const.PREF_APP_THEME -> appTheme.value
+            Const.PREF_APP_ORIENTATION -> appOrientation.value
+
+            Const.PREF_MAX_SIZE -> maxFileSizeForSearch.value
+
+            Const.PREF_USE_SU -> useSu.value
+            else -> throw Exception("Key = $key.")
+        }
+    }
+
     val useSu = PreferenceStore.forBoolean<Boolean>(
             key = Const.PREF_USE_SU,
             default = false
