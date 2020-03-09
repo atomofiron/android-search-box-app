@@ -109,8 +109,10 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     }
 
     private fun insertInQuery(value: String) {
-        view?.findViewById<EditText>(R.id.item_find_rt_find)?.apply {
-            text.replace(selectionStart, selectionEnd, value)
-        }
+        view?.findViewById<EditText>(R.id.item_find_rt_find)
+                ?.takeIf { it.isFocused }
+                ?.apply {
+                    text.replace(selectionStart, selectionEnd, value)
+                }
     }
 }

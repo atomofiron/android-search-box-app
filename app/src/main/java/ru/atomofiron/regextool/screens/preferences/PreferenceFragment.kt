@@ -3,7 +3,9 @@ package ru.atomofiron.regextool.screens.preferences
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
 import app.atomofiron.common.base.BaseFragment
+import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.channel.PreferencesChannel
 import kotlin.reflect.KClass
@@ -27,19 +29,22 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>(), InternalPreferen
         childFragment.setAppPreferenceFragmentOutput(this)
     }
 
+    override fun onSubscribeData(owner: LifecycleOwner) {
+        viewModel.warning.observeData(owner) {
+            Snackbar
+                    .make(theView, it, Snackbar.LENGTH_SHORT)
+                    .setAnchorView(anchorView)
+                    .show()
+        }
+    }
+
     override fun onBack(): Boolean = exportImportDelegate.hide() || super.onBack()
 
     override fun onExportImportClick() = exportImportDelegate.show()
 
-    override fun onPreferenceUpdate(value: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onPreferenceUpdate(key: String, value: Int): Boolean = viewModel.onPreferenceUpdate(key, value)
 
-    override fun onPreferenceUpdate(value: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onPreferenceUpdate(key: String, value: String): Boolean = viewModel.onPreferenceUpdate(key, value)
 
-    override fun onPreferenceUpdate(value: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onPreferenceUpdate(key: String, value: Boolean): Boolean = viewModel.onPreferenceUpdate(key, value)
 }

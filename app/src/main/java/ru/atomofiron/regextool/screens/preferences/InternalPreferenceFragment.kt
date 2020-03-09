@@ -1,23 +1,25 @@
 package ru.atomofiron.regextool.screens.preferences
 
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.View
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.base.Backable
-import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
-import ru.atomofiron.regextool.utils.Shell.checkSu
 import ru.atomofiron.regextool.utils.Util
+import java.lang.Exception
 
 internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Backable {
-    private val anchorView: View get() = activity!!.findViewById(R.id.root_iv_joystick)
+    companion object {
+        private const val DOES_NOT_MATTER = true
+    }
     private lateinit var output: Output
+    private lateinit var sp: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,99 +65,106 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     }
 
     private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
-        when (preference.key) {
+        return when (val key = preference.key) {
             Const.PREF_STORAGE_PATH -> {
-                preference.summary = newValue as? String ?: SettingsStore.storagePath.value
-                if (newValue is String) {
-                    SettingsStore.storagePath.notify(newValue)
+                preference.summary = newValue as? String ?: getCurrentValue(key) as String
+                when (newValue) {
+                    is String -> output.onPreferenceUpdate(key, newValue)
+                    else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_EXTRA_FORMATS -> {
-                preference.summary = newValue as? String ?: SettingsStore.extraFormats.value
-                if (newValue is String) {
-                    SettingsStore.extraFormats.notifyByOriginal(newValue)
+                preference.summary = newValue as? String ?: getCurrentValue(key) as String
+                when (newValue) {
+                    is String -> output.onPreferenceUpdate(key, newValue)
+                    else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_SPECIAL_CHARACTERS -> {
-                preference.summary = newValue as? String ?: SettingsStore.specialCharacters.value
-                if (newValue is String) {
-                    SettingsStore.specialCharacters.notifyByOriginal(newValue.trim())
+                preference.summary = newValue as? String ?: getCurrentValue(key) as String
+                when (newValue) {
+                    is String -> output.onPreferenceUpdate(key, newValue)
+                    else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_APP_THEME -> {
-                val i = (newValue as? String ?: SettingsStore.appTheme.value).toInt()
+                val i = (newValue as? String ?: getCurrentValue(key) as String).toInt()
                 preference.summary = resources.getStringArray(R.array.theme_var)[i]
-                if (newValue is String) {
-                    SettingsStore.appTheme.notifyByOriginal(newValue)
+                when (newValue) {
+                    is String -> output.onPreferenceUpdate(key, newValue)
+                    else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_APP_ORIENTATION -> {
-                val i = (newValue as? String ?: SettingsStore.appOrientation.value).toInt()
+                val i = (newValue as? String ?: getCurrentValue(key) as String).toInt()
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
-                if (newValue is String) {
-                    SettingsStore.appOrientation.notifyByOriginal(newValue)
+                when (newValue) {
+                    is String -> output.onPreferenceUpdate(key, newValue)
+                    else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_USE_SU -> {
-                newValue ?: return true
-                newValue as Boolean
-                return onUpdateUseSu(newValue)
+                newValue ?: return DOES_NOT_MATTER
+                when (newValue) {
+                    is Boolean -> output.onPreferenceUpdate(key, newValue)
+                    else -> DOES_NOT_MATTER
+                }
             }
-            Const.PREF_MAX_SIZE -> onUpdateMaxSize(preference, newValue)
+            Const.PREF_MAX_SIZE -> {
+                val allowed = when (newValue) {
+                    !is Int -> DOES_NOT_MATTER
+                    else -> output.onPreferenceUpdate(preference.key, newValue)
+                }
+                if (allowed) {
+                    onUpdateMaxSize(preference, newValue)
+                }
+                return allowed
+            }
             Const.PREF_EXPORT_IMPORT -> {
                 preference.isEnabled = ExportImportDelegate.isAvailable
                 preference.setOnPreferenceClickListener {
                     output.onExportImportClick()
                     true
                 }
+                DOES_NOT_MATTER
             }
+            Const.PREF_MAX_DEPTH -> DOES_NOT_MATTER
+            Const.PREF_EXCLUDE_DIRS -> DOES_NOT_MATTER
+            else -> throw Exception("Unknown preference ($key)!")
         }
-        return true
-    }
-
-    private fun onUpdateUseSu(newValue: Boolean): Boolean {
-        val allowed = when {
-            newValue -> {
-                val output = checkSu()
-                if (!output.success) {
-                    val message = when {
-                        output.error.isEmpty() -> getString(R.string.not_allowed)
-                        else -> output.error
-                    }
-                    Snackbar
-                            .make(view!!, message, Snackbar.LENGTH_SHORT)
-                            .setAnchorView(anchorView)
-                            .show()
-                }
-                output.success
-            }
-            else -> true
-        }
-
-        if (allowed) {
-            SettingsStore.useSu.notify(newValue)
-        }
-        return allowed
     }
 
     private fun onUpdateMaxSize(preference: Preference, newValue: Any?) {
-        val maxSize = newValue ?: SettingsStore.maxFileSizeForSearch.value
+        val maxSize = newValue ?: getCurrentValue(preference.key)
         val view = view
         if (view != null) {
             val intValue = maxSize as Int
             val suffixes = resources.getStringArray(R.array.size_suffix_arr)
             preference.summary = Util.intToHumanReadable(intValue, suffixes)
         }
-        if (newValue is Int) {
-            SettingsStore.maxFileSizeForSearch.notify(newValue)
+    }
+
+    private fun getCurrentValue(key: String): Any? {
+        // NO ANOTHER WAY... parentFragment = null
+        return when (key) {
+            Const.PREF_STORAGE_PATH -> SettingsStore.storagePath.value
+            Const.PREF_EXTRA_FORMATS -> SettingsStore.extraFormats.value
+            Const.PREF_SPECIAL_CHARACTERS -> SettingsStore.specialCharacters.value
+            Const.PREF_APP_THEME -> SettingsStore.appTheme.value
+            Const.PREF_APP_ORIENTATION -> SettingsStore.appOrientation.value
+
+            Const.PREF_MAX_SIZE -> SettingsStore.maxFileSizeForSearch.value
+
+            Const.PREF_USE_SU -> SettingsStore.useSu.value
+            else -> throw Exception("Key = $key.")
         }
     }
 
-    interface Output: Backable {
+    interface Output : Backable {
         override fun onBack(): Boolean
         fun onExportImportClick()
-        fun onPreferenceUpdate(value: Int)
-        fun onPreferenceUpdate(value: String)
-        fun onPreferenceUpdate(value: Boolean)
+        fun onPreferenceUpdate(key: String, value: Int): Boolean
+        fun onPreferenceUpdate(key: String, value: String): Boolean
+        fun onPreferenceUpdate(key: String, value: Boolean): Boolean
     }
 }
