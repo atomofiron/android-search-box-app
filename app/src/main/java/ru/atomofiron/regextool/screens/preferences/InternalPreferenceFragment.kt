@@ -15,7 +15,7 @@ import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell.checkSu
 import ru.atomofiron.regextool.utils.Util
 
-class AppPreferenceFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Backable {
+internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Backable {
     private val anchorView: View get() = activity!!.findViewById(R.id.root_iv_joystick)
     private lateinit var output: Output
 
@@ -154,5 +154,8 @@ class AppPreferenceFragment : PreferenceFragmentCompat(), Preference.OnPreferenc
     interface Output: Backable {
         override fun onBack(): Boolean
         fun onExportImportClick()
+        fun onPreferenceUpdate(value: Int)
+        fun onPreferenceUpdate(value: String)
+        fun onPreferenceUpdate(value: Boolean)
     }
 }

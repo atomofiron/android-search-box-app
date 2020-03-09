@@ -5,7 +5,7 @@ import app.atomofiron.common.base.BaseFragment
 import app.atomofiron.common.base.BaseRouter
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.finder.FinderFragment
-import ru.atomofiron.regextool.screens.preferences.AppPreferenceFragment
+import ru.atomofiron.regextool.screens.preferences.InternalPreferenceFragment
 
 class RootRouter : BaseRouter() {
     override var fragmentContainerId: Int = R.id.root_fl
@@ -27,7 +27,7 @@ class RootRouter : BaseRouter() {
         manager {
             val transaction = beginTransaction()
             fragments
-                    .filter { it is BaseFragment<*> || it is AppPreferenceFragment }
+                    .filter { it is BaseFragment<*> || it is InternalPreferenceFragment }
                     .forEach {
                         transaction.detach(it)
                         transaction.attach(it)
