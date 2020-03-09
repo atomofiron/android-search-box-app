@@ -3,8 +3,8 @@ package ru.atomofiron.regextool.screens.preferences
 import android.app.Application
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
-import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
@@ -12,8 +12,13 @@ import java.lang.Exception
 
 class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(app) {
     override val router = PreferenceRouter()
+    private val preferenceService = PreferencesService(app.applicationContext)
 
-    val warning = SingleLiveEvent<String>()
+    val alert = SingleLiveEvent<String>()
+    val alertOutputSuccess = SingleLiveEvent<Int>()
+    val alertOutputError = SingleLiveEvent<Shell.Output>()
+    val externalPath: String get() = app.applicationContext.getExternalFilesDir(null)!!.absolutePath
+    val isExportImportAvailable: Boolean get() = app.applicationContext.getExternalFilesDir(null) != null
 
     fun onPreferenceUpdate(key: String, value: Int): Boolean {
         when (key) {
@@ -44,6 +49,36 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
 
     fun getCurrentValue(key: String): Any? = SettingsStore.getCurrentValue(key)
 
+    fun exportPreferences() {
+        val output = preferenceService.exportPreferences()
+        showOutput(output, R.string.successful)
+    }
+
+    fun exportHistory() {
+        val output = preferenceService.exportHistory()
+        showOutput(output, R.string.successful)
+    }
+
+    fun importPreferences() {
+        val output = preferenceService.importPreferences()
+        showOutput(output, R.string.successful_with_restart)
+    }
+
+    fun importHistory() {
+        val output = preferenceService.importHistory()
+        showOutput(output, R.string.successful)
+        if (output.success) {
+            PreferencesChannel.historyImportedEvent.justNotify()
+        }
+    }
+
+    private fun showOutput(output: Shell.Output, successMessage: Int) {
+        when {
+            output.success -> alertOutputSuccess.invoke(successMessage)
+            else -> alertOutputError.invoke(output)
+        }
+    }
+
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun onUpdateUseSu(newValue: Boolean): Boolean {
         val allowed = when {
@@ -51,10 +86,10 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
                 val output = Shell.checkSu()
                 when {
                     output.success -> Unit
-                    output.error.isNotBlank() -> warning.invoke(output.error)
+                    output.error.isNotBlank() -> alert.invoke(output.error)
                     else -> {
                         val message = app.getString(R.string.not_allowed)
-                        warning.invoke(message)
+                        alert.invoke(message)
                     }
                 }
                 output.success

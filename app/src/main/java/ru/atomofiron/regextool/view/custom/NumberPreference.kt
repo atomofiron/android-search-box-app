@@ -8,7 +8,7 @@ import androidx.preference.PreferenceViewHolder
 import ru.atomofiron.regextool.R
 
 class NumberPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs) {
-    private lateinit var editText: NumberTextField
+    private var editText: NumberTextField? = null
     private var value = 0
 
     init {
@@ -23,19 +23,28 @@ class NumberPreference(context: Context, attrs: AttributeSet) : Preference(conte
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        if (!::editText.isInitialized) {
-            editText = holder.findViewById(R.id.number) as NumberTextField
+        if (editText == null) {
+            val editText = holder.findViewById(R.id.number) as NumberTextField
             editText.isFocusable = false
             editText.setOnSubmitListener(::onSubmit)
             editText.setText(value.toString())
+            this.editText = editText
         }
     }
 
-    public override fun onClick() = editText.onClick(editText)
+    override fun onDetached() {
+        super.onDetached()
+        editText = null
+    }
+
+    public override fun onClick() {
+        editText!!.performClick()
+    }
 
     private fun onSubmit(value: Int) {
-        callChangeListener(value)
-        persistInt(value)
-        this.value = value
+        if (callChangeListener(value)) {
+            persistInt(value)
+            this.value = value
+        }
     }
 }

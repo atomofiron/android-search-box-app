@@ -7,7 +7,6 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
@@ -15,7 +14,7 @@ import androidx.appcompat.widget.AppCompatEditText
 open class TextField @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null
-) : AppCompatEditText(context, attrs), View.OnClickListener, TextWatcher {
+) : AppCompatEditText(context, attrs), TextWatcher {
     private var inputMethodManager: InputMethodManager? = null
     private var onSubmitListener: ((String) -> Unit)? = null
 
@@ -26,7 +25,6 @@ open class TextField @JvmOverloads constructor(
         addTextChangedListener(this)
         imeOptions = EditorInfo.IME_ACTION_DONE
         inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
-        setOnClickListener(this)
         setSingleLine(true)
         isLongClickable = false
         setHintTextColor(0)
@@ -56,7 +54,8 @@ open class TextField @JvmOverloads constructor(
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK && hasFocus()) {
             isFocusable = false
-            return true // перехватываем событие, чтобы оно не обработалось при уже закрытой клавиатуре
+            // перехватываем событие, чтобы оно не обработалось при уже закрытой клавиатуре
+            return true
         }
         return false
     }
@@ -82,9 +81,10 @@ open class TextField @JvmOverloads constructor(
         }
     }
 
-    override fun onClick(view: View) {
+    override fun performClick(): Boolean {
         isFocusable = true
         isFocusableInTouchMode = true
         requestFocus()
+        return super.performClick()
     }
 }

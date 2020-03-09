@@ -17,11 +17,42 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
         private const val VISIBLE = 1f
         private const val INVISIBLE = 0f
     }
-    private val editText: TextField = TextField(context)
+    private lateinit var editText: TextField
     private lateinit var summary: View
     private var value = ""
 
-    init {
+    override fun onGetDefaultValue(array: TypedArray, index: Int): String? = array.getString(index)
+
+    override fun onSetInitialValue(defaultValue: Any?) {
+        value = (defaultValue as? String) ?: getPersistedString(value)
+    }
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+
+        if (editText.parent == null) {
+            summary = holder.itemView.findViewById<View>(android.R.id.summary)
+            editText.layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                addRule(RelativeLayout.BELOW, android.R.id.title)
+            }
+            editText.setText(value)
+            (summary.parent as ViewGroup).addView(editText, 1)
+        }
+    }
+
+    override fun onAttached() {
+        super.onAttached()
+        initField(context)
+    }
+
+    public override fun onClick() {
+        summary.alpha = INVISIBLE
+        editText.visibility = View.VISIBLE
+        editText.performClick()
+    }
+
+    private fun initField(context: Context) {
+        editText = TextField(context)
         editText.visibility = View.GONE
         editText.isFocusable = false
         editText.setOnSubmitListener(::onSubmit)
@@ -33,33 +64,10 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
         }
     }
 
-    override fun onGetDefaultValue(array: TypedArray, index: Int): String? = array.getString(index)
-
-    override fun onSetInitialValue(defaultValue: Any?) {
-        value = (defaultValue as? String) ?: getPersistedString(value)
-    }
-
-    override fun onBindViewHolder(holder: PreferenceViewHolder) {
-        super.onBindViewHolder(holder)
-        if (editText.parent == null) {
-            summary = holder.itemView.findViewById<View>(android.R.id.summary)
-            editText.layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
-                addRule(RelativeLayout.BELOW, android.R.id.title)
-            }
-            editText.setText(value)
-            (summary.parent as ViewGroup).addView(editText, 1)
-        }
-    }
-
-    public override fun onClick() {
-        summary.alpha = INVISIBLE
-        editText.visibility = View.VISIBLE
-        editText.onClick(editText)
-    }
-
     private fun onSubmit(value: String) {
-        callChangeListener(value)
-        persistString(value)
-        this.value = value
+        if (callChangeListener(value)) {
+            persistString(value)
+            this.value = value
+        }
     }
 }

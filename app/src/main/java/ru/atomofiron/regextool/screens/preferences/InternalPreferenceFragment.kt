@@ -9,7 +9,6 @@ import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.base.Backable
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Util
 import java.lang.Exception
@@ -71,34 +70,30 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
 
     private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
         val key = preference.key
-        val currentValue = when (newValue) {
-            null -> provider.getCurrentValue(key)
-            else -> null
-        }
         return when (key) {
             Const.PREF_STORAGE_PATH -> {
-                preference.summary = newValue as? String ?: currentValue as String
+                preference.summary = newValue as? String ?: provider.getCurrentValue(key) as String
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
                     else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_EXTRA_FORMATS -> {
-                preference.summary = newValue as? String ?: currentValue as String
+                preference.summary = newValue as? String ?: provider.getCurrentValue(key) as String
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
                     else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_SPECIAL_CHARACTERS -> {
-                preference.summary = newValue as? String ?: currentValue as String
+                preference.summary = newValue as? String ?: provider.getCurrentValue(key) as String
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
                     else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_APP_THEME -> {
-                val i = (newValue as? String ?: currentValue as String).toInt()
+                val i = (newValue as? String ?: provider.getCurrentValue(key) as String).toInt()
                 preference.summary = resources.getStringArray(R.array.theme_var)[i]
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
@@ -106,7 +101,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
                 }
             }
             Const.PREF_APP_ORIENTATION -> {
-                val i = (newValue as? String ?: currentValue as String).toInt()
+                val i = (newValue as? String ?: provider.getCurrentValue(key) as String).toInt()
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
                 when (newValue) {
                     is String -> output.onPreferenceUpdate(key, newValue)
@@ -131,7 +126,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
                 return allowed
             }
             Const.PREF_EXPORT_IMPORT -> {
-                preference.isEnabled = ExportImportDelegate.isAvailable
+                preference.isEnabled = provider.isExportImportAvailable
                 preference.setOnPreferenceClickListener {
                     output.onExportImportClick()
                     true
@@ -155,6 +150,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     }
 
     interface Provider {
+        val isExportImportAvailable: Boolean
         fun getCurrentValue(key: String): Any?
     }
 
