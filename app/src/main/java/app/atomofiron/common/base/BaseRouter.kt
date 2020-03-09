@@ -161,7 +161,7 @@ abstract class BaseRouter {
     fun onBack(): Boolean {
         return manager {
             val lastVisible = fragments
-                    .filter { it is Fragment && it is Backable }
+                    .filter { it is Backable }
                     .findLast { !it.isHidden }
             when {
                 (lastVisible as Backable?)?.onBack() == true -> true
