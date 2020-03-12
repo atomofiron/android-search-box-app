@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.screens.root.util.ExitSnackbarCallback
+import ru.atomofiron.regextool.screens.root.util.TasksSheetDelegate
 import ru.atomofiron.regextool.view.custom.Joystick
 import kotlin.reflect.KClass
 
@@ -31,6 +32,8 @@ open class RootActivity : BaseActivity<RootViewModel>() {
                 .addCallback(ExitSnackbarCallback(viewModel))
     }
 
+    private lateinit var tasksDelegate: TasksSheetDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_root)
         super.onCreate(savedInstanceState)
@@ -42,6 +45,8 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         viewModel.showExitSnackbar.observeEvent(this) {
             sbExit { show() }
         }
+
+        tasksDelegate = TasksSheetDelegate(this)
     }
 
     override fun setTheme(resId: Int) {

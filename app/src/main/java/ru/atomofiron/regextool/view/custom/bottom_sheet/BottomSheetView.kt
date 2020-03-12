@@ -70,7 +70,7 @@ open class BottomSheetView @JvmOverloads constructor(
         overlay.setBackgroundColor(context.findColorByAttr(R.attr.colorOverlay))
         overlay.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         overlay.alpha = TRANSPARENT
-        addView(overlay)
+        addView(overlay, 0)
 
         loop.duration = SECOND
         loop.repeatMode = ValueAnimator.RESTART
@@ -100,6 +100,14 @@ open class BottomSheetView @JvmOverloads constructor(
         val bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
         view.setPadding(0, top, 0, bottom)
         addView(view)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        if (childCount > 1) {
+            view = getChildAt(1)
+        }
     }
 
     fun show() = setState(State.OPEN)
