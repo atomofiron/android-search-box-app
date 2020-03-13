@@ -12,7 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.screens.root.util.ExitSnackbarCallback
-import ru.atomofiron.regextool.screens.root.util.TasksSheetDelegate
+import ru.atomofiron.regextool.screens.root.util.TasksSheetView
 import ru.atomofiron.regextool.view.custom.Joystick
 import kotlin.reflect.KClass
 
@@ -22,6 +22,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
 
     private val root = Knife<CoordinatorLayout>(this, R.id.root_cl_root)
     private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
+    private val tsvTasks = Knife<TasksSheetView>(this, R.id.root_tsv_tasks)
     private val anchor = Knife<View>(this, R.id.root_v_anchor)
 
     private val sbExit: LazyReincarnation<Snackbar> = LazyReincarnation {
@@ -32,21 +33,24 @@ open class RootActivity : BaseActivity<RootViewModel>() {
                 .addCallback(ExitSnackbarCallback(viewModel))
     }
 
-    private lateinit var tasksDelegate: TasksSheetDelegate
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_root)
         super.onCreate(savedInstanceState)
 
         joystick.view.setOnClickListener {
-            viewModel.onJoystickClick()
+            when (onBack()) {
+                true -> Unit
+                else -> viewModel.onJoystickClick()
+            }
         }
 
         viewModel.showExitSnackbar.observeEvent(this) {
             sbExit { show() }
         }
 
-        tasksDelegate = TasksSheetDelegate(this)
+        tsvTasks {
+            setTrackingView(joystick.view)
+        }
     }
 
     override fun setTheme(resId: Int) {
@@ -62,6 +66,15 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     private fun setOrientation(orientation: AppOrientation) {
         if (requestedOrientation != orientation.constant) {
             requestedOrientation = orientation.constant
+        }
+    }
+
+    private fun onBack(): Boolean = tsvTasks(default = false) { hide() }
+
+    override fun onBackPressed() {
+        when (onBack()) {
+            true -> Unit
+            else -> super.onBackPressed()
         }
     }
 

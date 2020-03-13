@@ -16,6 +16,7 @@
 		<item name="colorControlHighlight">@color/colorAccent</item>
 
 		<item name="colorContent">@color/grey_dark</item>
+		<item name="colorSecondary">@color/grey_dark_transparent</item>
 		<item name="colorPositive">@color/black</item>
 		<item name="colorNegative">@color/windowBackgroundWhite</item>
 		<item name="colorAccentLite">@color/colorAccentLight</item>
@@ -44,6 +45,7 @@
 		<item name="colorControlHighlight">@color/colorAccent</item>
 
 		<item name="colorContent">@color/grey_light</item>
+		<item name="colorSecondary">@color/grey_light_transparent</item>
 		<item name="colorPositive">@color/white</item>
 		<item name="colorNegative">@color/windowBackgroundDark</item>
 		<item name="colorAccentLite">@color/colorAccentDark</item>

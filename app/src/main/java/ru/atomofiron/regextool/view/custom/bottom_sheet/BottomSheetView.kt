@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.calculateDurationWithScale
 import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.log
 import kotlin.math.max
 import kotlin.math.min
 
@@ -29,12 +30,14 @@ open class BottomSheetView @JvmOverloads constructor(
         private const val SECOND = 1000L
         private const val DURATION = 512L
         private const val FIRST = 0
+        private const val CONTENT_VIEW_INDEX = 1
         private const val TRANSPARENT = 0f
         private const val VISIBLE = 1f
     }
 
     private val overlay: View = View(context)
     private lateinit var view: View
+    protected val contentView: View get() = view
 
     private var lastY = 0f
     private var speedSum = 0f
@@ -80,8 +83,7 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     fun setView(id: Int) {
-        val view = LayoutInflater.from(context).inflate(id, null, false)
-        setView(view)
+        LayoutInflater.from(context).inflate(id, this)
     }
 
     fun setView(view: View) {
@@ -93,20 +95,25 @@ open class BottomSheetView @JvmOverloads constructor(
         val widthPixels = resources.displayMetrics.widthPixels
         val maxWidth = resources.getDimensionPixelOffset(R.dimen.bottom_sheet_view_max_width)
         val width = Math.min(widthPixels, maxWidth)
-        view.layoutParams = LayoutParams(width, LayoutParams.WRAP_CONTENT).apply {
-            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-        }
+        val layoutParams = (view.layoutParams as? LayoutParams) ?: LayoutParams(width, LayoutParams.WRAP_CONTENT)
+        layoutParams.width = width
+        layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+        view.layoutParams = layoutParams
         val top = resources.getDimensionPixelSize(R.dimen.menu_corner_radius)
         val bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
         view.setPadding(0, top, 0, bottom)
-        addView(view)
+        when {
+            view.parent == null -> addView(view)
+            view.parent === this -> Unit
+            else -> throw Exception("View already has another parent!")
+        }
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        if (childCount > 1) {
-            view = getChildAt(1)
+        if (!::view.isInitialized && childCount > CONTENT_VIEW_INDEX) {
+            setView(getChildAt(CONTENT_VIEW_INDEX))
         }
     }
 
@@ -120,6 +127,7 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     private fun setState(state: State) {
+        log("${this.state} -> $state")
         val fromState = this.state
         this.state = state
         if (determineState(view.top)) {
@@ -144,7 +152,7 @@ open class BottomSheetView @JvmOverloads constructor(
             State.CLOSE -> when (state) {
                 State.OPENED -> throw UnsupportedOperationException()
                 State.CLOSED -> animator.cancel()
-                State.OPEN -> throw UnsupportedOperationException()
+                State.OPEN -> startAnimator(minTop, decelerateInterpolator)
                 State.CLOSE -> Unit
                 State.REOPEN -> animator.cancel()
             }
@@ -153,7 +161,7 @@ open class BottomSheetView @JvmOverloads constructor(
                 State.CLOSED -> Unit
                 State.OPEN -> startAnimator(minTop, decelerateInterpolator)
                 State.CLOSE -> throw UnsupportedOperationException()
-                State.REOPEN -> throw UnsupportedOperationException()
+                State.REOPEN -> Unit
             }
             State.REOPEN -> when (state) {
                 State.OPENED -> Unit
@@ -181,6 +189,7 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     private fun startAnimator(to: Int, interpolator: Interpolator) {
+        animator.cancel()
         animator = ValueAnimator.ofInt(curTop, to)
         animator.duration = duration
         animator.interpolator = interpolator

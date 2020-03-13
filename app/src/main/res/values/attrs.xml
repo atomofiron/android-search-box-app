@@ -3,6 +3,7 @@
     <attr name="isDarkTheme" format="boolean" />
     <attr name="colorBackground" format="color" />
     <attr name="colorContent" format="color" />
+    <attr name="colorSecondary" format="color" />
     <attr name="colorFieldBackground" format="color" />
     <attr name="colorCardBackground" format="color" tools:override="true" />
     <attr name="colorPositive" format="color" />

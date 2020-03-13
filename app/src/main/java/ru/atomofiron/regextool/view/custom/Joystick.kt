@@ -71,11 +71,6 @@ class Joystick @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
-    override fun performClick(): Boolean {
-        invalidate()
-        return super.performClick()
-    }
-
     override fun draw(canvas: Canvas) {
         val width = measuredWidth
         val height = measuredHeight

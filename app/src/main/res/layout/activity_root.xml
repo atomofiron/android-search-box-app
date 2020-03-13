@@ -13,13 +13,11 @@
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
 		/>
-	<ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
-		android:id="@+id/root_bsv_tasks"
+	<ru.atomofiron.regextool.screens.root.util.TasksSheetView
+		android:id="@+id/root_tsv_tasks"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		>
-		<include layout="@layout/layout_tasks" />
-	</ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView>
+		/>
 	<ru.atomofiron.regextool.view.custom.Joystick
 		android:id="@+id/root_iv_joystick"
 		android:layout_width="@dimen/joystick_size"
