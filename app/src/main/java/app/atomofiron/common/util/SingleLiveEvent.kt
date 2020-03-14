@@ -8,6 +8,8 @@ import androidx.lifecycle.LifecycleOwner
 class SingleLiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
     private var parameterizedListener: ((T) -> Unit)? = null
+    var data: T? = null
+        private set
 
     operator fun invoke() {
         if (isStarted) {
@@ -15,6 +17,7 @@ class SingleLiveEvent<T> : LifecycleEventObserver {
         }
     }
     operator fun invoke(any: T) {
+        data = any
         if (isStarted) {
             parameterizedListener?.invoke(any)
         }

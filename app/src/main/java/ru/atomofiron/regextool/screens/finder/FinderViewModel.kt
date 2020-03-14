@@ -108,10 +108,6 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
                 this.configItem = null
             }
         }
-
-        val memoryInfo: Debug.MemoryInfo = Debug.MemoryInfo()
-        Debug.getMemoryInfo(memoryInfo)
-        log("totalPss ${memoryInfo.totalPss.toFloat() / 1024}")
     }
 
     fun onSettingsOptionSelected() = router.showSettings()

@@ -23,6 +23,10 @@ class HistoryAdapter(
     private lateinit var dao: HistoryDao
     private lateinit var items: ArrayList<ItemHistory>
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
 
@@ -69,6 +73,8 @@ class HistoryAdapter(
 
     override fun getItemCount(): Int = items.size
 
+    override fun getItemId(position: Int): Long = items[position].id
+
     override fun onBindViewHolder(holder: HistoryHolder, position: Int) {
         val item = items[position]
         holder.onBind(item.title, item.pinned)
@@ -81,17 +87,16 @@ class HistoryAdapter(
 
     override fun onItemPin(position: Int) {
         val item = items[position]
-        val lastIndex = items.indexOf(item)
-        val nextIndex = if (item.pinned) items.indexOfLast { it.pinned } else FIRST
+        val nextPosition = if (item.pinned) items.indexOfLast { it.pinned } else FIRST
         item.pinned = !item.pinned
         dao.delete(item)
         item.id = 0L
         item.id = dao.insert(item)
+        notifyItemChanged(position)
 
-        notifyItemChanged(lastIndex)
-        items.removeAt(lastIndex)
-        items.add(nextIndex, item)
-        notifyItemMoved(lastIndex, nextIndex)
+        items.removeAt(position)
+        items.add(nextPosition, item)
+        notifyItemMoved(position, nextPosition)
     }
 
     override fun onItemRemove(position: Int) {

@@ -51,6 +51,8 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         tsvTasks {
             setTrackingView(joystick.view)
         }
+
+        setOrientation(viewModel.setOrientation.data!!)
     }
 
     override fun setTheme(resId: Int) {

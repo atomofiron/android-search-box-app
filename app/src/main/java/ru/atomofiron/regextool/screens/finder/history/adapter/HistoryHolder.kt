@@ -7,18 +7,24 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 
 class HistoryHolder(itemView: View, onItemActionListener: OnItemActionListener) : RecyclerView.ViewHolder(itemView) {
+    companion object {
+        private const val UNDEFINED = -1
+    }
     private val btnPinned = itemView.findViewById<ImageButton>(R.id.item_history_btn_pinned)
     private val tvTitle = itemView.findViewById<TextView>(R.id.item_history_tv_title)
     private val btnRemove = itemView.findViewById<ImageButton>(R.id.item_history_btn_remove)
 
     init {
         itemView.setOnClickListener {
+            if (adapterPosition == UNDEFINED) return@setOnClickListener
             onItemActionListener.onItemClick(adapterPosition)
         }
         btnPinned.setOnClickListener {
+            if (adapterPosition == UNDEFINED) return@setOnClickListener
             onItemActionListener.onItemPin(adapterPosition)
         }
         btnRemove.setOnClickListener {
+            if (adapterPosition == UNDEFINED) return@setOnClickListener
             onItemActionListener.onItemRemove(adapterPosition)
         }
     }
