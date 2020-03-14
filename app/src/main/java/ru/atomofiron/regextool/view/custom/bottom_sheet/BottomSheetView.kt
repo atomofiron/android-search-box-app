@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.calculateDurationWithScale
 import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.log
 import kotlin.math.max
 import kotlin.math.min
 
@@ -43,18 +42,19 @@ open class BottomSheetView @JvmOverloads constructor(
     private var speedSum = 0f
     private var speedPerFrame = 0f
     private var direction = Slide.UNDEFINED
+    private var allowNestedScrolling = false
 
     val isSheetShown: Boolean get() = when (state) {
         State.OPENED -> true
         State.OPEN -> true
-        State.REOPEN -> true
+        State.SCROLL -> true
         State.CLOSE -> false
         State.CLOSED -> false
     }
 
     private var loop = ValueAnimator.ofFloat(0f, 1f)
     private var animator = ValueAnimator.ofFloat(0f, 1f)
-    private var state = State.CLOSED
+    protected var state = State.CLOSED; private set
 
     private val menuHeight: Int get() = view.measuredHeight
     private val minTop: Int get() = measuredHeight - view.measuredHeight
@@ -128,7 +128,6 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     private fun setState(state: State) {
-        log("${this.state} -> $state")
         val fromState = this.state
         this.state = state
         if (determineState(view.top)) {
@@ -141,40 +140,40 @@ open class BottomSheetView @JvmOverloads constructor(
                 State.CLOSED -> throw UnsupportedOperationException()
                 State.OPEN -> Unit
                 State.CLOSE -> startAnimator(curTop + menuHeight, accelerateInterpolator)
-                State.REOPEN -> animator.cancel()
+                State.SCROLL -> animator.cancel()
             }
             State.OPENED -> when (state) {
                 State.OPENED -> Unit
                 State.CLOSED -> throw UnsupportedOperationException()
                 State.OPEN -> throw UnsupportedOperationException()
                 State.CLOSE -> startAnimator(curTop + menuHeight, accelerateInterpolator)
-                State.REOPEN -> animator.cancel()
+                State.SCROLL -> animator.cancel()
             }
             State.CLOSE -> when (state) {
                 State.OPENED -> throw UnsupportedOperationException()
                 State.CLOSED -> animator.cancel()
                 State.OPEN -> startAnimator(minTop, decelerateInterpolator)
                 State.CLOSE -> Unit
-                State.REOPEN -> animator.cancel()
+                State.SCROLL -> animator.cancel()
             }
             State.CLOSED -> when (state) {
                 State.OPENED -> throw UnsupportedOperationException()
                 State.CLOSED -> Unit
                 State.OPEN -> startAnimator(minTop, decelerateInterpolator)
                 State.CLOSE -> throw UnsupportedOperationException()
-                State.REOPEN -> Unit
+                State.SCROLL -> Unit
             }
-            State.REOPEN -> when (state) {
+            State.SCROLL -> when (state) {
                 State.OPENED -> Unit
                 State.CLOSED -> Unit
                 State.OPEN -> startAnimator(minTop, accelerateDecelerateInterpolator)
                 State.CLOSE -> startAnimator(curTop + menuHeight, accelerateInterpolator)
-                State.REOPEN -> Unit
+                State.SCROLL -> Unit
             }
         }
 
         when (state) {
-            State.REOPEN -> loop.resume()
+            State.SCROLL -> loop.resume()
             else -> loop.pause()
         }
     }
@@ -202,6 +201,43 @@ open class BottomSheetView @JvmOverloads constructor(
         return false//super.onTouchEvent(event)
     }
 
+
+    override fun onStartNestedScroll(child: View?, target: View?, nestedScrollAxes: Int): Boolean {
+        allowNestedScrolling = true
+        return true
+    }
+
+    override fun onStopNestedScroll(child: View) {
+        when {
+            !allowNestedScrolling -> hideIfSlideDown(outside = false)
+            else -> allowNestedScrolling = false
+        }
+        super.onStopNestedScroll(child)
+    }
+
+    override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
+        if (dyUnconsumed < 0) {
+            allowNestedScrolling = false
+            setState(State.SCROLL)
+        }
+
+        var topDif = -dyUnconsumed
+        when {
+            !allowNestedScrolling -> {
+                direction = when {
+                    dyUnconsumed > 0 -> Slide.UP
+                    dyUnconsumed < 0 -> Slide.DOWN
+                    dyConsumed > 0 -> Slide.UP
+                    dyConsumed < 0 -> Slide.DOWN
+                    else -> direction
+                }
+                topDif -= dyConsumed
+            }
+        }
+        setMenuTop(view.top + topDif)
+        super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed)
+    }
+
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
         val default = false//super.onInterceptTouchEvent(event)
         if (event.getPointerId(event.actionIndex) != FIRST) {
@@ -210,12 +246,15 @@ open class BottomSheetView @JvmOverloads constructor(
         if (state == State.CLOSED) {
             return true
         }
+        if (allowNestedScrolling) {
+            return default
+        }
 
         when {
             event.action == MotionEvent.ACTION_DOWN -> {
                 lastY = event.y
                 direction = Slide.UNDEFINED
-                setState(State.REOPEN)
+                setState(State.SCROLL)
             }
             animator.isStarted -> Unit
             event.action == MotionEvent.ACTION_MOVE -> {
@@ -242,7 +281,7 @@ open class BottomSheetView @JvmOverloads constructor(
         speedPerFrame = speedSum
         speedSum = 0f
 
-        if (state == State.REOPEN) {
+        if (state == State.SCROLL) {
             setMenuTop(view.top + speedPerFrame.toInt())
         }
     }
@@ -292,9 +331,6 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        if (state == State.REOPEN) {
-            return
-        }
         super.onLayout(changed, left, top, right, bottom)
         if (state == State.CLOSED) {
             view.top = maxTop
@@ -305,7 +341,7 @@ open class BottomSheetView @JvmOverloads constructor(
         UNDEFINED, UP, DOWN
     }
 
-    private enum class State {
-        OPENED, CLOSED, OPEN, CLOSE, REOPEN
+    protected enum class State {
+        OPENED, CLOSED, OPEN, CLOSE, SCROLL
     }
 }

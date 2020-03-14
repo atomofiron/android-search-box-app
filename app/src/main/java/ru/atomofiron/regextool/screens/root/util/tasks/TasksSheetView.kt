@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.screens.root.util
+package ru.atomofiron.regextool.screens.root.util.tasks
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.getAnimatorDurationScale
 import ru.atomofiron.regextool.R
@@ -25,23 +26,36 @@ class TasksSheetView @JvmOverloads constructor(
     private val mtvRam: TextView get() = findViewById(R.id.tasks_mtv_ram)
 
     private var actionDownY = -1f
-    private var reopen = false
+    private var intercept = false
 
     private val memoryLoop = ValueAnimator.ofInt(0, 1, 2)
 
+    private val adapter = TasksAdapter()
+
     init {
         setView(R.layout.layout_tasks)
+        initRecyclerView(rvTasks)
 
         memoryLoop.duration = (2000 / context.getAnimatorDurationScale()).toLong()
         memoryLoop.repeatMode = ValueAnimator.RESTART
         memoryLoop.repeatCount = ValueAnimator.INFINITE
         memoryLoop.addUpdateListener(StatsUpdater())
         memoryLoop.start()
+
+        adapter.setItems(Array(16) { Task() }.toList())
     }
 
     fun resetContentView() {
         removeView(contentView)
         setView(R.layout.layout_tasks)
+        initRecyclerView(rvTasks)
+    }
+
+    private fun initRecyclerView(recyclerView: RecyclerView) {
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = adapter
+        recyclerView.setPadding(recyclerView.paddingLeft, recyclerView.paddingTop, recyclerView.paddingRight, contentView.paddingBottom)
+        contentView.setPadding(contentView.paddingLeft, contentView.paddingTop, contentView.paddingRight, 0)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -76,22 +90,22 @@ class TasksSheetView @JvmOverloads constructor(
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     actionDownY = event.y
-                    reopen = false
+                    intercept = false
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dif = actionDownY - event.y
                     when {
-                        reopen -> Unit
+                        intercept -> Unit
                         dif > v.height / 3 -> {
                             event.action = MotionEvent.ACTION_DOWN
-                            reopen = true
+                            intercept = true
                             show()
                         }
                         dif < 0 -> actionDownY = -1f
                     }
                 }
             }
-            if (reopen) {
+            if (intercept) {
                 super.onInterceptTouchEvent(event)
             }
             false
@@ -103,16 +117,19 @@ class TasksSheetView @JvmOverloads constructor(
 
         override fun onAnimationUpdate(animator: ValueAnimator) {
             val value = animator.animatedValue as Int
-            if (value != lastValue) {
-                var allocated = Debug.getNativeHeapAllocatedSize()
-                allocated += Runtime.getRuntime().totalMemory()
-                allocated -= Runtime.getRuntime().freeMemory()
-                allocated = Math.round((allocated / 1024).toFloat() / 1024).toLong()
-                var heap = Debug.getNativeHeapSize() + Runtime.getRuntime().totalMemory()
-                heap = Math.round((heap / 1024).toFloat() / 1024).toLong()
-                pbRam.max = heap.toInt()
-                pbRam.progress = allocated.toInt()
-                mtvRam.text = "%dM".format(allocated)
+            when {
+                state != State.OPENED -> return
+                value != lastValue -> {
+                    var allocated = Debug.getNativeHeapAllocatedSize()
+                    allocated += Runtime.getRuntime().totalMemory()
+                    allocated -= Runtime.getRuntime().freeMemory()
+                    allocated = Math.round((allocated / 1024).toFloat() / 1024).toLong()
+                    var heap = Debug.getNativeHeapSize() + Runtime.getRuntime().totalMemory()
+                    heap = Math.round((heap / 1024).toFloat() / 1024).toLong()
+                    pbRam.max = heap.toInt()
+                    pbRam.progress = allocated.toInt()
+                    mtvRam.text = "%dM".format(allocated)
+                }
             }
             lastValue = value
         }

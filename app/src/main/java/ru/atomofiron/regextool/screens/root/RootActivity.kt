@@ -12,7 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.screens.root.util.ExitSnackbarCallback
-import ru.atomofiron.regextool.screens.root.util.TasksSheetView
+import ru.atomofiron.regextool.screens.root.util.tasks.TasksSheetView
 import ru.atomofiron.regextool.view.custom.Joystick
 import kotlin.reflect.KClass
 
