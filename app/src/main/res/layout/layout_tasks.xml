@@ -27,9 +27,7 @@
             android:layout_marginStart="8dp"
             android:max="100"
             android:progress="30"
-            android:secondaryProgress="50"
             android:indeterminate="false"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             />
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tasks_mtv_ram"
@@ -56,7 +54,6 @@
             android:progress="50"
             android:secondaryProgress="80"
             android:indeterminate="false"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             />
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView

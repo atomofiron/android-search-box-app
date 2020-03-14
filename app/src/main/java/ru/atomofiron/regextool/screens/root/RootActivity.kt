@@ -58,6 +58,9 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     override fun setTheme(resId: Int) {
         super.setTheme(resId)
         sbExit.wipe()
+        tsvTasks {
+            resetContentView()
+        }
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {

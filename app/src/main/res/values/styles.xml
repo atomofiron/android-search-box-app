@@ -27,6 +27,8 @@
 		<item name="colorFieldDivider">@color/grey_light</item>
 		<item name="colorBone">@color/grey_light</item>
 		<item name="colorOverlay">@color/overlay_black</item>
+
+		<item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Horizontal</item>
 	</style>
 	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
 		<item name="isDarkTheme">true</item>
@@ -56,6 +58,8 @@
 		<item name="colorFieldDivider">@color/windowBackgroundDark</item>
 		<item name="colorBone">@color/windowBackgroundDarkLight</item>
 		<item name="colorOverlay">@color/overlay_colored</item>
+
+		<item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Horizontal</item>
 	</style>
 	<style name="AppTheme.Black" parent="@style/AppTheme.Dark">
 		<item name="android:windowBackground">@color/windowBackgroundBlack</item>

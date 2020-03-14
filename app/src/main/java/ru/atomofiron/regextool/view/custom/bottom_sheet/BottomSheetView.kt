@@ -84,6 +84,7 @@ open class BottomSheetView @JvmOverloads constructor(
 
     fun setView(id: Int) {
         LayoutInflater.from(context).inflate(id, this)
+        setView(getChildAt(CONTENT_VIEW_INDEX))
     }
 
     fun setView(view: View) {
@@ -291,6 +292,9 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        if (state == State.REOPEN) {
+            return
+        }
         super.onLayout(changed, left, top, right, bottom)
         if (state == State.CLOSED) {
             view.top = maxTop
