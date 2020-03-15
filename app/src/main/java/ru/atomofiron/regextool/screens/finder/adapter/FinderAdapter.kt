@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.finder.adapter
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.common.recycler.GeneralHolder
@@ -14,7 +15,7 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GeneralHolder<FinderStateItem> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): GeneralHolder<FinderStateItem> {
         return when (viewType) {
             FinderItemType.FIND.id -> FieldHolder(parent, viewType, onFinderActionListener)
             FinderItemType.CHARACTERS.id -> CharactersHolder(parent, viewType, onFinderActionListener)

@@ -9,16 +9,17 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.DrawerStateListenerImpl
+import app.atomofiron.common.util.lazyView
 import com.google.android.material.navigation.NavigationView
 import ru.atomofiron.regextool.R
-import app.atomofiron.common.util.DrawerStateListenerImpl
 
 class VerticalDockView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : NavigationView(context, attrs, defStyleAttr) {
-    private val ibDockSide: ImageButton
+    private val ibDockSide: ImageButton by lazyView(R.id.drawer_ib_dock_side, this)
     val recyclerView: RecyclerView
     val isOpened: Boolean get() = drawerStateListener.isOpened
 
@@ -34,10 +35,9 @@ class VerticalDockView @JvmOverloads constructor(
 
         recyclerView = findViewById(R.id.drawer_rv)
 
-        ibDockSide = findViewById(R.id.drawer_ib_dock_side)
         ibDockSide.setOnClickListener {
             val gravity = if (gravity == Gravity.START) Gravity.END else Gravity.START
-            updateGravity(gravity)
+            onGravityChangeListener?.invoke(gravity)
         }
 
         val tvTitle = findViewById<TextView>(R.id.drawer_tv_title)
@@ -64,13 +64,14 @@ class VerticalDockView @JvmOverloads constructor(
         (parent as DrawerLayout).addDrawerListener(drawerStateListener)
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        (parent as DrawerLayout).removeDrawerListener(drawerStateListener)
+    }
+
     private fun updateGravity(gravity: Int) {
-        layoutParams = (layoutParams as? DrawerLayout.LayoutParams)?.apply {
-            val changed = this.gravity != gravity
-            this.gravity = gravity
-            if (changed) {
-                onGravityChangeListener?.invoke(gravity)
-            }
-        }
+        (layoutParams as DrawerLayout.LayoutParams).gravity = gravity
+        layoutParams = layoutParams
     }
 }

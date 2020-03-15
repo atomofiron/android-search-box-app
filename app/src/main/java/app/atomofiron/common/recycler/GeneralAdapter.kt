@@ -1,5 +1,7 @@
 package app.atomofiron.common.recycler
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adapter<H>() {
@@ -9,6 +11,13 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
     protected val items: MutableList<D> = ArrayList()
 
     override fun getItemCount(): Int = items.size
+
+    final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): H {
+        val inflater = LayoutInflater.from(parent.context)
+        return onCreateViewHolder(parent, viewType, inflater)
+    }
+
+    abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): H
 
     override fun onBindViewHolder(holder: H, position: Int) {
         holder.bind(items[position], position)

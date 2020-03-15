@@ -17,7 +17,10 @@
         android:layout_weight="0"
         android:src="@drawable/ic_history_pin"
         android:background="?selectableItemBackgroundBorderless"
-        android:padding="@dimen/padding_middle"
+        android:paddingStart="@dimen/padding_large"
+        android:paddingTop="@dimen/padding_middle"
+        android:paddingEnd="@dimen/padding_middle"
+        android:paddingBottom="@dimen/padding_middle"
         />
 
     <TextView
@@ -34,7 +37,10 @@
         android:layout_weight="0"
         android:src="@drawable/ic_history_del"
         android:background="?selectableItemBackgroundBorderless"
-        android:padding="@dimen/padding_middle"
+        android:paddingStart="@dimen/padding_middle"
+        android:paddingTop="@dimen/padding_middle"
+        android:paddingEnd="@dimen/padding_large"
+        android:paddingBottom="@dimen/padding_middle"
         />
 
 </LinearLayout>

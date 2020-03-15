@@ -3,15 +3,13 @@ package ru.atomofiron.regextool.screens.finder
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.os.Debug
 import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.base.BaseViewModel
-import app.atomofiron.common.util.ReadyLiveData
+import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.iss.service.model.MutableXFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
@@ -24,7 +22,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
     private val items = ArrayList<FinderStateItem>()
     val historyDrawerGravity = MutableLiveData<Int>()
-    val state = ReadyLiveData<List<FinderStateItem>>()
+    val state = LateinitLiveData<List<FinderStateItem>>()
     val reloadHistory = SingleLiveEvent<Unit>()
     val insertInQuery = SingleLiveEvent<String>()
     val updateContent = SingleLiveEvent<FinderStateItemUpdate>()

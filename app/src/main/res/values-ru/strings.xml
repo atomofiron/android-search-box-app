@@ -71,4 +71,6 @@
     <string name="allow">Разрешить</string>
     <string name="places">Места</string>
     <string name="confirm">Подтвердить</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="external_storage">External Storage</string>
 </resources>

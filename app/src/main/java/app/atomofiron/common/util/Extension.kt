@@ -2,7 +2,9 @@ package app.atomofiron.common.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -69,3 +71,12 @@ fun Context?.findDimensByAttr(@AttrRes vararg attrs: Int): IntArray {
 @ColorInt
 fun Context.findColorByAttr(@AttrRes attr: Int) = ContextCompat.getColor(this, findResIdByAttr(attr))
 
+fun ViewGroup.moveChildrenFrom(layoutId: Int) {
+    val inflater = LayoutInflater.from(context)
+    val container = inflater.inflate(layoutId, null, false) as ViewGroup
+    for (i in 0 until container.childCount) {
+        val child = container.getChildAt(0)
+        container.removeView(child)
+        addView(child)
+    }
+}

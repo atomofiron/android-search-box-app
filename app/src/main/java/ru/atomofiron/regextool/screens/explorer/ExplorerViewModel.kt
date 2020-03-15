@@ -7,26 +7,31 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.base.BaseViewModel
+import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import app.atomofiron.common.util.permission.Permissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.log
-import ru.atomofiron.regextool.screens.explorer.adapter.ItemActionListener
+import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
+import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
+import ru.atomofiron.regextool.screens.explorer.places.XPlace
 
-class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), ItemActionListener {
+class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), ExplorerItemActionListener, PlacesAdapter.ItemActionListener {
     override val router = ExplorerRouter()
 
     private val explorerInteractor = ExplorerInteractor()
 
     val permissionRequiredWarning = SingleLiveEvent<Intent?>()
     val historyDrawerGravity = MutableLiveData<Int>()
+    val places = LateinitLiveData<List<XPlace>>()
     val files = MutableLiveData<List<XFile>>()
     val notifyCurrent = SingleLiveEvent<XFile?>()
     val notifyUpdate = SingleLiveEvent<XFile>()
@@ -70,7 +75,29 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
                 .storagePath
                 .addObserver(onClearedCallback, ::onStoragePathChanged)
 
-        readStorageGranted = Permissions.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val items = ArrayList<XPlace>()
+        items.add(XPlace.InternalStorage(app.getString(R.string.internal_storage), visible = true))
+        items.add(XPlace.ExternalStorage(app.getString(R.string.external_storage), visible = true))
+        items.add(XPlace.AnotherPlace("Another Place 0"))
+        items.add(XPlace.AnotherPlace("Another Place 1"))
+        items.add(XPlace.AnotherPlace("Another Place 2"))
+        places.value = items
+    }
+
+    override fun onItemClick(item: XPlace) {
+        places.value = places.value.plusElement(XPlace.AnotherPlace("${Math.random()}"))
+    }
+
+    override fun onItemActionClick(item: XPlace) {
+        when (item) {
+            is XPlace.InternalStorage -> places.value = places.value.map {
+                if (it == item) XPlace.InternalStorage(item.title, !item.visible) else it
+            }
+            is XPlace.ExternalStorage -> places.value = places.value.map {
+                if (it == item) XPlace.ExternalStorage(item.title, !item.visible) else it
+            }
+            is XPlace.AnotherPlace -> places.value = places.value.filter { it != item }
+        }
     }
 
     override fun onCleared() {

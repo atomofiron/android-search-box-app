@@ -158,7 +158,7 @@ public class ListAdapter extends BaseAdapter implements CompoundButton.OnChecked
 		String path = pathsList.get(position);
         holder.text.setText(path);
         if (new File(path).isDirectory())
-        	holder.icon.setImageResource(R.drawable.ic_folder);
+        	holder.icon.setImageResource(R.drawable.ic_explorer_folder);
         holder.check.setTag(path);
 
 		if (checkable) {

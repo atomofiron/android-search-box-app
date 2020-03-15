@@ -71,4 +71,6 @@
     <string name="allow">Allow</string>
     <string name="places">Places</string>
     <string name="confirm">Confirm</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="external_storage">External Storage</string>
 </resources>

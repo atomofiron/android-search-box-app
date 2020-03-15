@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.R
 import app.atomofiron.common.recycler.GeneralAdapter
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.model.XFile
-import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemShadowDecorator.Shadow
+import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
 
 class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     companion object {
@@ -16,7 +16,11 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         private const val VIEW_POOL_MAX_COUNT = 30
     }
 
-    private var onItemActionListener: ItemActionListener? = null
+    var itemActionListener: ExplorerItemActionListener? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
     private var viewPool: Array<View?>? = null
 
     private var currentDir: XFile? = null
@@ -82,27 +86,21 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
 
-    fun setOnItemActionListener(listener: ItemActionListener?) {
-        onItemActionListener = listener
-        notifyDataSetChanged()
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorerHolder {
-        val inflater = LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): ExplorerHolder {
         val view = getNewView(inflater, parent)
 
         return ExplorerHolder(view)
     }
 
     override fun onBindViewHolder(holder: ExplorerHolder, position: Int) {
-        holder.onItemActionListener = onItemActionListener
+        holder.onItemActionListener = itemActionListener
         super.onBindViewHolder(holder, position)
-        onItemActionListener?.onItemVisible(holder.item)
+        itemActionListener?.onItemVisible(holder.item)
     }
 
     override fun onViewDetachedFromWindow(holder: ExplorerHolder) {
         super.onViewDetachedFromWindow(holder)
-        onItemActionListener?.onItemInvalidate(holder.item)
+        itemActionListener?.onItemInvalidate(holder.item)
     }
 
     private fun getNewView(inflater: LayoutInflater, parent: ViewGroup): View {

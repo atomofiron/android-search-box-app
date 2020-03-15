@@ -23,7 +23,7 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     private val size = Knife<TextView>(itemView, R.id.item_tv_size)
     private val checkbox = Knife<CheckBox>(itemView, R.id.item_cb)
 
-    var onItemActionListener: ItemActionListener? = null
+    var onItemActionListener: ExplorerItemActionListener? = null
 
     private var onClickListener: ((View) -> Unit) = {
         onItemActionListener?.onItemClick(item)
@@ -36,8 +36,8 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
 
         val image = when {
             !item.isDirectory -> R.drawable.ic_file_circle
-            item.files?.isEmpty() == true -> R.drawable.ic_folder_empty
-            else -> R.drawable.ic_folder
+            item.files?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
+            else -> R.drawable.ic_explorer_folder
         }
         icon {
             setImageResource(image)

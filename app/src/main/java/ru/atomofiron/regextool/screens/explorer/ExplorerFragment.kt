@@ -11,6 +11,7 @@ import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
+import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.view.custom.BottomOptionMenu
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
@@ -25,18 +26,13 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     private val dockView = Knife<VerticalDockView>(this, R.id.explorer_dv)
 
     private val explorerAdapter = ExplorerAdapter()
+    private val placesAdapter = PlacesAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.files.observe(this, Observer(explorerAdapter::setItems))
-        viewModel.notifyCurrent.observeData(this, explorerAdapter::setCurrentDir)
-        viewModel.notifyUpdate.observeData(this, explorerAdapter::setItem)
-        viewModel.notifyRemove.observeData(this, explorerAdapter::removeItem)
-        viewModel.notifyInsert.observeData(this) { explorerAdapter.insertItem(it.first, it.second) }
-        viewModel.notifyRemoveRange.observeData(this, explorerAdapter::removeItems)
-        viewModel.notifyInsertRange.observeData(this) { explorerAdapter.insertItems(it.first, it.second) }
-        viewModel.permissionRequiredWarning.observeEvent(this, ::showPermissionRequiredWarning)
+        explorerAdapter.itemActionListener = viewModel
+        placesAdapter.itemActionListener = viewModel
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,7 +41,6 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         recyclerView {
             layoutManager = LinearLayoutManager(context)
             adapter = explorerAdapter
-            explorerAdapter.setOnItemActionListener(viewModel)
         }
 
         bottomOptionMenu {
@@ -60,11 +55,23 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         }
         dockView {
             onGravityChangeListener = viewModel::onDockGravityChange
+
+            recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView.adapter = placesAdapter
         }
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
+        viewModel.files.observe(owner, Observer(explorerAdapter::setItems))
+        viewModel.notifyCurrent.observeData(owner, explorerAdapter::setCurrentDir)
+        viewModel.notifyUpdate.observeData(owner, explorerAdapter::setItem)
+        viewModel.notifyRemove.observeData(owner, explorerAdapter::removeItem)
+        viewModel.notifyInsert.observeData(owner) { explorerAdapter.insertItem(it.first, it.second) }
+        viewModel.notifyRemoveRange.observeData(owner, explorerAdapter::removeItems)
+        viewModel.notifyInsertRange.observeData(owner) { explorerAdapter.insertItems(it.first, it.second) }
+        viewModel.permissionRequiredWarning.observeEvent(owner, ::showPermissionRequiredWarning)
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
+        viewModel.places.observe(owner, Observer(placesAdapter::setItems))
     }
 
     override fun onBack(): Boolean {
