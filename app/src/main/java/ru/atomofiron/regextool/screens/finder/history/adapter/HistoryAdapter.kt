@@ -82,7 +82,7 @@ class HistoryAdapter(
 
     override fun onItemClick(position: Int) {
         val item = items[position]
-        onItemClickListener.onItemClick(item.title)
+        onItemClickListener.onItemClick(item.title!!)
     }
 
     override fun onItemPin(position: Int) {
@@ -107,6 +107,6 @@ class HistoryAdapter(
     }
 
     interface OnItemClickListener {
-        fun onItemClick(node: String?)
+        fun onItemClick(node: String)
     }
 }

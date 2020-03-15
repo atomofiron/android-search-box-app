@@ -9,9 +9,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.R
 import app.atomofiron.common.base.BaseFragment
 import app.atomofiron.common.util.Knife
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.adapter.FinderActionListenerDelegate
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
@@ -32,7 +32,9 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     private val finderAdapter = FinderAdapter()
 
     private val historyAdapter: HistoryAdapter = HistoryAdapter(object : HistoryAdapter.OnItemClickListener {
-        override fun onItemClick(node: String?) {
+        override fun onItemClick(node: String) {
+            dockView { close() }
+            viewModel.onHistoryItemClick(node)
         }
     })
 
@@ -87,6 +89,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         viewModel.insertInQuery.observeData(owner, ::insertInQuery)
         viewModel.state.observe(owner, Observer(::onStateChange))
         viewModel.updateContent.observeData(owner, ::onContentUpdate)
+        viewModel.replaceQuery.observeData(owner, ::replaceQuery)
     }
 
     override fun onBack(): Boolean {
@@ -106,6 +109,10 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
             is FinderStateItemUpdate.Inserted -> finderAdapter.insertItem(event.index, event.item)
             is FinderStateItemUpdate.Removed -> finderAdapter.removeItem(event.index)
         }
+    }
+
+    private fun replaceQuery(value: String) {
+        view?.findViewById<EditText>(R.id.item_find_rt_find)?.setText(value)
     }
 
     private fun insertInQuery(value: String) {

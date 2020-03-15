@@ -25,6 +25,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     val state = LateinitLiveData<List<FinderStateItem>>()
     val reloadHistory = SingleLiveEvent<Unit>()
     val insertInQuery = SingleLiveEvent<String>()
+    val replaceQuery = SingleLiveEvent<String>()
     val updateContent = SingleLiveEvent<FinderStateItemUpdate>()
 
     private var configItem: ConfigItem? = ConfigItem()
@@ -94,8 +95,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     }
 
     fun onConfigOptionSelected() {
-        val configItem = configItem
-        when (configItem) {
+        when (val configItem = configItem) {
             null -> {
                 this.configItem = items.removeAt(FinderStateItem.CONFIG_POSITION) as ConfigItem
                 updateContent.invoke(Removed(FinderStateItem.CONFIG_POSITION))
@@ -109,6 +109,8 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
+
+    fun onHistoryItemClick(node: String) = replaceQuery.invoke(node)
 
     private fun <I : FinderStateItem> updateItem(item: I, klass: KClass<I>) {
         val index = items.indexOfFirst { it::class == klass }
