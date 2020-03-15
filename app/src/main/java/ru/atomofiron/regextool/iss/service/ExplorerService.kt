@@ -1,13 +1,13 @@
 package ru.atomofiron.regextool.iss.service
 
 import android.preference.PreferenceManager
+import app.atomofiron.common.util.KObservable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.App
-import app.atomofiron.common.util.KObservable
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.Change.*
 import ru.atomofiron.regextool.iss.service.model.Change.Nothing
@@ -421,7 +421,6 @@ class ExplorerService {
 
     private suspend fun notifyFiles() {
         log2("notifyFiles")
-        val items = mutex.withLock { ArrayList(files) }
-        store.setAndNotify(items)
+        store.setAndNotify(files)
     }
 }

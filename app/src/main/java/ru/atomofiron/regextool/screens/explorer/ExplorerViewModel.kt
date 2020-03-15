@@ -2,7 +2,6 @@ package ru.atomofiron.regextool.screens.explorer
 
 import android.Manifest
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -19,7 +18,6 @@ import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.model.Change
 import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
@@ -43,14 +41,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     private var readStorageGranted = false
     private lateinit var permissions: Permissions
 
-    override fun onFragmentAttach(fragment: Fragment) {
-        super.onFragmentAttach(fragment)
-        permissions = Permissions(fragment)
-    }
-
-    override fun onCreate(context: Context, intent: Intent) {
-        super.onCreate(context, intent)
-
+    init {
         explorerInteractor.observeFiles {
             GlobalScope.launch(Dispatchers.Main) {
                 files.value = it
@@ -84,6 +75,11 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         places.value = items
     }
 
+    override fun onFragmentAttach(fragment: Fragment) {
+        super.onFragmentAttach(fragment)
+        permissions = Permissions(fragment)
+    }
+
     override fun onItemClick(item: XPlace) {
         places.value = places.value.plusElement(XPlace.AnotherPlace("${Math.random()}"))
     }
@@ -107,7 +103,6 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        log("onRequestPermissionsResult")
         this.permissions.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 

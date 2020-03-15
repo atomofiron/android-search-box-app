@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import ru.atomofiron.regextool.App
+import ru.atomofiron.regextool.log2
 
 abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewModel(app) {
     protected abstract val router: R
@@ -24,6 +25,10 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
     protected val app: App get() = getApplication()
 
     protected val onClearedCallback = KObservable.RemoveObserverCallback()
+
+    init {
+        log2("init")
+    }
 
     open fun onFragmentAttach(fragment: Fragment) {
         router.onFragmentAttach(fragment)
