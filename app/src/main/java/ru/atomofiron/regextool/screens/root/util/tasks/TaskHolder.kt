@@ -10,7 +10,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import ru.atomofiron.regextool.R
 
-class TaskHolder(itemView: View) : GeneralHolder<Task>(itemView) {
+class TaskHolder(itemView: View) : GeneralHolder<XTask>(itemView) {
     companion object {
         private const val CONFIRM_DELAY = 1024L
     }
@@ -48,7 +48,7 @@ class TaskHolder(itemView: View) : GeneralHolder<Task>(itemView) {
         btnConfirm.layoutParams = btnConfirm.layoutParams
     }
 
-    override fun onBind(item: Task, position: Int) {
+    override fun onBind(item: XTask, position: Int) {
         TransitionManager.endTransitions(itemView as ViewGroup)
         ivIcon.setImageResource(R.drawable.ic_trashbox)
         mtvTitle.text = "Task $position"

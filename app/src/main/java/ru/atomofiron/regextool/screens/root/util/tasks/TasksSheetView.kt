@@ -41,8 +41,6 @@ class TasksSheetView @JvmOverloads constructor(
         memoryLoop.repeatCount = ValueAnimator.INFINITE
         memoryLoop.addUpdateListener(StatsUpdater())
         memoryLoop.start()
-
-        adapter.setItems(Array(16) { Task() }.toList())
     }
 
     fun resetContentView() {
@@ -50,6 +48,8 @@ class TasksSheetView @JvmOverloads constructor(
         setView(R.layout.layout_tasks)
         initRecyclerView(rvTasks)
     }
+
+    fun setItems(items: List<XTask>) = adapter.setItems(items)
 
     private fun initRecyclerView(recyclerView: RecyclerView) {
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -128,7 +128,8 @@ class TasksSheetView @JvmOverloads constructor(
                     heap = Math.round((heap / 1024).toFloat() / 1024).toLong()
                     pbRam.max = heap.toInt()
                     pbRam.progress = allocated.toInt()
-                    mtvRam.text = "%dM".format(allocated)
+                    val text = "%dM".format(allocated)
+                    mtvRam.text = text
                 }
             }
             lastValue = value

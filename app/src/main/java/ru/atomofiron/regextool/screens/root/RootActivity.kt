@@ -5,6 +5,7 @@ import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import app.atomofiron.common.base.BaseActivity
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.LazyReincarnation
@@ -66,6 +67,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.setTheme.observeData(owner, ::setTheme)
         viewModel.setOrientation.observeData(owner, ::setOrientation)
+        viewModel.tasks.observe(owner, Observer { tsvTasks { setItems(it) } })
     }
 
     private fun setOrientation(orientation: AppOrientation) {
