@@ -33,4 +33,5 @@
     <dimen name="item_dir_shadow_size">6dp</dimen>
     <dimen name="bottom_sheet_view_max_width">480dp</dimen>
     <dimen name="bottom_sheet_max_height">460dp</dimen>
+	<dimen name="item_dir_separation_size">4dp</dimen>
 </resources>

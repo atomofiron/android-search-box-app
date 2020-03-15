@@ -25,6 +25,7 @@
 	<color name="overlay_black">#a0000000</color>
 	<color name="overlay_colored">#a0005000</color>
 	<color name="grey_middle">#ff787878</color>
+	<color name="grey_middle_lite">#aa787878</color>
 	<color name="grey_dark">#ff333333</color>
 	<color name="grey_dark_lite">#aa333333</color>
 	<color name="grey_light">#ffcccccc</color>

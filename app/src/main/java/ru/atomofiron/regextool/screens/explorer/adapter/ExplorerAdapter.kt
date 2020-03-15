@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemShadowDecorator.Shadow
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
 
@@ -56,6 +57,25 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         }
     }
 
+    private val separationDecorator = ItemSeparationDecorator { position ->
+        val currentDir = currentDir ?: return@ItemSeparationDecorator Separation.NO
+
+        val item = items[position]
+        val isCurrent = item.completedPath == currentDir.completedPath
+        val isCurrentChild = item.completedParentPath == currentDir.completedPath
+        if (isCurrent || isCurrentChild) {
+            return@ItemSeparationDecorator Separation.NO
+        }
+
+        when {
+            item.isOpened && item.files.isNullOrEmpty() -> Separation.NO
+            item.isOpened -> Separation.TOP
+            position.inc() == items.size -> Separation.NO // не рисуем тень под последним элементом
+            item.completedParentPath != items[position.inc()].completedParentPath -> Separation.BOTTOM
+            else -> Separation.NO
+        }
+    }
+
     fun setCurrentDir(dir: XFile?) {
         currentDir = dir
     }
@@ -73,6 +93,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
         recyclerView.addItemDecoration(spaceDecorator)
         recyclerView.addItemDecoration(shadowDecorator)
+        recyclerView.addItemDecoration(separationDecorator)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
@@ -80,6 +101,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
         recyclerView.removeItemDecoration(spaceDecorator)
         recyclerView.removeItemDecoration(shadowDecorator)
+        recyclerView.removeItemDecoration(separationDecorator)
     }
 
     override fun getItemViewType(position: Int): Int = VIEW_TYPE
