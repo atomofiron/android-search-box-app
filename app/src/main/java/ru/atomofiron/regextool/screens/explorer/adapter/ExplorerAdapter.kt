@@ -37,7 +37,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         }
     }
 
-    private val highlightDecorator = ItemShadowDecorator { position ->
+    private val shadowDecorator = ItemShadowDecorator { position ->
         val currentDir = currentDir ?: return@ItemShadowDecorator Shadow.NO
 
         val item = items[position]
@@ -72,14 +72,14 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         }
 
         recyclerView.addItemDecoration(spaceDecorator)
-        recyclerView.addItemDecoration(highlightDecorator)
+        recyclerView.addItemDecoration(shadowDecorator)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
 
         recyclerView.removeItemDecoration(spaceDecorator)
-        recyclerView.removeItemDecoration(highlightDecorator)
+        recyclerView.removeItemDecoration(shadowDecorator)
     }
 
     override fun getItemViewType(position: Int): Int = VIEW_TYPE

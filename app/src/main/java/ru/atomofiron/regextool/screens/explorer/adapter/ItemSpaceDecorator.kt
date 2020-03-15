@@ -8,15 +8,18 @@ class ItemSpaceDecorator(private val divide: (Int) -> Divider) : RecyclerView.It
     enum class Divider {
         NO, SMALL, BIG
     }
+    private var nonZeroHeight: Int = 0
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         super.getItemOffsets(outRect, view, parent, state)
 
+        nonZeroHeight = if (view.measuredHeight == 0) nonZeroHeight else view.measuredHeight
+
         val position = parent.getChildLayoutPosition(view)
         outRect.bottom = when (divide(position)) {
             Divider.NO -> 0
-            Divider.SMALL -> view.measuredHeight / 2
-            Divider.BIG -> view.measuredHeight
+            Divider.SMALL -> nonZeroHeight / 2
+            Divider.BIG -> nonZeroHeight
         }
     }
 }
