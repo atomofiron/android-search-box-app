@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:clipToPadding="true"
     >
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
@@ -13,6 +13,7 @@
         android:paddingTop="36dp"
         android:paddingBottom="@dimen/bottom_tab_bar_height"
         android:clipToPadding="false"
+        android:overScrollMode="never"
         />
     <View
         android:layout_width="match_parent"
@@ -23,8 +24,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="36dp"
-        android:gravity="center_vertical"
-        android:clipToPadding="true"
         android:background="@color/transparent"
         >
         <com.google.android.material.textview.MaterialTextView
@@ -38,13 +37,15 @@
             android:textStyle="bold"
             tool:text="Title"
             />
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/drawer_ib_dock_side"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/ic_dock_end"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingEnd="12dp"
+            android:tint="?attr/colorContent"
+            android:alpha="0.5"
             />
     </LinearLayout>
 </FrameLayout>
