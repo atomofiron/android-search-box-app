@@ -34,7 +34,7 @@
                 <ru.atomofiron.regextool.view.custom.BottomOptionMenu
                     android:id="@+id/explorer_bom"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="@dimen/bottom_tab_bar_height"
                     android:layout_gravity="bottom"
                     app:menu="@menu/nav_explorer"
                     />

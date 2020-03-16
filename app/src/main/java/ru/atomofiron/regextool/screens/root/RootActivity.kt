@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.screens.root
 
 import android.os.Bundle
-import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -24,11 +23,10 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     private val root = Knife<CoordinatorLayout>(this, R.id.root_cl_root)
     private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
     private val tsvTasks = Knife<TasksSheetView>(this, R.id.root_tsv_tasks)
-    private val anchor = Knife<View>(this, R.id.root_v_anchor)
 
     private val sbExit: LazyReincarnation<Snackbar> = LazyReincarnation {
         Snackbar.make(joystick.view, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
-                .setAnchorView(anchor.view)
+                .setAnchorView(joystick.view)
                 .setActionTextColor(ContextCompat.getColor(this@RootActivity, R.color.colorAccent))
                 .setAction(R.string.exit) { viewModel.onExitClick() }
                 .addCallback(ExitSnackbarCallback(viewModel))

@@ -1,41 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/common_half_margin"
-        android:gravity="center_vertical"
-        >
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/drawer_tv_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/colorAccent"
-            android:layout_marginStart="36dp"
-            android:textStyle="bold"
-            tool:text="Title"
-            />
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/drawer_ib_dock_side"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_dock_end"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            />
-    </LinearLayout>
+    android:orientation="vertical"
+    android:clipToPadding="true"
+    >
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/drawer_rv"
+        android:paddingTop="36dp"
         android:paddingBottom="@dimen/bottom_tab_bar_height"
         android:clipToPadding="false"
         />
-</LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:alpha="0.8"
+        android:background="?attr/colorBackground"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:gravity="center_vertical"
+        android:clipToPadding="true"
+        android:background="@color/transparent"
+        >
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/drawer_tv_title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/colorAccent"
+            android:paddingStart="44dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            tool:text="Title"
+            />
+        <ImageButton
+            android:id="@+id/drawer_ib_dock_side"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_dock_end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingEnd="12dp"
+            />
+    </LinearLayout>
+</FrameLayout>

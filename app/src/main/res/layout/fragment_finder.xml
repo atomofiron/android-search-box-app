@@ -38,7 +38,7 @@
 				<ru.atomofiron.regextool.view.custom.BottomOptionMenu
 					android:id="@+id/finder_bom"
 					android:layout_width="match_parent"
-					android:layout_height="56dp"
+					android:layout_height="@dimen/bottom_tab_bar_height"
 					app:menu="@menu/nav_finder"
 					/>
 			</com.google.android.material.appbar.CollapsingToolbarLayout>
