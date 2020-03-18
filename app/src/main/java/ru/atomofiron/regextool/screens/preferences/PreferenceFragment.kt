@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.preferences
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -12,14 +13,20 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.utils.Shell
 import kotlin.reflect.KClass
 
-class PreferenceFragment : BaseFragment<PreferenceViewModel>(), InternalPreferenceFragment.Output {
+class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
     override val viewModelClass: KClass<PreferenceViewModel> = PreferenceViewModel::class
     override val layoutId: Int = R.layout.fragment_preference
 
     private lateinit var exportImportDelegate: ExportImportDelegate
+    private lateinit var preferencesDelegate: PreferencesDelegate
 
     // InternalPreferenceFragment like a View
     private lateinit var childFragment: InternalPreferenceFragment
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        preferencesDelegate = PreferencesDelegate(this, viewModel)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,17 +40,17 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>(), InternalPreferen
         super.onAttachFragment(childFragment)
         this.childFragment = childFragment as? InternalPreferenceFragment ?: return
 
-        childFragment.setAppPreferenceFragmentOutput(this)
-        childFragment.setAppPreferenceFragmentProvider(object : InternalPreferenceFragment.Provider {
-            override val isExportImportAvailable: Boolean get() = viewModel.isExportImportAvailable
-            override fun getCurrentValue(key: String): Any? = viewModel.getCurrentValue(key)
-        })
+        childFragment.setAppPreferenceFragmentOutput(preferencesDelegate)
+        childFragment.setAppPreferenceFragmentProvider(preferencesDelegate)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        exportImportDelegate = ExportImportDelegate(view as ViewGroup, viewModel)
+        exportImportDelegate = ExportImportDelegate(view.context, viewModel)
+
+        view as ViewGroup
+        view.addView(exportImportDelegate.exportSheetView)
 
         if (!childFragment.isAdded) {
             childFragmentManager.beginTransaction()
@@ -60,13 +67,7 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>(), InternalPreferen
 
     override fun onBack(): Boolean = exportImportDelegate.hide() || super.onBack()
 
-    override fun onExportImportClick() = exportImportDelegate.show()
-
-    override fun onPreferenceUpdate(key: String, value: Int): Boolean = viewModel.onPreferenceUpdate(key, value)
-
-    override fun onPreferenceUpdate(key: String, value: String): Boolean = viewModel.onPreferenceUpdate(key, value)
-
-    override fun onPreferenceUpdate(key: String, value: Boolean): Boolean = viewModel.onPreferenceUpdate(key, value)
+    fun onExportImportClick() = exportImportDelegate.show()
 
     private fun showAlert(message: String) {
         Snackbar

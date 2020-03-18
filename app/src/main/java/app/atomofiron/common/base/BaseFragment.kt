@@ -1,5 +1,6 @@
 package app.atomofiron.common.base
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -36,9 +37,13 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         log2("init")
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         viewModel = ViewModelProvider(activity!!).get(viewModelClass.java)
         viewModel.onFragmentAttach(this)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Fragment.onAttachFragment()
         viewModel.onCreate(context!!, arguments)

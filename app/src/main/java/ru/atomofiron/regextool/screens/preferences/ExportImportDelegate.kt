@@ -1,6 +1,6 @@
 package ru.atomofiron.regextool.screens.preferences
 
-import android.view.ViewGroup
+import android.content.Context
 import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -8,22 +8,19 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
 
 class ExportImportDelegate(
-        rootView: ViewGroup,
+        context: Context,
         private val viewModel: PreferenceViewModel
 ) {
 
-    private val context = rootView.context
-    private val exportSheet = BottomSheetView(context).apply {
+    val exportSheetView = BottomSheetView(context).apply {
         setView(R.layout.layout_export_import)
     }
-    private val tvPath = exportSheet.findViewById<TextView>(R.id.lei_tv_path)
-    private val rgTarget = exportSheet.findViewById<RadioGroup>(R.id.lei_rg_target)
-    private val rgAction = exportSheet.findViewById<RadioGroup>(R.id.lei_rg_action)
-    private val button = exportSheet.findViewById<Button>(R.id.lei_btn)
+    private val tvPath = exportSheetView.findViewById<TextView>(R.id.lei_tv_path)
+    private val rgTarget = exportSheetView.findViewById<RadioGroup>(R.id.lei_rg_target)
+    private val rgAction = exportSheetView.findViewById<RadioGroup>(R.id.lei_rg_action)
+    private val button = exportSheetView.findViewById<Button>(R.id.lei_btn)
 
     init {
-        rootView.addView(exportSheet)
-
         rgAction.setOnCheckedChangeListener { _, checkedId ->
             val id = when (checkedId) {
                 R.id.lei_rb_export -> R.string.export_btn
@@ -50,10 +47,10 @@ class ExportImportDelegate(
             }
             else -> throw Exception()
         }
-        exportSheet.hide()
+        exportSheetView.hide()
     }
 
-    fun show() = exportSheet.show()
+    fun show() = exportSheetView.show()
 
-    fun hide() = exportSheet.hide()
+    fun hide() = exportSheetView.hide()
 }
