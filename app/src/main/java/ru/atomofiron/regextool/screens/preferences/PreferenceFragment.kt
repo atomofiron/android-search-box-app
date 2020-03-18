@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import app.atomofiron.common.base.BaseFragment
 import com.google.android.material.snackbar.Snackbar
@@ -18,10 +19,19 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>(), InternalPreferen
     private lateinit var exportImportDelegate: ExportImportDelegate
 
     // InternalPreferenceFragment like a View
-    private val childFragment = InternalPreferenceFragment()
+    private lateinit var childFragment: InternalPreferenceFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!::childFragment.isInitialized) {
+            childFragment = InternalPreferenceFragment()
+        }
+    }
+
+    override fun onAttachFragment(childFragment: Fragment) {
+        super.onAttachFragment(childFragment)
+        this.childFragment = childFragment as InternalPreferenceFragment
 
         childFragment.setAppPreferenceFragmentOutput(this)
         childFragment.setAppPreferenceFragmentProvider(object : InternalPreferenceFragment.Provider {

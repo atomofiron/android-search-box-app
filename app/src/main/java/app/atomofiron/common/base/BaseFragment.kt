@@ -37,9 +37,10 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(activity!!).get(viewModelClass.java)
         viewModel.onFragmentAttach(this)
+        super.onCreate(savedInstanceState)
+        // Fragment.onAttachFragment()
         viewModel.onCreate(context!!, arguments)
     }
 

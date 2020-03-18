@@ -9,9 +9,9 @@ import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.base.Backable
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Util
-import java.lang.Exception
 
 internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Backable {
     companion object {
@@ -21,6 +21,12 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     private lateinit var provider: Provider
     private lateinit var sp: SharedPreferences
 
+    private val c = Math.random()
+
+    fun kek() {
+        log("kek $c")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
@@ -29,6 +35,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
 
     override fun onCreateAdapter(preferenceScreen: PreferenceScreen): RecyclerView.Adapter<*> {
+        log("onCreateAdapter")
         onUpdateScreen(preferenceScreen)
         return super.onCreateAdapter(preferenceScreen)
     }
