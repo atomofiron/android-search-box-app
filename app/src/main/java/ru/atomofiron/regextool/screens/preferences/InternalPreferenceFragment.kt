@@ -1,7 +1,7 @@
 package ru.atomofiron.regextool.screens.preferences
 
-import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
@@ -9,7 +9,6 @@ import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.base.Backable
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Util
 
@@ -19,23 +18,24 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     }
     private lateinit var output: Output
     private lateinit var provider: Provider
-    private lateinit var sp: SharedPreferences
-
-    private val c = Math.random()
-
-    fun kek() {
-        log("kek $c")
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val recyclerView = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
+        recyclerView.clipToPadding = false
+        val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)
+        recyclerView.setPadding(recyclerView.paddingLeft, recyclerView.paddingTop, recyclerView.paddingRight, padding)
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
 
     override fun onCreateAdapter(preferenceScreen: PreferenceScreen): RecyclerView.Adapter<*> {
-        log("onCreateAdapter")
         onUpdateScreen(preferenceScreen)
         return super.onCreateAdapter(preferenceScreen)
     }
@@ -76,8 +76,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     }
 
     private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
-        val key = preference.key
-        return when (key) {
+        return when (val key = preference.key) {
             Const.PREF_STORAGE_PATH -> {
                 preference.summary = newValue as? String ?: provider.getCurrentValue(key) as String
                 when (newValue) {
