@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.screens.preferences
+package ru.atomofiron.regextool.screens.preferences.delegate
 
 import android.os.Bundle
 import android.view.View

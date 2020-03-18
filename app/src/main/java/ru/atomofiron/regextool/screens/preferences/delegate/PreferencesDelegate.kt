@@ -1,4 +1,7 @@
-package ru.atomofiron.regextool.screens.preferences
+package ru.atomofiron.regextool.screens.preferences.delegate
+
+import ru.atomofiron.regextool.screens.preferences.PreferenceFragment
+import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel
 
 class PreferencesDelegate(
         private val parentFragment: PreferenceFragment,

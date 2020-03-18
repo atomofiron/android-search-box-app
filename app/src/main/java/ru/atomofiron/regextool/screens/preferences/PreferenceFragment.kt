@@ -10,6 +10,9 @@ import androidx.lifecycle.LifecycleOwner
 import app.atomofiron.common.base.BaseFragment
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.screens.preferences.delegate.ExportImportDelegate
+import ru.atomofiron.regextool.screens.preferences.delegate.InternalPreferenceFragment
+import ru.atomofiron.regextool.screens.preferences.delegate.PreferencesDelegate
 import ru.atomofiron.regextool.utils.Shell
 import kotlin.reflect.KClass
 
@@ -38,7 +41,8 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
 
     override fun onAttachFragment(childFragment: Fragment) {
         super.onAttachFragment(childFragment)
-        this.childFragment = childFragment as? InternalPreferenceFragment ?: return
+        this.childFragment = childFragment as? InternalPreferenceFragment
+                ?: return
 
         childFragment.setAppPreferenceFragmentOutput(preferencesDelegate)
         childFragment.setAppPreferenceFragmentProvider(preferencesDelegate)
