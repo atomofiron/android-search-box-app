@@ -31,7 +31,7 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>(), InternalPreferen
 
     override fun onAttachFragment(childFragment: Fragment) {
         super.onAttachFragment(childFragment)
-        this.childFragment = childFragment as InternalPreferenceFragment
+        this.childFragment = childFragment as? InternalPreferenceFragment ?: return
 
         childFragment.setAppPreferenceFragmentOutput(this)
         childFragment.setAppPreferenceFragmentProvider(object : InternalPreferenceFragment.Provider {
