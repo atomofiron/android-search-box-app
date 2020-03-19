@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class RecyclerViewActivity extends AppCompatActivity {
+public class PreviewActivity extends AppCompatActivity {
 
     private RecyclerViewAdapterImpl adapter = null;
 

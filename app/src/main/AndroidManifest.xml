@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".utils.FilterActivity" android:label="Filter" />
-        <activity android:name=".utils.recyclerViewPreview.RecyclerViewActivity"
+        <activity android:name=".utils.recyclerViewPreview.PreviewActivity"
             android:label="RecyclerView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
