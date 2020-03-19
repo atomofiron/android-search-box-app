@@ -15,7 +15,6 @@ public class PreviewActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.e("recyclerViewPreview", "onCreate");
         super.onCreate(savedInstanceState);
 
         RecyclerView recyclerView = new RecyclerView(this);
