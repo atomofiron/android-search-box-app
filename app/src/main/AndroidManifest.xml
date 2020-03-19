@@ -29,6 +29,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".utils.FilterActivity" android:label="Filter" />
+        <activity android:name=".utils.recyclerViewPreview.RecyclerViewActivity"
+            android:label="RecyclerView">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".SearchService"
