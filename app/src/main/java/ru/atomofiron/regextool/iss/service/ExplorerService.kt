@@ -16,7 +16,6 @@ import ru.atomofiron.regextool.iss.service.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Const
-import ru.atomofiron.regextool.utils.Const.ROOT
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.io.FileOutputStream
@@ -26,7 +25,6 @@ class ExplorerService {
 
     private val mutex = Mutex()
     private val files: MutableList<MutableXFile> = ArrayList()
-    private lateinit var root: MutableXFile
     private var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
@@ -46,15 +44,19 @@ class ExplorerService {
         }
     }
 
-    suspend fun setRoot(path: String) {
-        root = MutableXFile.byPath(path)
+    /*
+    open dir
+    close dir
+    reopen dir (close opened child)
+     */
+
+    suspend fun addRoot(vararg path: String) {
+        val roots = path.map { MutableXFile.byPath(it) }
 
         mutex.withLock {
-            files.clear()
-            files.add(root)
+            files.addAll(roots)
         }
-        updateClosedDir(root)
-        notifyFiles()
+        roots.forEach { updateClosedDir(it) }
     }
 
     fun invalidateDir(f: XFile) {
@@ -71,28 +73,44 @@ class ExplorerService {
         sp.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
     }
 
-    private fun findFile(f: XFile): MutableXFile? = findFile(f.completedPath)
+    private fun findFile(f: XFile): MutableXFile? = findFile(f.completedPath, f.root)
 
-    private fun findFile(completedPath: String): MutableXFile? {
+    private fun findFile(completedPath: String, root: Int): MutableXFile? {
         val files = files
         var i = 0
         // ConcurrentModificationException
         while (i < files.size) {
             val file = files[i++]
-            if (file.completedPath == completedPath) {
+            if (file.root == root && file.completedPath == completedPath) {
                 return file
             }
         }
         return null
     }
 
-    private fun findOpenedDirIn(completedParentPath: String): MutableXFile? {
+    private fun findOpenedDirIn(dir: MutableXFile): MutableXFile? {
         val files = files
         var i = 0
         // ConcurrentModificationException
         while (i < files.size) {
             val file = files[i++]
-            if (file.isOpened && file.completedParentPath == completedParentPath && file.completedPath != ROOT) {
+            if (file.root == dir.root &&
+                file.isOpened &&
+                file.completedParentPath == dir.completedPath &&
+                !file.isRoot) {
+                return file
+            }
+        }
+        return null
+    }
+
+    private fun findOpenedAnotherRoot(root: Int): MutableXFile? {
+        val files = files
+        var i = 0
+        // ConcurrentModificationException
+        while (i < files.size) {
+            val file = files[i++]
+            if (file.isRoot && file.isOpened && file.root != root) {
                 return file
             }
         }
@@ -128,32 +146,43 @@ class ExplorerService {
 
     private suspend fun reopenDir(dir: MutableXFile) {
         log2("reopenDir $dir")
-        val anotherDir = findOpenedDirIn(dir.completedPath)
-        if (anotherDir != null) {
-            log2("reopenDir anotherDir != null $anotherDir")
-            anotherDir.close()
-            anotherDir.clearChildren()
+        if (dir == currentOpenedDir) {
+            closeDir(dir)
+            return
+        }
+        val childDir = findOpenedDirIn(dir)
+        if (childDir != null) {
+            log2("reopenDir anotherDir != null $childDir")
+            childDir.close()
+            childDir.clearChildren()
             currentOpenedDir = dir
             invalidateDir(dir)
 
-            removeAllChildren(anotherDir)
-            notifyUpdate(anotherDir)
+            removeAllChildren(childDir)
+            notifyUpdate(childDir)
             updateCurrentDir(dir)
-        } else {
-            closeDir(dir)
         }
     }
 
     private suspend fun openDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         log2("openDir $dir")
-        val anotherDir = findOpenedDirIn(dir.completedParentPath)
+        val anotherDir = findOpenedDirIn(dir)
         if (anotherDir != null) {
             log2("openDir $dir anotherDir == $anotherDir")
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
             notifyUpdate(anotherDir)
+        }
+
+        var anotherRoot = findOpenedAnotherRoot(dir.root)
+        while (anotherRoot != null) {
+            anotherRoot.close()
+            anotherRoot.clearChildren()
+            removeAllChildren(anotherRoot)
+            notifyUpdate(anotherRoot)
+            anotherRoot = findOpenedAnotherRoot(dir.root)
         }
 
         val dirFiles = mutex.withLock {
@@ -178,21 +207,26 @@ class ExplorerService {
     private suspend fun closeDir(f: XFile) {
         val dir = findFile(f) ?: return
         log2("closeDir $dir")
-        val parent = if (dir.completedPath == ROOT) null else findFile(dir.completedParentPath)
+        val parent = if (dir.isRoot) null else findFile(dir.completedParentPath, dir.root)
         mutex.withLock {
             dir.close()
             currentOpenedDir = parent
         }
 
-        notifyUpdate(dir)
         dir.clearChildren()
         removeAllChildren(dir)
+        notifyUpdate(dir)
+
+        if (parent != null) {
+            parent.invalidateCache()
+            updateCurrentDir(parent)
+        }
     }
 
     private suspend fun updateTheFile(file: MutableXFile) {
         log2("updateTheFile $file")
         when {
-            file.updateCache() == null -> notifyUpdate(file)
+            file.updateCache(useSu) == null -> notifyUpdate(file)
             !file.exists -> dropEntity(file)
         }
     }
@@ -207,7 +241,7 @@ class ExplorerService {
         val error = dir.updateCache(useSu)
         if (error != null) {
             if (!dir.exists) {
-                dropOpenedDir(dir)
+                closeDir(dir)
             }
             log2("updateCurrentDir: $error")
             return
@@ -291,15 +325,14 @@ class ExplorerService {
                 4 дочерние папки кешироваться не начинают, потому что isCaching=true
                 5 список отображает папки как isCached=false
                 6 по окончании кеширования может быть oldFiles==newFiles
-                todo перепроверить
                  */
             }
         }
     }
 
-    private suspend fun removeAllChildren(dir: XFile) = removeAllChildren(dir.completedPath)
-
-    private suspend fun removeAllChildren(path: String) {
+    private suspend fun removeAllChildren(dir: XFile) {
+        val path = dir.completedPath
+        val root = dir.root
         log2("removeAllChildren $path")
         val removed = mutex.withLock {
             val removed = ArrayList<XFile>()
@@ -307,7 +340,7 @@ class ExplorerService {
             loop@ while (each.hasNext()) {
                 val next = each.next()
                 when {
-                    next.completedParentPath.startsWith(path) -> {
+                    next.root == root && next.completedParentPath.startsWith(path) -> {
                         each.remove()
                         removed.add(next)
                     }
@@ -320,50 +353,6 @@ class ExplorerService {
             true -> log2("removeAllChildren not found $path")
             false -> notifyRemoveRange(removed)
         }
-    }
-
-    private suspend fun dropOpenedDir(d: MutableXFile) {
-        var dirToDrop: XFile
-        var targetDir = d
-        do {
-            dirToDrop = targetDir
-            targetDir = findFile(targetDir.completedParentPath)!!
-            targetDir.invalidateCache()
-            targetDir.updateCache(useSu)
-        } while (!targetDir.exists || !targetDir.isDirectory)
-
-        val dirToDropPath = dirToDrop.completedPath
-        val droppedFiles = mutex.withLock {
-            val droppedFiles = ArrayList<XFile>()
-            var droppedLast = false
-            var dirToDropFound = false
-            val each = files.iterator()
-            while (!droppedLast && each.hasNext()) {
-                val next = each.next()
-                when {
-                    !dirToDropFound && next.completedPath == dirToDropPath -> {
-                        dirToDropFound = true
-                        droppedFiles.add(next)
-                    }
-                    dirToDropFound && next.completedPath.startsWith(dirToDropPath) -> {
-                        each.remove()
-                        droppedFiles.add(next)
-                    }
-                    dirToDropFound -> droppedLast = true
-                }
-            }
-            droppedFiles
-        }
-
-        if (droppedFiles.isNotEmpty()) {
-            log2("dropOpenedDir $dirToDropPath")
-            notifyRemoveRange(droppedFiles)
-        } else {
-            log2("Dir to drop was not found! $dirToDropPath")
-        }
-        currentOpenedDir = targetDir
-        targetDir.open()
-        notifyUpdate(targetDir)
     }
 
     private suspend fun dropEntity(entity: MutableXFile) {

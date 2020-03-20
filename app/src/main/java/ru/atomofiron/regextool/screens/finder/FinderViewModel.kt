@@ -37,7 +37,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         items.add(TestItem())
         items.add(ProgressItem(777, "9/36"))
         for (i in 1L..30L)
-        items.add(ResultItem(i + 900L, MutableXFile("-rwxrwxrwx", "atomofiron", "atomofiron", "7B", "DATE", "TIME", "some_file", "", false, "/sdcard/search/path/some_file")))
+        items.add(ResultItem(i + 900L, MutableXFile("-rwxrwxrwx", "atomofiron", "atomofiron", "7B", "DATE", "TIME", "some_file", "", false, "/sdcard/search/path/some_file", 1337)))
         state.value = items
     }
 

@@ -33,10 +33,10 @@ class MutableXFile : XFile {
 
         fun byPath(absolutePath: String): MutableXFile {
             val file = File(absolutePath)
-            return MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath)
+            return MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath, root = null)
         }
 
-        private fun parse(completedParentPath: String, line: String): MutableXFile {
+        private fun parse(completedParentPath: String, line: String, root: Int): MutableXFile {
             val parts = line.split(spaces, 8)
             val access = parts[0]
             val owner = parts[2]
@@ -54,7 +54,7 @@ class MutableXFile : XFile {
             val suffix = ""
             val absolutePath = completedParentPath + name
 
-            return MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath)
+            return MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root)
         }
     }
     override var files: MutableList<MutableXFile>? = null
@@ -88,10 +88,19 @@ class MutableXFile : XFile {
 
     override var isDirectory: Boolean private set
     override var isFile: Boolean private set
+    override val root: Int
+    val isRoot: Boolean
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
-    constructor(access: String, owner: String, group: String, size: String, date: String, time: String,
-                name: String, suffix: String, isDirectory: Boolean, absolutePath: String) {
+    constructor(
+            access: String, owner: String, group: String, size: String, date: String, time: String,
+                name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int)
+    : this(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root as Int?)
+
+    private constructor(
+            access: String, owner: String, group: String, size: String, date: String, time: String,
+            name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int?
+    ) {
         this.access = access
         this.owner = owner
         this.group = group
@@ -105,6 +114,9 @@ class MutableXFile : XFile {
 
         completedPath = completePath(absolutePath, isDirectory)
         completedParentPath = completedPath.replace(parentSuffix, "")
+
+        this.root = root ?: completedPath.hashCode()
+        isRoot = root == null
     }
 
     fun open() {
@@ -131,7 +143,7 @@ class MutableXFile : XFile {
     }
 
     /** @return error or null */
-    fun updateCache(su: Boolean = false): String? {
+    fun updateCache(su: Boolean): String? {
         dropCaching = false
         when {
             isCaching -> return "Cache in process. $this"
@@ -164,7 +176,7 @@ class MutableXFile : XFile {
                     }
                     for (i in start until lines.size) {
                         if (lines[i].isNotEmpty()) {
-                            val file = parse(completedPath, lines[i])
+                            val file = parse(completedPath, lines[i], root)
                             if (file.isDirectory) {
                                 dirs.add(file)
                             } else {
@@ -195,7 +207,7 @@ class MutableXFile : XFile {
         }
     }
 
-    private fun sleep() = Unit//Thread.sleep(300 + (Math.random() * 700).toLong())
+    private fun sleep() = Thread.sleep(1000 + (Math.random() * 700).toLong())
 
     private fun persistOldFiles(oldFiles: MutableList<MutableXFile>?) {
         val newFiles = this.files!!
@@ -260,14 +272,13 @@ class MutableXFile : XFile {
 
     override fun equals(other: Any?): Boolean {
         return when {
-            other == null -> false
             other !is MutableXFile -> false
             other.isDirectory != isDirectory -> false
-            else -> other.completedPath == completedPath
+            else -> other.completedPath == completedPath && other.root == root
         }
     }
 
-    override fun hashCode(): Int = completedPath.hashCode()
+    override fun hashCode(): Int = completedPath.hashCode() + root
 
     override fun toString(): String = completedPath
 }

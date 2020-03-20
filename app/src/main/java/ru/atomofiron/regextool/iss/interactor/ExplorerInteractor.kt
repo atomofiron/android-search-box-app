@@ -14,7 +14,7 @@ class ExplorerInteractor {
 
     fun setRoot(path: String) {
         scope.launch {
-            service.setRoot(path)
+            service.addRoot(path)
         }
     }
 
