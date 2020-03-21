@@ -3,9 +3,9 @@ package ru.atomofiron.regextool.iss.interactor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.atomofiron.regextool.iss.service.ExplorerService
-import ru.atomofiron.regextool.iss.service.model.Change
-import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.service.explorer.ExplorerService
+import ru.atomofiron.regextool.iss.service.explorer.model.Change
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 
 class ExplorerInteractor {
     private val service = ExplorerService()
@@ -30,7 +30,7 @@ class ExplorerInteractor {
         scope.launch {
             service.openDir(dir)
             service.persistState()
-            service.updateFile(dir)
+            //service.updateFile(dir)
         }
     }
 

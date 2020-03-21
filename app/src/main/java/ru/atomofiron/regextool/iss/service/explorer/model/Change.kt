@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.iss.service.model
+package ru.atomofiron.regextool.iss.service.explorer.model
 
 sealed class Change {
     object Nothing : Change()

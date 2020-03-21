@@ -8,7 +8,7 @@ import android.widget.TextView
 import ru.atomofiron.regextool.R
 import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.common.util.Knife
-import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.utils.Const
 
 class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.iss.service
+package ru.atomofiron.regextool.iss.service.explorer
 
 import android.preference.PreferenceManager
 import app.atomofiron.common.util.KObservable
@@ -8,31 +8,29 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.iss.service.model.Change
-import ru.atomofiron.regextool.iss.service.model.Change.*
-import ru.atomofiron.regextool.iss.service.model.Change.Nothing
-import ru.atomofiron.regextool.iss.service.model.MutableXFile
-import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.service.explorer.model.Change
+import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.log2
-import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.io.FileOutputStream
 
-class ExplorerService {
-    private val sp = PreferenceManager.getDefaultSharedPreferences(App.context)
+open class PrivateExplorerServiceLogic {
+    protected val sp = PreferenceManager.getDefaultSharedPreferences(App.context)!!
+    protected val publisher = Publisher()
 
-    private val mutex = Mutex()
-    private val files: MutableList<MutableXFile> = ArrayList()
-    private var currentOpenedDir: MutableXFile? = null
+    protected val mutex = Mutex()
+    protected val files: MutableList<MutableXFile> get() = publisher.files
+    protected var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
-            notifyCurrent(value)
+            publisher.notifyCurrent(value)
         }
 
-    val store = KObservable<List<XFile>>(files)
-    val updates = KObservable<Change>(Nothing, single = true)
+    val store: KObservable<List<XFile>> get() = publisher.store
+    val updates: KObservable<Change> get() = publisher.updates
 
     private val useSu: Boolean get() = SettingsStore.useSu.value
 
@@ -44,39 +42,12 @@ class ExplorerService {
         }
     }
 
-    /*
-    open dir
-    close dir
-    reopen dir (close opened child)
-     */
-
-    suspend fun setRoots(vararg path: String) {
-        val roots = path.map { MutableXFile.byPath(it) }
-
-        mutex.withLock {
-            // todo remove old root and children
-            files.clear()
-            files.addAll(roots)
-        }
-        notifyFiles()
-        roots.forEach { updateClosedDir(it) }
-    }
-
-    fun invalidateDir(f: XFile) {
-        val dir = findFile(f) ?: return
-        invalidateDir(dir)
-    }
-
-    private fun invalidateDir(dir: MutableXFile) {
+    protected fun invalidateDir(dir: MutableXFile) {
         log2("invalidateDir $dir")
         dir.invalidateCache()
     }
 
-    fun persistState() {
-        sp.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
-    }
-
-    private fun findFile(f: XFile): MutableXFile? = findFile(f.completedPath, f.root)
+    protected fun findFile(f: XFile): MutableXFile? = findFile(f.completedPath, f.root)
 
     private fun findFile(completedPath: String, root: Int): MutableXFile? {
         val files = files
@@ -106,9 +77,9 @@ class ExplorerService {
         while (i < files.size) {
             val file = files[i++]
             if (file.isOpened &&
-                file.root == root &&
-                file.completedParentPath == completedParentPath &&
-                !file.isRoot) {
+                    file.root == root &&
+                    file.completedParentPath == completedParentPath &&
+                    !file.isRoot) {
                 return file
             }
         }
@@ -128,34 +99,21 @@ class ExplorerService {
         return null
     }
 
-    suspend fun updateFile(f: XFile) {
-        val file = findFile(f) ?: return
-        log2("updateFile $file")
-        when {
-            file.isOpened && file == currentOpenedDir -> updateCurrentDir(file)
-            file.isOpened -> Unit
-            file.isDirectory -> updateClosedDir(file)
-            else -> return updateTheFile(file)
-        }
+    private fun copyToybox() {
+        val pathToybox = App.pathToybox
+        val toybox = File(pathToybox)
+        toybox.deleteRecursively()
+        toybox.parentFile.mkdirs()
+        val input = App.context.assets.open("toybox/toybox64")
+        val bytes = input.readBytes()
+        input.close()
+        val output = FileOutputStream(toybox)
+        output.write(bytes)
+        output.close()
+        Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
     }
 
-    suspend fun openDir(f: XFile) {
-        val dir = findFile(f) ?: return
-        if (!dir.isDirectory) {
-            log2("openDir return $dir")
-            return
-        }
-        if (!dir.isCached) {
-            return updateClosedDir(dir)
-        }
-        when {
-            dir == currentOpenedDir -> closeDir(dir)
-            dir.isOpened -> reopenDir(dir)
-            else -> openDir(dir)
-        }
-    }
-
-    private suspend fun reopenDir(dir: MutableXFile) {
+    protected suspend fun reopenDir(dir: MutableXFile) {
         log2("reopenDir $dir")
         if (dir == currentOpenedDir) {
             closeDir(dir)
@@ -170,12 +128,12 @@ class ExplorerService {
             invalidateDir(dir)
 
             removeAllChildren(childDir)
-            notifyUpdate(childDir)
+            publisher.notifyUpdate(childDir)
             updateCurrentDir(dir)
         }
     }
 
-    private suspend fun openDir(dir: MutableXFile) {
+    protected suspend fun openDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         log2("openDir $dir")
         val anotherDir = findOpenedDirInParentOf(dir)
@@ -184,7 +142,7 @@ class ExplorerService {
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
-            notifyUpdate(anotherDir)
+            publisher.notifyUpdate(anotherDir)
         } else {
             log2("anotherDir == null $dir")
         }
@@ -194,7 +152,7 @@ class ExplorerService {
             anotherRoot.close()
             anotherRoot.clearChildren()
             removeAllChildren(anotherRoot)
-            notifyUpdate(anotherRoot)
+            publisher.notifyUpdate(anotherRoot)
             anotherRoot = findOpenedAnotherRoot(dir.root)
         }
 
@@ -210,14 +168,14 @@ class ExplorerService {
             }
             dirFiles
         }
-        notifyUpdate(dir)
+        publisher.notifyUpdate(dir)
         if (dirFiles.isNotEmpty()) {
-            notifyInsertRange(dir, dirFiles)
+            publisher.notifyInsertRange(dir, dirFiles)
         }
         updateCurrentDir(dir)
     }
 
-    private suspend fun closeDir(f: XFile) {
+    protected suspend fun closeDir(f: XFile) {
         val dir = findFile(f) ?: return
         log2("closeDir $dir")
         val parent = if (dir.isRoot) null else findFile(dir.completedParentPath, dir.root)
@@ -228,7 +186,7 @@ class ExplorerService {
 
         dir.clearChildren()
         removeAllChildren(dir)
-        notifyUpdate(dir)
+        publisher.notifyUpdate(dir)
 
         if (parent != null) {
             parent.invalidateCache()
@@ -236,15 +194,15 @@ class ExplorerService {
         }
     }
 
-    private suspend fun updateTheFile(file: MutableXFile) {
+    protected suspend fun updateTheFile(file: MutableXFile) {
         log2("updateTheFile $file")
         when {
-            file.updateCache(useSu) == null -> notifyUpdate(file)
+            file.updateCache(useSu) == null -> publisher.notifyUpdate(file)
             !file.exists -> dropEntity(file)
         }
     }
 
-    private suspend fun updateCurrentDir(dir: MutableXFile) {
+    protected suspend fun updateCurrentDir(dir: MutableXFile) {
         if (dir != currentOpenedDir) {
             log2("updateCurrentDir dir != currentOpenedDir $dir")
             return
@@ -268,7 +226,7 @@ class ExplorerService {
             }
             if (!dir.isOpened) {
                 log2("updateCurrentDir !isOpened $dir")
-                return notifyUpdate(dir)
+                return publisher.notifyUpdate(dir)
             }
             if (dir != currentOpenedDir) {
                 log2("updateCurrentDir !isCurrentOpenedDir $dir")
@@ -282,7 +240,7 @@ class ExplorerService {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), newFiles)
             }
-            notifyUpdate(dir)
+            publisher.notifyUpdate(dir)
             notifyCurrentDirChanges(dir, dirFiles, newFiles)
         }
     }
@@ -291,8 +249,8 @@ class ExplorerService {
         val wasNullOrEmpty = dirFiles.isNullOrEmpty()
         val nowIsEmpty = newFiles.isEmpty()
         when {
-            wasNullOrEmpty && !nowIsEmpty -> notifyInsertRange(dir, newFiles)
-            !wasNullOrEmpty && nowIsEmpty -> notifyRemoveRange(dirFiles!!)
+            wasNullOrEmpty && !nowIsEmpty -> publisher.notifyInsertRange(dir, newFiles)
+            !wasNullOrEmpty && nowIsEmpty -> publisher.notifyRemoveRange(dirFiles!!)
             !wasNullOrEmpty && !nowIsEmpty -> {
                 dirFiles!!
                 val news = newFiles.iterator()
@@ -302,13 +260,13 @@ class ExplorerService {
                 while (olds.hasNext()) {
                     val next = olds.next()
                     if (!newFiles.contains(next)) {
-                        notifyRemove(next)
+                        publisher.notifyRemove(next)
                     }
                 }
                 while (news.hasNext()) {
                     val next = news.next()
                     if (!dirFiles.contains(next)) {
-                        notifyInsert(previous, next)
+                        publisher.notifyInsert(previous, next)
                     }
                     previous = next
                 }
@@ -316,7 +274,7 @@ class ExplorerService {
         }
     }
 
-    private suspend fun updateClosedDir(dir: MutableXFile) {
+    protected suspend fun updateClosedDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         if (dir.isOpened) {
             log2("updateClosedDir return $dir")
@@ -329,7 +287,7 @@ class ExplorerService {
             !dir.exists -> dropEntity(dir)
             error != null -> log2("updateClosedDir error != null ${dir.completedPath}\n$error")
             else -> {
-                notifyUpdate(dir)
+                publisher.notifyUpdate(dir)
                 /*
                 нельзя не уведомлять, если файлы не изменились, потому что:
                 1 у дочерних папок isCached=true, updateCache(), isCaching=true
@@ -364,7 +322,7 @@ class ExplorerService {
         }
         when (removed.isEmpty()) {
             true -> log2("removeAllChildren not found $path")
-            false -> notifyRemoveRange(removed)
+            false -> publisher.notifyRemoveRange(removed)
         }
     }
 
@@ -374,55 +332,6 @@ class ExplorerService {
         mutex.withLock {
             files.remove(entity)
         }
-        notifyRemove(entity)
-    }
-
-    private fun copyToybox() {
-        val pathToybox = App.pathToybox
-        val toybox = File(pathToybox)
-        toybox.deleteRecursively()
-        toybox.parentFile.mkdirs()
-        val input = App.context.assets.open("toybox/toybox64")
-        val bytes = input.readBytes()
-        input.close()
-        val output = FileOutputStream(toybox)
-        output.write(bytes)
-        output.close()
-        Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
-    }
-
-    private fun notifyCurrent(file: XFile?) {
-        log2("notifyCurrent $file")
-        updates.setAndNotify(Current(file))
-    }
-
-    private fun notifyUpdate(file: XFile) {
-        log2("notifyUpdate $file")
-        updates.setAndNotify(Update(file))
-    }
-
-    private fun notifyRemove(file: XFile) {
-        log2("notifyRemove $file")
-        updates.setAndNotify(Remove(file))
-    }
-
-    private fun notifyInsert(previous: XFile, file: XFile) {
-        log2("notifyInsert $file after $previous")
-        updates.setAndNotify(Insert(previous, file))
-    }
-
-    private fun notifyRemoveRange(files: List<XFile>) {
-        log2("notifyRemoveRange ${files.size}")
-        updates.setAndNotify(RemoveRange(files))
-    }
-
-    private fun notifyInsertRange(previous: XFile, files: List<XFile>) {
-        log2("notifyInsert ${files.size} after $previous")
-        updates.setAndNotify(InsertRange(previous, files))
-    }
-
-    private suspend fun notifyFiles() {
-        log2("notifyFiles")
-        store.setAndNotify(files)
+        publisher.notifyRemove(entity)
     }
 }

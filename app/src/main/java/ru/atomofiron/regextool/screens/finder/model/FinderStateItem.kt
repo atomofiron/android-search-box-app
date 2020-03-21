@@ -1,7 +1,7 @@
 package ru.atomofiron.regextool.screens.finder.model
 
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 
 sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     companion object {

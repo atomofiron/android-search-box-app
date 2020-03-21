@@ -1,6 +1,6 @@
 package ru.atomofiron.regextool.screens.explorer.adapter
 
-import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 
 interface ExplorerItemActionListener {
     fun onItemClick(item: XFile)

@@ -48,7 +48,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         }
 
         tsvTasks {
-            setTrackingView(joystick.view)
+            // todo tasks setTrackingView(joystick.view)
         }
 
         setOrientation(viewModel.setOrientation.data!!)

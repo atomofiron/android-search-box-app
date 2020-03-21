@@ -15,8 +15,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.iss.service.model.Change
-import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.service.explorer.model.Change
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter

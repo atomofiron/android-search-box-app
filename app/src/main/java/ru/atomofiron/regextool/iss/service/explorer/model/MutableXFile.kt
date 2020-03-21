@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.iss.service.model
+package ru.atomofiron.regextool.iss.service.explorer.model
 
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.utils.Shell
@@ -89,6 +89,7 @@ class MutableXFile : XFile {
     override var isFile: Boolean private set
     override val root: Int
     override val isRoot: Boolean
+    override var isChecked: Boolean = false
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.iss.service.model
+package ru.atomofiron.regextool.iss.service.explorer.model
 
 interface XFile {
     val files: List<XFile>?
@@ -26,4 +26,5 @@ interface XFile {
 
     val root: Int
     val isRoot: Boolean
+    var isChecked: Boolean
 }

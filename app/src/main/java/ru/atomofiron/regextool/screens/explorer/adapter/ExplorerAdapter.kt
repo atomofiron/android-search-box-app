@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.iss.service.model.XFile
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemShadowDecorator.Shadow
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider

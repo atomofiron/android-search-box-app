@@ -8,7 +8,7 @@ import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.channel.PreferencesChannel
-import ru.atomofiron.regextool.iss.service.model.MutableXFile
+import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
