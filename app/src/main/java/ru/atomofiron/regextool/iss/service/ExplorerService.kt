@@ -50,7 +50,7 @@ class ExplorerService {
     reopen dir (close opened child)
      */
 
-    suspend fun addRoot(vararg path: String) {
+    suspend fun addRoots(vararg path: String) {
         val roots = path.map { MutableXFile.byPath(it) }
 
         mutex.withLock {
@@ -88,15 +88,23 @@ class ExplorerService {
         return null
     }
 
+    private fun findOpenedDirInParentOf(dir: MutableXFile): MutableXFile? {
+        return findOpenedDirIn(dir.completedParentPath, dir.root)
+    }
+
     private fun findOpenedDirIn(dir: MutableXFile): MutableXFile? {
+        return findOpenedDirIn(dir.completedPath, dir.root)
+    }
+
+    private fun findOpenedDirIn(completedParentPath: String, root: Int): MutableXFile? {
         val files = files
         var i = 0
         // ConcurrentModificationException
         while (i < files.size) {
             val file = files[i++]
-            if (file.root == dir.root &&
-                file.isOpened &&
-                file.completedParentPath == dir.completedPath &&
+            if (file.isOpened &&
+                file.root == root &&
+                file.completedParentPath == completedParentPath &&
                 !file.isRoot) {
                 return file
             }
@@ -167,13 +175,15 @@ class ExplorerService {
     private suspend fun openDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         log2("openDir $dir")
-        val anotherDir = findOpenedDirIn(dir)
+        val anotherDir = findOpenedDirInParentOf(dir)
         if (anotherDir != null) {
             log2("openDir $dir anotherDir == $anotherDir")
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
             notifyUpdate(anotherDir)
+        } else {
+            log2("anotherDir == null $dir")
         }
 
         var anotherRoot = findOpenedAnotherRoot(dir.root)

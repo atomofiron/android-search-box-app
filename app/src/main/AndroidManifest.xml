@@ -28,8 +28,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".utils.FilterActivity" android:label="Filter" />
-        <activity android:name=".utils.recyclerViewPreview.PreviewActivity"
+        <activity
+            android:name=".utils.FilterActivity"
+            android:label="Filter" />
+        <activity
+            android:name=".utils.recyclerViewPreview.PreviewActivity"
             android:label="RecyclerView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
