@@ -8,85 +8,94 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
 
 class ItemShadowDecorator(private val shadowType: (position: Int) -> Shadow) : RecyclerView.ItemDecoration() {
     companion object {
-        private const val SHADOW_ALPHA = 80
-        private const val SHADOW_ALPHA_DIF = 40
+        private const val SHADOW_ALPHA = 100
     }
     enum class Shadow {
-        NO, TOP, BOTTOM, DOUBLE
+        NO, TOP, TOP_SLIDE, BOTTOM, DOUBLE
     }
 
-    private val comparator = Comparator<Int> { first, second -> first - second }
+    private var initiate = false
     private lateinit var topShadow: Drawable
     private lateinit var bottomShadow: Drawable
-    private var topShadowSize = 0
-    private var bottomShadowSize = 0
+    private var shadowSize = 0
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         initShadow(parent.context)
 
-        getChildren(parent).forEach {
+        parent.getSortedChildren().forEach {
             val child = it.value
             val position = parent.getChildLayoutPosition(child)
 
-            if (shadowType(position) == Shadow.NO) {
+            val shadowType = shadowType(position)
+            if (shadowType == Shadow.NO) {
                 return@forEach
             }
 
-            val dynamicOffset = child.bottom * topShadowSize / parent.measuredHeight
+            val dynamicOffset = child.bottom * shadowSize / parent.measuredHeight
 
-            when (shadowType(position)) {
-                Shadow.TOP -> drawTop(canvas, child, dynamicOffset)
+            when (shadowType) {
+                Shadow.TOP -> drawTop(canvas, child, dynamicOffset, pinned = true)
                 Shadow.BOTTOM -> {
+                    if (child.top <= 0) {
+                        drawSlide(canvas, child, pinned = false)
+                    }
                     val rect = Rect()
                     parent.getDecoratedBoundsWithMargins(child, rect)
-                    drawBottom(canvas, rect, dynamicOffset / 2)
+                    drawBottom(canvas, rect)
                 }
                 Shadow.DOUBLE -> {
                     val rect = Rect()
                     parent.getDecoratedBoundsWithMargins(child, rect)
-                    drawTop(canvas, child, dynamicOffset)
-                    drawBottom(canvas, rect, dynamicOffset / 2)
+                    drawTop(canvas, child, dynamicOffset, pinned = false)
+                    drawBottom(canvas, rect)
+                }
+                Shadow.TOP_SLIDE -> {
+                    if (child.top <= 0) {
+                        drawSlide(canvas, child, pinned = true)
+                    }
                 }
                 Shadow.NO -> Unit
             }
         }
     }
 
-    private fun drawTop(canvas: Canvas, child: View, dynamicOffset: Int) {
-        topShadow.setBounds(child.left, child.bottom, child.right, child.bottom + topShadowSize + dynamicOffset)
-        topShadow.alpha = SHADOW_ALPHA - (SHADOW_ALPHA_DIF * (dynamicOffset.toFloat() / topShadowSize)).toInt()
+    private fun drawTop(canvas: Canvas, child: View, dynamicOffset: Int, pinned: Boolean) {
+        val bottom = when {
+            pinned -> Math.max(0, child.bottom)
+            else -> child.bottom
+        }
+        topShadow.setBounds(child.left, bottom, child.right, bottom + shadowSize + dynamicOffset)
         topShadow.draw(canvas)
     }
 
-    private fun drawBottom(canvas: Canvas, rect: Rect, dynamicOffset: Int) {
-        bottomShadow.setBounds(rect.left, rect.bottom - bottomShadowSize + dynamicOffset, rect.right, rect.bottom)
+    private fun drawBottom(canvas: Canvas, rect: Rect) {
+        bottomShadow.setBounds(rect.left, rect.bottom - shadowSize, rect.right, rect.bottom)
         bottomShadow.draw(canvas)
     }
 
+    private fun drawSlide(canvas: Canvas, child: View, pinned: Boolean) {
+        val top = when {
+            pinned -> 0
+            else -> child.top
+        }
+        topShadow.setBounds(child.left, top, child.right, top + shadowSize)
+        topShadow.draw(canvas)
+    }
+
     private fun initShadow(context: Context) {
-        if (::topShadow.isInitialized) {
+        if (initiate) {
             return
         }
+        initiate = true
 
         topShadow = ContextCompat.getDrawable(context, R.drawable.item_explorer_opened_dir_shadow_top)!!
         bottomShadow = ContextCompat.getDrawable(context, R.drawable.item_explorer_opened_dir_shadow_bottom)!!
         topShadow.alpha = SHADOW_ALPHA
         bottomShadow.alpha = SHADOW_ALPHA
-        topShadowSize = context.resources.getDimensionPixelSize(R.dimen.item_dir_shadow_size)
-        bottomShadowSize = context.resources.getDimensionPixelSize(R.dimen.item_dir_shadow_size)
-    }
-
-    private fun getChildren(parent: RecyclerView): Map<Int, View> {
-        val children = mutableMapOf<Int, View>()
-        // exclude duplicated items (some items have the same adapter position)
-        for (i in 0 until parent.childCount) {
-            val child = parent.getChildAt(i)
-            val position = parent.getChildLayoutPosition(child)
-            children[position] = child
-        }
-        return children.toSortedMap(comparator)
+        shadowSize = context.resources.getDimensionPixelSize(R.dimen.item_dir_shadow_size)
     }
 }

@@ -28,50 +28,56 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     private val spaceDecorator = ItemSpaceDecorator { i ->
         val item = items[i]
+        val nextPosition = i.inc()
         when {
             item.isOpened && item.files.isNullOrEmpty() -> Divider.BIG
             item.isOpened -> Divider.SMALL
-            i.inc() >= items.size -> Divider.NO // не делаем отступ у последнего элемента
-            i.inc() == items.size && item.completedParentPath == currentDir?.completedPath -> Divider.SMALL
-            i.inc() != items.size && item.completedParentPath != items[i.inc()].completedParentPath -> Divider.SMALL
+            nextPosition >= items.size -> Divider.NO // не делаем отступ у последнего элемента
+            item.isRoot && items[nextPosition].isRoot -> Divider.NO
+            nextPosition == items.size && item.completedParentPath == currentDir?.completedPath -> Divider.SMALL
+            nextPosition != items.size && item.completedParentPath != items[nextPosition].completedParentPath ||
+                    item.root != items[nextPosition].root -> Divider.SMALL
             else -> Divider.NO
         }
     }
 
     private val shadowDecorator = ItemShadowDecorator { position ->
         val currentDir = currentDir ?: return@ItemShadowDecorator Shadow.NO
-
         val item = items[position]
         val isCurrent = item.completedPath == currentDir.completedPath
         val isCurrentChild = item.completedParentPath == currentDir.completedPath
-        if (!isCurrent && !isCurrentChild) {
-            return@ItemShadowDecorator Shadow.NO
-        }
+        val nextPosition = position.inc()
 
         when {
+            !isCurrent && !isCurrentChild -> Shadow.NO
             item.isOpened && item.files.isNullOrEmpty() -> Shadow.DOUBLE
             item.isOpened -> Shadow.TOP
-            position.inc() == items.size -> Shadow.NO // не рисуем тень под последним элементом
-            item.completedParentPath != items[position.inc()].completedParentPath -> Shadow.BOTTOM
+            nextPosition == items.size -> Shadow.NO // не рисуем под последним элементом
+            item.isRoot && items[nextPosition].isRoot -> Shadow.NO
+            item.completedParentPath != items[nextPosition].completedParentPath ||
+                    item.root != items[nextPosition].root -> Shadow.BOTTOM
+            isCurrentChild -> Shadow.TOP_SLIDE
             else -> Shadow.NO
         }
     }
 
     private val separationDecorator = ItemSeparationDecorator { position ->
         val currentDir = currentDir ?: return@ItemSeparationDecorator Separation.NO
-
         val item = items[position]
-        val isCurrent = item.completedPath == currentDir.completedPath
-        val isCurrentChild = item.completedParentPath == currentDir.completedPath
-        if (isCurrent || isCurrentChild) {
-            return@ItemSeparationDecorator Separation.NO
-        }
+        val nextPosition = position.inc()
 
         when {
+            item.completedPath == currentDir.completedPath -> Separation.NO
+            item.completedParentPath == currentDir.completedPath -> Separation.NO
+            item.root != currentDir.root -> Separation.NO
+            item.completedPath == currentDir.completedPath -> Separation.NO
             item.isOpened && item.files.isNullOrEmpty() -> Separation.NO
             item.isOpened -> Separation.TOP
-            position.inc() == items.size -> Separation.NO // не рисуем тень под последним элементом
-            item.completedParentPath != items[position.inc()].completedParentPath -> Separation.BOTTOM
+            nextPosition == items.size -> Separation.NO // не рисуем под последним элементом
+            item.isRoot && items[nextPosition].isRoot -> Separation.NO
+            currentDir.isRoot -> Separation.NO
+            item.completedParentPath != items[nextPosition].completedParentPath ||
+                    item.root != items[nextPosition].root -> Separation.BOTTOM
             else -> Separation.NO
         }
     }

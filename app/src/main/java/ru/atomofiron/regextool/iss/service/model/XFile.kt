@@ -25,4 +25,5 @@ interface XFile {
     val suffix: String
 
     val root: Int
+    val isRoot: Boolean
 }

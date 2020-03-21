@@ -8,13 +8,13 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
 
 class ItemSeparationDecorator(private val separationType: (position: Int) -> Separation) : RecyclerView.ItemDecoration() {
     enum class Separation {
         NO, TOP, BOTTOM
     }
 
-    private val comparator = Comparator<Int> { first, second -> first - second }
     private lateinit var upSeparation: Drawable
     private lateinit var downSeparation: Drawable
     private var separationSize = 0
@@ -22,18 +22,14 @@ class ItemSeparationDecorator(private val separationType: (position: Int) -> Sep
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         initShadow(parent.context)
 
-        getChildren(parent).forEach {
+        parent.getSortedChildren().forEach {
             val child = it.value
             val position = parent.getChildLayoutPosition(child)
 
-            if (separationType(position) == Separation.NO) {
-                return@forEach
-            }
-
             when (separationType(position)) {
+                Separation.NO -> Unit
                 Separation.TOP -> drawUp(canvas, child)
                 Separation.BOTTOM -> drawDown(canvas, child)
-                Separation.NO -> Unit
             }
         }
     }
@@ -66,16 +62,5 @@ class ItemSeparationDecorator(private val separationType: (position: Int) -> Sep
         upSeparation.setColorFilter(color, PorterDuff.Mode.SRC_IN)
         color = ContextCompat.getColor(context, R.color.grey_middle_lite)
         downSeparation.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-    }
-
-    private fun getChildren(parent: RecyclerView): Map<Int, View> {
-        val children = mutableMapOf<Int, View>()
-        // exclude duplicated items (some items have the same adapter position)
-        for (i in 0 until parent.childCount) {
-            val child = parent.getChildAt(i)
-            val position = parent.getChildLayoutPosition(child)
-            children[position] = child
-        }
-        return children.toSortedMap(comparator)
     }
 }

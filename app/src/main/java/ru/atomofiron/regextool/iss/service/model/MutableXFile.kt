@@ -83,13 +83,12 @@ class MutableXFile : XFile {
     override var time: String private set
     override val name: String
     override val suffix: String
-    override var exists: Boolean = true
-        private set
+    override var exists: Boolean = true; private set
 
     override var isDirectory: Boolean private set
     override var isFile: Boolean private set
     override val root: Int
-    val isRoot: Boolean
+    override val isRoot: Boolean
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(
@@ -274,7 +273,8 @@ class MutableXFile : XFile {
         return when {
             other !is MutableXFile -> false
             other.isDirectory != isDirectory -> false
-            else -> other.completedPath == completedPath && other.root == root
+            other.root != root -> false
+            else -> other.completedPath == completedPath
         }
     }
 

@@ -31,6 +31,8 @@
 	<color name="grey_dark_lite">#aa333333</color>
 	<color name="grey_light">#ffcccccc</color>
 	<color name="grey_light_lite">#aacccccc</color>
+	<color name="shadow">#ff909090</color>
+	<color name="shadow_transparent">#00909090</color>
 	<color name="red">#ffff0000</color>
 	<color name="red_transparent">#33ff0000</color>
 	<color name="red_soft">#ffff5252</color>
