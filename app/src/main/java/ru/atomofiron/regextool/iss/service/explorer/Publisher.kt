@@ -7,8 +7,8 @@ import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.log2
 
 class Publisher {
-    val files: MutableList<MutableXFile> = ArrayList()
-    val store = KObservable<List<XFile>>(files)
+    val items: MutableList<MutableXFile> = ArrayList()
+    val store = KObservable<List<XFile>>(items)
     val updates = KObservable<Change>(Change.Nothing, single = true)
 
     fun notifyCurrent(file: XFile?) {
@@ -41,8 +41,8 @@ class Publisher {
         updates.setAndNotify(Change.InsertRange(previous, files))
     }
 
-    fun notifyFiles() {
+    fun notifyItems() {
         log2("notifyFiles")
-        store.setAndNotify(files)
+        store.setAndNotify(items)
     }
 }

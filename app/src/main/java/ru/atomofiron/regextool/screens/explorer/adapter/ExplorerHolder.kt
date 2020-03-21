@@ -5,9 +5,8 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
-import ru.atomofiron.regextool.R
 import app.atomofiron.common.recycler.GeneralHolder
-import app.atomofiron.common.util.Knife
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.utils.Const
 
@@ -16,12 +15,12 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         private const val BYTE_LETTER = "B"
     }
 
-    private val icon = Knife<ImageView>(itemView, R.id.item_iv_icon)
-    private val name = Knife<TextView>(itemView, R.id.item_tv_title)
-    private val description = Knife<TextView>(itemView, R.id.item_tv_description)
-    private val date = Knife<TextView>(itemView, R.id.item_tv_date)
-    private val size = Knife<TextView>(itemView, R.id.item_tv_size)
-    private val checkbox = Knife<CheckBox>(itemView, R.id.item_cb)
+    private val ivIcon = view.findViewById<ImageView>(R.id.item_iv_icon)
+    private val tvName = view.findViewById<TextView>(R.id.item_tv_title)
+    private val tvDescription = view.findViewById<TextView>(R.id.item_tv_description)
+    private val tvDate = view.findViewById<TextView>(R.id.item_tv_date)
+    private val tvSize = view.findViewById<TextView>(R.id.item_tv_size)
+    private val cbFlag = view.findViewById<CheckBox>(R.id.item_cb)
 
     var onItemActionListener: ExplorerItemActionListener? = null
 
@@ -29,31 +28,35 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         onItemActionListener?.onItemClick(item)
     }
 
+    private var onCheckListener: ((View, Boolean) -> Unit) = { _, isChecked ->
+        onItemActionListener?.onItemCheck(item, isChecked)
+    }
+
     override fun onBind(item: XFile, position: Int) {
         super.onBind(item, position)
 
         itemView.setOnClickListener(onClickListener)
+        cbFlag.setOnCheckedChangeListener(onCheckListener)
 
         val image = when {
             !item.isDirectory -> R.drawable.ic_file_circle
             item.files?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
             else -> R.drawable.ic_explorer_folder
         }
-        icon {
-            setImageResource(image)
-            alpha = if (item.isDirectory && !item.isCached) .5f else 1f
-        }
-        name {
-            text = if (item.completedPath == Const.ROOT) Const.ROOT else item.name
-            typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-        }
+        ivIcon.setImageResource(image)
+        ivIcon.alpha = if (item.isDirectory && !item.isCached) .5f else 1f
 
-        description.view.text = String.format("%s %s %s", item.access, item.owner, item.group)
-        date.view.text = String.format("%s %s", item.date, item.time)
-        size.view.text = when {
+        tvName.text = if (item.completedPath == Const.ROOT) Const.ROOT else item.name
+        tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+
+        tvDescription.text = String.format("%s %s %s", item.access, item.owner, item.group)
+        tvDate.text = String.format("%s %s", item.date, item.time)
+        tvSize.text = when {
             item.isFile && item.size.length == 1 -> item.size + BYTE_LETTER
             item.isFile -> item.size
             else -> ""
         }
+
+        cbFlag.isChecked = item.isChecked
     }
 }

@@ -22,7 +22,7 @@ open class PrivateExplorerServiceLogic {
     protected val publisher = Publisher()
 
     protected val mutex = Mutex()
-    protected val files: MutableList<MutableXFile> get() = publisher.files
+    protected val files: MutableList<MutableXFile> get() = publisher.items
     protected var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
@@ -47,9 +47,11 @@ open class PrivateExplorerServiceLogic {
         dir.invalidateCache()
     }
 
-    protected fun findFile(f: XFile): MutableXFile? = findFile(f.completedPath, f.root)
+    protected fun findItem(f: XFile): MutableXFile? = findItem(f.completedPath, f.root)
 
-    private fun findFile(completedPath: String, root: Int): MutableXFile? {
+    private fun findParentDir(f: XFile): MutableXFile? = findItem(f.completedParentPath, f.root)
+
+    private fun findItem(completedPath: String, root: Int): MutableXFile? {
         val files = files
         var i = 0
         // ConcurrentModificationException
@@ -175,10 +177,10 @@ open class PrivateExplorerServiceLogic {
         updateCurrentDir(dir)
     }
 
-    protected suspend fun closeDir(f: XFile) {
-        val dir = findFile(f) ?: return
+    protected suspend fun closeDir(d: XFile) {
+        val dir = findItem(d) ?: return log2("closeDir not found $d")
         log2("closeDir $dir")
-        val parent = if (dir.isRoot) null else findFile(dir.completedParentPath, dir.root)
+        val parent = if (dir.isRoot) null else findParentDir(dir)
         mutex.withLock {
             dir.close()
             currentOpenedDir = parent
@@ -194,8 +196,9 @@ open class PrivateExplorerServiceLogic {
         }
     }
 
-    protected suspend fun updateTheFile(file: MutableXFile) {
+    protected suspend fun updateFile(file: MutableXFile) {
         log2("updateTheFile $file")
+        require(!file.isDirectory) { IllegalArgumentException("Is is a directory! $file") }
         when {
             file.updateCache(useSu) == null -> publisher.notifyUpdate(file)
             !file.exists -> dropEntity(file)

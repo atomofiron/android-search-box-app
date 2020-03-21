@@ -20,17 +20,17 @@ class ExplorerService : PrivateExplorerServiceLogic() {
             files.clear()
             files.addAll(roots)
         }
-        publisher.notifyFiles()
+        publisher.notifyItems()
         roots.forEach { updateClosedDir(it) }
     }
 
     fun invalidateDir(f: XFile) {
-        val dir = findFile(f) ?: return
+        val dir = findItem(f) ?: return
         invalidateDir(dir)
     }
 
     suspend fun openDir(f: XFile) {
-        val dir = findFile(f) ?: return
+        val dir = findItem(f) ?: return
         if (!dir.isDirectory) {
             log2("openDir return $dir")
             return
@@ -45,14 +45,18 @@ class ExplorerService : PrivateExplorerServiceLogic() {
         }
     }
 
-    suspend fun updateFile(f: XFile) {
-        val file = findFile(f) ?: return
-        log2("updateFile $file")
+    suspend fun updateItem(f: XFile) {
+        val file = findItem(f) ?: return
+        log2("updateItem $file")
         when {
             file.isOpened && file == currentOpenedDir -> updateCurrentDir(file)
             file.isOpened -> Unit
             file.isDirectory -> updateClosedDir(file)
-            else -> return updateTheFile(file)
+            else -> return updateFile(file)
         }
+    }
+
+    fun checkItem(item: XFile, isChecked: Boolean) {
+        findItem(item)?.isChecked = isChecked
     }
 }

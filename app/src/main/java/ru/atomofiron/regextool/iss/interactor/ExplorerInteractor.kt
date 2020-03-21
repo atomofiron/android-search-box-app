@@ -18,7 +18,7 @@ class ExplorerInteractor {
         }
     }
 
-    fun observeFiles(observer: (List<XFile>) -> Unit) {
+    fun observeItems(observer: (List<XFile>) -> Unit) {
         service.store.addObserver(observer)
     }
 
@@ -26,19 +26,22 @@ class ExplorerInteractor {
         service.updates.addObserver(observer)
     }
 
+    fun checkItem(item: XFile, isChecked: Boolean) {
+        service.checkItem(item, isChecked)
+    }
+
     fun openDir(dir: XFile) {
         scope.launch {
             service.openDir(dir)
             service.persistState()
-            //service.updateFile(dir)
         }
     }
 
-    fun updateFile(file: XFile) {
+    fun updateItem(file: XFile) {
         scope.launch {
-            service.updateFile(file)
+            service.updateItem(file)
         }
     }
 
-    fun invalidateFile(file: XFile) = service.invalidateDir(file)
+    fun invalidateItem(file: XFile) = service.invalidateDir(file)
 }

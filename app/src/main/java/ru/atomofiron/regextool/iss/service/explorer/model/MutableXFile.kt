@@ -135,7 +135,10 @@ class MutableXFile : XFile {
     }
 
     fun clearChildren() {
-        files!!.forEach { it.clear() }
+        files!!.forEach {
+            it.clear()
+            it.isChecked = false
+        }
     }
 
     fun invalidateCache() {

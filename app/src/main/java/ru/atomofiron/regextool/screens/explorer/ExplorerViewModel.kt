@@ -30,7 +30,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     val permissionRequiredWarning = SingleLiveEvent<Intent?>()
     val historyDrawerGravity = MutableLiveData<Int>()
     val places = LateinitLiveData<List<XPlace>>()
-    val files = MutableLiveData<List<XFile>>()
+    val items = MutableLiveData<List<XFile>>()
     val notifyCurrent = SingleLiveEvent<XFile?>()
     val notifyUpdate = SingleLiveEvent<XFile>()
     val notifyRemove = SingleLiveEvent<XFile>()
@@ -42,9 +42,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     private lateinit var permissions: Permissions
 
     init {
-        explorerInteractor.observeFiles {
+        explorerInteractor.observeItems {
             GlobalScope.launch(Dispatchers.Main) {
-                files.value = it
+                items.value = it
             }
         }
         explorerInteractor.observeUpdates {
@@ -136,9 +136,11 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         }
     }
 
-    override fun onItemVisible(item: XFile) = explorerInteractor.updateFile(item)
+    override fun onItemCheck(item: XFile, isChecked: Boolean) = explorerInteractor.checkItem(item, isChecked)
 
-    override fun onItemInvalidate(item: XFile) = explorerInteractor.invalidateFile(item)
+    override fun onItemVisible(item: XFile) = explorerInteractor.updateItem(item)
+
+    override fun onItemInvalidate(item: XFile) = explorerInteractor.invalidateItem(item)
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 }
