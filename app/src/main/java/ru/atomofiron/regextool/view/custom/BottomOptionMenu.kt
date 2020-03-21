@@ -17,6 +17,10 @@ class BottomOptionMenu @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
+    companion object {
+        private const val ALPHA_ENABLED = 1f
+        private const val ALPHA_DISABLED = 0.5f
+    }
 
     private var onMenuItemClickListener: ((id: Int) -> Unit)? = null
     val menu = MenuImpl(context)
@@ -57,6 +61,7 @@ class BottomOptionMenu @JvmOverloads constructor(
             view.findViewById<ImageView>(R.id.iv_icon).setImageDrawable(item.icon)
             view.findViewById<TextView>(R.id.tv_label).text = item.title
             view.setOnClickListener { onMenuItemClickListener?.invoke(id) }
+            view.alpha = if (item.isEnabled) ALPHA_ENABLED else ALPHA_DISABLED
             view.isEnabled = item.isEnabled
             view.clipToPadding = true
             addView(view)

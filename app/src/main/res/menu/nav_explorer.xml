@@ -5,6 +5,7 @@
         android:id="@+id/menu_places"
         android:title="@string/places"
         android:icon="@drawable/ic_home"
+        android:enabled="false"
         />
     <item
         android:id="@+id/menu_search"

@@ -50,12 +50,15 @@ class ExplorerService {
     reopen dir (close opened child)
      */
 
-    suspend fun addRoots(vararg path: String) {
+    suspend fun setRoots(vararg path: String) {
         val roots = path.map { MutableXFile.byPath(it) }
 
         mutex.withLock {
+            // todo remove old root and children
+            files.clear()
             files.addAll(roots)
         }
+        notifyFiles()
         roots.forEach { updateClosedDir(it) }
     }
 
