@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
-import app.atomofiron.common.util.lazyView
 import app.atomofiron.common.util.moveChildrenFrom
 import com.google.android.material.textview.MaterialTextView
 import ru.atomofiron.regextool.R
@@ -16,17 +15,17 @@ class DetailProgressView @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private val labelStart: MaterialTextView by lazyView(R.id.progress_mtv_start, this)
-    private val labelProgress: MaterialTextView by lazyView(R.id.progress_mtv_progress, this)
-    private val labelEnd: MaterialTextView by lazyView(R.id.progress_mtv_end, this)
-    private val vStart: View by lazyView(R.id.progress_v_start, this)
-    private val vEnd: View by lazyView(R.id.progress_v_end, this)
-
     init {
         orientation = HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
         moveChildrenFrom(R.layout.view_progress_detail)
     }
+
+    private val labelStart: MaterialTextView = findViewById(R.id.progress_mtv_start)
+    private val labelProgress: MaterialTextView = findViewById(R.id.progress_mtv_progress)
+    private val labelEnd: MaterialTextView = findViewById(R.id.progress_mtv_end)
+    private val vStart: View = findViewById(R.id.progress_v_start)
+    private val vEnd: View = findViewById(R.id.progress_v_end)
 
     @Suppress("NAME_SHADOWING")
     fun set(max: Long, progress: Long, labelStart: String?, labelProgress: String?, labelEnd: String?) {

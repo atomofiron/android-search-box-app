@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.DrawerStateListenerImpl
-import app.atomofiron.common.util.lazyView
 import com.google.android.material.navigation.NavigationView
 import ru.atomofiron.regextool.R
 
@@ -19,8 +18,13 @@ class VerticalDockView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : NavigationView(context, attrs, defStyleAttr) {
-    private val ibDockSide: ImageButton by lazyView(R.id.drawer_ib_dock_side, this)
-    val recyclerView: RecyclerView
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.layout_drawer_navigation, this, true)
+    }
+
+    private val ibDockSide: ImageButton = findViewById(R.id.drawer_ib_dock_side)
+    val recyclerView: RecyclerView = findViewById(R.id.drawer_rv)
     val isOpened: Boolean get() = drawerStateListener.isOpened
 
     var gravity: Int
@@ -31,10 +35,6 @@ class VerticalDockView @JvmOverloads constructor(
     var onGravityChangeListener: ((gravity: Int) -> Unit)? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.layout_drawer_navigation, this, true)
-
-        recyclerView = findViewById(R.id.drawer_rv)
-
         ibDockSide.setOnClickListener {
             val gravity = if (gravity == Gravity.START) Gravity.END else Gravity.START
             onGravityChangeListener?.invoke(gravity)
