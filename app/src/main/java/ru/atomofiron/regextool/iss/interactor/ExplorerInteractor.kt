@@ -7,9 +7,7 @@ import ru.atomofiron.regextool.iss.service.explorer.ExplorerService
 import ru.atomofiron.regextool.iss.service.explorer.model.Change
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 
-class ExplorerInteractor {
-    private val service = ExplorerService()
-
+class ExplorerInteractor(private val service: ExplorerService) {
     val scope = CoroutineScope(Dispatchers.IO)
 
     fun setRoot(path: String) {

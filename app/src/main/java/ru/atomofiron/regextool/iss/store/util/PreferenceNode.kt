@@ -1,11 +1,11 @@
-package ru.atomofiron.regextool.iss.store
+package ru.atomofiron.regextool.iss.store.util
 
 import android.content.SharedPreferences
-import ru.atomofiron.regextool.App
 import app.atomofiron.common.util.KObservable
+import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.utils.sp
 
-class PreferenceStore<E, V> private constructor(
+class PreferenceNode<E, V> private constructor(
         private val type: Type,
         private val key: String,
         private val default: V,
@@ -17,26 +17,26 @@ class PreferenceStore<E, V> private constructor(
 
         fun <E> forInt(key: String, default: Int,
                        toValue: ((E) -> Int)? = null,
-                       fromValue: ((Int) -> E)? = null): PreferenceStore<E, Int> {
-            return PreferenceStore(Type.INT, key, default, toValue, fromValue)
+                       fromValue: ((Int) -> E)? = null): PreferenceNode<E, Int> {
+            return PreferenceNode(Type.INT, key, default, toValue, fromValue)
         }
 
         fun <E> forString(key: String, default: String,
                           toValue: ((E) -> String)? = null,
-                          fromValue: ((String) -> E)? = null): PreferenceStore<E, String> {
-            return PreferenceStore(Type.STRING, key, default, toValue, fromValue)
+                          fromValue: ((String) -> E)? = null): PreferenceNode<E, String> {
+            return PreferenceNode(Type.STRING, key, default, toValue, fromValue)
         }
 
         fun <E> forNullableString(key: String, default: String?,
                           toValue: ((E) -> String?)? = null,
-                          fromValue: ((String?) -> E)? = null): PreferenceStore<E, String?> {
-            return PreferenceStore(Type.STRING, key, default, toValue, fromValue)
+                          fromValue: ((String?) -> E)? = null): PreferenceNode<E, String?> {
+            return PreferenceNode(Type.STRING, key, default, toValue, fromValue)
         }
 
         fun <E> forBoolean(key: String, default: Boolean,
                            toValue: ((E) -> Boolean)? = null,
-                           fromValue: ((Boolean) -> E)? = null): PreferenceStore<E, Boolean> {
-            return PreferenceStore(Type.BOOLEAN, key, default, toValue, fromValue)
+                           fromValue: ((Boolean) -> E)? = null): PreferenceNode<E, Boolean> {
+            return PreferenceNode(Type.BOOLEAN, key, default, toValue, fromValue)
         }
     }
 

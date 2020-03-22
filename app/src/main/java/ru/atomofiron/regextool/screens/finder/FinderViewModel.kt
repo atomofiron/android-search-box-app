@@ -8,12 +8,15 @@ import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.channel.PreferencesChannel
+import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate.*
+import javax.inject.Inject
 import kotlin.reflect.KClass
 
 
@@ -30,6 +33,9 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
     private var configItem: ConfigItem? = ConfigItem()
 
+    @Inject
+    lateinit var explorerStore: ExplorerStore
+
     init {
         items.add(SearchAndReplaceItem())
         val characters = SettingsStore.specialCharacters.entity
@@ -39,6 +45,14 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         for (i in 1L..30L)
         items.add(ResultItem(i + 900L, MutableXFile("-rwxrwxrwx", "atomofiron", "atomofiron", "7B", "DATE", "TIME", "some_file", "", false, "/sdcard/search/path/some_file", 1337)))
         state.value = items
+    }
+
+    override fun buildComponentAndInject() {
+        DaggerFinderComponent
+                .builder()
+                .dependencies(DaggerInjector.appComponent)
+                .build()
+                .inject(this)
     }
 
     override fun onCreate(context: Context, intent: Intent) {

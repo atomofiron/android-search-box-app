@@ -89,7 +89,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     }
 
     private fun showPermissionRequiredWarning() {
-        Snackbar.make(view!!, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
+        Snackbar.make(thisView, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
                 .setAnchorView(anchorView)
                 .setAction(R.string.allow) { viewModel.onAllowStorageClick() }
                 .show()

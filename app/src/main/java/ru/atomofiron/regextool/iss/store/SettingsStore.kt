@@ -1,10 +1,10 @@
 package ru.atomofiron.regextool.iss.store
 
 import android.view.Gravity
+import ru.atomofiron.regextool.iss.store.util.PreferenceNode
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
 import ru.atomofiron.regextool.utils.Const
-import java.lang.Exception
 
 object SettingsStore {
     fun getCurrentValue(key: String): Any? {
@@ -22,53 +22,53 @@ object SettingsStore {
         }
     }
 
-    val useSu = PreferenceStore.forBoolean<Boolean>(
+    val useSu = PreferenceNode.forBoolean<Boolean>(
             key = Const.PREF_USE_SU,
             default = false
     )
 
-    val storagePath = PreferenceStore.forString<String>(
+    val storagePath = PreferenceNode.forString<String>(
             key = Const.PREF_STORAGE_PATH,
             default = Const.ROOT
     )
 
-    val openedDirPath = PreferenceStore.forNullableString<String?>(
+    val openedDirPath = PreferenceNode.forNullableString<String?>(
             key = Const.PREF_OPENED_DIR_PATH,
             default = null
     )
 
-    val dockGravity = PreferenceStore.forInt<Int>(
+    val dockGravity = PreferenceNode.forInt<Int>(
             key = Const.PREF_DOCK_GRAVITY,
             default = Gravity.START
     )
 
-    val specialCharacters = PreferenceStore.forString(
+    val specialCharacters = PreferenceNode.forString(
             key = Const.PREF_SPECIAL_CHARACTERS,
             default = Const.DEFAULT_SPECIAL_CHARACTERS,
             toValue = { it.joinToString(separator = " ") },
             fromValue = { it.split(" ").toTypedArray() }
     )
 
-    val extraFormats = PreferenceStore.forString(
+    val extraFormats = PreferenceNode.forString(
             key = Const.PREF_EXTRA_FORMATS,
             default = Const.DEFAULT_EXTRA_FORMATS,
             toValue = { it.joinToString(separator = " ") },
             fromValue = { it.split(" ").toTypedArray() }
     )
 
-    val maxFileSizeForSearch = PreferenceStore.forInt<Int>(
+    val maxFileSizeForSearch = PreferenceNode.forInt<Int>(
             key = Const.PREF_MAX_SIZE,
             default = Const.DEFAULT_MAX_SIZE
     )
 
-    val appTheme = PreferenceStore.forString(
+    val appTheme = PreferenceNode.forString(
             key = Const.PREF_APP_THEME,
             default = AppTheme.WHITE.ordinal.toString(),
             toValue = { it.ordinal.toString() },
             fromValue = { AppTheme.values()[it.toInt()] }
     )
 
-    val appOrientation = PreferenceStore.forString(
+    val appOrientation = PreferenceNode.forString(
             Const.PREF_APP_ORIENTATION,
             AppOrientation.UNDEFINED.ordinal.toString(),
             toValue = { it.ordinal.toString() },

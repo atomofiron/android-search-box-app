@@ -32,7 +32,7 @@ abstract class BaseRouter {
     protected open var fragmentContainerId: Int = 0
         get() {
             if (field == 0) {
-                field = (fragment!!.view!!.parent as View).id
+                field = (fragment!!.requireView().parent as View).id
             }
             return field
         }

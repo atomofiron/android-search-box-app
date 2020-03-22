@@ -48,7 +48,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         super.onViewCreated(view, savedInstanceState)
 
         rvContent {
-            val linearLayoutManager = LinearLayoutManager(context!!)
+            val linearLayoutManager = LinearLayoutManager(thisContext)
             linearLayoutManager.reverseLayout = true
             layoutManager = linearLayoutManager
             itemAnimator = null
@@ -77,7 +77,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
 
         if (hidden) {
             view?.let {
-                val inputMethodManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                val inputMethodManager = thisContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
                 inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
             }
         }

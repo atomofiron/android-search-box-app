@@ -11,26 +11,26 @@ import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.iss.service.explorer.model.Change
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.io.FileOutputStream
 
-open class PrivateExplorerServiceLogic {
+open class PrivateExplorerServiceLogic(protected val explorerStore: ExplorerStore) {
     protected val sp = PreferenceManager.getDefaultSharedPreferences(App.context)!!
-    protected val publisher = Publisher()
 
     protected val mutex = Mutex()
-    protected val files: MutableList<MutableXFile> get() = publisher.items
+    protected val files: MutableList<MutableXFile> get() = explorerStore.items
     protected var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
-            publisher.notifyCurrent(value)
+            explorerStore.notifyCurrent(value)
         }
 
-    val store: KObservable<List<XFile>> get() = publisher.store
-    val updates: KObservable<Change> get() = publisher.updates
+    val store: KObservable<List<XFile>> get() = explorerStore.store
+    val updates: KObservable<Change> get() = explorerStore.updates
 
     private val useSu: Boolean get() = SettingsStore.useSu.value
 
@@ -130,7 +130,7 @@ open class PrivateExplorerServiceLogic {
             invalidateDir(dir)
 
             removeAllChildren(childDir)
-            publisher.notifyUpdate(childDir)
+            explorerStore.notifyUpdate(childDir)
             updateCurrentDir(dir)
         }
     }
@@ -144,7 +144,7 @@ open class PrivateExplorerServiceLogic {
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
-            publisher.notifyUpdate(anotherDir)
+            explorerStore.notifyUpdate(anotherDir)
         } else {
             log2("anotherDir == null $dir")
         }
@@ -154,7 +154,7 @@ open class PrivateExplorerServiceLogic {
             anotherRoot.close()
             anotherRoot.clearChildren()
             removeAllChildren(anotherRoot)
-            publisher.notifyUpdate(anotherRoot)
+            explorerStore.notifyUpdate(anotherRoot)
             anotherRoot = findOpenedAnotherRoot(dir.root)
         }
 
@@ -170,9 +170,9 @@ open class PrivateExplorerServiceLogic {
             }
             dirFiles
         }
-        publisher.notifyUpdate(dir)
+        explorerStore.notifyUpdate(dir)
         if (dirFiles.isNotEmpty()) {
-            publisher.notifyInsertRange(dir, dirFiles)
+            explorerStore.notifyInsertRange(dir, dirFiles)
         }
         updateCurrentDir(dir)
     }
@@ -188,7 +188,7 @@ open class PrivateExplorerServiceLogic {
 
         dir.clearChildren()
         removeAllChildren(dir)
-        publisher.notifyUpdate(dir)
+        explorerStore.notifyUpdate(dir)
 
         if (parent != null) {
             parent.invalidateCache()
@@ -200,7 +200,7 @@ open class PrivateExplorerServiceLogic {
         log2("updateTheFile $file")
         require(!file.isDirectory) { IllegalArgumentException("Is is a directory! $file") }
         when {
-            file.updateCache(useSu) == null -> publisher.notifyUpdate(file)
+            file.updateCache(useSu) == null -> explorerStore.notifyUpdate(file)
             !file.exists -> dropEntity(file)
         }
     }
@@ -229,7 +229,7 @@ open class PrivateExplorerServiceLogic {
             }
             if (!dir.isOpened) {
                 log2("updateCurrentDir !isOpened $dir")
-                return publisher.notifyUpdate(dir)
+                return explorerStore.notifyUpdate(dir)
             }
             if (dir != currentOpenedDir) {
                 log2("updateCurrentDir !isCurrentOpenedDir $dir")
@@ -243,7 +243,7 @@ open class PrivateExplorerServiceLogic {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), newFiles)
             }
-            publisher.notifyUpdate(dir)
+            explorerStore.notifyUpdate(dir)
             notifyCurrentDirChanges(dir, dirFiles, newFiles)
         }
     }
@@ -252,8 +252,8 @@ open class PrivateExplorerServiceLogic {
         val wasNullOrEmpty = dirFiles.isNullOrEmpty()
         val nowIsEmpty = newFiles.isEmpty()
         when {
-            wasNullOrEmpty && !nowIsEmpty -> publisher.notifyInsertRange(dir, newFiles)
-            !wasNullOrEmpty && nowIsEmpty -> publisher.notifyRemoveRange(dirFiles!!)
+            wasNullOrEmpty && !nowIsEmpty -> explorerStore.notifyInsertRange(dir, newFiles)
+            !wasNullOrEmpty && nowIsEmpty -> explorerStore.notifyRemoveRange(dirFiles!!)
             !wasNullOrEmpty && !nowIsEmpty -> {
                 dirFiles!!
                 val news = newFiles.iterator()
@@ -263,13 +263,13 @@ open class PrivateExplorerServiceLogic {
                 while (olds.hasNext()) {
                     val next = olds.next()
                     if (!newFiles.contains(next)) {
-                        publisher.notifyRemove(next)
+                        explorerStore.notifyRemove(next)
                     }
                 }
                 while (news.hasNext()) {
                     val next = news.next()
                     if (!dirFiles.contains(next)) {
-                        publisher.notifyInsert(previous, next)
+                        explorerStore.notifyInsert(previous, next)
                     }
                     previous = next
                 }
@@ -290,7 +290,7 @@ open class PrivateExplorerServiceLogic {
             !dir.exists -> dropEntity(dir)
             error != null -> log2("updateClosedDir error != null ${dir.completedPath}\n$error")
             else -> {
-                publisher.notifyUpdate(dir)
+                explorerStore.notifyUpdate(dir)
                 /*
                 нельзя не уведомлять, если файлы не изменились, потому что:
                 1 у дочерних папок isCached=true, updateCache(), isCaching=true
@@ -325,7 +325,7 @@ open class PrivateExplorerServiceLogic {
         }
         when (removed.isEmpty()) {
             true -> log2("removeAllChildren not found $path")
-            false -> publisher.notifyRemoveRange(removed)
+            false -> explorerStore.notifyRemoveRange(removed)
         }
     }
 
@@ -335,6 +335,6 @@ open class PrivateExplorerServiceLogic {
         mutex.withLock {
             files.remove(entity)
         }
-        publisher.notifyRemove(entity)
+        explorerStore.notifyRemove(entity)
     }
 }

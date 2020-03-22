@@ -26,11 +26,11 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     protected open val systemBarsColorId: Int = R.color.transparent
     protected open val systemBarsLights: Boolean get() = !context.findBooleanByAttr(R.attr.isDarkTheme)
 
-    protected val theContext get() = requireContext()
-    protected val theActivity get() = requireActivity()
-    protected val theView get() = requireView()
+    protected val thisContext get() = requireContext()
+    protected val thisActivity get() = requireActivity()
+    protected val thisView get() = requireView()
 
-    protected val anchorView: View get() = activity!!.findViewById(R.id.root_iv_joystick)
+    protected val anchorView: View get() = thisActivity.findViewById(R.id.root_iv_joystick)
     private val visibilityWatcher = VisibilityWatcher()
 
     init {
@@ -39,14 +39,14 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel = ViewModelProvider(activity!!).get(viewModelClass.java)
+        viewModel = ViewModelProvider(thisActivity).get(viewModelClass.java)
         viewModel.onFragmentAttach(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Fragment.onAttachFragment()
-        viewModel.onCreate(context!!, arguments)
+        viewModel.onCreate(thisContext, arguments)
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -119,7 +119,7 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     private fun fixSystemBars(windowLightBars: Boolean) {
         // fix of the bug, when the flag is not applied by the system
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity!!.window.decorView.apply {
+            thisActivity.window.decorView.apply {
                 systemUiVisibility = when {
                     windowLightBars -> systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                     else -> systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()

@@ -1,15 +1,20 @@
 package ru.atomofiron.regextool.iss.service.explorer
 
+import android.content.SharedPreferences
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Const
 
-class ExplorerService : PrivateExplorerServiceLogic() {
+class ExplorerService(
+        private val preferences: SharedPreferences,
+        explorerStore: ExplorerStore
+) : PrivateExplorerServiceLogic(explorerStore) {
 
     fun persistState() {
-        sp.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
+        preferences.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
     }
 
     suspend fun setRoots(vararg path: String) {
@@ -20,7 +25,7 @@ class ExplorerService : PrivateExplorerServiceLogic() {
             files.clear()
             files.addAll(roots)
         }
-        publisher.notifyItems()
+        explorerStore.notifyItems()
         roots.forEach { updateClosedDir(it) }
     }
 

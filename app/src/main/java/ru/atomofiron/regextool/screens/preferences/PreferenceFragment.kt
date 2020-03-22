@@ -75,7 +75,7 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
 
     private fun showAlert(message: String) {
         Snackbar
-                .make(theView, message, Snackbar.LENGTH_SHORT)
+                .make(thisView, message, Snackbar.LENGTH_SHORT)
                 .setAnchorView(anchorView)
                 .show()
     }
@@ -85,11 +85,11 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
             R.string.successful_with_restart -> Snackbar.LENGTH_LONG
             else -> Snackbar.LENGTH_SHORT
         }
-        Snackbar.make(theView, message, duration).setAnchorView(anchorView).show()
+        Snackbar.make(thisView, message, duration).setAnchorView(anchorView).show()
     }
 
     private fun showOutputError(output: Shell.Output) {
-        Snackbar.make(theView, R.string.error, Snackbar.LENGTH_SHORT)
+        Snackbar.make(thisView, R.string.error, Snackbar.LENGTH_SHORT)
                 .apply {
                     if (output.error.isNotEmpty()) {
                         setAction(R.string.more) {

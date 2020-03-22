@@ -14,6 +14,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.explorer.model.Change
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
@@ -21,11 +22,13 @@ import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
+import javax.inject.Inject
 
 class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), ExplorerItemActionListener, PlacesAdapter.ItemActionListener {
     override val router = ExplorerRouter()
 
-    private val explorerInteractor = ExplorerInteractor()
+    @Inject
+    lateinit var explorerInteractor: ExplorerInteractor
 
     val permissionRequiredWarning = SingleLiveEvent<Intent?>()
     val historyDrawerGravity = MutableLiveData<Int>()
@@ -73,6 +76,14 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         items.add(XPlace.AnotherPlace("Another Place 1"))
         items.add(XPlace.AnotherPlace("Another Place 2"))
         places.value = items
+    }
+
+    override fun buildComponentAndInject() {
+        DaggerExplorerComponent
+                .builder()
+                .dependencies(DaggerInjector.appComponent)
+                .build()
+                .inject(this)
     }
 
     override fun onFragmentAttach(fragment: Fragment) {

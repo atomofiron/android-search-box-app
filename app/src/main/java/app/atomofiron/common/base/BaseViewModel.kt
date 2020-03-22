@@ -26,7 +26,10 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
 
     init {
         log2("init")
+        buildComponentAndInject()
     }
+
+    protected open fun buildComponentAndInject() = Unit
 
     open fun onFragmentAttach(fragment: Fragment) = router.onFragmentAttach(fragment)
 
