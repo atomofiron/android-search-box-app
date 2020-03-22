@@ -1,14 +1,11 @@
 package ru.atomofiron.regextool.iss.service.explorer
 
-import android.preference.PreferenceManager
-import app.atomofiron.common.util.KObservable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.iss.service.explorer.model.Change
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.ExplorerStore
@@ -19,7 +16,6 @@ import java.io.File
 import java.io.FileOutputStream
 
 open class PrivateExplorerServiceLogic(protected val explorerStore: ExplorerStore) {
-    protected val sp = PreferenceManager.getDefaultSharedPreferences(App.context)!!
 
     protected val mutex = Mutex()
     protected val files: MutableList<MutableXFile> get() = explorerStore.items
@@ -28,9 +24,6 @@ open class PrivateExplorerServiceLogic(protected val explorerStore: ExplorerStor
             field = value
             explorerStore.notifyCurrent(value)
         }
-
-    val store: KObservable<List<XFile>> get() = explorerStore.store
-    val updates: KObservable<Change> get() = explorerStore.updates
 
     private val useSu: Boolean get() = SettingsStore.useSu.value
 
@@ -105,7 +98,7 @@ open class PrivateExplorerServiceLogic(protected val explorerStore: ExplorerStor
         val pathToybox = App.pathToybox
         val toybox = File(pathToybox)
         toybox.deleteRecursively()
-        toybox.parentFile.mkdirs()
+        toybox.parentFile!!.mkdirs()
         val input = App.context.assets.open("toybox/toybox64")
         val bytes = input.readBytes()
         input.close()

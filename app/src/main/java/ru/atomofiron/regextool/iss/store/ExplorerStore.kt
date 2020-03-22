@@ -10,12 +10,11 @@ class ExplorerStore {
     val items: MutableList<MutableXFile> = ArrayList()
     val store = KObservable<List<XFile>>(items)
     val updates = KObservable<Change>(Change.Nothing, single = true)
-    val current = KObservable(Change.Current(null))
+    val current = KObservable<XFile?>(null)
 
     fun notifyCurrent(item: XFile?) {
         log2("notifyCurrent $item")
-        updates.setAndNotify(Change.Current(item)) // todo remove
-        current.setAndNotify(Change.Current(item))
+        current.setAndNotify(item)
     }
 
     fun notifyUpdate(item: XFile) {
@@ -44,7 +43,7 @@ class ExplorerStore {
     }
 
     fun notifyItems() {
-        log2("notifyFiles")
+        log2("notifyFiles ${items.size}")
         store.setAndNotify(items)
     }
 }

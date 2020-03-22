@@ -69,9 +69,7 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
     class RemoveObserverCallback {
         private val observers = Vector<() -> Unit>()
 
-        fun addOneTimeObserver(observer: () -> Unit) {
-            observers.addElement(observer)
-        }
+        fun addOneTimeObserver(observer: () -> Unit) = observers.addElement(observer)
 
         fun invoke() {
             observers.forEach { it() }

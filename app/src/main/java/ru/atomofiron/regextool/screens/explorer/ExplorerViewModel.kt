@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.explorer
 
 import android.Manifest
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +19,7 @@ import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.explorer.model.Change
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
@@ -34,7 +36,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     val historyDrawerGravity = MutableLiveData<Int>()
     val places = LateinitLiveData<List<XPlace>>()
     val items = MutableLiveData<List<XFile>>()
-    val notifyCurrent = SingleLiveEvent<XFile?>()
+    val current = MutableLiveData<XFile?>()
     val notifyUpdate = SingleLiveEvent<XFile>()
     val notifyRemove = SingleLiveEvent<XFile>()
     val notifyInsert = SingleLiveEvent<Pair<XFile, XFile>>()
@@ -44,24 +46,10 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     private var readStorageGranted = false
     private lateinit var permissions: Permissions
 
+    @Inject
+    lateinit var explorerStore: ExplorerStore
+
     init {
-        explorerInteractor.observeItems {
-            GlobalScope.launch(Dispatchers.Main) {
-                items.value = it
-            }
-        }
-        explorerInteractor.observeUpdates {
-            GlobalScope.launch(Dispatchers.Main) {
-                when (it) {
-                    is Change.Current -> notifyCurrent(it.file)
-                    is Change.Update -> notifyUpdate(it.file)
-                    is Change.Remove -> notifyRemove(it.file)
-                    is Change.Insert -> notifyInsert(Pair(it.previous, it.file))
-                    is Change.RemoveRange -> notifyRemoveRange(it.files)
-                    is Change.InsertRange -> notifyInsertRange(Pair(it.previous, it.files))
-                }
-            }
-        }
         SettingsStore
                 .dockGravity
                 .addObserver(onClearedCallback, ::onDockGravityChanged)
@@ -84,6 +72,32 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
                 .dependencies(DaggerInjector.appComponent)
                 .build()
                 .inject(this)
+    }
+
+    override fun onCreate(context: Context, intent: Intent) {
+        super.onCreate(context, intent)
+
+        explorerStore.store.addObserver(onClearedCallback) {
+            GlobalScope.launch(Dispatchers.Main) {
+                items.value = it
+            }
+        }
+        explorerStore.updates.addObserver(onClearedCallback) {
+            GlobalScope.launch(Dispatchers.Main) {
+                when (it) {
+                    is Change.Update -> notifyUpdate(it.file)
+                    is Change.Remove -> notifyRemove(it.file)
+                    is Change.Insert -> notifyInsert(Pair(it.previous, it.file))
+                    is Change.RemoveRange -> notifyRemoveRange(it.files)
+                    is Change.InsertRange -> notifyInsertRange(Pair(it.previous, it.files))
+                }
+            }
+        }
+        explorerStore.current.addObserver(onClearedCallback) {
+            GlobalScope.launch(Dispatchers.Main) {
+                current.value = it
+            }
+        }
     }
 
     override fun onFragmentAttach(fragment: Fragment) {

@@ -1,16 +1,18 @@
 package ru.atomofiron.regextool.di.module
 
+import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.App
+import javax.inject.Singleton
 
 @Module
 open class CommonModule {
 
     @Provides
-    open fun provideSharedPreferences(): SharedPreferences {
-        return PreferenceManager.getDefaultSharedPreferences(App.context)
+    @Singleton
+    open fun provideSharedPreferences(context: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(context)
     }
 }

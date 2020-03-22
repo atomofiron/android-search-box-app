@@ -47,17 +47,13 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         super.onCreate(savedInstanceState)
         // Fragment.onAttachFragment()
         viewModel.onCreate(thisContext, arguments)
+        onSubscribeData(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?
     ): View? = LayoutInflater.from(context).inflate(layoutId, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        onSubscribeData(viewLifecycleOwner)
-    }
 
     override fun onBack(): Boolean {
         val viewWithFocus = view?.findFocus()

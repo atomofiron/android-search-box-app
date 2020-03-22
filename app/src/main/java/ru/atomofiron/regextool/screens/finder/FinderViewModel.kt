@@ -10,8 +10,10 @@ import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
@@ -32,6 +34,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     val updateContent = SingleLiveEvent<FinderStateItemUpdate>()
 
     private var configItem: ConfigItem? = ConfigItem()
+    private var currentDir: XFile? = null
 
     @Inject
     lateinit var explorerStore: ExplorerStore
@@ -68,6 +71,11 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         }
         PreferencesChannel.historyImportedEvent.addObserver(onClearedCallback) {
             reloadHistory.invoke()
+        }
+
+        explorerStore.current.addObserver(onClearedCallback) {
+            log("current $it")
+            currentDir = it
         }
     }
 

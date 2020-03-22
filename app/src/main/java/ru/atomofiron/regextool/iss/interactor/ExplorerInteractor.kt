@@ -16,14 +16,6 @@ class ExplorerInteractor(private val service: ExplorerService) {
         }
     }
 
-    fun observeItems(observer: (List<XFile>) -> Unit) {
-        service.store.addObserver(observer)
-    }
-
-    fun observeUpdates(observer: (Change) -> Unit) {
-        service.updates.addObserver(observer)
-    }
-
     fun checkItem(item: XFile, isChecked: Boolean) {
         service.checkItem(item, isChecked)
     }
