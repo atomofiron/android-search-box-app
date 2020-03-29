@@ -7,6 +7,7 @@ import dagger.Provides
 import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.iss.service.explorer.ExplorerService
 import ru.atomofiron.regextool.iss.store.ExplorerStore
+import ru.atomofiron.regextool.iss.store.SettingsStore
 import javax.inject.Scope
 
 @Scope
@@ -34,8 +35,9 @@ class ExplorerModule {
     @ExplorerScope
     fun explorerService(
             preferences: SharedPreferences,
-            explorerStore: ExplorerStore
-    ): ExplorerService = ExplorerService(preferences, explorerStore)
+            explorerStore: ExplorerStore,
+            settingsStore: SettingsStore
+    ): ExplorerService = ExplorerService(preferences, explorerStore, settingsStore)
 
     @Provides
     @ExplorerScope
@@ -47,4 +49,5 @@ class ExplorerModule {
 interface ExplorerDependencies {
     fun sharedPreferences(): SharedPreferences
     fun explorerStore(): ExplorerStore
+    fun settingsStore(): SettingsStore
 }

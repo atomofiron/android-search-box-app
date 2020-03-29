@@ -4,10 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.model.AppTheme
+import ru.atomofiron.regextool.utils.Const
 import kotlin.reflect.KClass
 
 abstract class BaseActivity<M : BaseViewModel<*>> : AppCompatActivity() {
@@ -16,12 +17,18 @@ abstract class BaseActivity<M : BaseViewModel<*>> : AppCompatActivity() {
     protected lateinit var viewModel: M
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(SettingsStore.appTheme.entity)
+        setTheme(getAppTheme())
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(viewModelClass.java)
         viewModel.onActivityAttach(this)
         viewModel.onCreate(this, intent)
         onSubscribeData(this)
+    }
+
+    private fun getAppTheme(): AppTheme {
+        val sp = PreferenceManager.getDefaultSharedPreferences(this)
+        val themeIndex = sp.getString(Const.PREF_APP_THEME, null) ?: AppTheme.WHITE.ordinal.toString()
+        return AppTheme.values()[themeIndex.toInt()]
     }
 
     protected open fun onSubscribeData(owner: LifecycleOwner) = Unit

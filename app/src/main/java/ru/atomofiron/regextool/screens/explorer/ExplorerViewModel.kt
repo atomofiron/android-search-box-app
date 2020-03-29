@@ -49,11 +49,14 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     @Inject
     lateinit var explorerStore: ExplorerStore
 
+    @Inject
+    lateinit var settingsStore: SettingsStore
+
     init {
-        SettingsStore
+        settingsStore
                 .dockGravity
                 .addObserver(onClearedCallback, ::onDockGravityChanged)
-        SettingsStore
+        settingsStore
                 .storagePath
                 .addObserver(onClearedCallback, ::onStoragePathChanged)
 
@@ -144,10 +147,10 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onDockGravityChange(gravity: Int) = SettingsStore.dockGravity.push(gravity)
+    fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
 
     override fun onItemClick(item: XFile) {
-        val useSu = SettingsStore.useSu.value
+        val useSu = settingsStore.useSu.value
         when {
             !useSu && !readStorageGranted -> permissions
                     .check(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -157,7 +160,10 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
                     }
                     .forbidden { permissionRequiredWarning.invoke() }
             item.isDirectory -> explorerInteractor.openDir(item)
-            else -> router.showFile(item)
+            else -> {
+                val extraFormats = settingsStore.extraFormats.entity
+                router.showFile(item, extraFormats)
+            }
         }
     }
 

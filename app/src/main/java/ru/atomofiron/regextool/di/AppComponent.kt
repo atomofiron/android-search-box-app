@@ -7,6 +7,8 @@ import ru.atomofiron.regextool.di.module.CommonModule
 import ru.atomofiron.regextool.di.module.StoreModule
 import ru.atomofiron.regextool.screens.explorer.ExplorerDependencies
 import ru.atomofiron.regextool.screens.finder.FinderDependencies
+import ru.atomofiron.regextool.screens.preferences.PreferenceDependencies
+import ru.atomofiron.regextool.screens.root.RootDependencies
 import javax.inject.Singleton
 
 @Component(modules = [
@@ -16,7 +18,9 @@ import javax.inject.Singleton
 @Singleton
 abstract class AppComponent :
         FinderDependencies,
-        ExplorerDependencies
+        ExplorerDependencies,
+        PreferenceDependencies,
+        RootDependencies
 {
 
     @Component.Builder

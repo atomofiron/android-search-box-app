@@ -2,10 +2,9 @@ package ru.atomofiron.regextool.iss.store.util
 
 import android.content.SharedPreferences
 import app.atomofiron.common.util.KObservable
-import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.utils.sp
 
 class PreferenceNode<E, V> private constructor(
+        private val sp: SharedPreferences,
         private val type: Type,
         private val key: String,
         private val default: V,
@@ -13,30 +12,32 @@ class PreferenceNode<E, V> private constructor(
         fromValue: ((V) -> E)? = null
 ) {
     companion object {
-        private val sp by lazy { App.context.sp() }
-
-        fun <E> forInt(key: String, default: Int,
+        fun <E> forInt(sp: SharedPreferences,
+                       key: String, default: Int,
                        toValue: ((E) -> Int)? = null,
                        fromValue: ((Int) -> E)? = null): PreferenceNode<E, Int> {
-            return PreferenceNode(Type.INT, key, default, toValue, fromValue)
+            return PreferenceNode(sp, Type.INT, key, default, toValue, fromValue)
         }
 
-        fun <E> forString(key: String, default: String,
+        fun <E> forString(sp: SharedPreferences,
+                          key: String, default: String,
                           toValue: ((E) -> String)? = null,
                           fromValue: ((String) -> E)? = null): PreferenceNode<E, String> {
-            return PreferenceNode(Type.STRING, key, default, toValue, fromValue)
+            return PreferenceNode(sp, Type.STRING, key, default, toValue, fromValue)
         }
 
-        fun <E> forNullableString(key: String, default: String?,
-                          toValue: ((E) -> String?)? = null,
-                          fromValue: ((String?) -> E)? = null): PreferenceNode<E, String?> {
-            return PreferenceNode(Type.STRING, key, default, toValue, fromValue)
+        fun <E> forNullableString(sp: SharedPreferences,
+                                  key: String, default: String?,
+                                  toValue: ((E) -> String?)? = null,
+                                  fromValue: ((String?) -> E)? = null): PreferenceNode<E, String?> {
+            return PreferenceNode(sp, Type.STRING, key, default, toValue, fromValue)
         }
 
-        fun <E> forBoolean(key: String, default: Boolean,
+        fun <E> forBoolean(sp: SharedPreferences,
+                           key: String, default: Boolean,
                            toValue: ((E) -> Boolean)? = null,
                            fromValue: ((Boolean) -> E)? = null): PreferenceNode<E, Boolean> {
-            return PreferenceNode(Type.BOOLEAN, key, default, toValue, fromValue)
+            return PreferenceNode(sp, Type.BOOLEAN, key, default, toValue, fromValue)
         }
     }
 

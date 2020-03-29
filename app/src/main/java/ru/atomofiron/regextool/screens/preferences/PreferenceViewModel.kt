@@ -5,14 +5,15 @@ import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.channel.PreferencesChannel
+import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.iss.service.PreferenceService
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
-import java.lang.Exception
+import javax.inject.Inject
 
 class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(app) {
     override val router = PreferenceRouter()
-    private val preferenceService = PreferencesService(app.applicationContext)
 
     val alert = SingleLiveEvent<String>()
     val alertOutputSuccess = SingleLiveEvent<Int>()
@@ -20,9 +21,23 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
     val externalPath: String get() = app.applicationContext.getExternalFilesDir(null)!!.absolutePath
     val isExportImportAvailable: Boolean get() = app.applicationContext.getExternalFilesDir(null) != null
 
+    @Inject
+    lateinit var preferenceService: PreferenceService
+
+    @Inject
+    lateinit var settingsStore: SettingsStore
+
+    override fun buildComponentAndInject() {
+        DaggerPreferenceComponent
+                .builder()
+                .dependencies(DaggerInjector.appComponent)
+                .build()
+                .inject(this)
+    }
+
     fun onPreferenceUpdate(key: String, value: Int): Boolean {
         when (key) {
-            Const.PREF_MAX_SIZE -> SettingsStore.maxFileSizeForSearch.notify(value)
+            Const.PREF_MAX_SIZE -> settingsStore.maxFileSizeForSearch.notify(value)
             else -> throw Exception()
         }
         return true
@@ -30,11 +45,11 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
 
     fun onPreferenceUpdate(key: String, value: String): Boolean {
         when (key) {
-            Const.PREF_STORAGE_PATH -> SettingsStore.storagePath.notify(value)
-            Const.PREF_EXTRA_FORMATS -> SettingsStore.extraFormats.notifyByOriginal(value)
-            Const.PREF_SPECIAL_CHARACTERS -> SettingsStore.specialCharacters.notifyByOriginal(value.trim())
-            Const.PREF_APP_THEME -> SettingsStore.appTheme.notifyByOriginal(value)
-            Const.PREF_APP_ORIENTATION -> SettingsStore.appOrientation.notifyByOriginal(value)
+            Const.PREF_STORAGE_PATH -> settingsStore.storagePath.notify(value)
+            Const.PREF_EXTRA_FORMATS -> settingsStore.extraFormats.notifyByOriginal(value)
+            Const.PREF_SPECIAL_CHARACTERS -> settingsStore.specialCharacters.notifyByOriginal(value.trim())
+            Const.PREF_APP_THEME -> settingsStore.appTheme.notifyByOriginal(value)
+            Const.PREF_APP_ORIENTATION -> settingsStore.appOrientation.notifyByOriginal(value)
             else -> throw Exception()
         }
         return true
@@ -47,7 +62,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
         }
     }
 
-    fun getCurrentValue(key: String): Any? = SettingsStore.getCurrentValue(key)
+    fun getCurrentValue(key: String): Any? = settingsStore.getCurrentValue(key)
 
     fun exportPreferences() {
         val output = preferenceService.exportPreferences()
@@ -98,7 +113,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
         }
 
         if (allowed) {
-            SettingsStore.useSu.notify(newValue)
+            settingsStore.useSu.notify(newValue)
         }
         return allowed
     }

@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import ru.atomofiron.regextool.iss.interactor.FinderInteractor
 import ru.atomofiron.regextool.iss.store.ExplorerStore
+import ru.atomofiron.regextool.iss.store.SettingsStore
 import javax.inject.Scope
 
 @Scope
@@ -35,4 +36,5 @@ class FinderModule {
 
 interface FinderDependencies {
     fun explorerStore(): ExplorerStore
+    fun settingsStore(): SettingsStore
 }

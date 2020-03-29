@@ -1,10 +1,10 @@
-package ru.atomofiron.regextool.screens.preferences
+package ru.atomofiron.regextool.iss.service
 
 import android.content.Context
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.utils.Shell
 
-class PreferencesService(val context: Context) {
+class PreferenceService(val context: Context) {
     private val packageName = context.packageName
     private val toybox = App.pathToybox
     private val internalPath = context.applicationInfo.dataDir

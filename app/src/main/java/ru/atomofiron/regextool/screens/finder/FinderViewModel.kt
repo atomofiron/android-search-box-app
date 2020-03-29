@@ -39,9 +39,12 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     @Inject
     lateinit var explorerStore: ExplorerStore
 
+    @Inject
+    lateinit var settingsStore: SettingsStore
+
     init {
         items.add(SearchAndReplaceItem())
-        val characters = SettingsStore.specialCharacters.entity
+        val characters = settingsStore.specialCharacters.entity
         items.add(SpecialCharactersItem(characters))
         items.add(TestItem())
         items.add(ProgressItem(777, "9/36"))
@@ -61,12 +64,12 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     override fun onCreate(context: Context, intent: Intent) {
         super.onCreate(context, intent)
 
-        SettingsStore
+        settingsStore
                 .dockGravity
                 .addObserver(onClearedCallback) { gravity ->
                     historyDrawerGravity.value = gravity
                 }
-        SettingsStore.specialCharacters.addObserver(onClearedCallback) { chs ->
+        settingsStore.specialCharacters.addObserver(onClearedCallback) { chs ->
             updateItem(SpecialCharactersItem(chs), SpecialCharactersItem::class)
         }
         PreferencesChannel.historyImportedEvent.addObserver(onClearedCallback) {
@@ -110,7 +113,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         }
     }
 
-    fun onDockGravityChange(gravity: Int) = SettingsStore.dockGravity.push(gravity)
+    fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
 
     fun onExplorerOptionSelected() {
         router.showExplorer()

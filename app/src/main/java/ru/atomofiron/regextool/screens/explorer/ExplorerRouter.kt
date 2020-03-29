@@ -21,8 +21,7 @@ class ExplorerRouter : BaseRouter() {
 
     fun showSettings() = startScreen(PreferenceFragment())
 
-    fun showFile(item: XFile) {
-        val extraFormats = SettingsStore.extraFormats.entity
+    fun showFile(item: XFile, extraFormats: Array<String>) {
         if (Util.isTextFile(item.completedPath, extraFormats)) {
             // todo open file
         } else {

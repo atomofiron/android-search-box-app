@@ -15,7 +15,10 @@ import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.io.FileOutputStream
 
-open class PrivateExplorerServiceLogic(protected val explorerStore: ExplorerStore) {
+open class PrivateExplorerServiceLogic(
+        protected val explorerStore: ExplorerStore,
+        protected val settingsStore: SettingsStore
+) {
 
     protected val mutex = Mutex()
     protected val files: MutableList<MutableXFile> get() = explorerStore.items
@@ -25,7 +28,7 @@ open class PrivateExplorerServiceLogic(protected val explorerStore: ExplorerStor
             explorerStore.notifyCurrent(value)
         }
 
-    private val useSu: Boolean get() = SettingsStore.useSu.value
+    private val useSu: Boolean get() = settingsStore.useSu.value
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
