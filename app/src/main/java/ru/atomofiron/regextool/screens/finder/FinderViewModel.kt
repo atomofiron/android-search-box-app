@@ -9,11 +9,9 @@ import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
@@ -34,7 +32,6 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     val updateContent = SingleLiveEvent<FinderStateItemUpdate>()
 
     private var configItem: ConfigItem? = ConfigItem()
-    private var currentDir: XFile? = null
 
     @Inject
     lateinit var explorerStore: ExplorerStore
@@ -48,8 +45,6 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         items.add(SpecialCharactersItem(characters))
         items.add(TestItem())
         items.add(ProgressItem(777, "9/36"))
-        for (i in 1L..30L)
-        items.add(ResultItem(i + 900L, MutableXFile("-rwxrwxrwx", "atomofiron", "atomofiron", "7B", "DATE", "TIME", "some_file", "", false, "/sdcard/search/path/some_file", 1337)))
         state.value = items
     }
 
@@ -77,9 +72,26 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         }
 
         explorerStore.current.addObserver(onClearedCallback) {
-            log("current $it")
-            currentDir = it
+            val checked = explorerStore.storeChecked.value
+            if (checked.isEmpty()) {
+                updateTargets(it, checked)
+            }
         }
+
+        explorerStore.storeChecked.addObserver(onClearedCallback) {
+            val currentDir = explorerStore.current.value
+            updateTargets(currentDir, it)
+        }
+    }
+
+    private fun updateTargets(currentDir: XFile?, checked: List<XFile>) {
+        val targets = items.filterIsInstance<TargetItem>()
+        targets.forEach { items.remove(it) }
+        when {
+            checked.isNotEmpty() -> checked.forEach { items.add(TargetItem(it)) }
+            currentDir != null -> items.add(TargetItem(currentDir))
+        }
+        state.postValue(items)
     }
 
     fun onConfigChange(newItem: ConfigItem) {

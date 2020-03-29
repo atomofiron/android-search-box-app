@@ -22,7 +22,7 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
             FinderItemType.CONFIGS.id -> ConfigHolder(parent, viewType, onFinderActionListener)
             FinderItemType.TEST.id -> TestHolder(parent, viewType)
             FinderItemType.PROGRESS.id -> ProgressHolder(parent, viewType, onFinderActionListener)
-            FinderItemType.RESULT.id -> ResultHolder(parent, viewType, onFinderActionListener)
+            FinderItemType.TARGET.id -> TargetHolder(parent, viewType, onFinderActionListener)
             else -> throw IllegalArgumentException("viewType = $viewType")
         }
     }
@@ -36,5 +36,5 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
             CharactersHolder.OnActionListener,
             ConfigHolder.OnActionListener,
             ProgressHolder.OnActionListener,
-            ResultHolder.OnActionListener
+            TargetHolder.OnActionListener
 }

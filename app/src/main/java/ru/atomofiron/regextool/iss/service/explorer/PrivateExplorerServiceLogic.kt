@@ -22,6 +22,7 @@ open class PrivateExplorerServiceLogic(
 
     protected val mutex = Mutex()
     protected val files: MutableList<MutableXFile> get() = explorerStore.items
+    protected val checked: MutableList<MutableXFile> get() = explorerStore.checked
     protected var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value

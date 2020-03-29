@@ -31,13 +31,13 @@ class ExplorerService(
         roots.forEach { updateClosedDir(it) }
     }
 
-    fun invalidateDir(f: XFile) {
-        val dir = findItem(f) ?: return
-        invalidateDir(dir)
+    fun invalidateDir(dir: XFile) {
+        val item = findItem(dir) ?: return
+        invalidateDir(item)
     }
 
-    suspend fun openDir(f: XFile) {
-        val dir = findItem(f) ?: return
+    suspend fun openDir(d: XFile) {
+        val dir = findItem(d) ?: return
         if (!dir.isDirectory) {
             log2("openDir return $dir")
             return
@@ -52,8 +52,8 @@ class ExplorerService(
         }
     }
 
-    suspend fun updateItem(f: XFile) {
-        val file = findItem(f) ?: return
+    suspend fun updateItem(it: XFile) {
+        val file = findItem(it) ?: return
         log2("updateItem $file")
         when {
             file.isOpened && file == currentOpenedDir -> updateCurrentDir(file)
@@ -63,7 +63,24 @@ class ExplorerService(
         }
     }
 
-    fun checkItem(item: XFile, isChecked: Boolean) {
-        findItem(item)?.isChecked = isChecked
+    fun checkItem(it: XFile, isChecked: Boolean) {
+        val item = findItem(it) ?: return
+        log2("checkItem $item")
+        item.isChecked = isChecked
+
+        when {
+            item.isChecked -> checked.add(item)
+            !item.isChecked -> checked.remove(item)
+        }
+        ArrayList(checked).forEach { i ->
+            checked.filter { j ->
+                j.completedParentPath.startsWith(i.completedPath)
+            }.forEach { k ->
+                checked.remove(k)
+                k.isChecked = false
+                explorerStore.notifyUpdate(k)
+            }
+        }
+        explorerStore.notifyChecked()
     }
 }

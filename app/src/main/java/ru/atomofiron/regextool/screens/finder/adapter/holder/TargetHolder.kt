@@ -6,22 +6,29 @@ import android.widget.TextView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
-class ResultHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : CardViewHolder(parent, id) {
+class TargetHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : CardViewHolder(parent, id) {
     private val ivIcon = itemView.findViewById<ImageView>(R.id.item_iv_icon)
     private val tvTitle = itemView.findViewById<TextView>(R.id.item_tv_title)
 
     init {
         itemView.setOnClickListener {
-            listener.onItemClick(item as FinderStateItem.ResultItem)
+            listener.onItemClick(item as FinderStateItem.TargetItem)
         }
     }
 
     override fun onBind(item: FinderStateItem, position: Int) {
-        item as FinderStateItem.ResultItem
+        item as FinderStateItem.TargetItem
+
+        val icon = when {
+            !item.target.isDirectory -> R.drawable.ic_file_circle
+            item.target.files.isNullOrEmpty() -> R.drawable.ic_explorer_folder_empty
+            else -> R.drawable.ic_explorer_folder
+        }
+        ivIcon.setImageResource(icon)
         tvTitle.text = item.target.completedPath
     }
 
     interface OnActionListener {
-        fun onItemClick(item: FinderStateItem.ResultItem)
+        fun onItemClick(item: FinderStateItem.TargetItem)
     }
 }

@@ -12,6 +12,9 @@ class ExplorerStore {
     val updates = KObservable<Change>(Change.Nothing, single = true)
     val current = KObservable<XFile?>(null)
 
+    val checked: MutableList<MutableXFile> = ArrayList()
+    val storeChecked = KObservable<List<XFile>>(ArrayList())
+
     fun notifyCurrent(item: XFile?) {
         log2("notifyCurrent $item")
         current.setAndNotify(item)
@@ -20,11 +23,19 @@ class ExplorerStore {
     fun notifyUpdate(item: XFile) {
         log2("notifyUpdate $item")
         updates.setAndNotify(Change.Update(item))
+
+        if (checked.contains(item)) {
+            notifyChecked()
+        }
     }
 
     fun notifyRemove(item: XFile) {
         log2("notifyRemove $item")
         updates.setAndNotify(Change.Remove(item))
+
+        if (checked.remove(item)) {
+            notifyChecked()
+        }
     }
 
     fun notifyInsert(previous: XFile, item: XFile) {
@@ -35,6 +46,10 @@ class ExplorerStore {
     fun notifyRemoveRange(items: List<XFile>) {
         log2("notifyRemoveRange ${items.size}")
         updates.setAndNotify(Change.RemoveRange(items))
+
+        if (checked.removeAll(items)) {
+            notifyChecked()
+        }
     }
 
     fun notifyInsertRange(previous: XFile, items: List<XFile>) {
@@ -45,5 +60,17 @@ class ExplorerStore {
     fun notifyItems() {
         log2("notifyFiles ${items.size}")
         store.setAndNotify(items)
+
+        val size = checked.size
+        checked.filter { !items.contains(it) }
+                .forEach { checked.remove(it) }
+        if (checked.size != size) {
+            notifyChecked()
+        }
+    }
+
+    fun notifyChecked() {
+        log2("notifyChecked")
+        storeChecked.setAndNotify(ArrayList(checked))
     }
 }

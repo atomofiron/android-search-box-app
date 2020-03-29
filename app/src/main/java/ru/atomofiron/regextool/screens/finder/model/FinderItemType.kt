@@ -8,5 +8,5 @@ enum class FinderItemType(val id: Int) {
     CONFIGS(R.layout.item_config),
     TEST(R.layout.item_test),
     PROGRESS(R.layout.item_progress),
-    RESULT(R.layout.item_finder_result)
+    TARGET(R.layout.item_finder_target)
 }

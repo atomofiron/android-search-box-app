@@ -26,6 +26,6 @@ class FinderActionListenerDelegate(
     override fun onProgressStopClick(item: FinderStateItem.ProgressItem) {
     }
 
-    override fun onItemClick(item: FinderStateItem.ResultItem) {
+    override fun onItemClick(item: FinderStateItem.TargetItem) {
     }
 }

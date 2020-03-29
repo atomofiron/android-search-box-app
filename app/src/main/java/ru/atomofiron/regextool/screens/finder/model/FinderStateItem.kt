@@ -44,6 +44,6 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     }
     class ProgressItem(val id: Long, val status: String)
         : FinderStateItem(id, R.layout.item_progress)
-    class ResultItem(val id: Long, val target: XFile)
-        : FinderStateItem(id, R.layout.item_finder_result)
+    class TargetItem(val target: XFile)
+        : FinderStateItem(target.hashCode().toLong(), R.layout.item_finder_target)
 }
