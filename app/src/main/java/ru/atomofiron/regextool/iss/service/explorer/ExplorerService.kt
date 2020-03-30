@@ -69,7 +69,7 @@ class ExplorerService(
         item.isChecked = isChecked
 
         val dirFiles = item.files ?: arrayListOf()
-        val isNotEmptyOpenedDir = dirFiles.isNotEmpty() && item.isDirectory && item.isOpened
+        val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
         when {
             isNotEmptyOpenedDir && !item.isChecked -> {
                 checked.remove(item)
