@@ -72,15 +72,22 @@ class ExplorerService(
         val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
         when {
             isNotEmptyOpenedDir && !item.isChecked -> {
-                checked.remove(item)
                 checkChildren(item)
+                checked.remove(item)
             }
-            isNotEmptyOpenedDir && item.isChecked -> if (!uncheckChildren(item)) {
-                checked.add(item)
+            isNotEmptyOpenedDir && item.isChecked -> when {
+                uncheckAllChildren(item) -> {
+                    item.isChecked = false
+                    explorerStore.notifyUpdate(item)
+                }
+                else -> {
+                    uncheckParent(item)
+                    checked.add(item)
+                }
             }
             item.isChecked -> {
-                checked.add(item)
                 uncheckParent(item)
+                checked.add(item)
             }
             !item.isChecked -> checked.remove(item)
         }

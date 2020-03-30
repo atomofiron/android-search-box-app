@@ -345,19 +345,14 @@ open class PrivateExplorerServiceLogic(
         explorerStore.notifyUpdateRange(dirFiles)
     }
 
-    protected fun uncheckChildren(dir: MutableXFile): Boolean {
+    protected fun uncheckAllChildren(dir: MutableXFile): Boolean {
         log2("uncheckChildren $dir")
-        val dirFiles = dir.files!!
         var containedChecked = false
-        dirFiles.filter { it.isChecked }.forEach {
+        checked.filter { it.completedParentPath.startsWith(dir.completedPath) }.forEach {
             containedChecked = true
             it.isChecked = false
+            explorerStore.notifyUpdate(it)
             checked.remove(it)
-        }
-        if (containedChecked) {
-            dir.isChecked = false
-            explorerStore.notifyUpdate(dir)
-            explorerStore.notifyUpdateRange(dirFiles)
         }
 
         return containedChecked
