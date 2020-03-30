@@ -40,6 +40,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     val notifyUpdate = SingleLiveEvent<XFile>()
     val notifyRemove = SingleLiveEvent<XFile>()
     val notifyInsert = SingleLiveEvent<Pair<XFile, XFile>>()
+    val notifyUpdateRange = SingleLiveEvent<List<XFile>>()
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
 
@@ -88,11 +89,12 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         explorerStore.updates.addObserver(onClearedCallback) {
             GlobalScope.launch(Dispatchers.Main) {
                 when (it) {
-                    is Change.Update -> notifyUpdate(it.file)
-                    is Change.Remove -> notifyRemove(it.file)
-                    is Change.Insert -> notifyInsert(Pair(it.previous, it.file))
-                    is Change.RemoveRange -> notifyRemoveRange(it.files)
-                    is Change.InsertRange -> notifyInsertRange(Pair(it.previous, it.files))
+                    is Change.Update -> notifyUpdate(it.item)
+                    is Change.Remove -> notifyRemove(it.item)
+                    is Change.Insert -> notifyInsert(Pair(it.previous, it.item))
+                    is Change.UpdateRange -> notifyUpdateRange(it.items)
+                    is Change.RemoveRange -> notifyRemoveRange(it.items)
+                    is Change.InsertRange -> notifyInsertRange(Pair(it.previous, it.items))
                 }
             }
         }

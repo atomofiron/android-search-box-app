@@ -65,22 +65,26 @@ class ExplorerService(
 
     fun checkItem(it: XFile, isChecked: Boolean) {
         val item = findItem(it) ?: return
-        log2("checkItem $item")
+        log2("checkItem $isChecked $it")
         item.isChecked = isChecked
 
+        val dirFiles = item.files ?: arrayListOf()
+        val isNotEmptyOpenedDir = dirFiles.isNotEmpty() && item.isDirectory && item.isOpened
         when {
-            item.isChecked -> checked.add(item)
+            isNotEmptyOpenedDir && !item.isChecked -> {
+                checked.remove(item)
+                checkChildren(item)
+            }
+            isNotEmptyOpenedDir && item.isChecked -> if (!uncheckChildren(item)) {
+                checked.add(item)
+            }
+            item.isChecked -> {
+                checked.add(item)
+                uncheckParent(item)
+            }
             !item.isChecked -> checked.remove(item)
         }
-        ArrayList(checked).forEach { i ->
-            checked.filter { j ->
-                j.completedParentPath.startsWith(i.completedPath)
-            }.forEach { k ->
-                checked.remove(k)
-                k.isChecked = false
-                explorerStore.notifyUpdate(k)
-            }
-        }
+
         explorerStore.notifyChecked()
     }
 }

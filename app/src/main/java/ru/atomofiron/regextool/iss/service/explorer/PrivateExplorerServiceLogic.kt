@@ -334,4 +334,43 @@ open class PrivateExplorerServiceLogic(
         }
         explorerStore.notifyRemove(entity)
     }
+
+    protected fun checkChildren(dir: MutableXFile) {
+        log2("checkChildren $dir")
+        val dirFiles = dir.files!!
+        dirFiles.forEach {
+            it.isChecked = true
+            checked.add(it)
+        }
+        explorerStore.notifyUpdateRange(dirFiles)
+    }
+
+    protected fun uncheckChildren(dir: MutableXFile): Boolean {
+        log2("uncheckChildren $dir")
+        val dirFiles = dir.files!!
+        var containedChecked = false
+        dirFiles.filter { it.isChecked }.forEach {
+            containedChecked = true
+            it.isChecked = false
+            checked.remove(it)
+        }
+        if (containedChecked) {
+            dir.isChecked = false
+            explorerStore.notifyUpdate(dir)
+            explorerStore.notifyUpdateRange(dirFiles)
+        }
+
+        return containedChecked
+    }
+
+    protected fun uncheckParent(item: MutableXFile) {
+        log2("uncheckParent $item")
+        checked.find {
+            item.completedParentPath.startsWith(it.completedPath)
+        }?.let { checkedParent ->
+            checkedParent.isChecked = false
+            checked.remove(checkedParent)
+            explorerStore.notifyUpdate(checkedParent)
+        }
+    }
 }

@@ -29,6 +29,11 @@ class ExplorerStore {
         }
     }
 
+    fun notifyUpdateRange(items: List<XFile>) {
+        log2("notifyUpdateRange ${items.size}")
+        updates.setAndNotify(Change.UpdateRange(items))
+    }
+
     fun notifyRemove(item: XFile) {
         log2("notifyRemove $item")
         updates.setAndNotify(Change.Remove(item))

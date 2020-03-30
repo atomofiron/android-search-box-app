@@ -63,6 +63,9 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
             if (indexLast == UNKNOWN) {
                 indexLast = this.items.indexOf(items[lastCount - i])
             }
+            if (indexFirst != UNKNOWN && indexLast != UNKNOWN) {
+                break
+            }
         }
 
         if (indexFirst == UNKNOWN) {
@@ -74,6 +77,32 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         }
 
         notifyItemRangeRemoved(indexFirst, indexLast.inc() - indexFirst)
+    }
+
+    fun notifyItems(items: List<D>) {
+        var indexFirst = UNKNOWN
+        var indexLast = UNKNOWN
+        val lastCount = items.size.dec()
+
+        for (i in items.indices) {
+            if (indexFirst == UNKNOWN) {
+                indexFirst = this.items.indexOf(items[i])
+            }
+            if (indexLast == UNKNOWN) {
+                indexLast = this.items.indexOf(items[lastCount - i])
+            }
+            if (indexFirst != UNKNOWN && indexLast != UNKNOWN) {
+                break
+            }
+        }
+
+        if (indexFirst == UNKNOWN) {
+            return
+        }
+
+        // caution: do not replace items, notify only
+
+        notifyItemRangeChanged(indexFirst, indexLast.inc() - indexFirst)
     }
 
     fun insertItems(previous: D, items: List<D>) {

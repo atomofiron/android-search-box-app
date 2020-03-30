@@ -67,6 +67,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         viewModel.notifyUpdate.observeData(owner, explorerAdapter::setItem)
         viewModel.notifyRemove.observeData(owner, explorerAdapter::removeItem)
         viewModel.notifyInsert.observeData(owner) { explorerAdapter.insertItem(it.first, it.second) }
+        viewModel.notifyUpdateRange.observeData(owner, explorerAdapter::notifyItems)
         viewModel.notifyRemoveRange.observeData(owner, explorerAdapter::removeItems)
         viewModel.notifyInsertRange.observeData(owner) { explorerAdapter.insertItems(it.first, it.second) }
         viewModel.permissionRequiredWarning.observeEvent(owner, ::showPermissionRequiredWarning)

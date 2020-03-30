@@ -28,15 +28,16 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         onItemActionListener?.onItemClick(item)
     }
 
-    private var onCheckListener: ((View, Boolean) -> Unit) = { _, isChecked ->
-        onItemActionListener?.onItemCheck(item, isChecked)
+    private var onCheckListener: ((View) -> Unit) = { view ->
+        view as CheckBox
+        onItemActionListener?.onItemCheck(item, view.isChecked)
     }
 
     override fun onBind(item: XFile, position: Int) {
         super.onBind(item, position)
 
         itemView.setOnClickListener(onClickListener)
-        cbFlag.setOnCheckedChangeListener(onCheckListener)
+        cbFlag.setOnClickListener(onCheckListener)
 
         val image = when {
             !item.isDirectory -> R.drawable.ic_file_circle
