@@ -55,7 +55,7 @@ class ConfigHolder(
         item as FinderStateItem.ConfigItem
         skipUpdate = true
         cbCaseSense.isChecked = !item.ignoreCase
-        cbUseRegexp.isChecked = item.useRegexp
+        cbUseRegexp.isChecked = item.useRegex
         cpSearchInContent.isChecked = item.searchInContent
         cbMultiline.isChecked = item.multilineSearch
         cbReplace.isChecked = item.replaceEnabled

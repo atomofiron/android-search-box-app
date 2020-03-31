@@ -5,18 +5,18 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.appcompat.widget.AppCompatEditText
-import ru.atomofiron.regextool.R
 import app.atomofiron.common.recycler.GeneralHolder
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.SearchAndReplaceItem
+import ru.atomofiron.regextool.view.custom.RegexText
 import java.util.regex.Pattern
 
 class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionListener) :
         GeneralHolder<FinderStateItem>(parent, id) {
     private val params: SearchAndReplaceItem get() = item as SearchAndReplaceItem
 
-    private val etFind = itemView.findViewById<AppCompatEditText>(R.id.item_find_rt_find)
+    private val etFind = itemView.findViewById<RegexText>(R.id.item_find_rt_find)
     private val btnFind = itemView.findViewById<View>(R.id.item_find_ib_find)
     private val viewReplace = itemView.findViewById<View>(R.id.item_find_i_replace)
 
@@ -35,15 +35,17 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
     }
 
     private fun updateWarning(query: String) {
-        when {
-            params.useRegexp -> try {
+        if (params.useRegex) {
+            try {
                 Pattern.compile(query)
-                etFind.isActivated = false
             } catch (e: Exception) {
                 etFind.isActivated = true
+                btnFind.visibility = View.GONE
+                return
             }
-            else -> etFind.isActivated = false
         }
+        etFind.isActivated = false
+        btnFind.visibility = View.VISIBLE
     }
 
     interface OnActionListener {

@@ -3,6 +3,7 @@ package ru.atomofiron.regextool.screens.explorer.adapter
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -60,8 +61,8 @@ class ItemSeparationDecorator(private val separationType: (position: Int) -> Sep
         downSeparation = ContextCompat.getDrawable(context, R.drawable.tree_level_separation)!!
         separationSize = context.resources.getDimensionPixelSize(R.dimen.item_dir_separation_size)
         var color = context.findColorByAttr(R.attr.colorAccent)
-        upSeparation.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+        upSeparation.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
         color = ContextCompat.getColor(context, R.color.grey_middle_lite)
-        downSeparation.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+        downSeparation.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
     }
 }

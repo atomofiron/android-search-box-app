@@ -101,10 +101,10 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
         val ignoreCaseChanged = item.ignoreCase xor newItem.ignoreCase
         val replaceEnabledChanged = item.replaceEnabled xor newItem.replaceEnabled
-        val useRegexpChanged = item.useRegexp xor newItem.useRegexp
+        val useRegexpChanged = item.useRegex xor newItem.useRegex
 
         if (replaceEnabledChanged || useRegexpChanged) {
-            val it = SearchAndReplaceItem(newItem.replaceEnabled, newItem.useRegexp)
+            val it = SearchAndReplaceItem(newItem.replaceEnabled, newItem.useRegex)
             updateItem(it, SearchAndReplaceItem::class)
         }
 
@@ -112,7 +112,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
         if (ignoreCaseChanged || replaceEnabledChanged || useRegexpChanged) {
             updateItem(TestItem::class) {
-                it.copy(useRegexp = newItem.useRegexp,
+                it.copy(useRegexp = newItem.useRegex,
                         ignoreCase = newItem.ignoreCase,
                         multilineSearch = newItem.multilineSearch)
             }

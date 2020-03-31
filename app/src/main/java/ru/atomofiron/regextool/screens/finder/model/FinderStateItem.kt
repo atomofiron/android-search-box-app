@@ -11,19 +11,19 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         const val TEST_POSITION = 3
     }
     class SearchAndReplaceItem(val replaceEnabled: Boolean = false,
-                               val useRegexp: Boolean = false)
+                               val useRegex: Boolean = false)
         : FinderStateItem(SEARCH_POSITION.inc().toLong(), R.layout.item_field_search)
     class SpecialCharactersItem(val characters: Array<String>)
         : FinderStateItem(CHARACTERS_POSITION.inc().toLong(), R.layout.item_characters)
     class ConfigItem(val ignoreCase: Boolean = false,
-                     val useRegexp: Boolean = false,
+                     val useRegex: Boolean = false,
                      val searchInContent: Boolean = false,
                      val multilineSearch: Boolean = false,
                      val replaceEnabled: Boolean = false)
         : FinderStateItem(CONFIG_POSITION.inc().toLong(), R.layout.item_config) {
         fun copy(
                 ignoreCase: Boolean = this.ignoreCase,
-                useRegexp: Boolean = this.useRegexp,
+                useRegexp: Boolean = this.useRegex,
                 searchInContent: Boolean = this.searchInContent,
                 multilineSearch: Boolean = this.multilineSearch,
                 searchAndReplace: Boolean = this.replaceEnabled): ConfigItem {
