@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
 
@@ -58,7 +59,7 @@ class ItemSeparationDecorator(private val separationType: (position: Int) -> Sep
         upSeparation = ContextCompat.getDrawable(context, R.drawable.tree_level_separation)!!
         downSeparation = ContextCompat.getDrawable(context, R.drawable.tree_level_separation)!!
         separationSize = context.resources.getDimensionPixelSize(R.dimen.item_dir_separation_size)
-        var color = ContextCompat.getColor(context, R.color.colorAccent)
+        var color = context.findColorByAttr(R.attr.colorAccent)
         upSeparation.setColorFilter(color, PorterDuff.Mode.SRC_IN)
         color = ContextCompat.getColor(context, R.color.grey_middle_lite)
         downSeparation.setColorFilter(color, PorterDuff.Mode.SRC_IN)

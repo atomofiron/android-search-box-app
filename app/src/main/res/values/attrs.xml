@@ -8,7 +8,7 @@
     <attr name="colorCardBackground" format="color" tools:override="true" />
     <attr name="colorPositive" format="color" />
     <attr name="colorNegative" format="color" />
-    <attr name="colorAccentLite" format="color" />
+    <attr name="colorRipple" format="color" />
     <attr name="colorFieldDivider" format="color" />
     <attr name="colorBone" format="color" />
     <attr name="colorOverlay" format="color" />

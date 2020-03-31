@@ -8,11 +8,11 @@
         android:scaleX="2"
         android:scaleY="2">
         <path
-            android:fillColor="@color/colorAccent"
+            android:fillColor="?attr/colorAccent"
             android:pathData="M2,4c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2z"
             />
         <path
-            android:fillColor="@color/colorAccent"
+            android:fillColor="?attr/colorAccent"
             android:pathData="M10,4c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2z"
             />
     </group>

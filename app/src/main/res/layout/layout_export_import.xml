@@ -79,7 +79,7 @@
         android:checked="true"
         android:layout_margin="@dimen/common_half_margin"
         app:cornerRadius="@dimen/infinity"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="?attr/colorAccent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lei_rg_target"
         app:layout_constraintRight_toRightOf="parent"

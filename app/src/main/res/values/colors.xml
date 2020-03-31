@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorPrimaryLight">#ff3F51B5</color>
-	<color name="colorPrimaryDarkLight">#ff303F9F</color>
-	<color name="colorAccentLight">#ff55ff55</color>
+	<color name="colorPrimaryLight">#ff1D7874</color>
+	<color name="colorAccentLight">#ff1D7874</color>
+	<color name="colorRippleLight">#7f4Dc8c4</color>
 
-	<color name="colorPrimary">#ff223388</color>
-	<color name="colorPrimaryDark">#ff222266</color>
-	<color name="colorAccent">#ff33aa33</color>
-	<color name="colorAccentDark">#ff117711</color>
-	<color name="colorAccentLite">#7f33aa33</color>
-	<color name="colorAccentWhite">#ff4cff4c</color>
+	<color name="colorPrimaryDark">#ff046865</color>
+	<color name="colorAccentDark">#ff046865</color>
+	<color name="colorRippleDark">#7f043835</color>
+
+	<color name="ic_launcher_background">@color/colorPrimaryDark</color>
 
 	<color name="windowBackgroundWhite">#ffffffff</color>
 	<color name="windowBackgroundDarkLight">#ff222222</color>
@@ -24,7 +23,7 @@
 	<color name="black">#ff000000</color>
 	<color name="black_low">#33000000</color>
 	<color name="overlay_black">#a0000000</color>
-	<color name="overlay_colored">#a0005000</color>
+	<color name="overlay_colored">@color/colorRippleDark</color>
 	<color name="grey_middle">#ff787878</color>
 	<color name="grey_middle_lite">#aa787878</color>
 	<color name="grey_dark">#ff333333</color>
@@ -38,7 +37,5 @@
 	<color name="red_soft">#ffff5252</color>
 	<color name="red_soft_pressed">#ffff7070</color>
 	<color name="spanBlue">#5f4f60c0</color>
-	<color name="spanGreen">#7f007f00</color>
-
-	<color name="ic_launcher_background">#ff009922</color>
+	<color name="spanGreen">@color/colorPrimaryDark</color>
 </resources>

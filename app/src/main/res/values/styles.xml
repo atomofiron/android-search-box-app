@@ -7,19 +7,19 @@
 		<item name="android:statusBarColor">@color/windowBackgroundWhite</item>
 		<item name="android:navigationBarColor">@color/windowBackgroundWhite</item>
 		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryLight</item>
-		<item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimaryDarkLight</item>
-		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccent</item>
-		<item name="android:colorControlHighlight">@color/colorAccent</item>
+		<item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimaryLight</item>
+		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccentLight</item>
+		<item name="android:colorControlHighlight">@color/colorAccentLight</item>
 		<item name="colorPrimary">@color/colorPrimaryLight</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDarkLight</item>
-		<item name="colorAccent">@color/colorAccent</item>
-		<item name="colorControlHighlight">@color/colorAccent</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryLight</item>
+		<item name="colorAccent">@color/colorAccentLight</item>
+		<item name="colorControlHighlight">@color/colorAccentLight</item>
 
 		<item name="colorContent">@color/grey_dark</item>
 		<item name="colorSecondary">@color/grey_dark_lite</item>
 		<item name="colorPositive">@color/black</item>
 		<item name="colorNegative">@color/windowBackgroundWhite</item>
-		<item name="colorAccentLite">@color/colorAccentLight</item>
+		<item name="colorRipple">@color/colorRippleLight</item>
 
 		<item name="colorBackground">@color/windowBackgroundWhite</item>
 		<item name="colorFieldBackground">@color/grey_light</item>
@@ -37,20 +37,20 @@
 		<item name="android:windowBackground">@color/windowBackgroundDark</item>
 		<item name="android:statusBarColor">@color/windowBackgroundDark</item>
 		<item name="android:navigationBarColor">@color/windowBackgroundDark</item>
-		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimary</item>
+		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
 		<item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
-		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccent</item>
-		<item name="android:colorControlHighlight">@color/colorAccent</item>
-		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccentDark</item>
+		<item name="android:colorControlHighlight">@color/colorAccentDark</item>
+		<item name="colorPrimary">@color/colorPrimaryDark</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-		<item name="colorAccent">@color/colorAccent</item>
-		<item name="colorControlHighlight">@color/colorAccent</item>
+		<item name="colorAccent">@color/colorAccentDark</item>
+		<item name="colorControlHighlight">@color/colorAccentDark</item>
 
 		<item name="colorContent">@color/grey_light</item>
 		<item name="colorSecondary">@color/grey_light_lite</item>
 		<item name="colorPositive">@color/white</item>
 		<item name="colorNegative">@color/windowBackgroundDark</item>
-		<item name="colorAccentLite">@color/colorAccentDark</item>
+		<item name="colorRipple">@color/colorRippleDark</item>
 
 		<item name="colorBackground">@color/windowBackgroundDark</item>
 		<item name="colorFieldBackground">@color/windowBackgroundDarkLight</item>
@@ -70,7 +70,6 @@
 		<item name="colorFieldBackground">@color/windowBackgroundDark</item>
 		<item name="colorCardBackground">@color/windowBackgroundDark</item>
 		<item name="colorFieldDivider">@color/windowBackgroundBlack</item>
-		<item name="colorBone">@color/grey_light</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>

@@ -2,12 +2,12 @@ package ru.atomofiron.regextool.screens.root
 
 import android.os.Bundle
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import app.atomofiron.common.base.BaseActivity
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.LazyReincarnation
+import app.atomofiron.common.util.findColorByAttr
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.AppOrientation
@@ -27,7 +27,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     private val sbExit: LazyReincarnation<Snackbar> = LazyReincarnation {
         Snackbar.make(joystick.view, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
                 .setAnchorView(joystick.view)
-                .setActionTextColor(ContextCompat.getColor(this@RootActivity, R.color.colorAccent))
+                .setActionTextColor(this@RootActivity.findColorByAttr(R.attr.colorAccent))
                 .setAction(R.string.exit) { viewModel.onExitClick() }
                 .addCallback(ExitSnackbarCallback(viewModel))
     }
