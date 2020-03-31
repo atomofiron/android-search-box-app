@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
@@ -30,6 +31,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     val insertInQuery = SingleLiveEvent<String>()
     val replaceQuery = SingleLiveEvent<String>()
     val updateContent = SingleLiveEvent<FinderStateItemUpdate>()
+    val snackbar = SingleLiveEvent<String>()
 
     private var configItem: ConfigItem? = ConfigItem()
 
@@ -148,6 +150,17 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     fun onSettingsOptionSelected() = router.showSettings()
 
     fun onHistoryItemClick(node: String) = replaceQuery.invoke(node)
+
+    fun onReplaceClick(value: String) {
+    }
+
+    fun onItemClick(item: ProgressItem) {
+    }
+
+    fun onProgressStopClick(item: ProgressItem) {
+    }
+
+    fun onItemClick(item: TargetItem) = snackbar.invoke(app.getString(R.string.oops_not_working))
 
     private fun <I : FinderStateItem> updateItem(item: I, klass: KClass<I>) {
         val index = items.indexOfFirst { it::class == klass }

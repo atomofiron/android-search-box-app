@@ -13,19 +13,15 @@ class FinderActionListenerDelegate(
 
     override fun onSearchClick(value: String) = historyAdapter.add(value)
 
-    override fun onReplaceClick(value: String) {
-    }
+    override fun onReplaceClick(value: String) = viewModel.onReplaceClick(value)
 
     override fun onCharacterClick(value: String) = viewModel.onCharacterClick(value)
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.onConfigChange(item)
 
-    override fun onItemClick(item: FinderStateItem.ProgressItem) {
-    }
+    override fun onItemClick(item: FinderStateItem.ProgressItem) = viewModel.onItemClick(item)
 
-    override fun onProgressStopClick(item: FinderStateItem.ProgressItem) {
-    }
+    override fun onProgressStopClick(item: FinderStateItem.ProgressItem) = viewModel.onProgressStopClick(item)
 
-    override fun onItemClick(item: FinderStateItem.TargetItem) {
-    }
+    override fun onItemClick(item: FinderStateItem.TargetItem) = viewModel.onItemClick(item)
 }

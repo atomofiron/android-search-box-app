@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.base.BaseFragment
 import app.atomofiron.common.util.Knife
+import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.adapter.FinderActionListenerDelegate
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
@@ -90,6 +91,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         viewModel.state.observe(owner, Observer(::onStateChange))
         viewModel.updateContent.observeData(owner, ::onContentUpdate)
         viewModel.replaceQuery.observeData(owner, ::replaceQuery)
+        viewModel.snackbar.observeData(owner, ::showSnackbar)
     }
 
     override fun onBack(): Boolean {
@@ -113,6 +115,12 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
 
     private fun replaceQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)?.setText(value)
+    }
+
+    private fun showSnackbar(value: String) {
+        Snackbar.make(thisView, value, Snackbar.LENGTH_SHORT)
+                .setAnchorView(anchorView)
+                .show()
     }
 
     private fun insertInQuery(value: String) {
