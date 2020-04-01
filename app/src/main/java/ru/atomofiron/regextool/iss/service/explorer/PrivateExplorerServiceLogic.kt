@@ -15,7 +15,7 @@ import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.io.FileOutputStream
 
-open class PrivateExplorerServiceLogic(
+abstract class PrivateExplorerServiceLogic(
         protected val explorerStore: ExplorerStore,
         protected val settingsStore: SettingsStore
 ) {

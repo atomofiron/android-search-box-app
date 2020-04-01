@@ -144,7 +144,10 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
 
     fun onSearchOptionSelected() = router.showFinder()
 
-    fun onOptionsOptionSelected() {
+    fun onItemOptionSelected(id: Int) = when (id) {
+        R.id.menu_remove -> explorerInteractor.deleteItems()
+        R.id.menu_rename -> Unit
+        else -> Unit
     }
 
     fun onSettingsOptionSelected() = router.showSettings()

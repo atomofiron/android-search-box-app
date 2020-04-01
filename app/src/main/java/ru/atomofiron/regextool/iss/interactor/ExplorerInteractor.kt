@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.iss.service.explorer.ExplorerService
-import ru.atomofiron.regextool.iss.service.explorer.model.Change
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 
 class ExplorerInteractor(private val service: ExplorerService) {
@@ -34,4 +33,10 @@ class ExplorerInteractor(private val service: ExplorerService) {
     }
 
     fun invalidateItem(file: XFile) = service.invalidateDir(file)
+
+    fun deleteItems(vararg file: XFile) {
+        scope.launch {
+            service.deleteItems(*file)
+        }
+    }
 }

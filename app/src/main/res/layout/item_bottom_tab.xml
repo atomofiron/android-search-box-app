@@ -11,15 +11,17 @@
     android:clickable="true"
     >
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:tint="?attr/colorContent"
         />
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:textColor="?attr/colorContent"
         />
 </LinearLayout>

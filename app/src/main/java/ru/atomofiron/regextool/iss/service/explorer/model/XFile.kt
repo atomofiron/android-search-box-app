@@ -26,5 +26,6 @@ interface XFile {
 
     val root: Int
     val isRoot: Boolean
-    var isChecked: Boolean
+    val isChecked: Boolean
+    val isDeleting: Boolean
 }

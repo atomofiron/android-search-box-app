@@ -59,5 +59,6 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         }
 
         cbFlag.isChecked = item.isChecked
+        cbFlag.visibility = if (item.isRoot) View.INVISIBLE else View.VISIBLE
     }
 }

@@ -10,6 +10,7 @@ object Shell {
     private const val SH = "sh"
     private const val SUCCESS = 0
 
+    const val RM_RF = "%s rm -rf \"%s\""
     const val LS_LAHL = "%s ls -lAhL \"%s\""
     const val NATIVE_CHMOD_X = "chmod +x \"%s\""
     const val FIND = "cd %1\$s && find %1\$s -maxdepth %2\$d -exec ls -lAhLd \"{}\" \\;"

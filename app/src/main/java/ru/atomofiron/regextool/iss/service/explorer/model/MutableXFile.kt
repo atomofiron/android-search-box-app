@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.iss.service.explorer.model
 
 import ru.atomofiron.regextool.App
+import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.util.*
@@ -90,6 +91,7 @@ class MutableXFile : XFile {
     override val root: Int
     override val isRoot: Boolean
     override var isChecked: Boolean = false
+    override var isDeleting: Boolean = false; private set
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(
@@ -155,6 +157,20 @@ class MutableXFile : XFile {
         return when {
             isDirectory -> cacheAsDir(su)
             else -> cacheAsFile(su)
+        }
+    }
+
+    fun delete(su: Boolean = false): Boolean {
+        isDeleting = true
+        return when {
+            isDirectory -> {
+                val output = Shell.exec(Shell.RM_RF, su)
+                if (!output.success) {
+                    log2("Delete not success. $this\n${output.error}")
+                }
+                output.success
+            }
+            else -> File(completedPath).delete()
         }
     }
 

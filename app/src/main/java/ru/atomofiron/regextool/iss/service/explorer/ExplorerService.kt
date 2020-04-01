@@ -52,7 +52,7 @@ class ExplorerService(
         }
     }
 
-    suspend fun updateItem(it: XFile) {
+    override suspend fun updateItem(it: XFile) {
         val file = findItem(it) ?: return
         log2("updateItem $file")
         when {
@@ -93,5 +93,12 @@ class ExplorerService(
         }
 
         explorerStore.notifyChecked()
+    }
+
+    suspend fun deleteItems(vararg items: XFile) {
+        items.forEach {
+            val item = findItem(it) ?: return@forEach
+            deleteItem(item)
+        }
     }
 }

@@ -5,5 +5,11 @@
         android:id="@+id/menu_remove"
         android:title="@string/remove"
         android:icon="@drawable/ic_trashbox"
+        android:checkable="true"
+        />
+    <item
+        android:id="@+id/menu_rename"
+        android:title="@string/rename"
+        android:icon="@drawable/ic_rename"
         />
 </menu>

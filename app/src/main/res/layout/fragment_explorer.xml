@@ -44,7 +44,7 @@
             android:id="@+id/explorer_bsv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:menu="@menu/file_options"
+            app:menu="@menu/explorer_item_options"
             />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <ru.atomofiron.regextool.view.custom.VerticalDockView

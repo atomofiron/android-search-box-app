@@ -60,6 +60,7 @@
     <string name="exit">Exit</string>
     <string name="click_back_to_exit">Click Back to close the App</string>
     <string name="remove">Remove</string>
+    <string name="rename">Rename</string>
     <string name="not_allowed">Not allowed</string>
     <string name="pref_export_import">Export/Import</string>
     <string name="export_btn">Export</string>
