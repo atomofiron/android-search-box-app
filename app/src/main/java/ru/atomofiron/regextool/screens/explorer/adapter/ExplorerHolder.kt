@@ -28,15 +28,19 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         onItemActionListener?.onItemClick(item)
     }
 
+    private var onLongClickListener: ((View) -> Boolean) = {
+        onItemActionListener?.onItemLongClick(item)
+        true
+    }
+
     private var onCheckListener: ((View) -> Unit) = { view ->
         view as CheckBox
         onItemActionListener?.onItemCheck(item, view.isChecked)
     }
 
     override fun onBind(item: XFile, position: Int) {
-        super.onBind(item, position)
-
         itemView.setOnClickListener(onClickListener)
+        itemView.setOnLongClickListener(onLongClickListener)
         cbFlag.setOnClickListener(onCheckListener)
 
         val image = when {

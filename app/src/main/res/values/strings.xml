@@ -29,7 +29,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="look">Look</string>
-    <string name="config">Config</string>
+    <string name="options">Options</string>
     <string name="files">Files</string>
     <string name="replace">Replace</string>
     <string name="tasks">Tasks</string>
@@ -62,7 +62,7 @@
     <string name="remove">Remove</string>
     <string name="rename">Rename</string>
     <string name="not_allowed">Not allowed</string>
-    <string name="pref_export_import">Export/Import</string>
+    <string name="pref_export_import">Export / Import</string>
     <string name="export_btn">Export</string>
     <string name="import_btn">Import</string>
     <string name="successful">Successful</string>
@@ -77,4 +77,21 @@
     <string name="oops_not_working">Oops, not working yet</string>
     <string name="user_interface">Interface</string>
     <string name="pref_explorer_item">File / Directory</string>
+    <string name="create">Create</string>
+    <plurals name="x_dirs">
+        <item quantity="zero">%d directories</item>
+        <item quantity="one">%d directory</item>
+        <item quantity="two">%d directories</item>
+        <item quantity="few">%d directories</item>
+        <item quantity="many">%d directories</item>
+        <item quantity="other">%d directories</item>
+    </plurals>
+    <plurals name="x_files">
+        <item quantity="zero">%d files</item>
+        <item quantity="one">%d file</item>
+        <item quantity="two">%d files</item>
+        <item quantity="few">%d files</item>
+        <item quantity="many">%d files</item>
+        <item quantity="other">%d files</item>
+    </plurals>
 </resources>

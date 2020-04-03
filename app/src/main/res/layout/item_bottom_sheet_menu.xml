@@ -1,29 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/common_margin"
-    android:paddingTop="@dimen/common_margin"
-    android:paddingEnd="@dimen/common_margin"
-    android:paddingBottom="@dimen/common_margin"
-    android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true"
-    >
+    android:focusable="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/common_margin"
+        android:paddingTop="@dimen/common_margin"
+        android:paddingEnd="@dimen/common_margin"
+        android:paddingBottom="@dimen/common_margin"
+        android:gravity="center_vertical">
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/item_iv_icon"
+        android:id="@+id/item_menu_iv_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:tint="?attr/colorContent"
         />
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/item_tv_label"
-        android:layout_width="wrap_content"
+        android:id="@+id/item_menu_tv_label"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginStart="@dimen/common_margin"
+        android:layout_marginEnd="@dimen/common_margin"
         android:textColor="?attr/colorContent"
         />
-</LinearLayout>
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/item_menu_tv_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/common_margin"
+        android:text="@string/confirm"
+        app:cornerRadius="@dimen/infinity"
+        />
+</FrameLayout>

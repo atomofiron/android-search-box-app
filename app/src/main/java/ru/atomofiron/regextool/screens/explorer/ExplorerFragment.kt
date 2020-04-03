@@ -11,10 +11,11 @@ import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
+import ru.atomofiron.regextool.screens.explorer.options.BottomSheetMenuWithTitle
+import ru.atomofiron.regextool.screens.explorer.options.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetMenu
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
@@ -24,7 +25,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
     private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.explorer_bom)
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.explorer_bsv)
-    private lateinit var bottomSheetMenu: BottomSheetMenu
+    private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
     private val dockView = Knife<VerticalDockView>(this, R.id.explorer_dv)
 
     private val explorerAdapter = ExplorerAdapter()
@@ -50,7 +51,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 when (id) {
                     R.id.menu_places -> dockView { open() }
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
-                    R.id.menu_config -> bottomSheetMenu.show()
+                    R.id.menu_options -> viewModel.options?.let{ bottomItemMenu.show(it) }
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
                 }
             }
@@ -62,10 +63,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
             recyclerView.adapter = placesAdapter
         }
 
-        bottomSheetMenu = BottomSheetMenu(thisContext)
-        bottomSheetMenu.bottomSheetView = bottomSheetView.view
-        bottomSheetMenu.inflateMenu(thisContext, R.menu.explorer_item_options)
-        bottomSheetMenu.menuItemClickListener = viewModel::onItemOptionSelected
+        bottomItemMenu = BottomSheetMenuWithTitle(thisContext, viewModel)
+        bottomItemMenu.bottomSheetView = bottomSheetView.view
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
@@ -80,6 +79,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         viewModel.permissionRequiredWarning.observeEvent(owner, ::showPermissionRequiredWarning)
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
         viewModel.places.observe(owner, Observer(placesAdapter::setItems))
+        viewModel.showOptions.observeData(owner, ::showOptions)
     }
 
     override fun onBack(): Boolean {
@@ -102,4 +102,6 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 .setAction(R.string.allow) { viewModel.onAllowStorageClick() }
                 .show()
     }
+
+    private fun showOptions(options: ExplorerItemOptions) = bottomItemMenu.show(options)
 }

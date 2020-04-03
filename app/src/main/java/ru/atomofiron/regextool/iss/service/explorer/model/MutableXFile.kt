@@ -286,6 +286,7 @@ class MutableXFile : XFile {
         date = file.date
         time = file.time
         isDirectory = file.isDirectory
+        isChecked = file.isChecked
         isFile = !isDirectory && (access.isEmpty() || access[0] == FILE_CHAR)
     }
 

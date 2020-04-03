@@ -29,7 +29,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="look">Наблюдать</string>
-    <string name="config">Параметры</string>
+    <string name="options">Опции</string>
     <string name="files">Файлы</string>
     <string name="replace">Заменить</string>
     <string name="tasks">Задачи</string>
@@ -62,7 +62,7 @@
     <string name="remove">Удалить</string>
     <string name="rename">Переименовать</string>
     <string name="not_allowed">Не позволено</string>
-    <string name="pref_export_import">Экспорт/Импорт</string>
+    <string name="pref_export_import">Экспорт / Импорт</string>
     <string name="export_btn">Экспорт</string>
     <string name="import_btn">Импорт</string>
     <string name="successful">Успешно</string>
@@ -77,4 +77,17 @@
     <string name="oops_not_working">Упс, пока не работает</string>
     <string name="user_interface">Интерфейс</string>
     <string name="pref_explorer_item">Файл / Директория</string>
+    <string name="create">Создать</string>
+    <plurals name="x_dirs">
+        <item quantity="one">%d директория</item>
+        <item quantity="few">%d директории</item>
+        <item quantity="many">%d директорий</item>
+        <item quantity="other">%d директорий</item>
+    </plurals>
+    <plurals name="x_files">
+        <item quantity="one">%d файл</item>
+        <item quantity="few">%d файла</item>
+        <item quantity="many">%d файлов</item>
+        <item quantity="other">%d файлов</item>
+    </plurals>
 </resources>

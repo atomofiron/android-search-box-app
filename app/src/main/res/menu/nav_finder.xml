@@ -16,8 +16,8 @@
         android:enabled="false"
         />
     <item
-        android:id="@+id/menu_config"
-        android:title="@string/config"
+        android:id="@+id/menu_options"
+        android:title="@string/options"
         android:icon="@drawable/ic_check_box"
         />
     <item

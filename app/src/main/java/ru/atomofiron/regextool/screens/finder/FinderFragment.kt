@@ -61,7 +61,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
                 when (id) {
                     R.id.menu_history -> dockView { open() }
                     R.id.menu_explorer -> viewModel.onExplorerOptionSelected()
-                    R.id.menu_config -> viewModel.onConfigOptionSelected()
+                    R.id.menu_options -> viewModel.onConfigOptionSelected()
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
                 }
             }

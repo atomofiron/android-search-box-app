@@ -129,9 +129,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
     fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
 
-    fun onExplorerOptionSelected() {
-        router.showExplorer()
-    }
+    fun onExplorerOptionSelected() = router.showExplorer()
 
     fun onConfigOptionSelected() {
         when (val configItem = configItem) {

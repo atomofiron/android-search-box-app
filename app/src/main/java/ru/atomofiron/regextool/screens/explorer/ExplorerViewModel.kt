@@ -22,17 +22,23 @@ import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
+import ru.atomofiron.regextool.screens.explorer.options.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
+import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuListener
 import javax.inject.Inject
 
-class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), ExplorerItemActionListener, PlacesAdapter.ItemActionListener {
+class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
+        ExplorerItemActionListener,
+        PlacesAdapter.ItemActionListener,
+        BottomSheetMenuListener {
     override val router = ExplorerRouter()
 
     @Inject
     lateinit var explorerInteractor: ExplorerInteractor
 
     val permissionRequiredWarning = SingleLiveEvent<Intent?>()
+    val showOptions = SingleLiveEvent<ExplorerItemOptions>()
     val historyDrawerGravity = MutableLiveData<Int>()
     val places = LateinitLiveData<List<XPlace>>()
     val items = MutableLiveData<List<XFile>>()
@@ -43,9 +49,13 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
     val notifyUpdateRange = SingleLiveEvent<List<XFile>>()
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
+    val options: ExplorerItemOptions? get() = getItemOptions()
 
     private var readStorageGranted = false
     private lateinit var permissions: Permissions
+    private val directoryOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
+    private val oneFileOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename)
+    private val manyFilesOptions = arrayListOf(R.id.menu_remove)
 
     @Inject
     lateinit var explorerStore: ExplorerStore
@@ -114,6 +124,28 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
         places.value = places.value.plusElement(XPlace.AnotherPlace("${Math.random()}"))
     }
 
+    override fun onItemLongClick(item: XFile) {
+        val files: List<XFile> = when {
+            item.isChecked -> explorerStore.checked
+            else -> arrayListOf(item)
+        }
+        val ids = when {
+            files.size > 1 -> manyFilesOptions
+            files[0].isChecked -> manyFilesOptions
+            files[0].isDirectory -> directoryOptions
+            else -> oneFileOptions
+        }
+        val options = ExplorerItemOptions(ids, files)
+        showOptions.invoke(options)
+    }
+
+    override fun onMenuItemSelected(id: Int) {
+        when (id) {
+            R.id.menu_remove -> Unit
+            R.id.menu_rename -> Unit
+        }
+    }
+
     override fun onItemActionClick(item: XPlace) {
         when (item) {
             is XPlace.InternalStorage -> places.value = places.value.map {
@@ -142,13 +174,23 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app), 
 
     private fun onStoragePathChanged(path: String) = explorerInteractor.setRoot(path)
 
-    fun onSearchOptionSelected() = router.showFinder()
-
-    fun onItemOptionSelected(id: Int) = when (id) {
-        R.id.menu_remove -> explorerInteractor.deleteItems()
-        R.id.menu_rename -> Unit
-        else -> Unit
+    private fun getItemOptions(): ExplorerItemOptions? {
+        val current = explorerStore.current.value
+        val files = when {
+            explorerStore.checked.isNotEmpty() -> explorerStore.checked
+            current != null -> arrayListOf(current)
+            else -> return null
+        }
+        val ids = when {
+            files.size > 1 -> manyFilesOptions
+            files[0].isChecked -> manyFilesOptions
+            files[0].isDirectory -> directoryOptions
+            else -> oneFileOptions
+        }
+        return ExplorerItemOptions(ids, files)
     }
+
+    fun onSearchOptionSelected() = router.showFinder()
 
     fun onSettingsOptionSelected() = router.showSettings()
 
