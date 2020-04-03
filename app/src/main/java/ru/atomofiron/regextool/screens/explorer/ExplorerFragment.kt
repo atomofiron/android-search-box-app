@@ -12,8 +12,9 @@ import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
-import ru.atomofiron.regextool.view.custom.BottomOptionMenu
+import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
+import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetMenu
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
@@ -21,8 +22,9 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     override val layoutId: Int = R.layout.fragment_explorer
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
-    private val bottomOptionMenu = Knife<BottomOptionMenu>(this, R.id.explorer_bom)
+    private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.explorer_bom)
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.explorer_bsv)
+    private lateinit var bottomSheetMenu: BottomSheetMenu
     private val dockView = Knife<VerticalDockView>(this, R.id.explorer_dv)
 
     private val explorerAdapter = ExplorerAdapter()
@@ -43,12 +45,12 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
             adapter = explorerAdapter
         }
 
-        bottomOptionMenu {
+        bottomMenuBar {
             setOnMenuItemClickListener { id ->
                 when (id) {
                     R.id.menu_places -> dockView { open() }
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
-                    R.id.menu_config -> bottomSheetView { show() }
+                    R.id.menu_config -> bottomSheetMenu.show()
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
                 }
             }
@@ -59,6 +61,11 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
             recyclerView.layoutManager = LinearLayoutManager(context)
             recyclerView.adapter = placesAdapter
         }
+
+        bottomSheetMenu = BottomSheetMenu(thisContext)
+        bottomSheetMenu.bottomSheetView = bottomSheetView.view
+        bottomSheetMenu.inflateMenu(thisContext, R.menu.explorer_item_options)
+        bottomSheetMenu.menuItemClickListener = viewModel::onItemOptionSelected
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {

@@ -30,20 +30,17 @@
         </activity>
         <activity
             android:name=".utils.FilterActivity"
-            android:label="Filter" />
+            android:label="Filter"
+            />
         <activity
             android:name=".utils.recyclerViewPreview.PreviewActivity"
-            android:label="RecyclerView">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:label="RecyclerView"
+            />
 
         <service
             android:name=".SearchService"
-            android:exported="false" />
+            android:exported="false"
+            />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -52,7 +49,8 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/provider_paths"
+                />
         </provider>
     </application>
 

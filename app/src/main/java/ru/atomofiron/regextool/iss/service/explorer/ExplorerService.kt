@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.iss.service.explorer
 
 import android.content.SharedPreferences
+import android.content.res.AssetManager
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
@@ -9,11 +10,12 @@ import ru.atomofiron.regextool.iss.store.SettingsStore
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Const
 
-class ExplorerService(
+class ExplorerService constructor(
+        assets: AssetManager,
         private val preferences: SharedPreferences,
         explorerStore: ExplorerStore,
         settingsStore: SettingsStore
-) : PrivateExplorerServiceLogic(explorerStore, settingsStore) {
+) : PrivateExplorerServiceLogic(assets, explorerStore, settingsStore) {
 
     fun persistState() {
         preferences.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()

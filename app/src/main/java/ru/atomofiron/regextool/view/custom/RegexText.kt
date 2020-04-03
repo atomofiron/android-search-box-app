@@ -10,8 +10,7 @@ import androidx.appcompat.widget.AppCompatEditText
 
 class RegexText @JvmOverloads constructor(
         context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+        attrs: AttributeSet? = null
 ) : AppCompatEditText(context, attrs), TextWatcher {
     companion object {
         private const val UNKNOWN = -1

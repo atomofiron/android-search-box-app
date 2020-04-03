@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.di
 
 import android.content.Context
+import android.content.res.AssetManager
 import dagger.BindsInstance
 import dagger.Component
 import ru.atomofiron.regextool.di.module.CommonModule
@@ -28,6 +29,9 @@ abstract class AppComponent :
 
         @BindsInstance
         fun appContext(context: Context): Builder
+
+        @BindsInstance
+        fun assetManager(assetManager: AssetManager): Builder
 
         fun build(): AppComponent
     }

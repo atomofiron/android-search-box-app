@@ -1,36 +1,24 @@
 package ru.atomofiron.regextool.view.custom.bottom_sheet
 
-import android.animation.ValueAnimator
 import android.content.Context
-import android.util.AttributeSet
 import android.view.MenuInflater
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.R
 
-class BottomSheetMenu @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
-) : BottomSheetView(context, attrs, defStyleAttr), ValueAnimator.AnimatorUpdateListener {
+class BottomSheetMenu(context: Context) : BottomSheetDelegate() {
+    private val rvMenu: RecyclerView = RecyclerView(context)
+    override var contentView: View? = rvMenu
 
-    init {
-        val styled = context.obtainStyledAttributes(attrs, R.styleable.BottomSheetMenu, defStyleAttr, 0)
-        val menuId = styled.getResourceId(R.styleable.BottomSheetMenu_menu, 0)
-        styled.recycle()
+    var menuItemClickListener: (id: Int) -> Unit = { }
 
-        if (menuId != 0) {
-            inflateMenu(menuId)
-        }
-    }
+    private fun onMenuItemClick(id: Int) = menuItemClickListener.invoke(id)
 
-    fun inflateMenu(menuId: Int) {
-        val rvMenu = RecyclerView(context)
+    fun inflateMenu(context: Context, menuId: Int) {
         rvMenu.layoutManager = LinearLayoutManager(context)
         rvMenu.adapter = BottomSheetViewAdapter(context).apply {
             MenuInflater(context).inflate(menuId, menu)
+            menuItemClickListener = ::onMenuItemClick
         }
-        rvMenu.clipToPadding = false
-        setView(rvMenu)
     }
 }

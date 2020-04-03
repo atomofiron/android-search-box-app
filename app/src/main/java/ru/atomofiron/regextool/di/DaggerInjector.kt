@@ -10,6 +10,7 @@ object DaggerInjector {
         appComponent = DaggerAppComponent
                 .builder()
                 .appContext(context)
+                .assetManager(context.assets)
                 .build()
     }
 }

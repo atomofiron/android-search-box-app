@@ -13,13 +13,8 @@
     <attr name="colorBone" format="color" />
     <attr name="colorOverlay" format="color" />
 
-    <attr name="menu" format="reference" />
-    <declare-styleable name="BottomOptionMenu">
-        <attr name="menu" />
-    </declare-styleable>
-
-    <declare-styleable name="BottomSheetMenu">
-        <attr name="menu" />
+    <declare-styleable name="BottomMenuBar">
+        <attr name="menu" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="VerticalDockView">

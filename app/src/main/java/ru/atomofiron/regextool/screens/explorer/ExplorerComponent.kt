@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.screens.explorer
 
 import android.content.SharedPreferences
+import android.content.res.AssetManager
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -34,10 +35,11 @@ class ExplorerModule {
     @Provides
     @ExplorerScope
     fun explorerService(
+            assets: AssetManager,
             preferences: SharedPreferences,
             explorerStore: ExplorerStore,
             settingsStore: SettingsStore
-    ): ExplorerService = ExplorerService(preferences, explorerStore, settingsStore)
+    ): ExplorerService = ExplorerService(assets, preferences, explorerStore, settingsStore)
 
     @Provides
     @ExplorerScope
@@ -47,6 +49,7 @@ class ExplorerModule {
 }
 
 interface ExplorerDependencies {
+    fun assetManager(): AssetManager
     fun sharedPreferences(): SharedPreferences
     fun explorerStore(): ExplorerStore
     fun settingsStore(): SettingsStore

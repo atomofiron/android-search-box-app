@@ -18,7 +18,7 @@ import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
-import ru.atomofiron.regextool.view.custom.BottomOptionMenu
+import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import kotlin.reflect.KClass
 
@@ -27,7 +27,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     override val layoutId: Int = R.layout.fragment_finder
 
     private val rvContent = Knife<RecyclerView>(this, R.id.finder_rv)
-    private val bottomOptionMenu = Knife<BottomOptionMenu>(this, R.id.finder_bom)
+    private val bottomOptionMenu = Knife<BottomMenuBar>(this, R.id.finder_bom)
     private val dockView = Knife<VerticalDockView>(this, R.id.finder_dv)
 
     private val finderAdapter = FinderAdapter()

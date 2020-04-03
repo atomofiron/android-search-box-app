@@ -35,7 +35,7 @@
 				android:layout_height="wrap_content"
 				app:layout_scrollFlags="scroll|exitUntilCollapsed"
 				>
-				<ru.atomofiron.regextool.view.custom.BottomOptionMenu
+				<ru.atomofiron.regextool.view.custom.BottomMenuBar
 					android:id="@+id/finder_bom"
 					android:layout_width="match_parent"
 					android:layout_height="@dimen/bottom_tab_bar_height"

@@ -7,8 +7,7 @@ import ru.atomofiron.regextool.di.DaggerInjector
 class App : Application() {
     companion object {
         private lateinit var appContext: Context
-        val context: Context get() = appContext
-        val pathToybox: String get() = "${context.filesDir}/toybox"
+        val pathToybox: String get() = "${appContext.filesDir}/toybox"
     }
 
     override fun onCreate() {

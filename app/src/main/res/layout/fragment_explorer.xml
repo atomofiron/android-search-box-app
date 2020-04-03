@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 >
-                <ru.atomofiron.regextool.view.custom.BottomOptionMenu
+                <ru.atomofiron.regextool.view.custom.BottomMenuBar
                     android:id="@+id/explorer_bom"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/bottom_tab_bar_height"
@@ -40,11 +40,10 @@
                     />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </ru.atomofiron.regextool.view.custom.FixedBottomAppBar>
-        <ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetMenu
+        <ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
             android:id="@+id/explorer_bsv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:menu="@menu/explorer_item_options"
             />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <ru.atomofiron.regextool.view.custom.VerticalDockView

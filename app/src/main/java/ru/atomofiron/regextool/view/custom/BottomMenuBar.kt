@@ -12,7 +12,7 @@ import android.widget.TextView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.view.custom.menu.MenuImpl
 
-class BottomOptionMenu @JvmOverloads constructor(
+class BottomMenuBar @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
@@ -31,8 +31,8 @@ class BottomOptionMenu @JvmOverloads constructor(
         // fix tab's ripple background
         setBackgroundColor(Color.TRANSPARENT)
 
-        val styled = context.obtainStyledAttributes(attrs, R.styleable.BottomOptionMenu, defStyleAttr, 0)
-        val menuId = styled.getResourceId(R.styleable.BottomOptionMenu_menu, 0)
+        val styled = context.obtainStyledAttributes(attrs, R.styleable.BottomMenuBar, defStyleAttr, 0)
+        val menuId = styled.getResourceId(R.styleable.BottomMenuBar_menu, 0)
         styled.recycle()
 
         if (menuId != 0) {

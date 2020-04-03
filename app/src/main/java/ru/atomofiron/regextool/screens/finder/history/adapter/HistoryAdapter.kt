@@ -56,7 +56,7 @@ class HistoryAdapter(
         val item = ItemHistory()
         item.title = string
         items.add(index, item)
-        dao.insert(item)
+        item.id = dao.insert(item)
         notifyItemInserted(index)
     }
 

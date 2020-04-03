@@ -23,9 +23,9 @@
         android:paddingStart="@dimen/common_margin"
         android:paddingEnd="64dp"
         android:hint="@string/find"
-        android:background="@color/bg_search_field"
+        android:background="@drawable/bg_search_field"
         />
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/item_find_ib_find"
         android:layout_width="@dimen/common_size"
         android:layout_height="@dimen/common_size"

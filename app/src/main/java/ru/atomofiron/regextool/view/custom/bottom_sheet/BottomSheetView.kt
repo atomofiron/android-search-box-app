@@ -3,19 +3,16 @@ package ru.atomofiron.regextool.view.custom.bottom_sheet
 import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import android.widget.FrameLayout
-import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.util.calculateDurationWithScale
-import app.atomofiron.common.util.findColorByAttr
+import app.atomofiron.common.util.moveChildrenFrom
 import ru.atomofiron.regextool.R
 import kotlin.math.max
 import kotlin.math.min
@@ -27,16 +24,21 @@ open class BottomSheetView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), ValueAnimator.AnimatorUpdateListener {
     companion object {
         private const val SECOND = 1000L
-        private const val DURATION = 512L
+        private const val DURATION = 256L
         private const val FIRST = 0
         private const val CONTENT_VIEW_INDEX = 1
-        private const val TRANSPARENT = 0f
+        private const val UNDEFINED = -1
         private const val VISIBLE = 1f
     }
 
-    private val overlay: View = View(context)
-    private lateinit var view: View
-    protected val contentView: View get() = view
+    init {
+        moveChildrenFrom(R.layout.view_bottom_sheet)
+    }
+
+    private val overlay: View = findViewById(R.id.bottom_sheet_overlay)
+    private val viewContainer: ViewGroup = findViewById(R.id.bottom_container)
+    lateinit var contentView: View private set
+    var contentViewId: Int = UNDEFINED; private set
 
     private var lastY = 0f
     private var speedSum = 0f
@@ -52,69 +54,71 @@ open class BottomSheetView @JvmOverloads constructor(
         State.CLOSED -> false
     }
 
-    private var loop = ValueAnimator.ofFloat(0f, 1f)
+    private var frameLoop = ValueAnimator.ofFloat(0f, 1f)
     private var animator = ValueAnimator.ofFloat(0f, 1f)
     protected var state = State.CLOSED; private set
 
-    private val menuHeight: Int get() = view.measuredHeight
-    private val minTop: Int get() = measuredHeight - view.measuredHeight
+    private val menuHeight: Int get() = viewContainer.measuredHeight
+    private val minTop: Int get() = measuredHeight - viewContainer.measuredHeight
     private val maxTop: Int get() = measuredHeight
-    private val curTop: Int get() = view.top
+    private val curTop: Int get() = viewContainer.top
 
     private val accelerateInterpolator = AccelerateInterpolator()
     private val decelerateInterpolator = DecelerateInterpolator()
     private val accelerateDecelerateInterpolator = AccelerateDecelerateInterpolator()
 
-    private val duration: Long get() = context.calculateDurationWithScale(DURATION)
-
     init {
-        overlay.isFocusable = true
-        overlay.isClickable = true
-        overlay.setBackgroundColor(context.findColorByAttr(R.attr.colorOverlay))
-        overlay.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
-        overlay.alpha = TRANSPARENT
-        addView(overlay, 0)
-
-        loop.duration = SECOND
-        loop.repeatMode = ValueAnimator.RESTART
-        loop.repeatCount = ValueAnimator.INFINITE
-        loop.addUpdateListener { loop() }
-        loop.start()
-    }
-
-    fun setView(id: Int) {
-        LayoutInflater.from(context).inflate(id, this)
-        setView(getChildAt(CONTENT_VIEW_INDEX))
-    }
-
-    fun setView(view: View) {
-        this.view = view
-        view.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-        view.setBackgroundResource(R.drawable.bg_bottom_sheet)
-        view.isNestedScrollingEnabled = false
+        frameLoop.duration = SECOND
+        frameLoop.repeatMode = ValueAnimator.RESTART
+        frameLoop.repeatCount = ValueAnimator.INFINITE
+        frameLoop.addUpdateListener { loop() }
+        frameLoop.start()
 
         val widthPixels = resources.displayMetrics.widthPixels
         val maxWidth = resources.getDimensionPixelOffset(R.dimen.bottom_sheet_view_max_width)
-        val width = Math.min(widthPixels, maxWidth)
-        val layoutParams = (view.layoutParams as? LayoutParams) ?: LayoutParams(width, LayoutParams.WRAP_CONTENT)
-        layoutParams.width = width
-        layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-        view.layoutParams = layoutParams
-        val top = resources.getDimensionPixelSize(R.dimen.menu_corner_radius)
-        val bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
-        view.setPadding(0, top, 0, bottom)
-        when {
-            view.parent == null -> addView(view)
-            view.parent === this -> Unit
-            else -> throw Exception("View already has another parent!")
+        viewContainer.layoutParams.width = Math.min(widthPixels, maxWidth)
+    }
+
+    private fun clearContainer() {
+        while (viewContainer.childCount > CONTENT_VIEW_INDEX) {
+            viewContainer.removeViewAt(CONTENT_VIEW_INDEX)
         }
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
+    fun setView(id: Int): View {
+        if (id != contentViewId) {
+            clearContainer()
+        }
+        LayoutInflater.from(context).inflate(id, viewContainer)
+        setView(viewContainer.getChildAt(CONTENT_VIEW_INDEX))
+        contentViewId = id
+        return contentView
+    }
 
-        if (!::view.isInitialized && childCount > CONTENT_VIEW_INDEX) {
-            setView(getChildAt(CONTENT_VIEW_INDEX))
+    fun setView(view: View) {
+        when  {
+            !::contentView.isInitialized -> Unit
+            contentView === view -> return
+            viewContainer.getChildAt(CONTENT_VIEW_INDEX) !== view -> clearContainer()
+            else -> Unit
+        }
+        contentViewId = UNDEFINED
+        contentView = view
+
+        view.overScrollMode = View.OVER_SCROLL_NEVER
+        view.isNestedScrollingEnabled = false
+        (view as? ViewGroup)?.clipToPadding = false
+
+        var bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
+        when {
+            view.paddingBottom < bottom -> bottom += view.paddingBottom
+            view.paddingBottom > bottom -> bottom = view.paddingBottom
+        }
+        view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, bottom)
+        when {
+            view.parent == null -> viewContainer.addView(view)
+            view.parent === viewContainer -> Unit
+            else -> throw Exception("View already has another parent!")
         }
     }
 
@@ -130,7 +134,7 @@ open class BottomSheetView @JvmOverloads constructor(
     private fun setState(state: State) {
         val fromState = this.state
         this.state = state
-        if (determineState(view.top)) {
+        if (determineState(viewContainer.top)) {
             return
         }
 
@@ -173,8 +177,8 @@ open class BottomSheetView @JvmOverloads constructor(
         }
 
         when (state) {
-            State.SCROLL -> loop.resume()
-            else -> loop.pause()
+            State.SCROLL -> frameLoop.resume()
+            else -> frameLoop.pause()
         }
     }
 
@@ -191,7 +195,7 @@ open class BottomSheetView @JvmOverloads constructor(
     private fun startAnimator(to: Int, interpolator: Interpolator) {
         animator.cancel()
         animator = ValueAnimator.ofInt(curTop, to)
-        animator.duration = duration
+        animator.duration = DURATION
         animator.interpolator = interpolator
         animator.addUpdateListener(this)
         animator.start()
@@ -234,7 +238,7 @@ open class BottomSheetView @JvmOverloads constructor(
                 topDif -= dyConsumed
             }
         }
-        setMenuTop(view.top + topDif)
+        setMenuTop(viewContainer.top + topDif)
         super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed)
     }
 
@@ -282,7 +286,7 @@ open class BottomSheetView @JvmOverloads constructor(
         speedSum = 0f
 
         if (state == State.SCROLL) {
-            setMenuTop(view.top + speedPerFrame.toInt())
+            setMenuTop(viewContainer.top + speedPerFrame.toInt())
         }
     }
 
@@ -290,8 +294,8 @@ open class BottomSheetView @JvmOverloads constructor(
         when {
             direction == Slide.UP -> setState(State.OPEN)
             outside -> setState(State.CLOSE)
-            view.top == minTop -> setState(State.OPENED)
-            view.top == maxTop -> setState(State.CLOSED)
+            viewContainer.top == minTop -> setState(State.OPENED)
+            viewContainer.top == maxTop -> setState(State.CLOSED)
             direction == Slide.DOWN -> setState(State.CLOSE)
             direction == Slide.UNDEFINED -> setState(State.OPEN)
         }
@@ -304,12 +308,12 @@ open class BottomSheetView @JvmOverloads constructor(
         val minTop = minTop
         val maxTop = maxTop
         val top = max(minTop, min(maxTop, top))
-        if (view.top != top) {
-            view.top = top
+        if (viewContainer.top != top) {
+            viewContainer.top = top
         }
 
         overlay.alpha = (parentHeight - curTop).toFloat() / height
-        view.alpha = VISIBLE
+        viewContainer.alpha = VISIBLE
 
         determineState(top)
     }
@@ -319,7 +323,7 @@ open class BottomSheetView @JvmOverloads constructor(
         if (speedPerFrame == 0f) {
             setMenuTop(value)
         } else {
-            val nextTopBySpeed = view.top + speedPerFrame.toInt()
+            val nextTopBySpeed = viewContainer.top + speedPerFrame.toInt()
             val overrideOpen = state == State.OPEN && value > nextTopBySpeed
             val overrideClose = state == State.CLOSE && value < nextTopBySpeed
             if (overrideOpen || overrideClose) {
@@ -333,7 +337,7 @@ open class BottomSheetView @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         if (state == State.CLOSED) {
-            view.top = maxTop
+            viewContainer.top = maxTop
         }
     }
 

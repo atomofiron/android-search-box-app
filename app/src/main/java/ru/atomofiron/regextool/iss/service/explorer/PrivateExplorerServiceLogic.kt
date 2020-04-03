@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.iss.service.explorer
 
+import android.content.res.AssetManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -15,7 +16,8 @@ import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.io.FileOutputStream
 
-abstract class PrivateExplorerServiceLogic(
+abstract class PrivateExplorerServiceLogic constructor(
+        protected val assets: AssetManager,
         protected val explorerStore: ExplorerStore,
         protected val settingsStore: SettingsStore
 ) {
@@ -103,7 +105,7 @@ abstract class PrivateExplorerServiceLogic(
         val toybox = File(pathToybox)
         toybox.deleteRecursively()
         toybox.parentFile!!.mkdirs()
-        val input = App.context.assets.open("toybox/toybox64")
+        val input = assets.open("toybox/toybox64")
         val bytes = input.readBytes()
         input.close()
         val output = FileOutputStream(toybox)
@@ -111,6 +113,8 @@ abstract class PrivateExplorerServiceLogic(
         output.close()
         Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
     }
+
+    abstract suspend fun updateItem(it: XFile)
 
     protected suspend fun reopenDir(dir: MutableXFile) {
         log2("reopenDir $dir")
@@ -366,6 +370,22 @@ abstract class PrivateExplorerServiceLogic(
             checkedParent.isChecked = false
             checked.remove(checkedParent)
             explorerStore.notifyUpdate(checkedParent)
+        }
+    }
+
+    protected suspend fun deleteItem(item: MutableXFile) {
+        log2("deleteItem $item")
+        if (checked.contains(item)) {
+            item.isChecked = false
+            checked.remove(item)
+            explorerStore.notifyChecked()
+        }
+        explorerStore.notifyUpdate(item)
+        item.delete()
+        when {
+            item.isOpened -> updateCurrentDir(currentOpenedDir!!)
+            item.isDirectory -> updateClosedDir(item)
+            else -> updateItem(item)
         }
     }
 }
