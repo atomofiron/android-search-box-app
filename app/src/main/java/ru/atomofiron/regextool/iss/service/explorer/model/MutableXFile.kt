@@ -232,13 +232,11 @@ class MutableXFile : XFile {
         val newFiles = this.files!!
         if (oldFiles != null) {
             newFiles.forEachIndexed { newIndex, new ->
-                if (new.isDirectory) {
-                    val lastIndex = oldFiles.indexOf(new)
-                    if (lastIndex != -1) {
-                        val last = oldFiles[lastIndex]
-                        last.updateData(new)
-                        newFiles[newIndex] = last
-                    }
+                val lastIndex = oldFiles.indexOf(new)
+                if (lastIndex != -1) {
+                    val last = oldFiles[lastIndex]
+                    last.updateData(new)
+                    newFiles[newIndex] = last
                 }
             }
         }
@@ -286,7 +284,6 @@ class MutableXFile : XFile {
         date = file.date
         time = file.time
         isDirectory = file.isDirectory
-        isChecked = file.isChecked
         isFile = !isDirectory && (access.isEmpty() || access[0] == FILE_CHAR)
     }
 
