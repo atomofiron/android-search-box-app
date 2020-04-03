@@ -36,14 +36,14 @@
             android:layout_height="wrap_content"
             android:text="@string/preferences"
             android:checked="true"
-            android:padding="@dimen/common_half_margin"
+            android:padding="@dimen/common_margin_half"
             />
         <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/lei_rb_history"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/history"
-            android:padding="@dimen/common_half_margin"
+            android:padding="@dimen/common_margin_half"
             />
     </RadioGroup>
     <RadioGroup
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/export_btn"
-            android:padding="@dimen/common_half_margin"
+            android:padding="@dimen/common_margin_half"
             android:checked="true"
             />
         <com.google.android.material.radiobutton.MaterialRadioButton
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/import_btn"
-            android:padding="@dimen/common_half_margin"
+            android:padding="@dimen/common_margin_half"
             />
     </RadioGroup>
     <com.google.android.material.button.MaterialButton
@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:text="@string/export_btn"
         android:checked="true"
-        android:layout_margin="@dimen/common_half_margin"
+        android:layout_margin="@dimen/common_margin_half"
         app:cornerRadius="@dimen/infinity"
         app:backgroundTint="?attr/colorAccent"
         app:layout_constraintLeft_toLeftOf="parent"

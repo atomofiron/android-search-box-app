@@ -79,9 +79,15 @@ class SettingsStore(sp: SharedPreferences) {
 
     val appOrientation = PreferenceNode.forString(
             sp,
-            Const.PREF_APP_ORIENTATION,
-            AppOrientation.UNDEFINED.ordinal.toString(),
+            key = Const.PREF_APP_ORIENTATION,
+            default = AppOrientation.UNDEFINED.ordinal.toString(),
             toValue = { it.ordinal.toString() },
             fromValue = { AppOrientation.values()[it.toInt()] }
+    )
+
+    val explorerItem = PreferenceNode.forInt<Int>(
+            sp,
+            key = Const.PREF_EXPLORER_ITEM,
+            default = Const.DEFAULT_EXPLORER_ITEM
     )
 }

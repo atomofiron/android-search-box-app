@@ -21,6 +21,9 @@ abstract class BottomSheetDelegate(private val layoutContent: Int) {
             else -> bottomSheetView.setView(contentView!!)
         }
 
+        onViewReady()
         bottomSheetView.post { bottomSheetView.show() }
     }
+
+    open fun onViewReady() = Unit
 }

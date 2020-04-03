@@ -88,10 +88,10 @@ open class BottomSheetView @JvmOverloads constructor(
     fun setView(id: Int): View {
         if (id != contentViewId) {
             clearContainer()
+            LayoutInflater.from(context).inflate(id, viewContainer)
+            setView(viewContainer.getChildAt(CONTENT_VIEW_INDEX))
+            contentViewId = id
         }
-        LayoutInflater.from(context).inflate(id, viewContainer)
-        setView(viewContainer.getChildAt(CONTENT_VIEW_INDEX))
-        contentViewId = id
         return contentView
     }
 

@@ -16,6 +16,8 @@ class PreferencesDelegate(
 
     override fun onExportImportClick() = parentFragment.onExportImportClick()
 
+    override fun onExplorerItemClick() = parentFragment.onExplorerItemClick()
+
     override fun onPreferenceUpdate(key: String, value: Int): Boolean = viewModel.onPreferenceUpdate(key, value)
 
     override fun onPreferenceUpdate(key: String, value: String): Boolean = viewModel.onPreferenceUpdate(key, value)

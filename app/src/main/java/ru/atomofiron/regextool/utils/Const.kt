@@ -17,6 +17,7 @@ object Const {
     const val PREF_USE_SU = "pref_use_su"
     const val PREF_CURRENT_DIR = "pref_current_dir"
     const val PREF_EXPORT_IMPORT = "pref_export_import"
+    const val PREF_EXPLORER_ITEM = "pref_explorer_item"
 
     const val SEARCH_COUNT = "SEARCH_COUNT"
     const val SEARCH_LIST = "SEARCH_LIST"
@@ -31,4 +32,5 @@ object Const {
     const val DEFAULT_EXTRA_FORMATS = "md mkd markdown cm ad adoc"
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
     const val DEFAULT_MAX_SIZE = 10485760
+    const val DEFAULT_EXPLORER_ITEM = 2 * 2 * 2 * 2 * 2 - 1
 }

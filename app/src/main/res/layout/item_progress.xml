@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/common_half_margin">
+    android:padding="@dimen/common_margin_half">
 
     <ru.atomofiron.regextool.view.custom.ProgressSpinner
         android:id="@+id/progress_btn_spinner"

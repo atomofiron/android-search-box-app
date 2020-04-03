@@ -15,12 +15,12 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         private const val BYTE_LETTER = "B"
     }
 
-    private val ivIcon = view.findViewById<ImageView>(R.id.item_iv_icon)
-    private val tvName = view.findViewById<TextView>(R.id.item_tv_title)
-    private val tvDescription = view.findViewById<TextView>(R.id.item_tv_description)
-    private val tvDate = view.findViewById<TextView>(R.id.item_tv_date)
-    private val tvSize = view.findViewById<TextView>(R.id.item_tv_size)
-    private val cbFlag = view.findViewById<CheckBox>(R.id.item_cb)
+    private val ivIcon = view.findViewById<ImageView>(R.id.item_explorer_iv_icon)
+    private val tvName = view.findViewById<TextView>(R.id.item_explorer_tv_title)
+    private val tvDescription = view.findViewById<TextView>(R.id.item_explorer_tv_description)
+    private val tvDate = view.findViewById<TextView>(R.id.item_explorer_tv_date)
+    private val tvSize = view.findViewById<TextView>(R.id.item_explorer_tv_size)
+    private val cbFlag = view.findViewById<CheckBox>(R.id.item_explorer_cb)
 
     var onItemActionListener: ExplorerItemActionListener? = null
 

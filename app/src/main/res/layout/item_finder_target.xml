@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:layout_margin="@dimen/common_half_margin">
+    android:layout_margin="@dimen/common_margin_half">
 
     <ImageView
         android:id="@+id/item_iv_icon"
@@ -18,7 +18,7 @@
         android:id="@+id/item_tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/common_half_margin"
+        android:layout_marginStart="@dimen/common_margin_half"
         android:textColor="?attr/colorContent"
         android:text="Some file"
         />

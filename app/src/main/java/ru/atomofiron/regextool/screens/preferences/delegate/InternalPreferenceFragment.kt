@@ -139,6 +139,13 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
                 }
                 DOES_NOT_MATTER
             }
+            Const.PREF_EXPLORER_ITEM -> {
+                preference.setOnPreferenceClickListener {
+                    output.onExplorerItemClick()
+                    true
+                }
+                DOES_NOT_MATTER
+            }
             Const.PREF_MAX_DEPTH -> DOES_NOT_MATTER
             Const.PREF_EXCLUDE_DIRS -> DOES_NOT_MATTER
             else -> throw Exception("Unknown preference ($key)!")
@@ -163,6 +170,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
     interface Output : Backable {
         override fun onBack(): Boolean
         fun onExportImportClick()
+        fun onExplorerItemClick()
         fun onPreferenceUpdate(key: String, value: Int): Boolean
         fun onPreferenceUpdate(key: String, value: String): Boolean
         fun onPreferenceUpdate(key: String, value: Boolean): Boolean

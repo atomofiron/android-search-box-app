@@ -20,6 +20,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
     val alertOutputError = SingleLiveEvent<Shell.Output>()
     val externalPath: String get() = app.applicationContext.getExternalFilesDir(null)!!.absolutePath
     val isExportImportAvailable: Boolean get() = app.applicationContext.getExternalFilesDir(null) != null
+    val explorerItemState: Int get() = settingsStore.explorerItem.value
 
     @Inject
     lateinit var preferenceService: PreferenceService
@@ -38,6 +39,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
     fun onPreferenceUpdate(key: String, value: Int): Boolean {
         when (key) {
             Const.PREF_MAX_SIZE -> settingsStore.maxFileSizeForSearch.notify(value)
+            Const.PREF_EXPLORER_ITEM -> settingsStore.explorerItem.push(value)
             else -> throw Exception()
         }
         return true

@@ -9,5 +9,5 @@
     android:gravity="top"
     android:textSize="15sp"
     android:background="@null"
-    android:padding="@dimen/common_half_margin"
+    android:padding="@dimen/common_margin_half"
     />

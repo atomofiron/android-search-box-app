@@ -63,4 +63,11 @@
             app:key="pref_export_import"
             />
     </PreferenceCategory>
+    <PreferenceCategory
+        app:title="@string/user_interface">
+        <Preference
+            app:title="@string/pref_explorer_item"
+            app:key="pref_explorer_item"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>
