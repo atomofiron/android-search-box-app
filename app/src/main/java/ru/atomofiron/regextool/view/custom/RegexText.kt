@@ -2,8 +2,6 @@ package ru.atomofiron.regextool.view.custom
 
 import android.content.Context
 import android.text.Editable
-import android.text.InputFilter
-import android.text.Spanned
 import android.text.TextWatcher
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
@@ -14,52 +12,44 @@ class RegexText @JvmOverloads constructor(
 ) : AppCompatEditText(context, attrs), TextWatcher {
     companion object {
         private const val UNKNOWN = -1
+        private const val ZERO_CHAR = 0.toChar()
     }
+    private var locked = false
+    private var deleted = ZERO_CHAR
+    private var start = 0
+    private var count = 0
 
-    private var removePosition = UNKNOWN
-    private var selectionPosition = UNKNOWN
+    private val openBrackets = charArrayOf('[', '{', '(')
+    private val closeBrackets = charArrayOf(']', '}', ')')
 
     init {
-        filters = arrayOf<InputFilter>(BracketsFilter())
         addTextChangedListener(this)
     }
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+    override fun beforeTextChanged(sequence: CharSequence, start: Int, count: Int, after: Int) {
+        deleted = if (count == 1) sequence[start] else ZERO_CHAR
+    }
 
-    override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
-        if (selectionPosition != UNKNOWN) {
-            setSelection(selectionPosition)
-            selectionPosition = UNKNOWN
-        }
+    override fun onTextChanged(sequence: CharSequence, start: Int, before: Int, count: Int) {
+        this.start = start
+        this.count = count
     }
 
     override fun afterTextChanged(editable: Editable) {
-        if (removePosition != UNKNOWN) {
-            val position = removePosition
-            removePosition = UNKNOWN
-            editable.replace(position, position.inc(), "")
-        }
-    }
+        if (locked) return
+        locked = true
 
-    private inner class BracketsFilter : InputFilter {
-        private val brackets = arrayOf('[', '{', '(')
-        private val bracketsClose = arrayOf(']', '}', ')')
-
-        override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence? {
-
-            if (source.length == 1) {
-                val index = brackets.indexOf(source[0])
-                if (index != UNKNOWN) {
-                    selectionPosition = dstart.inc()
-                    return "${source[0]}${bracketsClose[index]}"
-                }
-            } else if (source.isEmpty() && dstart.inc() == dend) {
-                val index = brackets.indexOf(dest[dstart])
-                if (index != -1) {
-                    removePosition = dstart
-                }
+        if (editable.length > start && deleted in openBrackets && editable[start] in closeBrackets) {
+            editable.delete(start, start.inc())
+        } else if (count == 1) {
+            val position = start.inc()
+            val char = editable[start]
+            val index = openBrackets.indexOf(char)
+            if (index != UNKNOWN) {
+                editable.insert(position, closeBrackets[index].toString())
+                setSelection(start)
             }
-            return null
         }
+        locked = false
     }
 }
