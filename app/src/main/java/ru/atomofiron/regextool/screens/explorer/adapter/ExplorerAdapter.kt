@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemShadowDecorator.Shadow
@@ -92,7 +91,6 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
-        log("setComposition $composition")
         this.composition = composition
         backgroundDecorator.enabled = composition.visibleBg
         notifyItemRangeChanged(0, items.size)

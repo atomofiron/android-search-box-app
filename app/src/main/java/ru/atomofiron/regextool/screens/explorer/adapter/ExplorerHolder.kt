@@ -88,8 +88,6 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         tvName.text = if (item.completedPath == Const.ROOT) Const.ROOT else item.name
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
-        tvDescription.text = String.format("%s %s %s", item.access, item.owner, item.group)
-        tvDate.text = String.format("%s %s", item.date, item.time)
         tvSize.text = when {
             item.isFile && item.size.length == 1 -> item.size + BYTE_LETTER
             item.isFile -> item.size
