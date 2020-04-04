@@ -51,7 +51,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 when (id) {
                     R.id.menu_places -> dockView { open() }
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
-                    R.id.menu_options -> viewModel.options?.let{ bottomItemMenu.show(it) }
+                    R.id.menu_options -> viewModel.options?.let{ bottomItemMenu.show(it, viewModel.itemComposition.value) }
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
                 }
             }
@@ -104,5 +104,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 .show()
     }
 
-    private fun showOptions(options: ExplorerItemOptions) = bottomItemMenu.show(options)
+    private fun showOptions(options: ExplorerItemOptions) {
+        bottomItemMenu.show(options, viewModel.itemComposition.value)
+    }
 }

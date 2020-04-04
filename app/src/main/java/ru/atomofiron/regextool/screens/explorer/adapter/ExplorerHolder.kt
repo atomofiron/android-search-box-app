@@ -1,11 +1,14 @@
 package ru.atomofiron.regextool.screens.explorer.adapter
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import app.atomofiron.common.recycler.GeneralHolder
+import com.google.android.material.checkbox.MaterialCheckBox
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
@@ -21,7 +24,22 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     private val tvDescription = view.findViewById<TextView>(R.id.item_explorer_tv_description)
     private val tvDate = view.findViewById<TextView>(R.id.item_explorer_tv_date)
     private val tvSize = view.findViewById<TextView>(R.id.item_explorer_tv_size)
-    private val cbFlag = view.findViewById<CheckBox>(R.id.item_explorer_cb)
+    private val cbBox = view.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
+
+    /*
+    16842910 enabled
+    16842912 checked
+    ColorStateList{
+        mThemeAttrs=null
+        mChangingConfigurations=0
+        mStateSpecs=[[16842910, 16842912], [16842910, -16842912], [-16842910, 16842912], [-16842910, -16842912]]
+        mColors=[-14845836, -9079435, -6381922, -6381922]
+        mDefaultColor=-14845836
+    }
+     */
+
+    private val defaultBoxTintList: ColorStateList by lazy(LazyThreadSafetyMode.NONE) { cbBox.buttonTintList!! }
+    private val transparentBoxTintList: ColorStateList
 
     var onItemActionListener: ExplorerItemActionListener? = null
 
@@ -39,10 +57,25 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         onItemActionListener?.onItemCheck(item, view.isChecked)
     }
 
+    init {
+        if (cbBox.buttonTintList == null) cbBox.isUseMaterialThemeColors = true
+
+        val stateEnabledChecked = intArrayOf(android.R.attr.state_enabled, android.R.attr.state_checked)
+        val stateDisabledChecked = intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked)
+        val stateEnabledUnchecked = intArrayOf(android.R.attr.state_enabled, -android.R.attr.state_checked)
+        val stateDisabledUnchecked = intArrayOf(-android.R.attr.state_enabled, -android.R.attr.state_checked)
+        val colorEnabledChecked = defaultBoxTintList.getColorForState(stateEnabledChecked, Color.RED)
+        val colorDisabledChecked = defaultBoxTintList.getColorForState(stateDisabledChecked, Color.RED)
+        val colorDisabledUnchecked = defaultBoxTintList.getColorForState(stateDisabledUnchecked, Color.RED)
+        val states = arrayOf(stateEnabledChecked, stateDisabledChecked, stateEnabledUnchecked, stateDisabledUnchecked)
+        val colors = intArrayOf(colorEnabledChecked, colorDisabledChecked, Color.TRANSPARENT, colorDisabledUnchecked)
+        transparentBoxTintList = ColorStateList(states, colors)
+    }
+
     override fun onBind(item: XFile, position: Int) {
         itemView.setOnClickListener(onClickListener)
         itemView.setOnLongClickListener(onLongClickListener)
-        cbFlag.setOnClickListener(onCheckListener)
+        cbBox.setOnClickListener(onCheckListener)
 
         val image = when {
             !item.isDirectory -> R.drawable.ic_file_circle
@@ -63,8 +96,8 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             else -> ""
         }
 
-        cbFlag.isChecked = item.isChecked
-        cbFlag.visibility = if (item.isRoot) View.INVISIBLE else View.VISIBLE
+        cbBox.isChecked = item.isChecked
+        cbBox.visibility = if (item.isRoot) View.INVISIBLE else View.VISIBLE
     }
 
     fun bindComposition(composition: ExplorerItemComposition) {
@@ -87,5 +120,7 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             string.append(" ").append(item.time)
         }
         tvDate.text = string.toString()
+        tvSize.visibility = if (composition.visibleSize) View.VISIBLE else View.GONE
+        cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 }

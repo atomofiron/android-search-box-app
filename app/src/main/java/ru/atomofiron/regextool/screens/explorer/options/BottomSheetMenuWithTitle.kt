@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenu
 import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuListener
@@ -21,13 +22,15 @@ class BottomSheetMenuWithTitle(
 
     override fun show(items: List<Int>) = throw Exception()
 
-    fun show(options: ExplorerItemOptions) {
+    fun show(options: ExplorerItemOptions, itemComposition: ExplorerItemComposition) {
         super.show(options.ids)
         when (options.items.size) {
             1 -> {
                 tvTitle.visibility = View.GONE
                 exItem.visibility = View.VISIBLE
-                ExplorerHolder(exItem).bind(options.items[0], 0)
+                val holder = ExplorerHolder(exItem)
+                holder.bind(options.items[0], 0)
+                holder.bindComposition(itemComposition)
             }
             else -> {
                 tvTitle.visibility = View.VISIBLE

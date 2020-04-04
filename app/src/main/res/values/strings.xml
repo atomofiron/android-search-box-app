@@ -78,6 +78,8 @@
     <string name="user_interface">Interface</string>
     <string name="pref_explorer_item">File / Directory</string>
     <string name="create">Create</string>
+    <string name="empty_check_box">Empty check box</string>
+    <string name="size">Size</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>
         <item quantity="one">%d directory</item>

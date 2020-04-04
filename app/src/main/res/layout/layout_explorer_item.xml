@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="@dimen/padding_middle"
-            android:text="-rwxrwxrwx"
+            android:text="drwxrwx---"
             />
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/preference_owner"
@@ -60,6 +60,20 @@
             android:layout_height="wrap_content"
             android:paddingEnd="@dimen/padding_middle"
             android:text="03:14"
+            />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/preference_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/padding_middle"
+            android:text="4KB"
+            />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/preference_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/padding_middle"
+            android:text="@string/empty_check_box"
             />
     </com.google.android.flexbox.FlexboxLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
