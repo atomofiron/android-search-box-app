@@ -5,6 +5,7 @@ import android.view.Gravity
 import ru.atomofiron.regextool.iss.store.util.PreferenceNode
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
+import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 
 class SettingsStore(sp: SharedPreferences) {
@@ -85,9 +86,11 @@ class SettingsStore(sp: SharedPreferences) {
             fromValue = { AppOrientation.values()[it.toInt()] }
     )
 
-    val explorerItem = PreferenceNode.forInt<Int>(
+    val explorerItem = PreferenceNode.forInt(
             sp,
             key = Const.PREF_EXPLORER_ITEM,
-            default = Const.DEFAULT_EXPLORER_ITEM
+            default = Const.DEFAULT_EXPLORER_ITEM,
+            toValue = { it.flags },
+            fromValue = { ExplorerItemComposition(it) }
     )
 }

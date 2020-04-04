@@ -80,6 +80,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
         viewModel.places.observe(owner, Observer(placesAdapter::setItems))
         viewModel.showOptions.observeData(owner, ::showOptions)
+        viewModel.itemComposition.observe(owner, Observer(explorerAdapter::setComposition))
     }
 
     override fun onBack(): Boolean {

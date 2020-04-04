@@ -259,7 +259,6 @@ abstract class PrivateExplorerServiceLogic constructor(
                 dirFiles!!
                 val news = newFiles.iterator()
                 val olds = dirFiles.iterator()
-                var previous: XFile = dir
 
                 while (olds.hasNext()) {
                     val next = olds.next()
@@ -270,9 +269,10 @@ abstract class PrivateExplorerServiceLogic constructor(
                 while (news.hasNext()) {
                     val next = news.next()
                     if (!dirFiles.contains(next)) {
+                        val index = newFiles.indexOf(next)
+                        val previous = if (index == 0) dir else newFiles[index.inc()]
                         explorerStore.notifyInsert(previous, next)
                     }
-                    previous = next
                 }
             }
         }

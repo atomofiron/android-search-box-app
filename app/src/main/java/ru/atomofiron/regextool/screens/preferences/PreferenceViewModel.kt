@@ -8,6 +8,7 @@ import ru.atomofiron.regextool.channel.PreferencesChannel
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.service.PreferenceService
 import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
     val alertOutputError = SingleLiveEvent<Shell.Output>()
     val externalPath: String get() = app.applicationContext.getExternalFilesDir(null)!!.absolutePath
     val isExportImportAvailable: Boolean get() = app.applicationContext.getExternalFilesDir(null) != null
-    val explorerItemState: Int get() = settingsStore.explorerItem.value
+    val explorerItemState: ExplorerItemComposition get() = settingsStore.explorerItem.entity
 
     @Inject
     lateinit var preferenceService: PreferenceService
@@ -39,7 +40,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
     fun onPreferenceUpdate(key: String, value: Int): Boolean {
         when (key) {
             Const.PREF_MAX_SIZE -> settingsStore.maxFileSizeForSearch.notify(value)
-            Const.PREF_EXPLORER_ITEM -> settingsStore.explorerItem.push(value)
+            Const.PREF_EXPLORER_ITEM -> settingsStore.explorerItem.pushByOriginal(value)
             else -> throw Exception()
         }
         return true

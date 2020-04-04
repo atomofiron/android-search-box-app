@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel
 import ru.atomofiron.regextool.utils.Const
@@ -33,33 +34,14 @@ class ExplorerItemDelegate(
 
     private val listener = Listener()
 
-    private var bitsAccess = 0b10000
-    private var bitsOwner = 0b01000
-    private var bitsGroup = 0b00100
-    private var bitsDate = 0b00010
-    private var bitsTime = 0b00001
-
-    private var visibleAccess = true
-    private var visibleOwner = true
-    private var visibleGroup = true
-    private var visibleDate = true
-    private var visibleTime = true
-
-    init {
-        val state = viewModel.explorerItemState
-        visibleAccess = state and bitsAccess == bitsAccess
-        visibleOwner = state and bitsOwner == bitsOwner
-        visibleGroup = state and bitsGroup == bitsGroup
-        visibleDate = state and bitsDate == bitsDate
-        visibleTime = state and bitsTime == bitsTime
-    }
+    private var composition: ExplorerItemComposition = viewModel.explorerItemState
 
     override fun onViewReady() {
-        cbAccess.isChecked = visibleAccess
-        cbOwner.isChecked = visibleOwner
-        cbGroup.isChecked = visibleGroup
-        cbDate.isChecked = visibleDate
-        cbTime.isChecked = visibleTime
+        cbAccess.isChecked = composition.visibleAccess
+        cbOwner.isChecked = composition.visibleOwner
+        cbGroup.isChecked = composition.visibleGroup
+        cbDate.isChecked = composition.visibleDate
+        cbTime.isChecked = composition.visibleTime
 
         cbAccess.setOnClickListener(listener)
         cbOwner.setOnClickListener(listener)
@@ -83,60 +65,40 @@ class ExplorerItemDelegate(
 
     fun updatePreview() {
         val string = StringBuilder()
-        if (visibleAccess) {
+        if (composition.visibleAccess) {
             string.append(dir.access).append(" ")
         }
-        if (visibleOwner) {
+        if (composition.visibleOwner) {
             string.append(dir.owner).append(" ")
         }
-        if (visibleGroup) {
-            string.append(dir.group).append(" ")
+        if (composition.visibleGroup) {
+            string.append(dir.group)
         }
         tvDescription.text = string.toString()
         string.clear()
-        if (visibleDate) {
+        if (composition.visibleDate) {
             string.append(dir.date)
         }
-        if (visibleTime) {
+        if (composition.visibleTime) {
             string.append(" ").append(dir.time)
         }
         tvDateTime.text = string.toString()
-    }
-    
-    private fun pushState() {
-        var state = 0
-        if (visibleAccess) {
-            state += bitsAccess
-        }
-        if (visibleOwner) {
-            state += bitsOwner
-        }
-        if (visibleGroup) {
-            state += bitsGroup
-        }
-        if (visibleDate) {
-            state += bitsDate
-        }
-        if (visibleTime) {
-            state += bitsTime
-        }
-        viewModel.onPreferenceUpdate(Const.PREF_EXPLORER_ITEM, state)
     }
 
     private inner class Listener : View.OnClickListener {
         override fun onClick(view: View) {
             view as CompoundButton
             val isChecked = view.isChecked
-            when (view.id) {
-                R.id.preference_access -> visibleAccess = isChecked
-                R.id.preference_owner -> visibleOwner = isChecked
-                R.id.preference_group -> visibleGroup = isChecked
-                R.id.preference_date -> visibleDate = isChecked
-                R.id.preference_time -> visibleTime = isChecked
+            composition = when (view.id) {
+                R.id.preference_access -> composition.copy(visibleAccess = isChecked)
+                R.id.preference_owner -> composition.copy(visibleOwner = isChecked)
+                R.id.preference_group -> composition.copy(visibleGroup = isChecked)
+                R.id.preference_date -> composition.copy(visibleDate = isChecked)
+                R.id.preference_time -> composition.copy(visibleTime = isChecked)
                 else -> throw Exception()
             }
             updatePreview()
-            pushState()
+            viewModel.onPreferenceUpdate(Const.PREF_EXPLORER_ITEM, composition.flags)
         }
     }
 }

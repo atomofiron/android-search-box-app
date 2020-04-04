@@ -66,12 +66,21 @@ class PreferenceNode<E, V> private constructor(
         }
     }
 
-    fun push(value: E) {
-        observable.setAndNotify(value)
+    fun push(entity: E) {
+        observable.setAndNotify(entity)
         when (type) {
-            Type.INT -> sp.edit().putInt(key, toValue(value) as Int).apply()
-            Type.STRING -> sp.edit().putString(key, toValue(value) as String?).apply()
-            Type.BOOLEAN -> sp.edit().putBoolean(key, toValue(value) as Boolean).apply()
+            Type.INT -> sp.edit().putInt(key, toValue(entity) as Int).apply()
+            Type.STRING -> sp.edit().putString(key, toValue(entity) as String?).apply()
+            Type.BOOLEAN -> sp.edit().putBoolean(key, toValue(entity) as Boolean).apply()
+        }
+    }
+
+    fun pushByOriginal(value: V) {
+        observable.setAndNotify(fromValue(value))
+        when (type) {
+            Type.INT -> sp.edit().putInt(key, value as Int).apply()
+            Type.STRING -> sp.edit().putString(key, value as String?).apply()
+            Type.BOOLEAN -> sp.edit().putBoolean(key, value as Boolean).apply()
         }
     }
 

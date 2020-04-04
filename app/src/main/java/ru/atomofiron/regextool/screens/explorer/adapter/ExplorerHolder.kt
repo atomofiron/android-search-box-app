@@ -8,6 +8,7 @@ import android.widget.TextView
 import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 
 class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
@@ -64,5 +65,27 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
 
         cbFlag.isChecked = item.isChecked
         cbFlag.visibility = if (item.isRoot) View.INVISIBLE else View.VISIBLE
+    }
+
+    fun bindComposition(composition: ExplorerItemComposition) {
+        val string = StringBuilder()
+        if (composition.visibleAccess) {
+            string.append(item.access).append(" ")
+        }
+        if (composition.visibleOwner) {
+            string.append(item.owner).append(" ")
+        }
+        if (composition.visibleGroup) {
+            string.append(item.group)
+        }
+        tvDescription.text = string.toString()
+        string.clear()
+        if (composition.visibleDate) {
+            string.append(item.date)
+        }
+        if (composition.visibleTime) {
+            string.append(" ").append(item.time)
+        }
+        tvDate.text = string.toString()
     }
 }

@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.log
+import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemShadowDecorator.Shadow
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
@@ -25,6 +27,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     private var viewPool: Array<View?>? = null
 
     private var currentDir: XFile? = null
+    private lateinit var composition: ExplorerItemComposition
 
     private val spaceDecorator = ItemSpaceDecorator { i ->
         val item = items[i]
@@ -86,6 +89,12 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         currentDir = dir
     }
 
+    fun setComposition(composition: ExplorerItemComposition) {
+        log("setComposition $composition")
+        this.composition = composition
+        notifyItemRangeChanged(0, items.size)
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.itemAnimator = null
@@ -123,6 +132,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     override fun onBindViewHolder(holder: ExplorerHolder, position: Int) {
         holder.onItemActionListener = itemActionListener
         super.onBindViewHolder(holder, position)
+        holder.bindComposition(composition)
         itemActionListener?.onItemVisible(holder.item)
     }
 

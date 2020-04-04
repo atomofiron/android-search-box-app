@@ -21,6 +21,7 @@ import ru.atomofiron.regextool.iss.service.explorer.model.Change
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.options.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
@@ -41,6 +42,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
     val showOptions = SingleLiveEvent<ExplorerItemOptions>()
     val historyDrawerGravity = MutableLiveData<Int>()
     val places = LateinitLiveData<List<XPlace>>()
+    val itemComposition = LateinitLiveData<ExplorerItemComposition>()
     val items = MutableLiveData<List<XFile>>()
     val current = MutableLiveData<XFile?>()
     val notifyUpdate = SingleLiveEvent<XFile>()
@@ -70,6 +72,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
         settingsStore
                 .storagePath
                 .addObserver(onClearedCallback, ::onStoragePathChanged)
+        settingsStore
+                .explorerItem
+                .addObserver(onClearedCallback, itemComposition::setValue)
 
         val items = ArrayList<XPlace>()
         items.add(XPlace.InternalStorage(app.getString(R.string.internal_storage), visible = true))
