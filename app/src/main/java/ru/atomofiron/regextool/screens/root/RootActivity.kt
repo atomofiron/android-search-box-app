@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.screens.root
 
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -11,6 +12,7 @@ import app.atomofiron.common.util.findColorByAttr
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.AppOrientation
+import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.root.util.ExitSnackbarCallback
 import ru.atomofiron.regextool.screens.root.util.tasks.TasksSheetView
 import ru.atomofiron.regextool.view.custom.Joystick
@@ -30,6 +32,15 @@ open class RootActivity : BaseActivity<RootViewModel>() {
                 .setActionTextColor(this@RootActivity.findColorByAttr(R.attr.colorAccent))
                 .setAction(R.string.exit) { viewModel.onExitClick() }
                 .addCallback(ExitSnackbarCallback(viewModel))
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        var consumed = false
+        supportFragmentManager.fragments.find { it is ExplorerFragment }?.let {
+            it as ExplorerFragment
+            consumed = it.onKeyDown(keyCode)
+        }
+        return consumed || super.onKeyDown(keyCode, event)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

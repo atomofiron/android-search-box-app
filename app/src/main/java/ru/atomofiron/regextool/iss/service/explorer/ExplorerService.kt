@@ -54,6 +54,12 @@ class ExplorerService constructor(
         }
     }
 
+    suspend fun openParent() {
+        val dir = currentOpenedDir ?: return
+        log2("openParent $dir")
+        closeDir(dir)
+    }
+
     override suspend fun updateItem(it: XFile) {
         val file = findItem(it) ?: return
         log2("updateItem $file")

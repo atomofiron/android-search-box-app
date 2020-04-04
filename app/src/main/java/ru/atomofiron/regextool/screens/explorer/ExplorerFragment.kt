@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.screens.explorer
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -81,6 +82,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         viewModel.places.observe(owner, Observer(placesAdapter::setItems))
         viewModel.showOptions.observeData(owner, ::showOptions)
         viewModel.itemComposition.observe(owner, Observer(explorerAdapter::setComposition))
+        viewModel.scrollToCurrentDir.observeEvent(owner, explorerAdapter::scrollToCurrentDir)
     }
 
     override fun onBack(): Boolean {
@@ -95,6 +97,16 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
             }
         }
         return consumed || super.onBack()
+    }
+
+    fun onKeyDown(keyCode: Int): Boolean = when {
+        bottomSheetView(default = false) { isSheetShown } -> false
+        isHidden -> false
+        keyCode == KeyEvent.KEYCODE_VOLUME_UP -> {
+            viewModel.onVolumeUp()
+            true
+        }
+        else -> false
     }
 
     private fun showPermissionRequiredWarning() {

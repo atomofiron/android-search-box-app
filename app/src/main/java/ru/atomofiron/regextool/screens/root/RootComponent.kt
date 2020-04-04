@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.root
 
 import dagger.Component
 import dagger.Module
+import ru.atomofiron.regextool.channel.RootChannel
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import javax.inject.Scope
 
@@ -26,5 +27,6 @@ interface RootComponent {
 class RootModule
 
 interface RootDependencies {
+    fun rootChannel(): RootChannel
     fun settingsStore(): SettingsStore
 }

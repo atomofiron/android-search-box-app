@@ -2,14 +2,19 @@ package app.atomofiron.common.util
 
 import java.util.*
 
-open class KObservable<T : Any?>(value: T, private val single: Boolean = false) {
+open class KObservable<T : Any?>(private val single: Boolean = false) {
     private var changed = false
     private val observers = Vector<(T) -> Unit>()
-    var value: T = value
-        private set
+    private var nullableValue: T? = null
+    val value: T get() = nullableValue as T
+
+    constructor(value: T, single: Boolean = false) : this(single) {
+        nullableValue = value
+    }
 
     fun addObserver(removeCallback: RemoveObserverCallback, observer: (T) -> Unit) {
         addObserver(observer)
+        lazy {  }
 
         removeCallback.addOneTimeObserver {
             removeObserver(observer)
@@ -31,7 +36,7 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
 
     @Synchronized
     fun setAndNotify(value: T) {
-        this.value = value
+        nullableValue = value
         changed = true
         notifyObservers()
     }
@@ -59,9 +64,6 @@ open class KObservable<T : Any?>(value: T, private val single: Boolean = false) 
             arrLocal[i].invoke(value)
         }
     }
-
-    @Synchronized
-    fun clearObservers() = observers.removeAllElements()
 
     @Synchronized
     fun size(): Int = observers.size

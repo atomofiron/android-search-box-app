@@ -40,6 +40,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
 
     val permissionRequiredWarning = SingleLiveEvent<Intent?>()
     val showOptions = SingleLiveEvent<ExplorerItemOptions>()
+    val scrollToCurrentDir = SingleLiveEvent<Unit>()
     val historyDrawerGravity = MutableLiveData<Int>()
     val places = LateinitLiveData<List<XPlace>>()
     val itemComposition = LateinitLiveData<ExplorerItemComposition>()
@@ -61,20 +62,13 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
 
     @Inject
     lateinit var explorerStore: ExplorerStore
-
     @Inject
     lateinit var settingsStore: SettingsStore
 
     init {
-        settingsStore
-                .dockGravity
-                .addObserver(onClearedCallback, ::onDockGravityChanged)
-        settingsStore
-                .storagePath
-                .addObserver(onClearedCallback, ::onStoragePathChanged)
-        settingsStore
-                .explorerItem
-                .addObserver(onClearedCallback, itemComposition::setValue)
+        settingsStore.dockGravity.addObserver(onClearedCallback, ::onDockGravityChanged)
+        settingsStore.storagePath.addObserver(onClearedCallback, ::onStoragePathChanged)
+        settingsStore.explorerItem.addObserver(onClearedCallback, itemComposition::setValue)
 
         val items = ArrayList<XPlace>()
         items.add(XPlace.InternalStorage(app.getString(R.string.internal_storage), visible = true))
@@ -182,7 +176,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
     private fun getItemOptions(): ExplorerItemOptions? {
         val current = explorerStore.current.value
         val files = when {
-            explorerStore.checked.isNotEmpty() -> explorerStore.checked
+            explorerStore.checked.isNotEmpty() -> ArrayList(explorerStore.checked)
             current != null -> arrayListOf(current)
             else -> return null
         }
@@ -226,4 +220,9 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
     override fun onItemInvalidate(item: XFile) = explorerInteractor.invalidateItem(item)
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
+
+    fun onVolumeUp() {
+        explorerInteractor.openParent()
+        scrollToCurrentDir.invoke()
+    }
 }

@@ -24,6 +24,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
             notifyDataSetChanged()
         }
     private var viewPool: Array<View?>? = null
+    private var recyclerView: RecyclerView? = null
 
     private var currentDir: XFile? = null
     private lateinit var composition: ExplorerItemComposition
@@ -96,8 +97,15 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         notifyItemRangeChanged(0, items.size)
     }
 
+    fun scrollToCurrentDir() {
+        val dir = currentDir ?: return
+        val position = items.indexOf(dir)
+        recyclerView?.scrollToPosition(position)
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
         recyclerView.itemAnimator = null
         recyclerView.recycledViewPool.setMaxRecycledViews(VIEW_TYPE, VIEW_POOL_MAX_COUNT)
 
@@ -115,6 +123,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
+        this.recyclerView = null
 
         recyclerView.removeItemDecoration(backgroundDecorator)
         recyclerView.removeItemDecoration(spaceDecorator)

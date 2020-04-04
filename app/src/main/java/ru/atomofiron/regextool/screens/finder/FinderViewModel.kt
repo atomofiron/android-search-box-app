@@ -8,7 +8,7 @@ import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.channel.PreferencesChannel
+import ru.atomofiron.regextool.channel.PreferenceChannel
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.service.explorer.model.XFile
 import ru.atomofiron.regextool.iss.store.ExplorerStore
@@ -37,9 +37,10 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
     @Inject
     lateinit var explorerStore: ExplorerStore
-
     @Inject
     lateinit var settingsStore: SettingsStore
+    @Inject
+    lateinit var preferenceChannel: PreferenceChannel
 
     init {
         items.add(SearchAndReplaceItem())
@@ -69,7 +70,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         settingsStore.specialCharacters.addObserver(onClearedCallback) { chs ->
             updateItem(SpecialCharactersItem(chs), SpecialCharactersItem::class)
         }
-        PreferencesChannel.historyImportedEvent.addObserver(onClearedCallback) {
+        preferenceChannel.historyImportedEvent.addObserver(onClearedCallback) {
             reloadHistory.invoke()
         }
 

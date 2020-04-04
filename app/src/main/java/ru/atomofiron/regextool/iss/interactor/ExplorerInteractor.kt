@@ -26,6 +26,12 @@ class ExplorerInteractor(private val service: ExplorerService) {
         }
     }
 
+    fun openParent() {
+        scope.launch {
+            service.openParent()
+        }
+    }
+
     fun updateItem(file: XFile) {
         scope.launch {
             service.updateItem(file)

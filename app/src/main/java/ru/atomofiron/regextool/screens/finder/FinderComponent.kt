@@ -3,6 +3,7 @@ package ru.atomofiron.regextool.screens.finder
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import ru.atomofiron.regextool.channel.PreferenceChannel
 import ru.atomofiron.regextool.iss.interactor.FinderInteractor
 import ru.atomofiron.regextool.iss.store.ExplorerStore
 import ru.atomofiron.regextool.iss.store.SettingsStore
@@ -35,6 +36,7 @@ class FinderModule {
 }
 
 interface FinderDependencies {
+    fun preferenceChannel(): PreferenceChannel
     fun explorerStore(): ExplorerStore
     fun settingsStore(): SettingsStore
 }

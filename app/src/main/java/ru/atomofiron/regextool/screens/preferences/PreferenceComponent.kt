@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import ru.atomofiron.regextool.channel.PreferenceChannel
 import ru.atomofiron.regextool.iss.service.PreferenceService
 import ru.atomofiron.regextool.iss.store.SettingsStore
 import javax.inject.Scope
@@ -33,6 +34,7 @@ class PreferenceModule {
 }
 
 interface PreferenceDependencies {
+    fun preferenceChannel(): PreferenceChannel
     fun settingsStore(): SettingsStore
     fun context(): Context
 }

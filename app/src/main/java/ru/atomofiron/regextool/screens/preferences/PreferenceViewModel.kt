@@ -4,7 +4,7 @@ import android.app.Application
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.channel.PreferencesChannel
+import ru.atomofiron.regextool.channel.PreferenceChannel
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.iss.service.PreferenceService
 import ru.atomofiron.regextool.iss.store.SettingsStore
@@ -25,9 +25,10 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
 
     @Inject
     lateinit var preferenceService: PreferenceService
-
     @Inject
     lateinit var settingsStore: SettingsStore
+    @Inject
+    lateinit var preferenceChannel: PreferenceChannel
 
     override fun buildComponentAndInject() {
         DaggerPreferenceComponent
@@ -86,7 +87,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
         val output = preferenceService.importHistory()
         showOutput(output, R.string.successful)
         if (output.success) {
-            PreferencesChannel.historyImportedEvent.justNotify()
+            preferenceChannel.historyImportedEvent.justNotify()
         }
     }
 
