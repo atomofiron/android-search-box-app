@@ -79,7 +79,7 @@
     <string name="pref_explorer_item">File / Directory</string>
     <string name="create">Create</string>
     <string name="empty_check_box">Empty check box</string>
-    <string name="size">Size</string>
+    <string name="item_explorer_background">Alternating background</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>
         <item quantity="one">%d directory</item>

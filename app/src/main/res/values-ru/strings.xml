@@ -79,7 +79,7 @@
     <string name="pref_explorer_item">Файл / Директория</string>
     <string name="create">Создать</string>
     <string name="empty_check_box">Пустой чек бокс</string>
-    <string name="size">Size</string>
+    <string name="item_explorer_background">Чередующийся фон</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>

@@ -29,6 +29,8 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     private var currentDir: XFile? = null
     private lateinit var composition: ExplorerItemComposition
 
+    private val backgroundDecorator = ItemBackgroundDecorator()
+
     private val spaceDecorator = ItemSpaceDecorator { i ->
         val item = items[i]
         val nextPosition = i.inc()
@@ -92,6 +94,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     fun setComposition(composition: ExplorerItemComposition) {
         log("setComposition $composition")
         this.composition = composition
+        backgroundDecorator.enabled = composition.visibleBg
         notifyItemRangeChanged(0, items.size)
     }
 
@@ -106,6 +109,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
             viewPool!![i] = inflateNewView(inflater, recyclerView)
         }
 
+        recyclerView.addItemDecoration(backgroundDecorator)
         recyclerView.addItemDecoration(spaceDecorator)
         recyclerView.addItemDecoration(shadowDecorator)
         recyclerView.addItemDecoration(separationDecorator)
@@ -114,6 +118,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
 
+        recyclerView.removeItemDecoration(backgroundDecorator)
         recyclerView.removeItemDecoration(spaceDecorator)
         recyclerView.removeItemDecoration(shadowDecorator)
         recyclerView.removeItemDecoration(separationDecorator)

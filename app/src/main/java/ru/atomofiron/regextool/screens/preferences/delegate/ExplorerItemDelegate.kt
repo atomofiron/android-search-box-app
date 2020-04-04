@@ -1,10 +1,12 @@
 package ru.atomofiron.regextool.screens.preferences.delegate
 
+import android.graphics.Color
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
@@ -21,7 +23,7 @@ class ExplorerItemDelegate(
 
     private val explorerItem: View get() = bottomSheetView.findViewById(R.id.preference_explorer_item)
     private val ivIcon: ImageView get() = bottomSheetView.findViewById(R.id.item_explorer_iv_icon)
-    private val cpBox: CheckBox get() = bottomSheetView.findViewById(R.id.item_explorer_cb)
+    private val cbCheckBox: CheckBox get() = bottomSheetView.findViewById(R.id.item_explorer_cb)
     private val tvSize: TextView get() = bottomSheetView.findViewById(R.id.item_explorer_tv_size)
 
     private val cbAccess: CheckBox get() = bottomSheetView.findViewById(R.id.preference_access)
@@ -31,9 +33,11 @@ class ExplorerItemDelegate(
     private val cbTime: CheckBox get() = bottomSheetView.findViewById(R.id.preference_time)
     private val cbSize: CheckBox get() = bottomSheetView.findViewById(R.id.preference_size)
     private val cbBox: CheckBox get() = bottomSheetView.findViewById(R.id.preference_box)
+    private val cbBg: CheckBox get() = bottomSheetView.findViewById(R.id.preference_bg)
 
     private val listener = Listener()
     private lateinit var holder: ExplorerHolder
+    private var backgroundColor: Int = 0
 
     private var composition: ExplorerItemComposition = viewModel.explorerItemState
 
@@ -45,6 +49,7 @@ class ExplorerItemDelegate(
         cbTime.isChecked = composition.visibleTime
         cbSize.isChecked = composition.visibleSize
         cbBox.isChecked = composition.visibleBox
+        cbBg.isChecked = composition.visibleBg
 
         cbAccess.setOnClickListener(listener)
         cbOwner.setOnClickListener(listener)
@@ -53,6 +58,7 @@ class ExplorerItemDelegate(
         cbTime.setOnClickListener(listener)
         cbSize.setOnClickListener(listener)
         cbBox.setOnClickListener(listener)
+        cbBg.setOnClickListener(listener)
 
         holder = ExplorerHolder(explorerItem)
         holder.bind(dir, 0)
@@ -63,6 +69,9 @@ class ExplorerItemDelegate(
         explorerItem.isFocusable = false
         explorerItem.isClickable = false
         tvSize.text = dir.size
+
+        backgroundColor = ContextCompat.getColor(explorerItem.context, R.color.item_explorer_background)
+        bindBackground()
     }
 
     private inner class Listener : View.OnClickListener {
@@ -77,10 +86,20 @@ class ExplorerItemDelegate(
                 R.id.preference_time -> composition.copy(visibleTime = isChecked)
                 R.id.preference_size -> composition.copy(visibleSize = isChecked)
                 R.id.preference_box -> composition.copy(visibleBox = isChecked)
+                R.id.preference_bg -> composition.copy(visibleBg = isChecked)
                 else -> throw Exception()
             }
             holder.bindComposition(composition)
+            bindBackground()
             viewModel.onPreferenceUpdate(Const.PREF_EXPLORER_ITEM, composition.flags)
         }
+    }
+
+    private fun bindBackground() {
+        val color = when (composition.visibleBg) {
+            true -> backgroundColor
+            else -> Color.TRANSPARENT
+        }
+        holder.itemView.setBackgroundColor(color)
     }
 }
