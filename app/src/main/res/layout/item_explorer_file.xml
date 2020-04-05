@@ -65,6 +65,15 @@
                 />
         </FrameLayout>
     </LinearLayout>
+    <ru.atomofiron.regextool.view.custom.ProgressSpinner
+        android:id="@+id/item_explorer_ps"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:visibility="gone"
+        />
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/item_explorer_cb"
         android:layout_width="@dimen/edge_size"

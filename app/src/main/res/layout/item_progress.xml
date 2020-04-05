@@ -8,18 +8,9 @@
     android:padding="@dimen/common_margin_half">
 
     <ru.atomofiron.regextool.view.custom.ProgressSpinner
-        android:id="@+id/progress_btn_spinner"
+        android:id="@+id/item_explorer_ps"
         android:layout_width="@dimen/common_size"
         android:layout_height="@dimen/common_size"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
-    <ImageView
-        android:layout_width="@dimen/common_size"
-        android:layout_height="@dimen/common_size"
-        android:src="@drawable/ic_progress_mask"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -46,7 +37,7 @@
         android:textColor="?attr/colorAccent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/progress_btn_spinner"
+        app:layout_constraintRight_toLeftOf="@+id/item_explorer_ps"
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/TextAppearance.MaterialComponents.Button"
         />
@@ -60,7 +51,7 @@
         android:textColor="@color/white"
         android:paddingStart="@dimen/common_margin"
         android:paddingEnd="@dimen/common_margin"
-        app:layout_constraintLeft_toRightOf="@+id/progress_btn_spinner"
+        app:layout_constraintLeft_toRightOf="@+id/item_explorer_ps"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
