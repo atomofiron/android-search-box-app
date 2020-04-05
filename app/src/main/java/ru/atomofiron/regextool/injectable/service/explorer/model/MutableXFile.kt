@@ -151,6 +151,8 @@ class MutableXFile : XFile {
     fun updateCache(su: Boolean): String? {
         dropCaching = false
         when {
+            !exists -> return "Item does not exist. $this"
+            isDeleting -> return "Item is deleting. $this"
             isCaching -> return "Cache in process. $this"
             isCacheActual -> return "Cache is actual. $this"
         }
@@ -162,16 +164,18 @@ class MutableXFile : XFile {
 
     fun delete(su: Boolean = false): Boolean {
         isDeleting = true
-        return when {
-            isDirectory -> {
-                val output = Shell.exec(Shell.RM_RF, su)
-                if (!output.success) {
-                    log2("Delete not success. $this\n${output.error}")
+        when {
+            isDirectory || su -> {
+                val output = Shell.exec(Shell.RM_RF.format(toyboxPath, completedPath), su)
+                when (output.success) {
+                    true -> exists = false
+                    else -> log2("Delete not success. $this\n${output.error}")
                 }
-                output.success
             }
-            else -> File(completedPath).delete()
+            else -> exists = !File(completedPath).delete()
         }
+        isDeleting = false
+        return !exists
     }
 
     private fun cacheAsDir(su: Boolean = false): String? {

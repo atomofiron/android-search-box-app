@@ -17,7 +17,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 abstract class PrivateExplorerServiceLogic constructor(
-        protected val assets: AssetManager,
+        private val assets: AssetManager,
         protected val explorerStore: ExplorerStore,
         protected val settingsStore: SettingsStore
 ) {
@@ -201,6 +201,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         log2("updateTheFile $file")
         require(!file.isDirectory) { IllegalArgumentException("Is is a directory! $file") }
         when {
+            file.isDeleting -> Unit
             file.updateCache(useSu) == null -> explorerStore.notifyUpdate(file)
             !file.exists -> dropEntity(file)
         }
@@ -209,6 +210,10 @@ abstract class PrivateExplorerServiceLogic constructor(
     protected suspend fun updateCurrentDir(dir: MutableXFile) {
         if (dir != currentOpenedDir) {
             log2("updateCurrentDir dir != currentOpenedDir $dir")
+            return
+        }
+        if (dir.isDeleting) {
+            log2("updateCurrentDir return $dir")
             return
         }
         log2("updateCurrentDir $dir")
@@ -270,7 +275,7 @@ abstract class PrivateExplorerServiceLogic constructor(
                     val next = news.next()
                     if (!dirFiles.contains(next)) {
                         val index = newFiles.indexOf(next)
-                        val previous = if (index == 0) dir else newFiles[index.inc()]
+                        val previous = if (index == 0) dir else newFiles[index.dec()]
                         explorerStore.notifyInsert(previous, next)
                     }
                 }
@@ -280,7 +285,7 @@ abstract class PrivateExplorerServiceLogic constructor(
 
     protected suspend fun updateClosedDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
-        if (dir.isOpened) {
+        if (dir.isOpened || dir.isDeleting) {
             log2("updateClosedDir return $dir")
             return
         }
@@ -382,6 +387,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
         explorerStore.notifyUpdate(item)
         item.delete()
+        explorerStore.notifyUpdate(item)
         when {
             item.isOpened -> updateCurrentDir(currentOpenedDir!!)
             item.isDirectory -> updateClosedDir(item)

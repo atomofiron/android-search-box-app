@@ -13,6 +13,7 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
+import ru.atomofiron.regextool.utils.setVisibility
 import ru.atomofiron.regextool.view.custom.ProgressSpinner
 
 class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
@@ -97,6 +98,8 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         }
 
         cbBox.isChecked = item.isChecked
+        cbBox.setVisibility(!item.isDeleting)
+        psProgress.setVisibility(item.isDeleting)
     }
 
     fun bindComposition(composition: ExplorerItemComposition) {
@@ -119,7 +122,7 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             string.append(" ").append(item.time)
         }
         tvDate.text = string.toString()
-        tvSize.visibility = if (composition.visibleSize) View.VISIBLE else View.GONE
+        tvSize.setVisibility(composition.visibleSize)
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 }

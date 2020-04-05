@@ -1,6 +1,10 @@
 package ru.atomofiron.regextool.utils
 
-import android.content.Context
-import android.preference.PreferenceManager
+import android.view.View
 
-fun Context.sp() = PreferenceManager.getDefaultSharedPreferences(this)!!
+fun View.setVisibility(visible: Boolean, invisibleMode: Int = View.GONE) {
+    val visibility = if (visible) View.VISIBLE else invisibleMode
+    if (this.visibility != visibility) {
+        this.visibility = visibility
+    }
+}

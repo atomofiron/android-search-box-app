@@ -52,7 +52,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 when (id) {
                     R.id.menu_places -> dockView { open() }
                     R.id.menu_search -> viewModel.onSearchOptionSelected()
-                    R.id.menu_options -> viewModel.options?.let{ bottomItemMenu.show(it, viewModel.itemComposition.value) }
+                    R.id.menu_options -> viewModel.onOptionsOptionSelected()
                     R.id.menu_settings -> viewModel.onSettingsOptionSelected()
                 }
             }

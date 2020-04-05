@@ -52,7 +52,6 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
     val notifyUpdateRange = SingleLiveEvent<List<XFile>>()
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
-    val options: ExplorerItemOptions? get() = getItemOptions()
 
     private var readStorageGranted = false
     private lateinit var permissions: Permissions
@@ -140,8 +139,13 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
 
     override fun onMenuItemSelected(id: Int) {
         when (id) {
-            R.id.menu_remove -> Unit
+            R.id.menu_create -> Unit
             R.id.menu_rename -> Unit
+            R.id.menu_remove -> {
+                val items = showOptions.data?.items?.toTypedArray()
+                items ?: return
+                explorerInteractor.deleteItems(*items)
+            }
         }
     }
 
@@ -173,12 +177,14 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
 
     private fun onStoragePathChanged(path: String) = explorerInteractor.setRoot(path)
 
-    private fun getItemOptions(): ExplorerItemOptions? {
+    fun onSearchOptionSelected() = router.showFinder()
+
+    fun onOptionsOptionSelected() {
         val current = explorerStore.current.value
         val files = when {
             explorerStore.checked.isNotEmpty() -> ArrayList(explorerStore.checked)
             current != null -> arrayListOf(current)
-            else -> return null
+            else -> return
         }
         val ids = when {
             files.size > 1 -> manyFilesOptions
@@ -186,10 +192,8 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
             files[0].isDirectory -> directoryOptions
             else -> oneFileOptions
         }
-        return ExplorerItemOptions(ids, files)
+        showOptions.invoke(ExplorerItemOptions(ids, files))
     }
-
-    fun onSearchOptionSelected() = router.showFinder()
 
     fun onSettingsOptionSelected() = router.showSettings()
 

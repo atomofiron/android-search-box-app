@@ -16,6 +16,7 @@ open class BottomSheetMenu(
         private val menuItemClickListener: BottomSheetMenuListener
 ) : BottomSheetDelegate(layoutContent) {
     protected open val recyclerView: RecyclerView = RecyclerView(context)
+    @Suppress("SuspiciousVarProperty")
     override var contentView: View? = null
         get() = recyclerView
 
