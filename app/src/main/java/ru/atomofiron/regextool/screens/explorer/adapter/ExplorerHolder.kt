@@ -95,7 +95,6 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         }
 
         cbBox.isChecked = item.isChecked
-        cbBox.visibility = if (item.isRoot) View.INVISIBLE else View.VISIBLE
     }
 
     fun bindComposition(composition: ExplorerItemComposition) {

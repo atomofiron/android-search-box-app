@@ -29,6 +29,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     private var currentDir: XFile? = null
     private lateinit var composition: ExplorerItemComposition
 
+    private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
 
     private val spaceDecorator = ItemSpaceDecorator { i ->
@@ -119,6 +120,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         recyclerView.addItemDecoration(spaceDecorator)
         recyclerView.addItemDecoration(shadowDecorator)
         recyclerView.addItemDecoration(separationDecorator)
+        recyclerView.addItemDecoration(gravityDecorator)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
@@ -129,6 +131,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         recyclerView.removeItemDecoration(spaceDecorator)
         recyclerView.removeItemDecoration(shadowDecorator)
         recyclerView.removeItemDecoration(separationDecorator)
+        recyclerView.removeItemDecoration(gravityDecorator)
     }
 
     override fun getItemViewType(position: Int): Int = VIEW_TYPE

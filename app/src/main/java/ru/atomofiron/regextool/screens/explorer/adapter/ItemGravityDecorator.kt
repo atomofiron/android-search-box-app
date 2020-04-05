@@ -1,0 +1,19 @@
+package ru.atomofiron.regextool.screens.explorer.adapter
+
+import android.graphics.Rect
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+
+class ItemGravityDecorator : RecyclerView.ItemDecoration() {
+
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        super.getItemOffsets(outRect, view, parent, state)
+
+        val position = parent.getChildLayoutPosition(view)
+        if (position != 0) {
+            return
+        }
+        val offset = parent.height - parent.paddingTop - parent.paddingBottom
+        outRect.top += offset / 3 * 2
+    }
+}

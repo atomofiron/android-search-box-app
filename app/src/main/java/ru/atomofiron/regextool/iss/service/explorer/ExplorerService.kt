@@ -79,6 +79,13 @@ class ExplorerService constructor(
         val dirFiles = item.files ?: arrayListOf()
         val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
         when {
+            item.isRoot && item.isChecked -> {
+                if (item.isOpened && !uncheckAllChildren(item)) {
+                    checkChildren(item)
+                }
+                item.isChecked = false
+                explorerStore.notifyUpdate(item)
+            }
             isNotEmptyOpenedDir && !item.isChecked -> {
                 checkChildren(item)
                 checked.remove(item)

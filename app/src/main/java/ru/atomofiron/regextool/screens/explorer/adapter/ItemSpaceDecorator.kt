@@ -16,7 +16,7 @@ class ItemSpaceDecorator(private val divide: (Int) -> Divider) : RecyclerView.It
         nonZeroHeight = if (view.measuredHeight == 0) nonZeroHeight else view.measuredHeight
 
         val position = parent.getChildLayoutPosition(view)
-        outRect.bottom = when (divide(position)) {
+        outRect.bottom += when (divide(position)) {
             Divider.NO -> 0
             Divider.SMALL -> nonZeroHeight / 2
             Divider.BIG -> nonZeroHeight
