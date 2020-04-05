@@ -10,7 +10,7 @@ import android.widget.TextView
 import app.atomofiron.common.recycler.GeneralHolder
 import com.google.android.material.checkbox.MaterialCheckBox
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 

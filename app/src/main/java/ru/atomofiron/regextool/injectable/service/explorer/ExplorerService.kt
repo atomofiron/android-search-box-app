@@ -1,12 +1,12 @@
-package ru.atomofiron.regextool.iss.service.explorer
+package ru.atomofiron.regextool.injectable.service.explorer
 
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import kotlinx.coroutines.sync.withLock
-import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
-import ru.atomofiron.regextool.iss.service.explorer.model.XFile
-import ru.atomofiron.regextool.iss.store.ExplorerStore
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Const
 

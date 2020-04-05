@@ -3,10 +3,10 @@ package ru.atomofiron.regextool.screens.finder
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.channel.PreferenceChannel
-import ru.atomofiron.regextool.iss.interactor.FinderInteractor
-import ru.atomofiron.regextool.iss.store.ExplorerStore
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
+import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
+import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import javax.inject.Scope
 
 @Scope

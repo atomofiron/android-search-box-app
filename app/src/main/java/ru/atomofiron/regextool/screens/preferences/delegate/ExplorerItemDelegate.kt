@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel

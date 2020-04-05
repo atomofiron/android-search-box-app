@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.iss.store.util
+package ru.atomofiron.regextool.injectable.store.util
 
 import android.content.SharedPreferences
 import app.atomofiron.common.util.KObservable

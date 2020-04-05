@@ -1,10 +1,10 @@
-package ru.atomofiron.regextool.iss.interactor
+package ru.atomofiron.regextool.injectable.interactor
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.atomofiron.regextool.iss.service.explorer.ExplorerService
-import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 
 class ExplorerInteractor(private val service: ExplorerService) {
     val scope = CoroutineScope(Dispatchers.IO)

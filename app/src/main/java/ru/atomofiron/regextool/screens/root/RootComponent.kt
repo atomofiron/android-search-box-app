@@ -2,8 +2,8 @@ package ru.atomofiron.regextool.screens.root
 
 import dagger.Component
 import dagger.Module
-import ru.atomofiron.regextool.channel.RootChannel
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.channel.RootChannel
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import javax.inject.Scope
 
 @Scope

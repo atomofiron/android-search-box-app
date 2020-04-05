@@ -5,7 +5,7 @@ import android.util.Log
 private var timestamp: Long = 0
 private var nanotimestamp: Long = 0
 
-private const val mute = false
+private const val mute = true
 
 fun Any.log(s: String) = log(this.javaClass.simpleName, s)
 

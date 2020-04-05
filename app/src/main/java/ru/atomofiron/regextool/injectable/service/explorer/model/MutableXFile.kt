@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.iss.service.explorer.model
+package ru.atomofiron.regextool.injectable.service.explorer.model
 
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.log2

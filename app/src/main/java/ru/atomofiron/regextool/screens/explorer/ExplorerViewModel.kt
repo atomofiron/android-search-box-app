@@ -16,11 +16,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.iss.service.explorer.model.Change
-import ru.atomofiron.regextool.iss.service.explorer.model.XFile
-import ru.atomofiron.regextool.iss.store.ExplorerStore
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
+import ru.atomofiron.regextool.injectable.service.explorer.model.Change
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.options.ExplorerItemOptions

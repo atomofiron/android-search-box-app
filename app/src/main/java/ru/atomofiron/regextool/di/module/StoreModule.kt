@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.iss.store.ExplorerStore
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import javax.inject.Singleton
 
 @Module

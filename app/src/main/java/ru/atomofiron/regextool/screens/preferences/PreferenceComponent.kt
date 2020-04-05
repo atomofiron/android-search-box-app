@@ -4,9 +4,9 @@ import android.content.Context
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.channel.PreferenceChannel
-import ru.atomofiron.regextool.iss.service.PreferenceService
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
+import ru.atomofiron.regextool.injectable.service.PreferenceService
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import javax.inject.Scope
 
 @Scope

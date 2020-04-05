@@ -1,8 +1,8 @@
-package ru.atomofiron.regextool.iss.store
+package ru.atomofiron.regextool.injectable.store
 
 import android.content.SharedPreferences
 import android.view.Gravity
-import ru.atomofiron.regextool.iss.store.util.PreferenceNode
+import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
 import ru.atomofiron.regextool.model.ExplorerItemComposition

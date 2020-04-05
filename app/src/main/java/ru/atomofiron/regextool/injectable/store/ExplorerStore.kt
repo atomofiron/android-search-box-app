@@ -1,9 +1,9 @@
-package ru.atomofiron.regextool.iss.store
+package ru.atomofiron.regextool.injectable.store
 
 import app.atomofiron.common.util.KObservable
-import ru.atomofiron.regextool.iss.service.explorer.model.Change
-import ru.atomofiron.regextool.iss.service.explorer.model.MutableXFile
-import ru.atomofiron.regextool.iss.service.explorer.model.XFile
+import ru.atomofiron.regextool.injectable.service.explorer.model.Change
+import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.log2
 
 class ExplorerStore {

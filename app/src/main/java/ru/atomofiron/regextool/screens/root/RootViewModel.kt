@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
 import ru.atomofiron.regextool.screens.root.util.tasks.XTask

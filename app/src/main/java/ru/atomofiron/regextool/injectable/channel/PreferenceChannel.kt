@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.channel
+package ru.atomofiron.regextool.injectable.channel
 
 import app.atomofiron.common.util.KObservable
 

@@ -8,11 +8,11 @@ import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.channel.PreferenceChannel
+import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.iss.service.explorer.model.XFile
-import ru.atomofiron.regextool.iss.store.ExplorerStore
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.*
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate

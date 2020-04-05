@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.iss.service
+package ru.atomofiron.regextool.injectable.service
 
 import android.content.Context
 import ru.atomofiron.regextool.App

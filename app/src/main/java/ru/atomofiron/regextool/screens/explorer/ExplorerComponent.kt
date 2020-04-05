@@ -5,10 +5,10 @@ import android.content.res.AssetManager
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.iss.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.iss.service.explorer.ExplorerService
-import ru.atomofiron.regextool.iss.store.ExplorerStore
-import ru.atomofiron.regextool.iss.store.SettingsStore
+import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
+import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
+import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.SettingsStore
 import javax.inject.Scope
 
 @Scope

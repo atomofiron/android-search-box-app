@@ -2,8 +2,8 @@ package ru.atomofiron.regextool.di.module
 
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.channel.PreferenceChannel
-import ru.atomofiron.regextool.channel.RootChannel
+import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
+import ru.atomofiron.regextool.injectable.channel.RootChannel
 import javax.inject.Singleton
 
 
