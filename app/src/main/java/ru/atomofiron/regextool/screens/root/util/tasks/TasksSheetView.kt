@@ -33,7 +33,7 @@ class TasksSheetView @JvmOverloads constructor(
     private val adapter = TasksAdapter()
 
     init {
-        setView(R.layout.layout_tasks)
+        setView(R.layout.sheet_tasks)
         initRecyclerView(rvTasks)
 
         memoryLoop.duration = (2000 / context.getAnimatorDurationScale()).toLong()
@@ -45,7 +45,7 @@ class TasksSheetView @JvmOverloads constructor(
 
     fun resetContentView() {
         removeView(contentView)
-        setView(R.layout.layout_tasks)
+        setView(R.layout.sheet_tasks)
         initRecyclerView(rvTasks)
     }
 

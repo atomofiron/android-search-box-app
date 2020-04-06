@@ -33,4 +33,5 @@
     <dimen name="bottom_sheet_view_max_width">480dp</dimen>
     <dimen name="bottom_sheet_max_height">460dp</dimen>
 	<dimen name="item_dir_separation_size">3.5dp</dimen>
+	<dimen name="bottom_sheet_title_margin">56dp</dimen>
 </resources>

@@ -4,8 +4,6 @@ import android.graphics.Color
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
@@ -17,14 +15,11 @@ import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
 
 class ExplorerItemDelegate(
         private val viewModel: PreferenceViewModel
-) : BottomSheetDelegate(R.layout.layout_explorer_item) {
+) : BottomSheetDelegate(R.layout.sheet_item_composition) {
     private val dir = MutableXFile("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038",
             "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android", root = 0)
 
-    private val explorerItem: View get() = bottomSheetView.findViewById(R.id.preference_explorer_item)
-    private val ivIcon: ImageView get() = bottomSheetView.findViewById(R.id.item_explorer_iv_icon)
-    private val cbCheckBox: CheckBox get() = bottomSheetView.findViewById(R.id.item_explorer_cb)
-    private val tvSize: TextView get() = bottomSheetView.findViewById(R.id.item_explorer_tv_size)
+    private val itemView: View get() = bottomSheetView.findViewById(R.id.preference_explorer_item)
 
     private val cbAccess: CheckBox get() = bottomSheetView.findViewById(R.id.preference_access)
     private val cbOwner: CheckBox get() = bottomSheetView.findViewById(R.id.preference_owner)
@@ -40,6 +35,8 @@ class ExplorerItemDelegate(
     private var backgroundColor: Int = 0
 
     private var composition: ExplorerItemComposition = viewModel.explorerItemState
+
+    public override fun show() = super.show()
 
     override fun onViewReady() {
         cbAccess.isChecked = composition.visibleAccess
@@ -60,17 +57,15 @@ class ExplorerItemDelegate(
         cbBox.setOnClickListener(listener)
         cbBg.setOnClickListener(listener)
 
-        holder = ExplorerHolder(explorerItem)
-        holder.bind(dir, 0)
+        holder = ExplorerHolder(itemView)
+        holder.bind(dir)
         holder.bindComposition(composition)
 
-        ivIcon.alpha = 1f
-        explorerItem.background = null
-        explorerItem.isFocusable = false
-        explorerItem.isClickable = false
-        tvSize.text = dir.size
+        holder.ivIcon.alpha = 1f
+        holder.removeBackground()
+        holder.tvSize.text = dir.size
 
-        backgroundColor = ContextCompat.getColor(explorerItem.context, R.color.item_explorer_background)
+        backgroundColor = ContextCompat.getColor(itemView.context, R.color.item_explorer_background)
         bindBackground()
     }
 

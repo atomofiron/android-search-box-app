@@ -172,6 +172,6 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     }
 
     private fun inflateNewView(inflater: LayoutInflater, parent: ViewGroup): View {
-        return inflater.inflate(R.layout.item_explorer_file, parent, false)
+        return inflater.inflate(R.layout.item_explorer, parent, false)
     }
 }

@@ -21,12 +21,12 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         private const val BYTE_LETTER = "B"
     }
 
-    private val ivIcon = view.findViewById<ImageView>(R.id.item_explorer_iv_icon)
+    val ivIcon = view.findViewById<ImageView>(R.id.item_explorer_iv_icon)
     private val tvName = view.findViewById<TextView>(R.id.item_explorer_tv_title)
     private val tvDescription = view.findViewById<TextView>(R.id.item_explorer_tv_description)
     private val tvDate = view.findViewById<TextView>(R.id.item_explorer_tv_date)
-    private val tvSize = view.findViewById<TextView>(R.id.item_explorer_tv_size)
-    private val cbBox = view.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
+    val tvSize = view.findViewById<TextView>(R.id.item_explorer_tv_size)
+    val cbBox = view.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
     private val psProgress = view.findViewById<BallsView>(R.id.item_explorer_ps)
 
     /*
@@ -124,5 +124,16 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         tvDate.text = string.toString()
         tvSize.setVisibility(composition.visibleSize)
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
+    }
+
+    fun removeBackground() {
+        itemView.background = null
+        itemView.isFocusable = false
+        itemView.isClickable = false
+    }
+
+    fun disableCheckBox() {
+        cbBox.isFocusable = false
+        cbBox.isClickable = false
     }
 }

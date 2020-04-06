@@ -13,15 +13,20 @@ abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
             field = value
         }
 
-    open fun show() {
+    protected open fun show() {
         when (contentView) {
             null -> bottomSheetView.setView(layoutContent)
             else -> bottomSheetView.setView(contentView!!)
         }
 
         onViewReady()
+        bottomSheetView.onClosedToOpenedListener = ::onViewShown
         bottomSheetView.post { bottomSheetView.show() }
     }
 
-    open fun onViewReady() = Unit
+    protected fun hide() = bottomSheetView.hide()
+
+    protected open fun onViewReady() = Unit
+
+    protected open fun onViewShown() = Unit
 }

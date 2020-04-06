@@ -80,6 +80,9 @@
     <string name="create">Создать</string>
     <string name="empty_check_box">Пустой чек бокс</string>
     <string name="item_explorer_background">Чередующийся фон</string>
+    <string name="create_a_new">Создать нов.</string>
+    <string name="a_file">Файл</string>
+    <string name="a_directory">Директорию</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>

@@ -9,12 +9,14 @@ import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
 
 class ExportImportDelegate(
         private val viewModel: PreferenceViewModel
-) : BottomSheetDelegate(R.layout.layout_export_import) {
+) : BottomSheetDelegate(R.layout.sheet_export_import) {
 
     private val tvPath: TextView get() = bottomSheetView.findViewById(R.id.lei_tv_path)
     private val rgTarget: RadioGroup get() = bottomSheetView.findViewById(R.id.lei_rg_target)
     private val rgAction: RadioGroup get() = bottomSheetView.findViewById(R.id.lei_rg_action)
     private val button: Button get() = bottomSheetView.findViewById(R.id.lei_btn)
+
+    public override fun show() = super.show()
 
     override fun onViewReady() {
         rgAction.setOnCheckedChangeListener { _, checkedId ->
@@ -43,6 +45,6 @@ class ExportImportDelegate(
             }
             else -> throw Exception()
         }
-        bottomSheetView.hide()
+        hide()
     }
 }

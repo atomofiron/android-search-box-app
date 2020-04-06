@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/preference_explorer_item"
-        layout="@layout/item_explorer_file"
+        layout="@layout/item_explorer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"

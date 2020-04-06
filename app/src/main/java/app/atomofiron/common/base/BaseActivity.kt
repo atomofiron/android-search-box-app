@@ -16,14 +16,17 @@ abstract class BaseActivity<M : BaseViewModel<*>> : AppCompatActivity() {
     protected abstract val viewModelClass: KClass<M>
     protected lateinit var viewModel: M
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    final override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getAppTheme())
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(viewModelClass.java)
         viewModel.onActivityAttach(this)
         viewModel.onCreate(this, intent)
+        onCreate()
         onSubscribeData(this)
     }
+
+    protected open fun onCreate() = Unit
 
     private fun getAppTheme(): AppTheme {
         val sp = PreferenceManager.getDefaultSharedPreferences(this)

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:id="@+id/explorer_create_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginEnd="@dimen/common_margin"
+        >
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/explorer_create_dir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_directory"
+            android:layout_marginEnd="@dimen/common_margin"
+            android:checked="true"
+            />
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/explorer_create_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_file"
+            />
+    </RadioGroup>
+    <ru.atomofiron.regextool.view.custom.AutoHideKeyboardField
+        android:id="@+id/explorer_create_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_margin"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/explorer_create_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/common_margin"
+        android:text="@string/create"
+        app:cornerRadius="@dimen/infinity"
+        />
+</LinearLayout>

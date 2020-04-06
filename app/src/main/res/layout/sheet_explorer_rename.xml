@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <include
+        android:id="@+id/explorer_rename_item"
+        layout="@layout/item_explorer"
+        />
+    <ru.atomofiron.regextool.view.custom.AutoHideKeyboardField
+        android:id="@+id/explorer_rename_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_margin"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/explorer_rename_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/common_margin"
+        android:text="@string/rename"
+        app:cornerRadius="@dimen/infinity"
+        />
+</LinearLayout>

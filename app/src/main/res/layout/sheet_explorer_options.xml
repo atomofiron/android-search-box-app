@@ -11,12 +11,12 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="@dimen/bottom_sheet_title_margin"
         android:textColor="?attr/colorContent"
         />
     <include
-        android:id="@+id/explorer_menu_file"
-        layout="@layout/item_explorer_file"
+        android:id="@+id/explorer_menu_item"
+        layout="@layout/item_explorer"
         />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/explorer_menu_rv"

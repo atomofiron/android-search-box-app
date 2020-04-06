@@ -33,8 +33,6 @@ open class BottomSheetMenu(
         recyclerView.adapter = menuAdapter
     }
 
-    override fun show() = throw Exception()
-
     @SuppressLint("RestrictedApi")
     open fun show(items: List<Int>) {
         menuImpl.clear()
@@ -52,7 +50,7 @@ open class BottomSheetMenu(
     private inner class Listener : BottomSheetMenuListener {
         override fun onMenuItemSelected(id: Int) {
             menuItemClickListener.onMenuItemSelected(id)
-            bottomSheetView.hide()
+            hide()
         }
     }
 }

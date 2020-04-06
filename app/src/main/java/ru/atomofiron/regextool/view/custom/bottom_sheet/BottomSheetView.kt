@@ -35,6 +35,8 @@ open class BottomSheetView @JvmOverloads constructor(
         moveChildrenFrom(R.layout.view_bottom_sheet)
     }
 
+    var onClosedToOpenedListener: () -> Unit = { }
+
     private val overlay: View = findViewById(R.id.bottom_sheet_overlay)
     private val viewContainer: ViewGroup = findViewById(R.id.bottom_container)
     lateinit var contentView: View private set
@@ -57,6 +59,8 @@ open class BottomSheetView @JvmOverloads constructor(
     private var frameLoop = ValueAnimator.ofFloat(0f, 1f)
     private var animator = ValueAnimator.ofFloat(0f, 1f)
     protected var state = State.CLOSED; private set
+    private var keepOverlayVisible = false
+    private var notifyWhenOpened = false
 
     private val menuHeight: Int get() = viewContainer.measuredHeight
     private val minTop: Int get() = measuredHeight - viewContainer.measuredHeight
@@ -132,9 +136,11 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     private fun setState(state: State) {
+        keepOverlayVisible = false
         val fromState = this.state
         this.state = state
-        if (determineState(viewContainer.top)) {
+        val isReopen = fromState == State.CLOSE && state == State.OPEN
+        if (!isReopen && determineState(viewContainer.top)) {
             return
         }
 
@@ -156,7 +162,11 @@ open class BottomSheetView @JvmOverloads constructor(
             State.CLOSE -> when (state) {
                 State.OPENED -> throw UnsupportedOperationException()
                 State.CLOSED -> animator.cancel()
-                State.OPEN -> startAnimator(minTop, decelerateInterpolator)
+                State.OPEN -> {
+                    keepOverlayVisible = true
+                    setMenuTop(maxTop)
+                    startAnimator(minTop, decelerateInterpolator)
+                }
                 State.CLOSE -> Unit
                 State.SCROLL -> animator.cancel()
             }
@@ -179,6 +189,14 @@ open class BottomSheetView @JvmOverloads constructor(
         when (state) {
             State.SCROLL -> frameLoop.resume()
             else -> frameLoop.pause()
+        }
+        when (state) {
+            State.CLOSE, State.CLOSED -> notifyWhenOpened = true
+            State.OPENED -> if (notifyWhenOpened) {
+                notifyWhenOpened = false
+                onClosedToOpenedListener.invoke()
+            }
+            else -> Unit
         }
     }
 
@@ -312,7 +330,10 @@ open class BottomSheetView @JvmOverloads constructor(
             viewContainer.top = top
         }
 
-        overlay.alpha = (parentHeight - curTop).toFloat() / height
+        overlay.alpha = when (keepOverlayVisible) {
+            true -> VISIBLE
+            else -> (parentHeight - curTop).toFloat() / height
+        }
         viewContainer.alpha = VISIBLE
 
         determineState(top)

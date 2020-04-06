@@ -43,8 +43,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         return consumed || super.onKeyDown(keyCode, event)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate() {
         setContentView(R.layout.activity_root)
 
         joystick.view.setOnClickListener {

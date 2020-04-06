@@ -80,6 +80,9 @@
     <string name="create">Create</string>
     <string name="empty_check_box">Empty check box</string>
     <string name="item_explorer_background">Alternating background</string>
+    <string name="create_a_new">Create a new</string>
+    <string name="a_file">File</string>
+    <string name="a_directory">Directory</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>
         <item quantity="one">%d directory</item>

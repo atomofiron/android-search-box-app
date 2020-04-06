@@ -12,9 +12,10 @@ import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
-import ru.atomofiron.regextool.screens.explorer.options.BottomSheetMenuWithTitle
-import ru.atomofiron.regextool.screens.explorer.options.ExplorerItemOptions
+import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
+import ru.atomofiron.regextool.screens.explorer.sheet.CreateDelegate
+import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate
 import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
@@ -25,18 +26,22 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
     private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.explorer_bom)
+    private val dockView = Knife<VerticalDockView>(this, R.id.explorer_dv)
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.explorer_bsv)
     private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
-    private val dockView = Knife<VerticalDockView>(this, R.id.explorer_dv)
+    private lateinit var renameDelegate: RenameDelegate
+    private lateinit var createDelegate: CreateDelegate
 
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    override fun onCreate() {
         explorerAdapter.itemActionListener = viewModel
         placesAdapter.itemActionListener = viewModel
+
+        renameDelegate = RenameDelegate(viewModel)
+        createDelegate = CreateDelegate(viewModel)
+        bottomItemMenu = BottomSheetMenuWithTitle(thisContext, viewModel)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,7 +69,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
             recyclerView.adapter = placesAdapter
         }
 
-        bottomItemMenu = BottomSheetMenuWithTitle(thisContext, viewModel)
+        renameDelegate.bottomSheetView = bottomSheetView.view
+        createDelegate.bottomSheetView = bottomSheetView.view
         bottomItemMenu.bottomSheetView = bottomSheetView.view
     }
 
@@ -80,7 +86,9 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         viewModel.permissionRequiredWarning.observeEvent(owner, ::showPermissionRequiredWarning)
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
         viewModel.places.observe(owner, Observer(placesAdapter::setItems))
-        viewModel.showOptions.observeData(owner, ::showOptions)
+        viewModel.showOptions.observeData(owner, bottomItemMenu::show)
+        viewModel.showRename.observeData(owner, renameDelegate::show)
+        viewModel.showCreate.observeData(owner, createDelegate::show)
         viewModel.itemComposition.observe(owner, Observer(explorerAdapter::setComposition))
         viewModel.scrollToCurrentDir.observeEvent(owner, explorerAdapter::scrollToCurrentDir)
     }
@@ -114,9 +122,5 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 .setAnchorView(anchorView)
                 .setAction(R.string.allow) { viewModel.onAllowStorageClick() }
                 .show()
-    }
-
-    private fun showOptions(options: ExplorerItemOptions) {
-        bottomItemMenu.show(options, viewModel.itemComposition.value)
     }
 }

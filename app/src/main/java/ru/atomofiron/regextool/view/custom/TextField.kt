@@ -8,20 +8,16 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.widget.AppCompatEditText
 
 open class TextField @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null
-) : AppCompatEditText(context, attrs), TextWatcher {
-    private var inputMethodManager: InputMethodManager? = null
+) : AutoHideKeyboardField(context, attrs), TextWatcher {
     private var onSubmitListener: ((String) -> Unit)? = null
 
     private var submittedValue: CharSequence = ""
 
     init {
-        inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         addTextChangedListener(this)
         imeOptions = EditorInfo.IME_ACTION_DONE
         inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -71,11 +67,7 @@ open class TextField @JvmOverloads constructor(
 
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect)
-        if (focused) {
-            inputMethodManager!!.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-            setSelection(length())
-        } else {
-            inputMethodManager!!.hideSoftInputFromWindow(windowToken, InputMethodManager.RESULT_UNCHANGED_SHOWN)
+        if (!focused) {
             isFocusable = false
             setText(submittedValue, BufferType.NORMAL)
         }

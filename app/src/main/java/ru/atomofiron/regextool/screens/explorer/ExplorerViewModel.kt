@@ -23,9 +23,10 @@ import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.SettingsStore
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
-import ru.atomofiron.regextool.screens.explorer.options.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
+import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle.ExplorerItemOptions
+import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData
 import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuListener
 import javax.inject.Inject
 
@@ -40,6 +41,8 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
 
     val permissionRequiredWarning = SingleLiveEvent<Intent?>()
     val showOptions = SingleLiveEvent<ExplorerItemOptions>()
+    val showCreate = SingleLiveEvent<XFile>()
+    val showRename = SingleLiveEvent<RenameData>()
     val scrollToCurrentDir = SingleLiveEvent<Unit>()
     val historyDrawerGravity = MutableLiveData<Int>()
     val places = LateinitLiveData<List<XPlace>>()
@@ -133,19 +136,24 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
             files[0].isDirectory -> directoryOptions
             else -> oneFileOptions
         }
-        val options = ExplorerItemOptions(ids, files)
+        val options = ExplorerItemOptions(ids, files, itemComposition.value)
         showOptions.invoke(options)
     }
 
     override fun onMenuItemSelected(id: Int) {
         when (id) {
-            R.id.menu_create -> Unit
-            R.id.menu_rename -> Unit
-            R.id.menu_remove -> {
-                val items = showOptions.data?.items?.toTypedArray()
-                items ?: return
-                explorerInteractor.deleteItems(*items)
+            R.id.menu_create -> showOptions.data?.items?.get(0)?.let(showCreate::invoke)
+            R.id.menu_rename -> {
+                val item = showOptions.data?.items?.get(0)
+                item ?: return
+                val dirFiles = explorerStore.items
+                        .find { it.root == item.root && it.completedPath == item.completedParentPath }
+                        ?.files?.map { it.name }
+                dirFiles ?: return
+                val data = RenameData(itemComposition.value, item, dirFiles)
+                showRename.invoke(data)
             }
+            R.id.menu_remove -> showOptions.data?.items?.toTypedArray()?.let(explorerInteractor::deleteItems)
         }
     }
 
@@ -192,12 +200,20 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerRouter>(app),
             files[0].isDirectory -> directoryOptions
             else -> oneFileOptions
         }
-        showOptions.invoke(ExplorerItemOptions(ids, files))
+        showOptions.invoke(ExplorerItemOptions(ids, files, itemComposition.value))
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
 
     fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
+
+    fun onCreateClick(dir: XFile, name: String, directory: Boolean) {
+        // todo next
+    }
+
+    fun onRenameClick(item: XFile, name: String) {
+        // todo next
+    }
 
     override fun onItemClick(item: XFile) {
         val useSu = settingsStore.useSu.value

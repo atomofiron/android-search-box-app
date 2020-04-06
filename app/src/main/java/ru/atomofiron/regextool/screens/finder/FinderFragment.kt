@@ -39,9 +39,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         }
     })
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    override fun onCreate() {
         finderAdapter.onFinderActionListener = FinderActionListenerDelegate(viewModel, historyAdapter)
     }
 

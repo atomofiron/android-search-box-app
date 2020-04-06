@@ -36,9 +36,7 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
         preferencesDelegate = PreferencesDelegate(this, viewModel)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    override fun onCreate() {
         if (!::childFragment.isInitialized) {
             childFragment = InternalPreferenceFragment()
         }

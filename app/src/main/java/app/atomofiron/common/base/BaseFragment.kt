@@ -43,12 +43,15 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         viewModel.onFragmentAttach(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Fragment.onAttachFragment()
         viewModel.onCreate(thisContext, arguments)
+        onCreate()
         onSubscribeData(this)
     }
+
+    protected open fun onCreate() = Unit
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
