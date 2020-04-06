@@ -6,11 +6,10 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
-import androidx.appcompat.widget.AppCompatImageView
 import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
 
-class ProgressSpinner : AppCompatImageView, ValueAnimator.AnimatorUpdateListener {
+class BallsView : View, ValueAnimator.AnimatorUpdateListener {
     companion object {
         private const val DURATION = 512L
     }

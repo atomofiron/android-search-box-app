@@ -14,7 +14,7 @@ import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.setVisibility
-import ru.atomofiron.regextool.view.custom.ProgressSpinner
+import ru.atomofiron.regextool.view.custom.BallsView
 
 class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     companion object {
@@ -27,7 +27,7 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     private val tvDate = view.findViewById<TextView>(R.id.item_explorer_tv_date)
     private val tvSize = view.findViewById<TextView>(R.id.item_explorer_tv_size)
     private val cbBox = view.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
-    private val psProgress = view.findViewById<ProgressSpinner>(R.id.item_explorer_ps)
+    private val psProgress = view.findViewById<BallsView>(R.id.item_explorer_ps)
 
     /*
     16842910 enabled

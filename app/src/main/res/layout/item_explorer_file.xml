@@ -65,7 +65,7 @@
                 />
         </FrameLayout>
     </LinearLayout>
-    <ru.atomofiron.regextool.view.custom.ProgressSpinner
+    <ru.atomofiron.regextool.view.custom.BallsView
         android:id="@+id/item_explorer_ps"
         android:layout_width="24dp"
         android:layout_height="24dp"
