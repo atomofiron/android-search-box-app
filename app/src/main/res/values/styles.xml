@@ -3,7 +3,7 @@
 		<item name="isDarkTheme">false</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
-		<item name="android:windowBackground">@color/windowBackgroundWhite</item>
+		<item name="android:windowBackground">@color/windowBackgroundThemed</item>
 		<item name="android:statusBarColor">@color/windowBackgroundWhite</item>
 		<item name="android:navigationBarColor">@color/windowBackgroundWhite</item>
 		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryLight</item>
@@ -34,7 +34,7 @@
 		<item name="isDarkTheme">true</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
-		<item name="android:windowBackground">@color/windowBackgroundDark</item>
+		<item name="android:windowBackground">@color/windowBackgroundThemed</item>
 		<item name="android:statusBarColor">@color/windowBackgroundDark</item>
 		<item name="android:navigationBarColor">@color/windowBackgroundDark</item>
 		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryDark</item>

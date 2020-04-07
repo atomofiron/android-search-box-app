@@ -6,13 +6,11 @@
 	android:id="@+id/finder_dl"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="?attr/colorBackground"
 	>
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:id="@+id/finder_cl"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="?android:windowBackground"
 		tools:openDrawer="start">
 
 		<androidx.recyclerview.widget.RecyclerView
@@ -20,14 +18,12 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:paddingBottom="@dimen/rv_padding_top"
-			android:clipToPadding="false"
 			/>
 
 		<ru.atomofiron.regextool.view.custom.FixedBottomAppBar
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/bottom_tab_bar_height"
 			android:layout_gravity="bottom"
-			app:backgroundTint="?attr/colorBackground"
 			app:hideOnScroll="true"
 			>
 			<com.google.android.material.appbar.CollapsingToolbarLayout
