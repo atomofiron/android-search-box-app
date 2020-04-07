@@ -16,16 +16,18 @@ import kotlin.reflect.KClass
 
 abstract class BaseRouter {
     private lateinit var fragmentReference: WeakReference<Fragment?>
-    private lateinit var activityReference: WeakReference<AppCompatActivity>
+    private lateinit var activityReference: WeakReference<AppCompatActivity?>
 
     protected val fragment: Fragment? get() = fragmentReference.get()
     protected val activity: AppCompatActivity? get() = activityReference.get()
+            ?: fragmentReference.get()?.requireActivity() as AppCompatActivity?
+
     protected val isDestroyed: Boolean get() =  fragment == null && activity == null
     protected var isBlocked = false
 
     protected val arguments: Bundle get() {
         var arguments = fragmentReference.get()?.arguments
-        arguments = arguments ?: activityReference.get()?.intent?.extras
+        arguments = arguments ?: activity?.intent?.extras
         return arguments!!
     }
 
@@ -37,17 +39,17 @@ abstract class BaseRouter {
             return field
         }
 
-    protected fun context(action: Context.() -> Unit) = activityReference.get()!!.action()
+    protected fun context(action: Context.() -> Unit) = activity!!.action()
     protected fun fragment(action: Fragment.() -> Unit) = fragmentReference.get()!!.action()
-    protected fun activity(action: AppCompatActivity.() -> Unit) = activityReference.get()!!.action()
+    protected fun activity(action: AppCompatActivity.() -> Unit) = activity!!.action()
     protected fun childManager(action: FragmentManager.() -> Unit) {
         var manager = fragmentReference.get()?.childFragmentManager
-        manager = manager ?: activityReference.get()?.supportFragmentManager
+        manager = manager ?: activity?.supportFragmentManager
         manager!!.action()
     }
     protected fun <T> manager(action: FragmentManager.() -> T): T {
         //var manager = fragmentReference.get()?.parentFragmentManager
-        val manager = activityReference.get()?.supportFragmentManager
+        val manager = activity?.supportFragmentManager
         return manager!!.action()
     }
 
@@ -61,7 +63,7 @@ abstract class BaseRouter {
 
     fun onFragmentAttach(fragment: Fragment) {
         fragmentReference = WeakReference(fragment)
-        activityReference = WeakReference(fragment.activity as AppCompatActivity)
+        activityReference = WeakReference(fragment.activity as AppCompatActivity?)
     }
 
     fun onActivityAttach(activity: AppCompatActivity) {

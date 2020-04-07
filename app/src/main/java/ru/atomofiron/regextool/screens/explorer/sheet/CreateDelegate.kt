@@ -9,10 +9,10 @@ import android.widget.RadioGroup
 import app.atomofiron.common.util.showKeyboard
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
-import ru.atomofiron.regextool.screens.explorer.ExplorerViewModel
+import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
 
-class CreateDelegate(private val output: ExplorerViewModel) : BottomSheetDelegate(R.layout.sheet_explorer_create), View.OnClickListener, TextWatcher {
+class CreateDelegate(private val output: ExplorerPresenter) : BottomSheetDelegate(R.layout.sheet_explorer_create), View.OnClickListener, TextWatcher {
     private val rGroup: RadioGroup get() = bottomSheetView.contentView.findViewById(R.id.explorer_create_rg)
     private val etName: EditText get() = bottomSheetView.contentView.findViewById(R.id.explorer_create_et)
     private val btnConfirm: Button get() = bottomSheetView.contentView.findViewById(R.id.explorer_create_btn)

@@ -18,11 +18,11 @@ import ru.atomofiron.regextool.log2
 
 abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewModel(app) {
     protected abstract val router: R
-    val screenScope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Main.immediate)
+    private val screenScope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Main.immediate)
 
     protected val app: App get() = getApplication()
 
-    protected val onClearedCallback = KObservable.RemoveObserverCallback()
+    val onClearedCallback = KObservable.RemoveObserverCallback()
 
     init {
         log2("init")

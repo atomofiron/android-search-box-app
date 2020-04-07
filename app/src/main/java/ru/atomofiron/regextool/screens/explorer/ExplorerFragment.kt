@@ -11,17 +11,21 @@ import app.atomofiron.common.base.BaseFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
-import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
+import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
+import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.screens.explorer.sheet.CreateDelegate
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate
 import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
+import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
-    override val viewModelClass = ExplorerViewModel::class
+    override val viewModelClass: KClass<ExplorerViewModel>? = null
     override val layoutId: Int = R.layout.fragment_explorer
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
@@ -35,13 +39,28 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
 
-    override fun onCreate() {
-        explorerAdapter.itemActionListener = viewModel
-        placesAdapter.itemActionListener = viewModel
+    @Inject
+    override lateinit var viewModel: ExplorerViewModel
+    @Inject
+    lateinit var presenter: ExplorerPresenter
 
-        renameDelegate = RenameDelegate(viewModel)
-        createDelegate = CreateDelegate(viewModel)
-        bottomItemMenu = BottomSheetMenuWithTitle(thisContext, viewModel)
+    override fun buildComponentAndInject() {
+        DaggerExplorerComponent
+                .builder()
+                .fragment(this)
+                .dependencies(DaggerInjector.appComponent)
+                .build()
+                .inject(this)
+        basePresenter = presenter
+    }
+
+    override fun onCreate() {
+        explorerAdapter.itemActionListener = presenter
+        placesAdapter.itemActionListener = presenter
+
+        renameDelegate = RenameDelegate(presenter)
+        createDelegate = CreateDelegate(presenter)
+        bottomItemMenu = BottomSheetMenuWithTitle(thisContext, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,14 +75,14 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
             setOnMenuItemClickListener { id ->
                 when (id) {
                     R.id.menu_places -> dockView { open() }
-                    R.id.menu_search -> viewModel.onSearchOptionSelected()
-                    R.id.menu_options -> viewModel.onOptionsOptionSelected()
-                    R.id.menu_settings -> viewModel.onSettingsOptionSelected()
+                    R.id.menu_search -> presenter.onSearchOptionSelected()
+                    R.id.menu_options -> presenter.onOptionsOptionSelected()
+                    R.id.menu_settings -> presenter.onSettingsOptionSelected()
                 }
             }
         }
         dockView {
-            onGravityChangeListener = viewModel::onDockGravityChange
+            onGravityChangeListener = presenter::onDockGravityChange
 
             recyclerView.layoutManager = LinearLayoutManager(context)
             recyclerView.adapter = placesAdapter
@@ -111,7 +130,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
         bottomSheetView(default = false) { isSheetShown } -> false
         isHidden -> false
         keyCode == KeyEvent.KEYCODE_VOLUME_UP -> {
-            viewModel.onVolumeUp()
+            presenter.onVolumeUp()
             true
         }
         else -> false
@@ -120,7 +139,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     private fun showPermissionRequiredWarning() {
         Snackbar.make(thisView, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
                 .setAnchorView(anchorView)
-                .setAction(R.string.allow) { viewModel.onAllowStorageClick() }
+                .setAction(R.string.allow) { presenter.onAllowStorageClick() }
                 .show()
     }
 }

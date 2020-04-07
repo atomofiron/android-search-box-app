@@ -9,8 +9,12 @@ import ru.atomofiron.regextool.screens.finder.FinderFragment
 import ru.atomofiron.regextool.screens.preferences.PreferenceFragment
 import ru.atomofiron.regextool.utils.Util
 
-class ExplorerRouter : BaseRouter() {
+class ExplorerRouter(fragment: Fragment) : BaseRouter() {
     private val openedFiles = ArrayList<Fragment>()
+
+    init {
+        onFragmentAttach(fragment)
+    }
 
     fun showFinder() {
         switchScreen(addToBackStack = false) {

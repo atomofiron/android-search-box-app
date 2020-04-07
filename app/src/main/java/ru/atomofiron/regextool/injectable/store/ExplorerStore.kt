@@ -63,7 +63,7 @@ class ExplorerStore {
     }
 
     fun notifyItems() {
-        log2("notifyFiles ${items.size}")
+        log2("notifyItems ${items.size}")
         store.setAndNotify(items)
 
         val size = checked.size

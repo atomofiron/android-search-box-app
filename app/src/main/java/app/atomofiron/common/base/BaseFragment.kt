@@ -18,9 +18,11 @@ import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
 
 abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
-    protected abstract val viewModelClass: KClass<M>
-    protected lateinit var viewModel: M
+    protected abstract val viewModelClass: KClass<M>?
+    // 'open' to init via injection
+    protected open lateinit var viewModel: M
     protected val dataProvider: M get() = viewModel
+    open var basePresenter: BasePresenter<*, *>? = null
 
     protected abstract val layoutId: Int
     protected open val systemBarsColorId: Int = R.color.transparent
@@ -37,15 +39,23 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         log2("init")
     }
 
+    protected open fun buildComponentAndInject() = Unit
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel = ViewModelProvider(thisActivity).get(viewModelClass.java)
-        viewModel.onFragmentAttach(this)
+
+        val viewModelClass = viewModelClass
+        if (viewModelClass != null) {
+            viewModel = ViewModelProvider(thisActivity).get(viewModelClass.java)
+            viewModel.onFragmentAttach(this)
+        }
     }
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Fragment.onAttachFragment()
+        buildComponentAndInject()
+        basePresenter?.onCreate(thisContext, arguments)
         viewModel.onCreate(thisContext, arguments)
         onCreate()
         onSubscribeData(this)
@@ -81,11 +91,17 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         visibilityWatcher.resumed = false
     }
 
-    override fun onAttachFragment(childFragment: Fragment) = viewModel.onAttachChildFragment(childFragment)
+    override fun onAttachFragment(childFragment: Fragment) {
+        basePresenter?.onAttachChildFragment(childFragment)
+        viewModel.onAttachChildFragment(childFragment)
+    }
 
     open fun onSubscribeData(owner: LifecycleOwner) = Unit
 
-    open fun onVisibleChanged(visible: Boolean) = viewModel.onVisibleChanged(visible)
+    open fun onVisibleChanged(visible: Boolean) {
+        basePresenter?.onVisibleChanged(visible)
+        viewModel.onVisibleChanged(visible)
+    }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
@@ -98,11 +114,13 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     }
 
     override fun onDestroy() {
+        basePresenter?.onViewDestroy()
         viewModel.onViewDestroy()
         super.onDestroy()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        basePresenter?.onRequestPermissionsResult(requestCode, permissions, grantResults)
         viewModel.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 

@@ -1,7 +1,10 @@
 package ru.atomofiron.regextool.screens.explorer
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
+import androidx.lifecycle.ViewModelProvider
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -9,6 +12,10 @@ import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.screens.explorer.presenter.BottomSheetMenuListenerDelegate
+import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerItemActionListenerDelegate
+import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
+import ru.atomofiron.regextool.screens.explorer.presenter.PlacesActionListenerDelegate
 import javax.inject.Scope
 
 @Scope
@@ -22,16 +29,65 @@ interface ExplorerComponent {
     @Component.Builder
     interface Builder {
 
+        @BindsInstance
+        fun fragment(fragment: ExplorerFragment): Builder
+
         fun dependencies(dependencies: ExplorerDependencies): Builder
 
         fun build(): ExplorerComponent
     }
 
-    fun inject(target: ExplorerViewModel)
+    fun inject(target: ExplorerFragment)
 }
 
 @Module
 class ExplorerModule {
+    @Provides
+    @ExplorerScope
+    fun viewModel(fragment: ExplorerFragment): ExplorerViewModel {
+        return ViewModelProvider(fragment.requireActivity()).get(ExplorerViewModel::class.java)
+    }
+
+    @Provides
+    @ExplorerScope
+    fun itemListener(fragment: ExplorerFragment,
+                     viewModel: ExplorerViewModel,
+                     explorerStore: ExplorerStore,
+                     settingsStore: SettingsStore,
+                     router: ExplorerRouter,
+                     explorerInteractor: ExplorerInteractor): ExplorerItemActionListenerDelegate {
+        return ExplorerItemActionListenerDelegate(fragment, viewModel, explorerStore, settingsStore, router, explorerInteractor)
+    }
+
+    @Provides
+    @ExplorerScope
+    fun placesListener(viewModel: ExplorerViewModel): PlacesActionListenerDelegate {
+        return PlacesActionListenerDelegate(viewModel)
+    }
+
+    @Provides
+    @ExplorerScope
+    fun menuListener(viewModel: ExplorerViewModel,
+                     explorerStore: ExplorerStore,
+                     explorerInteractor: ExplorerInteractor): BottomSheetMenuListenerDelegate {
+        return BottomSheetMenuListenerDelegate(viewModel, explorerStore, explorerInteractor)
+
+    }
+    @Provides
+    @ExplorerScope
+    fun presenter(viewModel: ExplorerViewModel,
+                  router: ExplorerRouter,
+                  explorerStore: ExplorerStore,
+                  settingsStore: SettingsStore,
+                  explorerInteractor: ExplorerInteractor,
+                  itemListener: ExplorerItemActionListenerDelegate,
+                  placesListener: PlacesActionListenerDelegate,
+                  menuListener: BottomSheetMenuListenerDelegate): ExplorerPresenter {
+        return ExplorerPresenter(
+                viewModel, router, explorerStore, settingsStore, explorerInteractor,
+                itemListener, placesListener, menuListener)
+    }
+
     @Provides
     @ExplorerScope
     fun explorerService(
@@ -46,9 +102,14 @@ class ExplorerModule {
     fun interactor(explorerService: ExplorerService): ExplorerInteractor {
         return ExplorerInteractor(explorerService)
     }
+
+    @Provides
+    @ExplorerScope
+    fun router(fragment: ExplorerFragment): ExplorerRouter = ExplorerRouter(fragment)
 }
 
 interface ExplorerDependencies {
+    fun context(): Context
     fun assetManager(): AssetManager
     fun sharedPreferences(): SharedPreferences
     fun explorerStore(): ExplorerStore

@@ -9,11 +9,11 @@ import app.atomofiron.common.util.showKeyboard
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
-import ru.atomofiron.regextool.screens.explorer.ExplorerViewModel
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
+import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
 
-class RenameDelegate(private val output: ExplorerViewModel) : BottomSheetDelegate(R.layout.sheet_explorer_rename), View.OnClickListener, TextWatcher {
+class RenameDelegate(private val output: ExplorerPresenter) : BottomSheetDelegate(R.layout.sheet_explorer_rename), View.OnClickListener, TextWatcher {
     private val itemView: View get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_item)
     private val etName: EditText get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_et)
     private val btnConfirm: Button get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_btn)
