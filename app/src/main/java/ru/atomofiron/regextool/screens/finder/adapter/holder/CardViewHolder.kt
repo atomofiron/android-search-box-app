@@ -12,7 +12,7 @@ abstract class CardViewHolder(parent: ViewGroup, id: Int)
     companion object {
         fun wrapWithCard(parent: ViewGroup, id: Int): View {
             val inflater = LayoutInflater.from(parent.context)
-            val cardView = inflater.inflate(R.layout.layout_card, parent, false) as ViewGroup
+            val cardView = inflater.inflate(R.layout.item_card_container, parent, false) as ViewGroup
             inflater.inflate(id, cardView, true)
             return cardView
         }

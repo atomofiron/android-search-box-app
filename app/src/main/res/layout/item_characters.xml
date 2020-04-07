@@ -6,7 +6,6 @@
     android:id="@+id/characters_pane"
     android:orientation="horizontal"
     android:layout_marginStart="@dimen/common_margin"
-    android:layout_marginTop="4dp"
+    android:layout_marginTop="@dimen/common_margin"
     android:layout_marginEnd="@dimen/common_margin"
-    android:layout_marginBottom="4dp"
     />

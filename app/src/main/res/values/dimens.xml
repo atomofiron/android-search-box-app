@@ -26,7 +26,6 @@
     <dimen name="bottom_tab_bar_height">56dp</dimen>
     <dimen name="card_max_width">512dp</dimen>
     <dimen name="joystick_size">56dp</dimen>
-    <dimen name="rv_padding_top">64dp</dimen>
     <dimen name="item_explorer_file_size">36dp</dimen>
     <dimen name="edge_size">40dp</dimen>
     <dimen name="item_dir_shadow_size">6dp</dimen>
