@@ -8,6 +8,9 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
@@ -76,6 +79,7 @@ class ExplorerModule {
     @Provides
     @ExplorerScope
     fun presenter(viewModel: ExplorerViewModel,
+                  scope: CoroutineScope,
                   router: ExplorerRouter,
                   explorerStore: ExplorerStore,
                   settingsStore: SettingsStore,
@@ -84,7 +88,7 @@ class ExplorerModule {
                   placesListener: PlacesActionListenerDelegate,
                   menuListener: BottomSheetMenuListenerDelegate): ExplorerPresenter {
         return ExplorerPresenter(
-                viewModel, router, explorerStore, settingsStore, explorerInteractor,
+                viewModel, scope, router, explorerStore, settingsStore, explorerInteractor,
                 itemListener, placesListener, menuListener)
     }
 
@@ -99,8 +103,14 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun interactor(explorerService: ExplorerService): ExplorerInteractor {
-        return ExplorerInteractor(explorerService)
+    fun interactor(scope: CoroutineScope, explorerService: ExplorerService): ExplorerInteractor {
+        return ExplorerInteractor(scope, explorerService)
+    }
+
+    @Provides
+    @ExplorerScope
+    fun scope(): CoroutineScope {
+        return CoroutineScope(Job() + Dispatchers.Main.immediate)
     }
 
     @Provides

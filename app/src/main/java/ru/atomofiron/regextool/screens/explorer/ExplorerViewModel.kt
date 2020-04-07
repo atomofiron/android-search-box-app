@@ -19,6 +19,8 @@ class ExplorerViewModel(app: Application) : BaseViewModel<BaseRouter>(app) {
     // legacy field
     override val router = object : BaseRouter() { }
 
+    override fun onViewDestroy() = Unit
+
     val directoryOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
     val oneFileOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename)
     val manyFilesOptions = arrayListOf(R.id.menu_remove)

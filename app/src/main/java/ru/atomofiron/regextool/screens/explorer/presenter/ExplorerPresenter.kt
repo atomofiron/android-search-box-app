@@ -1,9 +1,7 @@
 package ru.atomofiron.regextool.screens.explorer.presenter
 
 import app.atomofiron.common.base.BasePresenter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
@@ -21,6 +19,7 @@ import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuList
 
 class ExplorerPresenter(
         viewModel: ExplorerViewModel,
+        scope: CoroutineScope,
         override val router: ExplorerRouter,
         private val explorerStore: ExplorerStore,
         private val settingsStore: SettingsStore,
@@ -28,7 +27,7 @@ class ExplorerPresenter(
         private val itemListener: ExplorerItemActionListenerDelegate,
         private val placesListener: PlacesActionListenerDelegate,
         private val menuListener: BottomSheetMenuListenerDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel),
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, scope),
         ExplorerItemActionListener by itemListener,
         PlacesAdapter.ItemActionListener by placesListener,
         BottomSheetMenuListener by menuListener {
@@ -51,12 +50,12 @@ class ExplorerPresenter(
 
     override fun onSubscribeData() {
         explorerStore.store.addObserver(onClearedCallback) {
-            GlobalScope.launch(Dispatchers.Main) {
+            scope.launch {
                 viewModel.items.value = it
             }
         }
         explorerStore.updates.addObserver(onClearedCallback) {
-            GlobalScope.launch(Dispatchers.Main) {
+            scope.launch {
                 when (it) {
                     is Change.Update -> viewModel.notifyUpdate(it.item)
                     is Change.Remove -> viewModel.notifyRemove(it.item)
@@ -68,16 +67,10 @@ class ExplorerPresenter(
             }
         }
         explorerStore.current.addObserver(onClearedCallback) {
-            GlobalScope.launch(Dispatchers.Main) {
+            scope.launch {
                 viewModel.current.value = it
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        explorerInteractor.scope.cancel("${this.javaClass.simpleName}.onCleared()")
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -4,18 +4,16 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.log2
 
 abstract class BasePresenter<M : BaseViewModel<BaseRouter>, R : BaseRouter>(
-        protected val viewModel: M
+        protected val viewModel: M,
+        protected val scope: CoroutineScope
 ) {
     protected val context: Context get() = viewModel.getApplication<App>().applicationContext
     protected abstract val router: R
-    private val screenScope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Main.immediate)
 
     protected val onClearedCallback = viewModel.onClearedCallback
 
@@ -37,7 +35,7 @@ abstract class BasePresenter<M : BaseViewModel<BaseRouter>, R : BaseRouter>(
     open fun onViewDestroy() = router.onViewDestroy()
 
     protected open fun onCleared() {
-        screenScope.cancel()
+        scope.cancel("${this.javaClass.simpleName}.onCleared()")
     }
 
     fun onAttachChildFragment(childFragment: Fragment) = router.onAttachChildFragment(childFragment)
