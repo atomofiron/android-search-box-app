@@ -7,7 +7,10 @@ import app.atomofiron.common.base.BaseRouter
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.injectable.service.explorer.model.Change
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
@@ -18,6 +21,8 @@ class ExplorerViewModel(app: Application) : BaseViewModel<BaseRouter>(app) {
 
     // legacy field
     override val router = object : BaseRouter() { }
+
+    lateinit var scope: CoroutineScope
 
     override fun onViewDestroy() = Unit
 
@@ -41,4 +46,29 @@ class ExplorerViewModel(app: Application) : BaseViewModel<BaseRouter>(app) {
     val notifyUpdateRange = SingleLiveEvent<List<XFile>>()
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
+
+    fun onChanged(items: List<XFile>) {
+        scope.launch {
+            this@ExplorerViewModel.items.value = items
+        }
+    }
+
+    fun onChanged(change: Change) {
+        scope.launch {
+            when (change) {
+                is Change.Update -> notifyUpdate(change.item)
+                is Change.Remove -> notifyRemove(change.item)
+                is Change.Insert -> notifyInsert(Pair(change.previous, change.item))
+                is Change.UpdateRange -> notifyUpdateRange(change.items)
+                is Change.RemoveRange -> notifyRemoveRange(change.items)
+                is Change.InsertRange -> notifyInsertRange(Pair(change.previous, change.items))
+            }
+        }
+    }
+
+    fun onChanged(item: XFile?) {
+        scope.launch {
+            current.value = item
+        }
+    }
 }

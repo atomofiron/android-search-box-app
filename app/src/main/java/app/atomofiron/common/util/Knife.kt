@@ -24,7 +24,7 @@ class Knife<T : View> private constructor(
             return field
         }
 
-    val view: T by lazy { viewNullable!! }
+    val view: T get() = viewNullable!!
 
     constructor(activity: Activity, id: Int) : this(activity, null, null, id)
 

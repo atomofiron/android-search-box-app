@@ -12,7 +12,7 @@ class NumberPreference(context: Context, attrs: AttributeSet) : Preference(conte
     private var value = 0
 
     init {
-        widgetLayoutResource = R.layout.edittext_number
+        widgetLayoutResource = R.layout.preference_number
     }
 
     override fun onGetDefaultValue(array: TypedArray, index: Int): Int = array.getInt(index, 0)

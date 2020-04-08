@@ -3,6 +3,7 @@ package app.atomofiron.common.base
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import app.atomofiron.common.util.permission.PermissionResultListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import ru.atomofiron.regextool.App
@@ -10,8 +11,9 @@ import ru.atomofiron.regextool.log2
 
 abstract class BasePresenter<M : BaseViewModel<BaseRouter>, R : BaseRouter>(
         protected val viewModel: M,
-        protected val scope: CoroutineScope
-) {
+        protected val scope: CoroutineScope,
+        private val permissionResultListener: PermissionResultListener
+) : PermissionResultListener {
     protected val context: Context get() = viewModel.getApplication<App>().applicationContext
     protected abstract val router: R
 
@@ -42,5 +44,7 @@ abstract class BasePresenter<M : BaseViewModel<BaseRouter>, R : BaseRouter>(
 
     open fun onBackButtonClick(): Boolean = router.onBack()
 
-    open fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) = Unit
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        permissionResultListener.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 }

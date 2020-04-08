@@ -37,7 +37,7 @@ class BallsView @JvmOverloads constructor(
         paintColoredMask.color = context.findColorByAttr(R.attr.colorAccent)
         paintColoredMask.xfermode = PorterDuffXfermode(PorterDuff.Mode.XOR)
 
-        setLayerType(LAYER_TYPE_HARDWARE, null);
+        setLayerType(LAYER_TYPE_HARDWARE, null)
     }
 
     override fun setVisibility(visibility: Int) {
@@ -57,7 +57,7 @@ class BallsView @JvmOverloads constructor(
     }
 
     private fun updateAnimation() {
-        if (isAttachedToWindow && visibility == View.VISIBLE) {
+        if (isAttachedToWindow && visibility == VISIBLE) {
             animator.start()
         } else {
             animator.pause()

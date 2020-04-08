@@ -2,10 +2,8 @@ package ru.atomofiron.regextool.screens.explorer.presenter
 
 import app.atomofiron.common.base.BasePresenter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.injectable.service.explorer.model.Change
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.SettingsStore
@@ -24,10 +22,10 @@ class ExplorerPresenter(
         private val explorerStore: ExplorerStore,
         private val settingsStore: SettingsStore,
         private val explorerInteractor: ExplorerInteractor,
-        private val itemListener: ExplorerItemActionListenerDelegate,
-        private val placesListener: PlacesActionListenerDelegate,
-        private val menuListener: BottomSheetMenuListenerDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, scope),
+        itemListener: ExplorerItemActionListenerDelegate,
+        placesListener: PlacesActionListenerDelegate,
+        menuListener: BottomSheetMenuListenerDelegate
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, scope, itemListener.permissions),
         ExplorerItemActionListener by itemListener,
         PlacesAdapter.ItemActionListener by placesListener,
         BottomSheetMenuListener by menuListener {
@@ -49,32 +47,9 @@ class ExplorerPresenter(
     }
 
     override fun onSubscribeData() {
-        explorerStore.store.addObserver(onClearedCallback) {
-            scope.launch {
-                viewModel.items.value = it
-            }
-        }
-        explorerStore.updates.addObserver(onClearedCallback) {
-            scope.launch {
-                when (it) {
-                    is Change.Update -> viewModel.notifyUpdate(it.item)
-                    is Change.Remove -> viewModel.notifyRemove(it.item)
-                    is Change.Insert -> viewModel.notifyInsert(Pair(it.previous, it.item))
-                    is Change.UpdateRange -> viewModel.notifyUpdateRange(it.items)
-                    is Change.RemoveRange -> viewModel.notifyRemoveRange(it.items)
-                    is Change.InsertRange -> viewModel.notifyInsertRange(Pair(it.previous, it.items))
-                }
-            }
-        }
-        explorerStore.current.addObserver(onClearedCallback) {
-            scope.launch {
-                viewModel.current.value = it
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        itemListener.permissions.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        explorerStore.store.addObserver(onClearedCallback, viewModel::onChanged)
+        explorerStore.updates.addObserver(onClearedCallback, viewModel::onChanged)
+        explorerStore.current.addObserver(onClearedCallback, viewModel::onChanged)
     }
 
     private fun onDockGravityChanged(gravity: Int) {

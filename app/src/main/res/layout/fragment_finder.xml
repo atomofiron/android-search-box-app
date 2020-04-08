@@ -18,7 +18,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:maxWidth="@dimen/card_max_width"
-			android:paddingBottom="@dimen/bottom_tab_bar_height"
+			android:paddingBottom="@dimen/joystick_size"
 			/>
 
 		<ru.atomofiron.regextool.view.custom.FixedBottomAppBar

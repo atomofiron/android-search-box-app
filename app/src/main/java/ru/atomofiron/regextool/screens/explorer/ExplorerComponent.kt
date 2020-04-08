@@ -47,8 +47,10 @@ interface ExplorerComponent {
 class ExplorerModule {
     @Provides
     @ExplorerScope
-    fun viewModel(fragment: ExplorerFragment): ExplorerViewModel {
-        return ViewModelProvider(fragment.requireActivity()).get(ExplorerViewModel::class.java)
+    fun viewModel(fragment: ExplorerFragment, scope: CoroutineScope): ExplorerViewModel {
+        val viewModel =  ViewModelProvider(fragment.requireActivity()).get(ExplorerViewModel::class.java)
+        viewModel.scope = scope
+        return viewModel
     }
 
     @Provides

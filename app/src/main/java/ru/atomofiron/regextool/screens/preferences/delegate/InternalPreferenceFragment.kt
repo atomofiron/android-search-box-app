@@ -148,6 +148,13 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
             }
             Const.PREF_MAX_DEPTH -> DOES_NOT_MATTER
             Const.PREF_EXCLUDE_DIRS -> DOES_NOT_MATTER
+            Const.PREF_ESC_COLOR -> {
+                preference.setOnPreferenceClickListener {
+                    output.onEscColorClick()
+                    true
+                }
+                DOES_NOT_MATTER
+            }
             else -> throw Exception("Unknown preference ($key)!")
         }
     }
@@ -171,6 +178,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
         override fun onBack(): Boolean
         fun onExportImportClick()
         fun onExplorerItemClick()
+        fun onEscColorClick()
         fun onPreferenceUpdate(key: String, value: Int): Boolean
         fun onPreferenceUpdate(key: String, value: String): Boolean
         fun onPreferenceUpdate(key: String, value: Boolean): Boolean

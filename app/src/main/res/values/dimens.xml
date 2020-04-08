@@ -9,6 +9,7 @@
 	<dimen name="common_margin_nano">4dp</dimen>
 	<dimen name="edit_text_padding">8dp</dimen>
 	<dimen name="search_button_padding">16dp</dimen>
+	<dimen name="icon_size">24dp</dimen>
 	<dimen name="item_icon_padding">4dp</dimen>
 	<dimen name="nav_header_vertical_spacing">16dp</dimen>
 	<dimen name="nav_header_height">160dp</dimen>
@@ -25,7 +26,7 @@
     <dimen name="card_corner_radius">8dp</dimen>
     <dimen name="bottom_tab_bar_height">56dp</dimen>
     <dimen name="card_max_width">512dp</dimen>
-    <dimen name="joystick_size">56dp</dimen>
+    <dimen name="joystick_size">@dimen/bottom_tab_bar_height</dimen>
     <dimen name="item_explorer_file_size">36dp</dimen>
     <dimen name="edge_size">40dp</dimen>
     <dimen name="item_dir_shadow_size">6dp</dimen>

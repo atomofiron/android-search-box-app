@@ -14,7 +14,7 @@
             android:id="@+id/explorer_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="@dimen/bottom_tab_bar_height"
+            android:paddingBottom="@dimen/joystick_size"
             android:overScrollMode="never"
             />
         <ru.atomofiron.regextool.view.custom.FixedBottomAppBar

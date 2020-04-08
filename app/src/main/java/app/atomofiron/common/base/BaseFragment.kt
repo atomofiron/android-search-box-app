@@ -22,7 +22,7 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     // 'open' to init via injection
     protected open lateinit var viewModel: M
     protected val dataProvider: M get() = viewModel
-    open var basePresenter: BasePresenter<*, *>? = null
+    open var somePresenter: BasePresenter<*, *>? = null
 
     protected abstract val layoutId: Int
     protected open val systemBarsColorId: Int = R.color.transparent
@@ -55,7 +55,7 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         super.onCreate(savedInstanceState)
         // Fragment.onAttachFragment()
         buildComponentAndInject()
-        basePresenter?.onCreate(thisContext, arguments)
+        somePresenter?.onCreate(thisContext, arguments)
         viewModel.onCreate(thisContext, arguments)
         onCreate()
         onSubscribeData(this)
@@ -92,14 +92,14 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     }
 
     override fun onAttachFragment(childFragment: Fragment) {
-        basePresenter?.onAttachChildFragment(childFragment)
+        somePresenter?.onAttachChildFragment(childFragment)
         viewModel.onAttachChildFragment(childFragment)
     }
 
     open fun onSubscribeData(owner: LifecycleOwner) = Unit
 
     open fun onVisibleChanged(visible: Boolean) {
-        basePresenter?.onVisibleChanged(visible)
+        somePresenter?.onVisibleChanged(visible)
         viewModel.onVisibleChanged(visible)
     }
 
@@ -114,13 +114,13 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     }
 
     override fun onDestroy() {
-        basePresenter?.onViewDestroy()
+        somePresenter?.onViewDestroy()
         viewModel.onViewDestroy()
         super.onDestroy()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        basePresenter?.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        somePresenter?.onRequestPermissionsResult(requestCode, permissions, grantResults)
         viewModel.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 

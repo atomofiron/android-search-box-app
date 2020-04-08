@@ -10,10 +10,7 @@ import app.atomofiron.common.base.BaseFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.screens.preferences.delegate.ExplorerItemDelegate
-import ru.atomofiron.regextool.screens.preferences.delegate.ExportImportDelegate
-import ru.atomofiron.regextool.screens.preferences.delegate.InternalPreferenceFragment
-import ru.atomofiron.regextool.screens.preferences.delegate.PreferencesDelegate
+import ru.atomofiron.regextool.screens.preferences.delegate.*
 import ru.atomofiron.regextool.utils.Shell
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
 import kotlin.reflect.KClass
@@ -24,6 +21,7 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
 
     private lateinit var exportImportDelegate: ExportImportDelegate
     private lateinit var explorerItemDelegate: ExplorerItemDelegate
+    private lateinit var joystickDelegate: JoystickDelegate
     private lateinit var preferencesDelegate: PreferencesDelegate
 
     // InternalPreferenceFragment like a View
@@ -40,6 +38,9 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
         if (!::childFragment.isInitialized) {
             childFragment = InternalPreferenceFragment()
         }
+        exportImportDelegate = ExportImportDelegate(viewModel)
+        explorerItemDelegate = ExplorerItemDelegate(viewModel)
+        joystickDelegate = JoystickDelegate(viewModel.escColorNode)
     }
 
     override fun onAttachFragment(childFragment: Fragment) {
@@ -54,18 +55,15 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        exportImportDelegate = ExportImportDelegate(viewModel)
         exportImportDelegate.bottomSheetView = bottomSheetView.view
-
-        explorerItemDelegate = ExplorerItemDelegate(viewModel)
         explorerItemDelegate.bottomSheetView = bottomSheetView.view
+        joystickDelegate.bottomSheetView = bottomSheetView.view
 
         if (!childFragment.isAdded) {
             childFragmentManager.beginTransaction()
                     .add(R.id.preference_fl_container, childFragment)
                     .commit()
         }
-
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
@@ -79,6 +77,8 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
     fun onExportImportClick() = exportImportDelegate.show()
 
     fun onExplorerItemClick() = explorerItemDelegate.show()
+
+    fun onEscColorClick() = joystickDelegate.show()
 
     private fun showAlert(message: String) {
         Snackbar

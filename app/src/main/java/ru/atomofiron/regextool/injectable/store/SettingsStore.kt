@@ -5,6 +5,7 @@ import android.view.Gravity
 import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
+import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 
@@ -92,5 +93,13 @@ class SettingsStore(sp: SharedPreferences) {
             default = Const.DEFAULT_EXPLORER_ITEM,
             toValue = { it.flags },
             fromValue = { ExplorerItemComposition(it) }
+    )
+
+    val escColor = PreferenceNode.forInt(
+            sp,
+            key = Const.PREF_ESC_COLOR,
+            default = Const.DEFAULT_ESC_COLOR,
+            toValue = { it.data },
+            fromValue = { JoystickComposition(it) }
     )
 }

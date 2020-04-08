@@ -4,10 +4,12 @@ import android.app.Application
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.service.PreferenceService
 import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
+import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
@@ -22,6 +24,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
     val externalPath: String get() = app.applicationContext.getExternalFilesDir(null)!!.absolutePath
     val isExportImportAvailable: Boolean get() = app.applicationContext.getExternalFilesDir(null) != null
     val explorerItemState: ExplorerItemComposition get() = settingsStore.explorerItem.entity
+    val escColorNode: PreferenceNode<JoystickComposition, Int> get() = settingsStore.escColor
 
     @Inject
     lateinit var preferenceService: PreferenceService

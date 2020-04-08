@@ -2,45 +2,80 @@ package ru.atomofiron.regextool.view.custom
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BlurMaskFilter
-import android.graphics.Canvas
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
-import androidx.appcompat.widget.AppCompatImageView
+import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import app.atomofiron.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.model.JoystickComposition
 
 class Joystick @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
-) : AppCompatImageView(context, attrs, defStyleAttr) {
-    private val image = ContextCompat.getDrawable(context, R.drawable.ic_circle)!!
+) : View(context, attrs, defStyleAttr) {
+    companion object {
+        private const val GLOW_DURATION = 256L
+        private const val BLUR_RADIUS_DP = 4f
+    }
+    private val circle = ContextCompat.getDrawable(context, R.drawable.ic_joystick)!!
+    private val icon = ContextCompat.getDrawable(context, R.drawable.ic_esc)!!
+    private val iconSize = resources.getDimensionPixelSize(R.dimen.icon_size)
 
-    private val blurPaint = Paint()
-    private val defaultPaint = Paint()
+    private val paintBlur = Paint()
+    private val glowingPaint = Paint()
 
     private var trackTouchEvent = false
 
-    private val maxBlurRadius = 4 * resources.displayMetrics.density
+    private val density = resources.displayMetrics.density
+    private val maxBlurRadius = BLUR_RADIUS_DP * density
     private var brightnes = 0f
     private val glowAnimator = ValueAnimator.ofFloat(0f, (Math.PI / 2).toFloat())
 
+    private lateinit var composition: JoystickComposition
+    private lateinit var bitmap: Bitmap
+
     init {
-        background = ContextCompat.getDrawable(
-                context,
-                R.drawable.ic_circle_states
-        )
-        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_esc))
-        defaultPaint.color = ContextCompat.getColor(context, R.color.red_soft)
-        glowAnimator.duration = 256L
+        glowAnimator.duration = GLOW_DURATION
         glowAnimator.addUpdateListener { animator ->
             val value = animator.animatedValue as Float
             brightnes = 1f - Math.sin(value.toDouble()).toFloat()
             invalidate()
         }
+    }
+
+    private fun initBitmap() {
+        val width = measuredWidth
+        val currentBitmap = if (::bitmap.isInitialized) bitmap else null
+        when {
+            width == 0 -> return
+            currentBitmap?.width == width -> Unit
+            else -> {
+                currentBitmap?.recycle()
+                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            }
+        }
+    }
+
+    fun setComposition(composition: JoystickComposition = this.composition) {
+        this.composition = composition
+        val isDark = context.findBooleanByAttr(R.attr.isDarkTheme)
+
+        val circleColor = composition.color(isDark)
+        circle.colorFilter = PorterDuffColorFilter(circleColor, PorterDuff.Mode.SRC_IN)
+        glowingPaint.color = composition.glow(isDark)
+
+        val limit = if (isDark) 0.4 else 0.6
+        val isCircleLight = ColorUtils.calculateLuminance(circleColor) > limit
+        val iconColor = when {
+            isCircleLight -> ContextCompat.getColor(context, R.color.black)
+            else -> ContextCompat.getColor(context, R.color.white)
+        }
+        icon.colorFilter = PorterDuffColorFilter(iconColor, PorterDuff.Mode.SRC_IN)
+        invalidate()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -72,18 +107,34 @@ class Joystick @JvmOverloads constructor(
     }
 
     override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+
+        initBitmap()
+
         val width = measuredWidth
         val height = measuredHeight
 
         if (brightnes != 0f) {
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val mCanvas = Canvas(bitmap)
-            image.setBounds(0, 0, width, height)
-            image.draw(mCanvas)
-            blurPaint.maskFilter = BlurMaskFilter(maxBlurRadius * brightnes, BlurMaskFilter.Blur.NORMAL)
-            val glow = bitmap.extractAlpha(blurPaint, IntArray(2))
-            canvas.drawBitmap(glow, (width - glow.width).toFloat() / 2, (height - glow.height).toFloat() / 2, defaultPaint)
+            mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+            circle.setBounds(0, 0, width, height)
+            circle.draw(mCanvas)
+            paintBlur.maskFilter = BlurMaskFilter(maxBlurRadius * brightnes, BlurMaskFilter.Blur.NORMAL)
+            val glowing = bitmap.extractAlpha(paintBlur, IntArray(2))
+            val left = (width - glowing.width).toFloat() / 2
+            val top = (height - glowing.height).toFloat() / 2
+            canvas.drawBitmap(glowing, left, top, glowingPaint)
         }
-        super.draw(canvas)
+        val offset = (density * brightnes).toInt()
+        circle.setBounds(offset, offset, width - offset, height - offset)
+        circle.draw(canvas)
+
+        val radius = iconSize / 2
+        val left = width / 2 - radius + offset
+        val top = height / 2 - radius + offset
+        val right = width / 2 + radius - offset
+        val bottom = height / 2 + radius - offset
+        icon.setBounds(left, top, right, bottom)
+        icon.draw(canvas)
     }
 }

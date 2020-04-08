@@ -1,8 +1,7 @@
 package ru.atomofiron.regextool.screens.root
 
-import android.os.Bundle
 import android.view.KeyEvent
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import app.atomofiron.common.base.BaseActivity
@@ -22,7 +21,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
 
     override val viewModelClass: KClass<RootViewModel> = RootViewModel::class
 
-    private val root = Knife<CoordinatorLayout>(this, R.id.root_cl_root)
+    private val root = Knife<ConstraintLayout>(this, R.id.root_cl_root)
     private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
     private val tsvTasks = Knife<TasksSheetView>(this, R.id.root_tsv_tasks)
 
@@ -70,11 +69,18 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         tsvTasks {
             resetContentView()
         }
+        root {
+            setBackgroundColor(findColorByAttr(R.attr.colorBackground))
+        }
+        joystick {
+            setComposition()
+        }
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.setTheme.observeData(owner, ::setTheme)
         viewModel.setOrientation.observeData(owner, ::setOrientation)
+        viewModel.setEscColor.observe(owner, Observer { joystick { setComposition(it) } })
         viewModel.tasks.observe(owner, Observer { tsvTasks { setItems(it) } })
     }
 

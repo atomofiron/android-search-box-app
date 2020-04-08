@@ -69,5 +69,9 @@
             app:title="@string/pref_explorer_item"
             app:key="pref_explorer_item"
             />
+        <Preference
+            app:title="@string/pref_esc_color"
+            app:key="pref_esc_color"
+            />
     </PreferenceCategory>
 </PreferenceScreen>

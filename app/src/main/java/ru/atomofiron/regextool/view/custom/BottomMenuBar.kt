@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.view.custom.menu.MenuImpl
 
@@ -29,7 +30,7 @@ class BottomMenuBar @JvmOverloads constructor(
         menu.setMenuChangedListener(::onMenuChanged)
         orientation = HORIZONTAL
         // fix tab's ripple background
-        setBackgroundColor(Color.TRANSPARENT)
+        setBackgroundColor(context.findColorByAttr(R.attr.colorBackground))
 
         val styled = context.obtainStyledAttributes(attrs, R.styleable.BottomMenuBar, defStyleAttr, 0)
         val menuId = styled.getResourceId(R.styleable.BottomMenuBar_menu, 0)

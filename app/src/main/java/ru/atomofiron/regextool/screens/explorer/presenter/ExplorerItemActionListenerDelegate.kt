@@ -47,6 +47,7 @@ class ExplorerItemActionListenerDelegate(
                         readStorageGranted = true
                         onItemClick(item)
                     }
+                    .denied {  }
                     .forbidden { viewModel.permissionRequiredWarning.invoke() }
             item.isDirectory -> explorerInteractor.openDir(item)
             else -> {

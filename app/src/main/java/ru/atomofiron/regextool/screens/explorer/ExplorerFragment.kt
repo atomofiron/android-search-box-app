@@ -51,7 +51,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 .dependencies(DaggerInjector.appComponent)
                 .build()
                 .inject(this)
-        basePresenter = presenter
+        somePresenter = presenter
     }
 
     override fun onCreate() {

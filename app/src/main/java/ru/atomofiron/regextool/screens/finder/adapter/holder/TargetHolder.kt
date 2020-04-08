@@ -21,10 +21,11 @@ class TargetHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : Car
 
         val icon = when {
             !item.target.isDirectory -> R.drawable.ic_file_circle
-            item.target.files.isNullOrEmpty() -> R.drawable.ic_explorer_folder_empty
+            item.target.files?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
             else -> R.drawable.ic_explorer_folder
         }
         ivIcon.setImageResource(icon)
+        ivIcon.alpha = if (item.target.isDirectory && !item.target.isCached) .4f else 1f
         tvTitle.text = item.target.completedPath
     }
 

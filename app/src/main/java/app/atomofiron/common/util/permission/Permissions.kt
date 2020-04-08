@@ -15,7 +15,7 @@ import ru.atomofiron.regextool.BuildConfig
 open class Permissions private constructor(
     private val activity: Activity?,
     private val fragment: Fragment?
-) {
+) : PermissionResultListener {
     companion object {
         private const val PACKAGE_SCHEME = "package:"
         private const val MAX_REQUEST_CODE = 65536
@@ -46,7 +46,7 @@ open class Permissions private constructor(
 
     protected constructor(helper: Permissions) : this(helper.activity, helper.fragment)
 
-    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         val grabber = map.remove(requestCode)!!
         when {
             grantResults[0] == PermissionChecker.PERMISSION_GRANTED -> grabber.onGranted()
@@ -59,12 +59,12 @@ open class Permissions private constructor(
         return PermissionChecker.checkSelfPermission(context, permission) == PermissionChecker.PERMISSION_GRANTED
     }
 
-    fun shouldShowRequestPermissionRationale(permission: String): Boolean {
+    private fun shouldShowRequestPermissionRationale(permission: String): Boolean {
         val should = activity?.shouldShowRequestPermissionRationale(permission)
         return should ?: fragment!!.shouldShowRequestPermissionRationale(permission)
     }
 
-    fun requestPermission(permission: String, requestCode: Int) {
+    private fun requestPermission(permission: String, requestCode: Int) {
         activity?.requestPermissions(arrayOf(permission), requestCode)
         fragment?.requestPermissions(arrayOf(permission), requestCode)
     }
@@ -79,7 +79,7 @@ open class Permissions private constructor(
             val denied = DeniedImpl(null)
             CheckerImpl(grabber, GrantedImpl(null, denied), denied)
         }
-        shouldShowRequestPermissionRationale(permission) -> {
+        !shouldShowRequestPermissionRationale(permission) -> {
             val grabber = Grabber(permission, isGranted = false, isForbidden = false)
             val requestCode = nextRequestCode
             map[requestCode] = grabber
@@ -95,26 +95,17 @@ open class Permissions private constructor(
     }
 
     interface Checker {
-        @Throws(Grabber.AlreadyDefinedException::class)
         infix fun granted(action: () -> Unit): Granted
-
-        @Throws(Grabber.AlreadyDefinedException::class)
-        infix fun denied(action: (String) -> Unit): Denied
-
-        @Throws(Grabber.AlreadyDefinedException::class)
-        infix fun forbidden(action: (String) -> Unit): Unit?
+        infix fun denied(action: (permission: String) -> Unit): Denied
+        infix fun forbidden(action: (permission: String) -> Unit): Unit?
     }
 
     interface Granted {
-        @Throws(Grabber.AlreadyDefinedException::class)
-        infix fun denied(action: (String) -> Unit): Denied
-
-        @Throws(Grabber.AlreadyDefinedException::class)
-        infix fun forbidden(action: (String) -> Unit): Unit?
+        infix fun denied(action: (permission: String) -> Unit): Denied
+        infix fun forbidden(action: (permission: String) -> Unit): Unit?
     }
 
     interface Denied {
-        @Throws(Grabber.AlreadyDefinedException::class)
-        infix fun forbidden(action: (String) -> Unit): Unit?
+        infix fun forbidden(action: (permission: String) -> Unit): Unit?
     }
 }

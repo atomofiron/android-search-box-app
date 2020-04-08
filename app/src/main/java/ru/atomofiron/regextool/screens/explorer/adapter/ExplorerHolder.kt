@@ -86,7 +86,7 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
             else -> R.drawable.ic_explorer_folder
         }
         ivIcon.setImageResource(image)
-        ivIcon.alpha = if (item.isDirectory && !item.isCached) .5f else 1f
+        ivIcon.alpha = if (item.isDirectory && !item.isCached) .4f else 1f
 
         tvName.text = if (item.completedPath == Const.ROOT) Const.ROOT else item.name
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT

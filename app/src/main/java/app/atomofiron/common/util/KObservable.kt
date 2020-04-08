@@ -13,22 +13,24 @@ open class KObservable<T : Any?>(private val single: Boolean = false) {
     }
 
     fun addObserver(removeCallback: RemoveObserverCallback, observer: (T) -> Unit) {
-        addObserver(observer)
-        lazy {  }
-
-        removeCallback.addOneTimeObserver {
-            removeObserver(observer)
+        val added = addObserver(observer)
+        if (added) {
+            removeCallback.addOneTimeObserver {
+                removeObserver(observer)
+            }
         }
     }
 
     @Synchronized
-    fun addObserver(observer: (T) -> Unit) {
-        if (!observers.contains(observer)) {
+    fun addObserver(observer: (T) -> Unit): Boolean = when {
+        !observers.contains(observer) -> {
             observers.addElement(observer)
             if (!single) {
                 observer.invoke(value)
             }
+            true
         }
+        else -> false
     }
 
     @Synchronized

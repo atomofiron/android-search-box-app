@@ -77,12 +77,15 @@
     <string name="oops_not_working">Упс, пока не работает</string>
     <string name="user_interface">Интерфейс</string>
     <string name="pref_explorer_item">Файл / Директория</string>
+    <string name="pref_esc_color">Цвет кнопки ESC</string>
     <string name="create">Создать</string>
     <string name="empty_check_box">Пустой чек бокс</string>
     <string name="item_explorer_background">Чередующийся фон</string>
     <string name="create_a_new">Создать нов.</string>
     <string name="a_file">Файл</string>
     <string name="a_directory">Директорию</string>
+    <string name="inverse_glowing">Инвертировать свечение</string>
+    <string name="inverse_for_dark">Инвертировать при тёмной теме</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>

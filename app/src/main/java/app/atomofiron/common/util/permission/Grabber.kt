@@ -23,7 +23,7 @@ class Grabber(
         granted = granted ?: { }
         when {
             isGranted -> return
-            granted != null -> throw AlreadyDefinedException()
+            denied != null -> throw AlreadyDefinedException()
             else -> denied = action
         }
     }
