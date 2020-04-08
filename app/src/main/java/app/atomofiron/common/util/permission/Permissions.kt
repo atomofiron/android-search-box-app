@@ -38,6 +38,8 @@ open class Permissions private constructor(
         get() = field++ % MAX_REQUEST_CODE
         set(_) = Unit
 
+    private val granted = ArrayList<String>()
+
     val context: Context get() = fragment?.context ?: activity!!
 
     constructor(activity: Activity) : this(activity, null)
@@ -49,7 +51,10 @@ open class Permissions private constructor(
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         val grabber = map.remove(requestCode)!!
         when {
-            grantResults[0] == PermissionChecker.PERMISSION_GRANTED -> grabber.onGranted()
+            grantResults[0] == PermissionChecker.PERMISSION_GRANTED -> {
+                granted.add(permissions[0])
+                grabber.onGranted()
+            }
             shouldShowRequestPermissionRationale(permissions[0]) -> grabber.onDenied(permissions[0])
             else -> grabber.onForbidden(permissions[0])
         }
@@ -60,8 +65,9 @@ open class Permissions private constructor(
     }
 
     private fun shouldShowRequestPermissionRationale(permission: String): Boolean {
-        val should = activity?.shouldShowRequestPermissionRationale(permission)
-        return should ?: fragment!!.shouldShowRequestPermissionRationale(permission)
+        var should = activity?.shouldShowRequestPermissionRationale(permission)
+        should = should ?: fragment?.shouldShowRequestPermissionRationale(permission)
+        return should ?: throw NullPointerException()
     }
 
     private fun requestPermission(permission: String, requestCode: Int) {
@@ -74,7 +80,7 @@ open class Permissions private constructor(
     }
 
     fun check(permission: String): Checker = when {
-        checkPermission(context, permission) -> {
+        granted.contains(permission) || checkPermission(context, permission) -> {
             val grabber = Grabber(permission, isGranted = true, isForbidden = false)
             val denied = DeniedImpl(null)
             CheckerImpl(grabber, GrantedImpl(null, denied), denied)
