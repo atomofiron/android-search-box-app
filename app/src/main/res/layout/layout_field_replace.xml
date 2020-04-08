@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="?attr/colorFieldDivider"
         />
-    <androidx.appcompat.widget.AppCompatEditText
+    <ru.atomofiron.regextool.view.custom.AutoHideKeyboardField
         android:id="@+id/rt_replace"
         android:layout_width="match_parent"
         android:layout_height="@dimen/common_size"
@@ -21,8 +20,9 @@
         android:paddingEnd="64dp"
         android:hint="@string/replace"
         android:background="@color/transparent"
+        app:hideKeyboardOnFocusLost="false"
         />
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:layout_width="@dimen/common_size"
         android:layout_height="@dimen/common_size"
         android:background="@drawable/bg_transparent_ripple"

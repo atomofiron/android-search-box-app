@@ -30,13 +30,13 @@ class ConfigHolder(
             when {
                 isChecked && checkMultilineWhenEnabled -> {
                     checkMultilineWhenEnabled = false
-                    update { it.copy(useRegexp = isChecked, multilineSearch = true) }
+                    update { it.copy(useRegex = isChecked, multilineSearch = true) }
                 }
                 !isChecked -> {
                     checkMultilineWhenEnabled = cbMultiline.isChecked
-                    update { it.copy(useRegexp = isChecked, multilineSearch = false) }
+                    update { it.copy(useRegex = isChecked, multilineSearch = false) }
                 }
-                isChecked -> update { it.copy(useRegexp = isChecked) }
+                isChecked -> update { it.copy(useRegex = isChecked) }
             }
             cbMultiline.isEnabled = isChecked
         }
@@ -47,7 +47,7 @@ class ConfigHolder(
             update { it.copy(multilineSearch = isChecked) }
         }
         cbReplace.setOnCheckedChangeListener { _, isChecked ->
-            update { it.copy(searchAndReplace = isChecked) }
+            update { it.copy(replaceEnabled = isChecked) }
         }
     }
 

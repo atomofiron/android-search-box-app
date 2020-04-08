@@ -47,7 +47,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         super.onViewCreated(view, savedInstanceState)
 
         rvContent {
-            val linearLayoutManager = LinearLayoutManager(thisContext)
+            val linearLayoutManager = LinearLayoutManager(context)
             linearLayoutManager.reverseLayout = true
             layoutManager = linearLayoutManager
             itemAnimator = null

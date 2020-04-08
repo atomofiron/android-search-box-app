@@ -4,16 +4,18 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatEditText
 
-class RegexText @JvmOverloads constructor(
+class RegexInputField @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null
-) : AppCompatEditText(context, attrs), TextWatcher {
+) : AutoHideKeyboardField(context, attrs), TextWatcher {
     companion object {
         private const val UNKNOWN = -1
         private const val ZERO_CHAR = 0.toChar()
     }
+
+    override val hideKeyboardOnFocusLost = false
+
     private var locked = false
     private var deleted = ZERO_CHAR
     private var start = 0

@@ -8,8 +8,8 @@ import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.SettingsStore
@@ -68,7 +68,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
                     historyDrawerGravity.value = gravity
                 }
         settingsStore.specialCharacters.addObserver(onClearedCallback) { chs ->
-            updateItem(SpecialCharactersItem(chs), SpecialCharactersItem::class)
+            updateItem(SpecialCharactersItem(chs))
         }
         preferenceChannel.historyImportedEvent.addObserver(onClearedCallback) {
             reloadHistory.invoke()
@@ -98,22 +98,23 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     }
 
     fun onConfigChange(newItem: ConfigItem) {
-        val item = state.value[FinderStateItem.CONFIG_POSITION] as ConfigItem
+        val item = getItem(ConfigItem::class)
 
         val ignoreCaseChanged = item.ignoreCase xor newItem.ignoreCase
         val replaceEnabledChanged = item.replaceEnabled xor newItem.replaceEnabled
         val useRegexpChanged = item.useRegex xor newItem.useRegex
 
         if (replaceEnabledChanged || useRegexpChanged) {
-            val it = SearchAndReplaceItem(newItem.replaceEnabled, newItem.useRegex)
-            updateItem(it, SearchAndReplaceItem::class)
+            updateItem(SearchAndReplaceItem::class) {
+                it.copy(replaceEnabled = newItem.replaceEnabled, useRegex = newItem.useRegex)
+            }
         }
 
-        updateItem(newItem, ConfigItem::class)
+        updateItem(newItem)
 
         if (ignoreCaseChanged || replaceEnabledChanged || useRegexpChanged) {
             updateItem(TestItem::class) {
-                it.copy(useRegexp = newItem.useRegex,
+                it.copy(useRegex = newItem.useRegex,
                         ignoreCase = newItem.ignoreCase,
                         multilineSearch = newItem.multilineSearch)
             }
@@ -126,6 +127,9 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
         updateItem(TestItem::class) {
             it.copy(searchQuery = value)
         }
+        val item = items.find { it is SearchAndReplaceItem } as SearchAndReplaceItem
+        item.query = value
+        // do not notify
     }
 
     fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
@@ -135,12 +139,16 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
     fun onConfigOptionSelected() {
         when (val configItem = configItem) {
             null -> {
-                this.configItem = items.removeAt(FinderStateItem.CONFIG_POSITION) as ConfigItem
-                updateContent.invoke(Removed(FinderStateItem.CONFIG_POSITION))
+                val item = getItem(ConfigItem::class)
+                this.configItem = item
+                val index = items.indexOf(item)
+                items.removeAt(index)
+                updateContent.invoke(Removed(index))
             }
             else -> {
-                items.add(FinderStateItem.CONFIG_POSITION, configItem)
-                updateContent.invoke(Inserted(FinderStateItem.CONFIG_POSITION, configItem))
+                val index = items.indexOf(getItem(TestItem::class))
+                items.add(index, configItem)
+                updateContent.invoke(Inserted(index, configItem))
                 this.configItem = null
             }
         }
@@ -161,15 +169,20 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
 
     fun onItemClick(item: TargetItem) = snackbar.invoke(app.getString(R.string.oops_not_working))
 
-    private fun <I : FinderStateItem> updateItem(item: I, klass: KClass<I>) {
-        val index = items.indexOfFirst { it::class == klass }
+    @Suppress("UNCHECKED_CAST")
+    private fun <I : FinderStateItem> getItem(kClass: KClass<I>): I {
+        return items.find { it::class == kClass } as I
+    }
+
+    private fun <I : FinderStateItem> updateItem(item: I) {
+        val index = items.indexOfFirst { it::class == item::class }
         items.removeAt(index)
         items.add(index, item)
         updateContent.invoke(Changed(index, item))
     }
 
-    private fun <I : FinderStateItem> updateItem(klass: KClass<I>, action: (I) -> I) {
-        val index = items.indexOfFirst { it::class == klass }
+    private fun <I : FinderStateItem> updateItem(kClass: KClass<I>, action: (I) -> I) {
+        val index = items.indexOfFirst { it::class == kClass }
         val removed = items.removeAt(index)
         @Suppress("UNCHECKED_CAST")
         val item = action(removed as I)

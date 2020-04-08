@@ -5,43 +5,28 @@ import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 
 sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     companion object {
-        const val SEARCH_POSITION = 0
-        const val CHARACTERS_POSITION = 1
-        const val CONFIG_POSITION = 2
-        const val TEST_POSITION = 3
+        private const val SEARCH_ID = 0L + 1L
+        private const val CHARACTERS_ID = 1L + 1L
+        private const val CONFIG_ID = 2L + 1L
+        private const val TEST_ID = 3L + 1L
     }
-    class SearchAndReplaceItem(val replaceEnabled: Boolean = false,
-                               val useRegex: Boolean = false)
-        : FinderStateItem(SEARCH_POSITION.inc().toLong(), R.layout.item_field_search)
+    data class SearchAndReplaceItem(var query: String = "", // mutable field
+                                    val replaceEnabled: Boolean = false,
+                                    val useRegex: Boolean = false)
+        : FinderStateItem(SEARCH_ID, R.layout.item_field_search)
     class SpecialCharactersItem(val characters: Array<String>)
-        : FinderStateItem(CHARACTERS_POSITION.inc().toLong(), R.layout.item_characters)
-    class ConfigItem(val ignoreCase: Boolean = false,
+        : FinderStateItem(CHARACTERS_ID, R.layout.item_characters)
+    data class ConfigItem(val ignoreCase: Boolean = false,
                      val useRegex: Boolean = false,
                      val searchInContent: Boolean = false,
                      val multilineSearch: Boolean = false,
                      val replaceEnabled: Boolean = false)
-        : FinderStateItem(CONFIG_POSITION.inc().toLong(), R.layout.item_config) {
-        fun copy(
-                ignoreCase: Boolean = this.ignoreCase,
-                useRegexp: Boolean = this.useRegex,
-                searchInContent: Boolean = this.searchInContent,
-                multilineSearch: Boolean = this.multilineSearch,
-                searchAndReplace: Boolean = this.replaceEnabled): ConfigItem {
-            return ConfigItem(ignoreCase, useRegexp, searchInContent, multilineSearch, searchAndReplace)
-        }
-    }
-    class TestItem(val searchQuery: String = "",
+        : FinderStateItem(CONFIG_ID, R.layout.item_config)
+    data class TestItem(val searchQuery: String = "",
                    val useRegex: Boolean = false,
                    val ignoreCase: Boolean = true,
                    val multilineSearch: Boolean = false)
-        : FinderStateItem(TEST_POSITION.inc().toLong(), R.layout.item_test) {
-        fun copy(searchQuery: String = this.searchQuery,
-                 useRegexp: Boolean = this.useRegex,
-                 ignoreCase: Boolean = this.ignoreCase,
-                 multilineSearch: Boolean = this.multilineSearch): TestItem {
-            return TestItem(searchQuery, useRegexp, ignoreCase, multilineSearch)
-        }
-    }
+        : FinderStateItem(TEST_ID, R.layout.item_test)
     class ProgressItem(val id: Long, val status: String)
         : FinderStateItem(id, R.layout.item_progress)
     class TargetItem(val target: XFile)

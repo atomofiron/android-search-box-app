@@ -20,4 +20,8 @@
     <declare-styleable name="VerticalDockView">
         <attr name="title" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="AutoHideKeyboardField">
+        <attr name="hideKeyboardOnFocusLost" format="boolean" />
+    </declare-styleable>
 </resources>

@@ -9,14 +9,14 @@ import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.SearchAndReplaceItem
-import ru.atomofiron.regextool.view.custom.RegexText
+import ru.atomofiron.regextool.view.custom.RegexInputField
 import java.util.regex.Pattern
 
 class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionListener) :
         GeneralHolder<FinderStateItem>(parent, id) {
     private val params: SearchAndReplaceItem get() = item as SearchAndReplaceItem
 
-    private val etFind = itemView.findViewById<RegexText>(R.id.item_find_rt_find)
+    private val etFind = itemView.findViewById<RegexInputField>(R.id.item_find_rt_find)
     private val btnFind = itemView.findViewById<View>(R.id.item_find_ib_find)
     private val viewReplace = itemView.findViewById<View>(R.id.item_find_i_replace)
 
@@ -31,6 +31,11 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         item as SearchAndReplaceItem
         viewReplace.visibility = if (item.replaceEnabled) View.VISIBLE else View.GONE
         etFind.imeOptions = if (item.replaceEnabled) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_SEARCH
+        if (etFind.text.toString() != item.query) {
+            etFind.setText(item.query)
+        } else {
+            "OK"
+        }
         updateWarning(etFind.text.toString())
     }
 
