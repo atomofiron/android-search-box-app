@@ -96,15 +96,6 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun explorerService(
-            assets: AssetManager,
-            preferences: SharedPreferences,
-            explorerStore: ExplorerStore,
-            settingsStore: SettingsStore
-    ): ExplorerService = ExplorerService(assets, preferences, explorerStore, settingsStore)
-
-    @Provides
-    @ExplorerScope
     fun interactor(scope: CoroutineScope, explorerService: ExplorerService): ExplorerInteractor {
         return ExplorerInteractor(scope, explorerService)
     }
@@ -124,6 +115,7 @@ interface ExplorerDependencies {
     fun context(): Context
     fun assetManager(): AssetManager
     fun sharedPreferences(): SharedPreferences
+    fun explorerService(): ExplorerService
     fun explorerStore(): ExplorerStore
     fun settingsStore(): SettingsStore
 }

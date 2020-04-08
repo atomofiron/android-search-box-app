@@ -23,14 +23,57 @@ class ExplorerService constructor(
 
     suspend fun setRoots(vararg path: String) {
         val roots = path.map { MutableXFile.byPath(it) }
+        log2("setRoots ${roots.size}")
 
         mutex.withLock {
-            // todo remove old root and children
-            files.clear()
+            removeExtraRoots(roots.map { it.root })
+            mergeRoots(roots)
+        }
+
+        explorerStore.notifyItems()
+        roots.filter { !it.isOpened }.forEach { updateClosedDir(it) }
+    }
+
+    // withLock
+    private fun removeExtraRoots(roots: List<Int>) {
+        val it = files.iterator()
+        while (it.hasNext()) {
+            if (!roots.contains(it.next().root)) {
+                it.remove()
+            }
+        }
+    }
+
+    // withLock
+    private fun mergeRoots(roots: List<MutableXFile>) {
+        if (files.isEmpty()) {
+            log2("mergeRoots just add ${roots.size}")
             files.addAll(roots)
         }
-        explorerStore.notifyItems()
-        roots.forEach { updateClosedDir(it) }
+        var i = -1
+        val itRoot = roots.iterator()
+        var nextRootItem = itRoot.next()
+        loop@ while (++i < files.size) {
+            val root = files[i].root
+            when {
+                root != nextRootItem.root -> {
+                    log2("mergeRoots add $nextRootItem")
+                    files.add(i, nextRootItem)
+                    if (itRoot.hasNext()) {
+                        nextRootItem = itRoot.next()
+                    }
+                }
+                !itRoot.hasNext() -> {
+                    log2("mergeRoots roots merged ${roots.size}")
+                    break@loop
+                }
+                i.inc() != files.size -> nextRootItem = itRoot.next()
+                else -> while (itRoot.hasNext()) {
+                    log2("mergeRoots finally add $nextRootItem")
+                    files.add(itRoot.next())
+                }
+            }
+        }
     }
 
     fun invalidateDir(dir: XFile) {
