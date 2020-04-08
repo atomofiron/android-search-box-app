@@ -33,8 +33,6 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         etFind.imeOptions = if (item.replaceEnabled) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_SEARCH
         if (etFind.text.toString() != item.query) {
             etFind.setText(item.query)
-        } else {
-            "OK"
         }
         updateWarning(etFind.text.toString())
     }
@@ -65,7 +63,11 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         override fun afterTextChanged(s: Editable) {
             val value = s.toString()
             updateWarning(value)
-            listener.onSearchChange(value)
+
+            val item = item as SearchAndReplaceItem
+            if (value != item.query) {
+                listener.onSearchChange(value)
+            }
         }
     }
 }
