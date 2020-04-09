@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.common.util.hideKeyboard
 import ru.atomofiron.regextool.R
@@ -111,12 +112,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
             fixSystemBars(systemBarsLights)
         }
         visibilityWatcher.hidden = hidden
-    }
-
-    override fun onDestroy() {
-        somePresenter?.onViewDestroy()
-        viewModel.onViewDestroy()
-        super.onDestroy()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -1,6 +1,6 @@
 package ru.atomofiron.regextool.screens.explorer.presenter
 
-import app.atomofiron.common.base.BasePresenter
+import app.atomofiron.common.arch.BasePresenter
 import kotlinx.coroutines.CoroutineScope
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor

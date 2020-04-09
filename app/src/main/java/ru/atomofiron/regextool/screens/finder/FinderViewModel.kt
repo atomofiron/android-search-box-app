@@ -94,6 +94,7 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderRouter>(app) {
             checked.isNotEmpty() -> checked.forEach { items.add(TargetItem(it)) }
             currentDir != null -> items.add(TargetItem(currentDir))
         }
+        // todo replace all postValue() with coroutines
         state.postValue(items)
     }
 

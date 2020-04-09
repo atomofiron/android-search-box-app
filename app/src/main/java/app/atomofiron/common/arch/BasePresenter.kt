@@ -1,4 +1,4 @@
-package app.atomofiron.common.base
+package app.atomofiron.common.arch
 
 import android.content.Context
 import android.os.Bundle
@@ -9,7 +9,7 @@ import kotlinx.coroutines.cancel
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.log2
 
-abstract class BasePresenter<M : BaseViewModel<BaseRouter>, R : BaseRouter>(
+abstract class BasePresenter<M : BaseViewModel, R : BaseRouter>(
         protected val viewModel: M,
         protected val scope: CoroutineScope,
         private val permissionResultListener: PermissionResultListener
@@ -33,8 +33,6 @@ abstract class BasePresenter<M : BaseViewModel<BaseRouter>, R : BaseRouter>(
     open fun onSubscribeData() = Unit
 
     open fun onVisibleChanged(visible: Boolean) = Unit
-
-    open fun onViewDestroy() = router.onViewDestroy()
 
     protected open fun onCleared() {
         scope.cancel("${this.javaClass.simpleName}.onCleared()")

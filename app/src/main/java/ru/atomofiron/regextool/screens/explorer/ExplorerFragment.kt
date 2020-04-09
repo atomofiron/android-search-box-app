@@ -7,7 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.base.BaseFragment
+import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
@@ -22,10 +22,8 @@ import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
 import javax.inject.Inject
-import kotlin.reflect.KClass
 
-class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
-    override val viewModelClass: KClass<ExplorerViewModel>? = null
+class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     override val layoutId: Int = R.layout.fragment_explorer
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
@@ -42,7 +40,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
     @Inject
     override lateinit var viewModel: ExplorerViewModel
     @Inject
-    lateinit var presenter: ExplorerPresenter
+    override lateinit var presenter: ExplorerPresenter
 
     override fun buildComponentAndInject() {
         DaggerExplorerComponent
@@ -51,7 +49,6 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel>() {
                 .dependencies(DaggerInjector.appComponent)
                 .build()
                 .inject(this)
-        somePresenter = presenter
     }
 
     override fun onCreate() {

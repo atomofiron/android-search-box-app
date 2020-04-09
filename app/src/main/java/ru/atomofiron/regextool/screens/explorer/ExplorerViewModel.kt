@@ -3,11 +3,9 @@ package ru.atomofiron.regextool.screens.explorer
 import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
-import app.atomofiron.common.base.BaseRouter
-import app.atomofiron.common.base.BaseViewModel
+import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.Change
@@ -17,14 +15,7 @@ import ru.atomofiron.regextool.screens.explorer.places.XPlace
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData
 
-class ExplorerViewModel(app: Application) : BaseViewModel<BaseRouter>(app) {
-
-    // legacy field
-    override val router = object : BaseRouter() { }
-
-    lateinit var scope: CoroutineScope
-
-    override fun onViewDestroy() = Unit
+class ExplorerViewModel(app: Application) : BaseViewModel(app) {
 
     val directoryOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
     val oneFileOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename)

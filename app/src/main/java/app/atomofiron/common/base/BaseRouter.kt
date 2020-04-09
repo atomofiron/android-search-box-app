@@ -11,22 +11,18 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import app.atomofiron.common.util.OneTimeBackStackListener
 import ru.atomofiron.regextool.log2
-import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
 abstract class BaseRouter {
-    private lateinit var fragmentReference: WeakReference<Fragment?>
-    private lateinit var activityReference: WeakReference<AppCompatActivity?>
-
-    protected val fragment: Fragment? get() = fragmentReference.get()
-    protected val activity: AppCompatActivity? get() = activityReference.get()
-            ?: fragmentReference.get()?.requireActivity() as AppCompatActivity?
+    protected var fragment: Fragment? = null
+    protected var activity: AppCompatActivity? = null
+        get() = field ?: fragment?.activity as AppCompatActivity?
 
     protected val isDestroyed: Boolean get() =  fragment == null && activity == null
     protected var isBlocked = false
 
     protected val arguments: Bundle get() {
-        var arguments = fragmentReference.get()?.arguments
+        var arguments = fragment?.arguments
         arguments = arguments ?: activity?.intent?.extras
         return arguments!!
     }
@@ -39,41 +35,32 @@ abstract class BaseRouter {
             return field
         }
 
-    protected fun context(action: Context.() -> Unit) = activity!!.action()
-    protected fun fragment(action: Fragment.() -> Unit) = fragmentReference.get()!!.action()
-    protected fun activity(action: AppCompatActivity.() -> Unit) = activity!!.action()
-    protected fun childManager(action: FragmentManager.() -> Unit) {
-        var manager = fragmentReference.get()?.childFragmentManager
+    protected fun <R> context(action: Context.() -> R): R = activity!!.action()
+    protected fun <R> fragment(action: Fragment.() -> R): R = fragment!!.action()
+    protected fun <R> activity(action: AppCompatActivity.() -> R): R = activity!!.action()
+    protected fun <R> childManager(action: FragmentManager.() -> R): R {
+        var manager = fragment?.childFragmentManager
         manager = manager ?: activity?.supportFragmentManager
-        manager!!.action()
+        return manager!!.action()
     }
-    protected fun <T> manager(action: FragmentManager.() -> T): T {
+    protected fun <R> manager(action: FragmentManager.() -> R): R {
         //var manager = fragmentReference.get()?.parentFragmentManager
         val manager = activity?.supportFragmentManager
         return manager!!.action()
     }
 
     protected fun nextIntent(clazz: KClass<out Activity>): Intent {
-        var intent: Intent? = null
-        context {
-            intent = Intent(this, clazz.java)
+        return context {
+            Intent(this, clazz.java)
         }
-        return intent!!
     }
 
     fun onFragmentAttach(fragment: Fragment) {
-        fragmentReference = WeakReference(fragment)
-        activityReference = WeakReference(fragment.activity as AppCompatActivity?)
+        this.fragment = fragment
     }
 
     fun onActivityAttach(activity: AppCompatActivity) {
-        fragmentReference = WeakReference(null)
-        activityReference = WeakReference(activity)
-    }
-
-    fun onViewDestroy() {
-        fragmentReference.clear()
-        activityReference.clear()
+        this.activity = activity
     }
 
     open fun onAttachChildFragment(childFragment: Fragment) = Unit
