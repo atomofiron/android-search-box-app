@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.di.module
 
-import android.content.Context
-import androidx.preference.PreferenceManager
+import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
@@ -17,8 +16,5 @@ open class StoreModule {
 
     @Provides
     @Singleton
-    open fun provideSettingsStore(context: Context): SettingsStore {
-        val sp = PreferenceManager.getDefaultSharedPreferences(context)
-        return SettingsStore(sp)
-    }
+    open fun provideSettingsStore(sp: SharedPreferences): SettingsStore = SettingsStore(sp)
 }

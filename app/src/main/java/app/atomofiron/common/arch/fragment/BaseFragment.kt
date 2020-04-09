@@ -7,13 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.arch.FragmentDelegate
-import app.atomofiron.common.base.Backable
+import app.atomofiron.common.util.findBooleanByAttr
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.log2
 
-abstract class BaseFragment<M : BaseViewModel, P : BasePresenter<*,*>> : Fragment(), IFragment<P> by FragmentDelegate<P>(), Backable {
-
+abstract class BaseFragment<M : BaseViewModel, P : BasePresenter<*,*>> : Fragment(), IFragment<P> by FragmentDelegate<P>() {
+    override val systemBarsColorId: Int get() = R.color.transparent
+    override val systemBarsLights: Boolean get() = thisContext.findBooleanByAttr(R.attr.isDarkTheme)
     abstract override val layoutId: Int
+
     abstract val viewModel: M
 
     init {
@@ -21,9 +23,8 @@ abstract class BaseFragment<M : BaseViewModel, P : BasePresenter<*,*>> : Fragmen
     }
 
     final override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        delegate.fragment = this
-        delegate.onCreate()
+        super<Fragment>.onCreate(savedInstanceState)
+        delegate.onCreate(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

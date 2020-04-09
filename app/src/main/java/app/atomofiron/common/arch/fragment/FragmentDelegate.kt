@@ -1,4 +1,4 @@
-package app.atomofiron.common.arch
+package app.atomofiron.common.arch.fragment
 
 import android.content.Context
 import android.os.Build
@@ -9,27 +9,19 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import app.atomofiron.common.arch.fragment.BaseFragment
-import app.atomofiron.common.arch.fragment.IFragment
-import app.atomofiron.common.util.findBooleanByAttr
-import app.atomofiron.common.util.hideKeyboard
-import ru.atomofiron.regextool.R
+import app.atomofiron.common.arch.BasePresenter
 import ru.atomofiron.regextool.log2
 
-class FragmentDelegate<P : BasePresenter<*,*>> : IFragment<P> {
-    companion object {
-        private const val LATEINIT_INT = 0
-    }
+class FragmentDelegate<P : BasePresenter<*, *>> : IFragment<P> {
 
-    override val systemBarsColorId: Int = R.color.transparent
-    override val systemBarsLights: Boolean get() = !thisContext.findBooleanByAttr(R.attr.isDarkTheme)
+    override val systemBarsColorId: Int get() = fragment.systemBarsColorId
+    override val systemBarsLights: Boolean get() = fragment.systemBarsLights
+    override val layoutId: Int get() = fragment.layoutId
 
-    override var layoutId: Int = LATEINIT_INT
-
-    lateinit var fragment: BaseFragment<*,P>
-    override lateinit var presenter: P
-
+    private lateinit var fragment: BaseFragment<*,P>
+    override val presenter: P get() = fragment.presenter
     override val delegate: FragmentDelegate<P> = this
+
     override val thisContext: Context get() = fragment.requireContext()
     override val thisActivity: AppCompatActivity get() = fragment.requireActivity() as AppCompatActivity
     override val thisView: View get() = fragment.requireView()
@@ -40,11 +32,10 @@ class FragmentDelegate<P : BasePresenter<*,*>> : IFragment<P> {
         log2("init")
     }
 
-    override fun onCreate() {
-        // Fragment.onAttachFragment()
+    fun onCreate(fragment: BaseFragment<*, P>) {
+        // onAttachChildFragment()
+        this.fragment = fragment
         fragment.buildComponentAndInject()
-        layoutId = fragment.layoutId
-        presenter = fragment.presenter
         presenter.onCreate(thisContext, fragment.arguments)
         fragment.onCreate()
         fragment.onSubscribeData(fragment)
@@ -52,12 +43,6 @@ class FragmentDelegate<P : BasePresenter<*,*>> : IFragment<P> {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return LayoutInflater.from(inflater.context).inflate(layoutId, container, false)
-    }
-
-    override fun onBack(): Boolean {
-        val viewWithFocus = thisView.findFocus()
-        // todo это вообще работает как задумано?
-        return viewWithFocus?.hideKeyboard() != null
     }
 
     override fun onStart() {

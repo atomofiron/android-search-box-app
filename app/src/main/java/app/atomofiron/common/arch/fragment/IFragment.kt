@@ -9,19 +9,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import app.atomofiron.common.arch.BasePresenter
-import app.atomofiron.common.arch.FragmentDelegate
 import app.atomofiron.common.base.Backable
 import app.atomofiron.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.R
 
 interface IFragment<P : BasePresenter<*,*>> : Backable {
-    // 'open' to init via injection
-    val presenter: P
 
     val layoutId: Int
     val systemBarsColorId: Int
     val systemBarsLights: Boolean get() = !thisContext.findBooleanByAttr(R.attr.isDarkTheme)
 
+    val presenter: P
     val delegate: FragmentDelegate<P>
 
     val thisContext: Context
@@ -34,7 +32,7 @@ interface IFragment<P : BasePresenter<*,*>> : Backable {
 
     fun onAttachChildFragment(childFragment: Fragment)
 
-    fun onCreate()
+    fun onCreate() = Unit
 
     fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
 
