@@ -86,6 +86,8 @@
     <string name="a_directory">Directory</string>
     <string name="inverse_glowing">Inverse highlight</string>
     <string name="inverse_for_dark">Inverse for Dark theme</string>
+    <string name="pref_category_debug">Debug</string>
+    <string name="pref_leak_canary" translatable="false">Leak Canary</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>
         <item quantity="one">%d directory</item>

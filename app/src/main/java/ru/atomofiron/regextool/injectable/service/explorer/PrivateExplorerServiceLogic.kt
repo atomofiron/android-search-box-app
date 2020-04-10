@@ -55,8 +55,10 @@ abstract class PrivateExplorerServiceLogic constructor(
         var i = 0
         // ConcurrentModificationException
         while (i < files.size) {
-            val file = files[i++]
-            if (file.root == root && file.completedPath == completedPath) {
+            // files[i++] may return null
+            val file: MutableXFile? = files[i++]
+            file ?: i--
+            if (file?.root == root && file.completedPath == completedPath) {
                 return file
             }
         }

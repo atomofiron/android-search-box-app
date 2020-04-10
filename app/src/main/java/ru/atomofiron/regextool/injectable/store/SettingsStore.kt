@@ -2,11 +2,12 @@ package ru.atomofiron.regextool.injectable.store
 
 import android.content.SharedPreferences
 import android.view.Gravity
+import leakcanary.AppWatcher
 import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.model.AppTheme
-import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.model.ExplorerItemComposition
+import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.utils.Const
 
 class SettingsStore(sp: SharedPreferences) {
@@ -21,6 +22,7 @@ class SettingsStore(sp: SharedPreferences) {
             Const.PREF_MAX_SIZE -> maxFileSizeForSearch.value
 
             Const.PREF_USE_SU -> useSu.value
+            Const.PREF_LEAK_CANARY -> AppWatcher.config.enabled
             else -> throw Exception("Key = $key.")
         }
     }

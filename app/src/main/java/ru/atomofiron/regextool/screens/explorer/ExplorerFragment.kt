@@ -11,7 +11,6 @@ import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
@@ -21,9 +20,9 @@ import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate
 import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
-import javax.inject.Inject
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
+    override val viewModelClass = ExplorerViewModel::class
     override val layoutId: Int = R.layout.fragment_explorer
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
@@ -37,19 +36,9 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
 
-    @Inject
-    override lateinit var viewModel: ExplorerViewModel
-    @Inject
-    override lateinit var presenter: ExplorerPresenter
+    override val presenter: ExplorerPresenter get() = viewModel.presenter
 
-    override fun buildComponentAndInject() {
-        DaggerExplorerComponent
-                .builder()
-                .fragment(this)
-                .dependencies(DaggerInjector.appComponent)
-                .build()
-                .inject(this)
-    }
+    override fun inject() = viewModel.inject(this)
 
     override fun onCreate() {
         explorerAdapter.itemActionListener = presenter

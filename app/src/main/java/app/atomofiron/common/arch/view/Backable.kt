@@ -1,4 +1,4 @@
-package app.atomofiron.common.base
+package app.atomofiron.common.arch.view
 
 interface Backable {
     /** @return event was consumed */

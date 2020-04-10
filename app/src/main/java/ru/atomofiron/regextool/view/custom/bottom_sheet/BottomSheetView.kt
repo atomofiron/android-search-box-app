@@ -21,7 +21,7 @@ open class BottomSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), ValueAnimator.AnimatorUpdateListener {
+) : FrameLayout(context, attrs, defStyleAttr) {
     companion object {
         private const val SECOND = 1000L
         private const val DURATION = 256L
@@ -71,16 +71,30 @@ open class BottomSheetView @JvmOverloads constructor(
     private val decelerateInterpolator = DecelerateInterpolator()
     private val accelerateDecelerateInterpolator = AccelerateDecelerateInterpolator()
 
+    private val loopListener: (ValueAnimator) -> Unit = ::loop
+    private val animatorListener: (ValueAnimator) -> Unit = ::onAnimationUpdate
+
     init {
         frameLoop.duration = SECOND
         frameLoop.repeatMode = ValueAnimator.RESTART
         frameLoop.repeatCount = ValueAnimator.INFINITE
-        frameLoop.addUpdateListener { loop() }
         frameLoop.start()
 
         val widthPixels = resources.displayMetrics.widthPixels
         val maxWidth = resources.getDimensionPixelOffset(R.dimen.bottom_sheet_view_max_width)
         viewContainer.layoutParams.width = Math.min(widthPixels, maxWidth)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        frameLoop.addUpdateListener(loopListener)
+        animator.addUpdateListener(animatorListener)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        frameLoop.removeUpdateListener(loopListener)
+        animator.removeUpdateListener(animatorListener)
     }
 
     private fun clearContainer() {
@@ -211,11 +225,12 @@ open class BottomSheetView @JvmOverloads constructor(
     }
 
     private fun startAnimator(to: Int, interpolator: Interpolator) {
+        animator.removeUpdateListener(animatorListener)
         animator.cancel()
         animator = ValueAnimator.ofInt(curTop, to)
         animator.duration = DURATION
         animator.interpolator = interpolator
-        animator.addUpdateListener(this)
+        animator.addUpdateListener(animatorListener)
         animator.start()
     }
 
@@ -299,7 +314,7 @@ open class BottomSheetView @JvmOverloads constructor(
         return default
     }
 
-    private fun loop() {
+    private fun loop(animator: ValueAnimator) {
         speedPerFrame = speedSum
         speedSum = 0f
 
@@ -339,7 +354,7 @@ open class BottomSheetView @JvmOverloads constructor(
         determineState(top)
     }
 
-    override fun onAnimationUpdate(animation: ValueAnimator) {
+    private fun onAnimationUpdate(animation: ValueAnimator) {
         val value = animation.animatedValue as Int
         if (speedPerFrame == 0f) {
             setMenuTop(value)

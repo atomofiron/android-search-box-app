@@ -43,6 +43,8 @@ abstract class BaseViewModel<R : BaseRouter>(app: Application) : AndroidViewMode
 
     open fun onVisibleChanged(visible: Boolean) = Unit
 
+    fun onDestroy() = router.onDestroy()
+
     override fun onCleared() {
         screenScope.cancel()
         onClearedCallback.invoke()

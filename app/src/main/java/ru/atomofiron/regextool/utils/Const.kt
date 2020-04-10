@@ -19,6 +19,7 @@ object Const {
     const val PREF_EXPORT_IMPORT = "pref_export_import"
     const val PREF_EXPLORER_ITEM = "pref_explorer_item"
     const val PREF_ESC_COLOR = "pref_esc_color"
+    const val PREF_LEAK_CANARY = "pref_leak_canary"
 
     const val CASE_SENSE = "CASE_SENSE"
     const val QUERY = "QUERY"

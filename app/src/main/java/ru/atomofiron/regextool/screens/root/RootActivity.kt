@@ -13,7 +13,6 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.root.util.ExitSnackbarCallback
-import ru.atomofiron.regextool.screens.root.util.tasks.TasksSheetView
 import ru.atomofiron.regextool.view.custom.Joystick
 import kotlin.reflect.KClass
 
@@ -23,7 +22,6 @@ open class RootActivity : BaseActivity<RootViewModel>() {
 
     private val root = Knife<ConstraintLayout>(this, R.id.root_cl_root)
     private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
-    private val tsvTasks = Knife<TasksSheetView>(this, R.id.root_tsv_tasks)
 
     private val sbExit: LazyReincarnation<Snackbar> = LazyReincarnation {
         Snackbar.make(joystick.view, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
@@ -46,18 +44,11 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         setContentView(R.layout.activity_root)
 
         joystick.view.setOnClickListener {
-            when (onBack()) {
-                true -> Unit
-                else -> viewModel.onJoystickClick()
-            }
+            viewModel.onJoystickClick()
         }
 
         viewModel.showExitSnackbar.observeEvent(this) {
             sbExit { show() }
-        }
-
-        tsvTasks {
-            // todo tasks setTrackingView(joystick.view)
         }
 
         setOrientation(viewModel.setOrientation.data!!)
@@ -66,9 +57,6 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     override fun setTheme(resId: Int) {
         super.setTheme(resId)
         sbExit.wipe()
-        tsvTasks {
-            resetContentView()
-        }
         root {
             setBackgroundColor(findColorByAttr(R.attr.colorBackground))
         }
@@ -81,21 +69,11 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         viewModel.setTheme.observeData(owner, ::setTheme)
         viewModel.setOrientation.observeData(owner, ::setOrientation)
         viewModel.setEscColor.observe(owner, Observer { joystick { setComposition(it) } })
-        viewModel.tasks.observe(owner, Observer { tsvTasks { setItems(it) } })
     }
 
     private fun setOrientation(orientation: AppOrientation) {
         if (requestedOrientation != orientation.constant) {
             requestedOrientation = orientation.constant
-        }
-    }
-
-    private fun onBack(): Boolean = tsvTasks(default = false) { hide() }
-
-    override fun onBackPressed() {
-        when (onBack()) {
-            true -> Unit
-            else -> super.onBackPressed()
         }
     }
 

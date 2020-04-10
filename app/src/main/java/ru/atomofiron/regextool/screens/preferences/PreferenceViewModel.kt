@@ -3,14 +3,15 @@ package ru.atomofiron.regextool.screens.preferences
 import android.app.Application
 import app.atomofiron.common.base.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
+import leakcanary.AppWatcher
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.service.PreferenceService
 import ru.atomofiron.regextool.injectable.store.SettingsStore
 import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
-import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.model.ExplorerItemComposition
+import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
 import javax.inject.Inject
@@ -92,6 +93,10 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceRouter>(ap
         if (output.success) {
             preferenceChannel.historyImportedEvent.justNotify()
         }
+    }
+
+    fun onLeakCanaryClick() {
+        AppWatcher.config = AppWatcher.config.copy(enabled = !AppWatcher.config.enabled)
     }
 
     private fun showOutput(output: Shell.Output, successMessage: Int) {

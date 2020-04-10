@@ -48,6 +48,7 @@ ext {
     flexbox = "2.0.1"
     room = "2.2.5"
     dagger = "2.26"
+    leakcanary = "2.2"
 }
 
 dependencies {
@@ -70,4 +71,6 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger"
     kapt "com.google.dagger:dagger-compiler:$dagger"
     kapt "com.google.dagger:dagger-android-processor:$dagger"
+
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary"
 }

@@ -3,7 +3,7 @@ package ru.atomofiron.regextool.screens.explorer
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
-import androidx.lifecycle.ViewModelProvider
+import app.atomofiron.common.util.property.WeakProperty
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -33,29 +33,24 @@ interface ExplorerComponent {
     interface Builder {
 
         @BindsInstance
-        fun fragment(fragment: ExplorerFragment): Builder
+        fun viewModel(viewModel: ExplorerViewModel): Builder
+
+        @BindsInstance
+        fun fragment(fragment: WeakProperty<ExplorerFragment>): Builder
 
         fun dependencies(dependencies: ExplorerDependencies): Builder
 
         fun build(): ExplorerComponent
     }
 
-    fun inject(target: ExplorerFragment)
+    fun inject(target: ExplorerViewModel)
 }
 
 @Module
 class ExplorerModule {
     @Provides
     @ExplorerScope
-    fun viewModel(fragment: ExplorerFragment, scope: CoroutineScope): ExplorerViewModel {
-        val viewModel =  ViewModelProvider(fragment.requireActivity()).get(ExplorerViewModel::class.java)
-        viewModel.scope = scope
-        return viewModel
-    }
-
-    @Provides
-    @ExplorerScope
-    fun itemListener(fragment: ExplorerFragment,
+    fun itemListener(fragment: WeakProperty<ExplorerFragment>,
                      viewModel: ExplorerViewModel,
                      explorerStore: ExplorerStore,
                      settingsStore: SettingsStore,
@@ -108,7 +103,7 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun router(fragment: ExplorerFragment): ExplorerRouter = ExplorerRouter(fragment)
+    fun router(fragment: WeakProperty<ExplorerFragment>): ExplorerRouter = ExplorerRouter(fragment)
 }
 
 interface ExplorerDependencies {

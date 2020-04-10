@@ -6,16 +6,24 @@ import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.service.explorer.model.Change
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
+import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData
+import javax.inject.Inject
 
-class ExplorerViewModel(app: Application) : BaseViewModel(app) {
+class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, ExplorerFragment>(app) {
+    @Inject
+    override lateinit var scope: CoroutineScope
+    @Inject
+    public override lateinit var presenter: ExplorerPresenter
 
     val directoryOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
     val oneFileOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename)
@@ -37,6 +45,20 @@ class ExplorerViewModel(app: Application) : BaseViewModel(app) {
     val notifyUpdateRange = SingleLiveEvent<List<XFile>>()
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
+
+    override val component: ExplorerComponent by lazy(LazyThreadSafetyMode.NONE) {
+        DaggerExplorerComponent
+                .builder()
+                .fragment(fragmentProperty)
+                .viewModel(this)
+                .dependencies(DaggerInjector.appComponent)
+                .build()
+    }
+
+    override fun inject(fragment: ExplorerFragment) {
+        super.inject(fragment)
+        component.inject(this)
+    }
 
     fun onChanged(items: List<XFile>) {
         scope.launch {

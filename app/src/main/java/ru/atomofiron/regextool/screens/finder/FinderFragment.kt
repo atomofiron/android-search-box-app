@@ -71,6 +71,16 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        dockView {
+            recyclerView.adapter = null
+        }
+        rvContent {
+            adapter = null
+        }
+    }
+
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
 

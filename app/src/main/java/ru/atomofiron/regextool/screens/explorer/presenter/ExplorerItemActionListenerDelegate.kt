@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.explorer.presenter
 
 import android.Manifest
 import app.atomofiron.common.util.permission.Permissions
+import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
@@ -13,7 +14,7 @@ import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListen
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 
 class ExplorerItemActionListenerDelegate(
-        fragment: ExplorerFragment,
+        fragment: WeakProperty<ExplorerFragment>,
         private val viewModel: ExplorerViewModel,
         private val explorerStore: ExplorerStore,
         private val settingsStore: SettingsStore,

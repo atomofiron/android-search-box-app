@@ -29,7 +29,6 @@ class BallsView @JvmOverloads constructor(
         animator.repeatCount = ValueAnimator.INFINITE
         animator.repeatMode = ValueAnimator.RESTART
         animator.interpolator = LinearInterpolator()
-        animator.addUpdateListener(this)
 
         paintMask.color = Color.BLACK
         paintCircle.color = Color.BLACK
@@ -40,27 +39,27 @@ class BallsView @JvmOverloads constructor(
         setLayerType(LAYER_TYPE_HARDWARE, null)
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        animator.addUpdateListener(this)
+        updateAnimation()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        animator.removeUpdateListener(this)
+        updateAnimation()
+    }
+
     override fun setVisibility(visibility: Int) {
         super.setVisibility(visibility)
         updateAnimation()
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        updateAnimation()
-        animator.start()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        updateAnimation()
-    }
-
     private fun updateAnimation() {
-        if (isAttachedToWindow && visibility == VISIBLE) {
-            animator.start()
-        } else {
-            animator.pause()
+        when (isAttachedToWindow && visibility == VISIBLE) {
+            true -> animator.start()
+            else -> animator.pause()
         }
     }
 

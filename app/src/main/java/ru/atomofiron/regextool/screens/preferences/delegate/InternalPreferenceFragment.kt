@@ -2,12 +2,9 @@ package ru.atomofiron.regextool.screens.preferences.delegate
 
 import android.os.Bundle
 import android.view.View
-import androidx.preference.Preference
-import androidx.preference.PreferenceCategory
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceScreen
+import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.base.Backable
+import app.atomofiron.common.arch.view.Backable
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Util
@@ -155,6 +152,15 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
                 }
                 DOES_NOT_MATTER
             }
+            Const.PREF_LEAK_CANARY -> {
+                preference as SwitchPreference
+                preference.isChecked = provider.getCurrentValue(preference.key) as Boolean
+                preference.setOnPreferenceClickListener {
+                    output.onLeakCanaryClick()
+                    true
+                }
+                DOES_NOT_MATTER
+            }
             else -> throw Exception("Unknown preference ($key)!")
         }
     }
@@ -179,6 +185,7 @@ internal class InternalPreferenceFragment : PreferenceFragmentCompat(), Preferen
         fun onExportImportClick()
         fun onExplorerItemClick()
         fun onEscColorClick()
+        fun onLeakCanaryClick()
         fun onPreferenceUpdate(key: String, value: Int): Boolean
         fun onPreferenceUpdate(key: String, value: String): Boolean
         fun onPreferenceUpdate(key: String, value: Boolean): Boolean

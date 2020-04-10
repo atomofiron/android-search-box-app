@@ -9,16 +9,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import app.atomofiron.common.arch.view.Backable
 import app.atomofiron.common.util.OneTimeBackStackListener
 import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
 
 abstract class BaseRouter {
-    protected var fragment: Fragment? = null
-    protected var activity: AppCompatActivity? = null
+    protected open var fragment: Fragment? = null
+    protected open var activity: AppCompatActivity? = null
         get() = field ?: fragment?.activity as AppCompatActivity?
 
-    protected val isDestroyed: Boolean get() =  fragment == null && activity == null
+    protected val isDestroyed: Boolean get() = fragment == null && activity == null
     protected var isBlocked = false
 
     protected val arguments: Bundle get() {
@@ -61,6 +62,11 @@ abstract class BaseRouter {
 
     fun onActivityAttach(activity: AppCompatActivity) {
         this.activity = activity
+    }
+
+    fun onDestroy() {
+        fragment = null
+        activity = null
     }
 
     open fun onAttachChildFragment(childFragment: Fragment) = Unit

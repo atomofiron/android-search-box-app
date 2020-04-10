@@ -6,6 +6,7 @@ open class KObservable<T : Any?>(private val single: Boolean = false) {
     private var changed = false
     private val observers = Vector<(T) -> Unit>()
     private var nullableValue: T? = null
+    @Suppress("UNCHECKED_CAST")
     val value: T get() = nullableValue as T
 
     constructor(value: T, single: Boolean = false) : this(single) {

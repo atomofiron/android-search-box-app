@@ -74,4 +74,12 @@
             app:key="pref_esc_color"
             />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_category_debug"
+        app:title="@string/pref_category_debug">
+        <SwitchPreference
+            app:title="@string/pref_leak_canary"
+            app:key="pref_leak_canary"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>

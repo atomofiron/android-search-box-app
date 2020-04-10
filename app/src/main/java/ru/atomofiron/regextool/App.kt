@@ -2,6 +2,7 @@ package ru.atomofiron.regextool
 
 import android.app.Application
 import android.content.Context
+import leakcanary.AppWatcher
 import ru.atomofiron.regextool.di.DaggerInjector
 
 class App : Application() {
@@ -16,5 +17,7 @@ class App : Application() {
         appContext = applicationContext
 
         DaggerInjector.init(this)
+
+        AppWatcher.config = AppWatcher.config.copy(enabled = false)
     }
 }

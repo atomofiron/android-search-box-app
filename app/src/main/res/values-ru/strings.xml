@@ -86,6 +86,7 @@
     <string name="a_directory">Директорию</string>
     <string name="inverse_glowing">Инвертировать свечение</string>
     <string name="inverse_for_dark">Инвертировать при тёмной теме</string>
+    <string name="pref_category_debug">Отладка</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>

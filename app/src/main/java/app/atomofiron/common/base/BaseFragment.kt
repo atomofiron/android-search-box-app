@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.arch.view.Backable
 import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.common.util.hideKeyboard
 import ru.atomofiron.regextool.R
@@ -20,10 +20,7 @@ import kotlin.reflect.KClass
 
 abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     protected abstract val viewModelClass: KClass<M>?
-    // 'open' to init via injection
-    protected open lateinit var viewModel: M
-    protected val dataProvider: M get() = viewModel
-    open var somePresenter: BasePresenter<*, *>? = null
+    protected lateinit var viewModel: M
 
     protected abstract val layoutId: Int
     protected open val systemBarsColorId: Int = R.color.transparent
@@ -56,7 +53,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         super.onCreate(savedInstanceState)
         // Fragment.onAttachFragment()
         buildComponentAndInject()
-        somePresenter?.onCreate(thisContext, arguments)
         viewModel.onCreate(thisContext, arguments)
         onCreate()
         onSubscribeData(this)
@@ -92,15 +88,18 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
         visibilityWatcher.resumed = false
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.onDestroy()
+    }
+
     override fun onAttachFragment(childFragment: Fragment) {
-        somePresenter?.onAttachChildFragment(childFragment)
         viewModel.onAttachChildFragment(childFragment)
     }
 
     open fun onSubscribeData(owner: LifecycleOwner) = Unit
 
     open fun onVisibleChanged(visible: Boolean) {
-        somePresenter?.onVisibleChanged(visible)
         viewModel.onVisibleChanged(visible)
     }
 
@@ -115,7 +114,6 @@ abstract class BaseFragment<M : BaseViewModel<*>> : Fragment(), Backable {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        somePresenter?.onRequestPermissionsResult(requestCode, permissions, grantResults)
         viewModel.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 

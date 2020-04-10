@@ -48,4 +48,9 @@ abstract class BaseActivity<M : BaseViewModel<*>> : AppCompatActivity() {
     override fun onBackPressed() {
         viewModel.onBackButtonClick()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.onDestroy()
+    }
 }

@@ -31,6 +31,7 @@ class TasksSheetView @JvmOverloads constructor(
     private val memoryLoop = ValueAnimator.ofInt(0, 1, 2)
 
     private val adapter = TasksAdapter()
+    private val statsUpdater = StatsUpdater()
 
     init {
         setView(R.layout.sheet_tasks)
@@ -39,8 +40,18 @@ class TasksSheetView @JvmOverloads constructor(
         memoryLoop.duration = (2000 / context.getAnimatorDurationScale()).toLong()
         memoryLoop.repeatMode = ValueAnimator.RESTART
         memoryLoop.repeatCount = ValueAnimator.INFINITE
-        memoryLoop.addUpdateListener(StatsUpdater())
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        memoryLoop.addUpdateListener(statsUpdater)
         memoryLoop.start()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        memoryLoop.removeUpdateListener(statsUpdater)
+        memoryLoop.pause()
     }
 
     fun resetContentView() {

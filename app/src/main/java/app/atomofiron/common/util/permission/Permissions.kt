@@ -9,12 +9,14 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
+import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.BuildConfig
 
 @TargetApi(Build.VERSION_CODES.M)
 open class Permissions private constructor(
     private val activity: Activity?,
-    private val fragment: Fragment?
+    private val fragment: Fragment?,
+    private val property: WeakProperty<out Fragment>?
 ) : PermissionResultListener {
     companion object {
         private const val PACKAGE_SCHEME = "package:"
@@ -40,13 +42,15 @@ open class Permissions private constructor(
 
     private val granted = ArrayList<String>()
 
-    val context: Context get() = fragment?.context ?: activity!!
+    val context: Context get() = property?.value?.requireContext() ?: fragment?.requireContext() ?: activity!!
 
-    constructor(activity: Activity) : this(activity, null)
+    constructor(activity: Activity) : this(activity, null, null)
 
-    constructor(fragment: Fragment) : this(null, fragment)
+    constructor(fragment: Fragment) : this(null, fragment, null)
 
-    protected constructor(helper: Permissions) : this(helper.activity, helper.fragment)
+    constructor(property: WeakProperty<out Fragment>) : this(null, null, property)
+
+    protected constructor(helper: Permissions) : this(helper.activity, helper.fragment, helper.property)
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         val grabber = map.remove(requestCode)!!
