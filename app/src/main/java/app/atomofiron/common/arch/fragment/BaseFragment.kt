@@ -26,9 +26,7 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
 
     protected abstract val layoutId: Int
     protected abstract val viewModelClass: KClass<M>
-
     protected lateinit var viewModel: M
-    abstract override val presenter: P
 
     override val thisContext: Context get() = requireContext()
     override val thisActivity: AppCompatActivity get() = requireActivity() as AppCompatActivity

@@ -22,11 +22,8 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
     override val systemBarsColorId: Int get() = R.color.transparent
     override val systemBarsLights: Boolean get() = !thisContext.findBooleanByAttr(R.attr.isDarkTheme)
 
-    protected abstract val layoutId: Int
     protected abstract val viewModelClass: KClass<M>
-
     protected lateinit var viewModel: M
-    abstract override val presenter: P
 
     override val thisContext: Context get() = requireContext()
     override val thisActivity: AppCompatActivity get() = requireActivity() as AppCompatActivity

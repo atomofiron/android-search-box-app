@@ -23,7 +23,6 @@ import kotlin.reflect.KClass
 
 class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, PreferencePresenter>() {
     override val viewModelClass: KClass<PreferenceViewModel> = PreferenceViewModel::class
-    override val layoutId: Int = R.layout.fragment_preference
 
     @Inject
     override lateinit var presenter: PreferencePresenter
