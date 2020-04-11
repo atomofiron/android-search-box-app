@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.screens.preferences.delegate
+package ru.atomofiron.regextool.screens.preferences.fragment
 
 import android.graphics.Color
 import android.view.View
@@ -9,13 +9,13 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
-import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
 
-class ExplorerItemDelegate(
-        private val viewModel: PreferenceViewModel
-) : BottomSheetDelegate(R.layout.sheet_item_composition) {
+class ExplorerItemFragmentDelegate(
+        private var composition: ExplorerItemComposition,
+        private val output: PreferenceUpdateOutput
+) : BottomSheetDelegate(R.layout.sheet_preference_explorer_item) {
     private val dir = MutableXFile("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038",
             "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android", root = 0)
 
@@ -30,11 +30,9 @@ class ExplorerItemDelegate(
     private val cbBox: CheckBox get() = bottomSheetView.findViewById(R.id.preference_box)
     private val cbBg: CheckBox get() = bottomSheetView.findViewById(R.id.preference_bg)
 
-    private val listener = Listener()
+    private val onClickListener = Listener()
     private lateinit var holder: ExplorerHolder
     private var backgroundColor: Int = 0
-
-    private var composition: ExplorerItemComposition = viewModel.explorerItemState
 
     public override fun show() = super.show()
 
@@ -48,14 +46,14 @@ class ExplorerItemDelegate(
         cbBox.isChecked = composition.visibleBox
         cbBg.isChecked = composition.visibleBg
 
-        cbAccess.setOnClickListener(listener)
-        cbOwner.setOnClickListener(listener)
-        cbGroup.setOnClickListener(listener)
-        cbDate.setOnClickListener(listener)
-        cbTime.setOnClickListener(listener)
-        cbSize.setOnClickListener(listener)
-        cbBox.setOnClickListener(listener)
-        cbBg.setOnClickListener(listener)
+        cbAccess.setOnClickListener(onClickListener)
+        cbOwner.setOnClickListener(onClickListener)
+        cbGroup.setOnClickListener(onClickListener)
+        cbDate.setOnClickListener(onClickListener)
+        cbTime.setOnClickListener(onClickListener)
+        cbSize.setOnClickListener(onClickListener)
+        cbBox.setOnClickListener(onClickListener)
+        cbBg.setOnClickListener(onClickListener)
 
         holder = ExplorerHolder(itemView)
         holder.bind(dir)
@@ -86,7 +84,7 @@ class ExplorerItemDelegate(
             }
             holder.bindComposition(composition)
             bindBackground()
-            viewModel.onPreferenceUpdate(Const.PREF_EXPLORER_ITEM, composition.flags)
+            output.onPreferenceUpdate(Const.PREF_EXPLORER_ITEM, composition.flags)
         }
     }
 

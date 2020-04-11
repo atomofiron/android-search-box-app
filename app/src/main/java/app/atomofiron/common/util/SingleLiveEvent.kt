@@ -45,7 +45,7 @@ class SingleLiveEvent<T> : LifecycleEventObserver {
         val state = source.lifecycle.currentState
         this.state = state
         if (state == State.DESTROYED) {
-            log2("DESTROYED source: ${source.javaClass.simpleName}")
+            log2("Destroyed. source: ${source.javaClass.simpleName}")
             source.lifecycle.removeObserver(this)
             listener = null
             parameterizedListener = null

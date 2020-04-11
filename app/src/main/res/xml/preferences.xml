@@ -70,8 +70,8 @@
             app:key="pref_explorer_item"
             />
         <Preference
-            app:title="@string/pref_esc_color"
-            app:key="pref_esc_color"
+            app:title="@string/pref_joystick"
+            app:key="pref_joystick"
             />
     </PreferenceCategory>
     <PreferenceCategory

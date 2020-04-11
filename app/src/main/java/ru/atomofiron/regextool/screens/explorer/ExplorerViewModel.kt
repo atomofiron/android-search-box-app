@@ -19,6 +19,7 @@ import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData
 import javax.inject.Inject
 
 class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, ExplorerFragment>(app) {
+
     @Inject
     override lateinit var scope: CoroutineScope
 

@@ -34,7 +34,7 @@
         android:gravity="center_horizontal"
         >
         <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/preference_esc_inv_for_theme"
+            android:id="@+id/preference_inv_for_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inverse_for_dark"
@@ -42,7 +42,7 @@
             android:paddingEnd="@dimen/padding_xlarge"
             />
         <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/preference_esc_inv_highlight"
+            android:id="@+id/preference_inv_highlight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inverse_glowing"

@@ -2,9 +2,7 @@ package app.atomofiron.common.arch.view
 
 import android.content.Context
 import android.os.Build
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -14,7 +12,6 @@ import ru.atomofiron.regextool.log2
 class ViewDelegate<P : BasePresenter<*,*>> {
     private val systemBarsColorId: Int get() = view.systemBarsColorId
     private val systemBarsLights: Boolean get() = view.systemBarsLights
-    private val layoutId: Int get() = view.layoutId
 
     private lateinit var view: IView<P>
     private val presenter: P get() = view.presenter
@@ -40,10 +37,6 @@ class ViewDelegate<P : BasePresenter<*,*>> {
         view.onSubscribeData(view)
     }
 
-    fun onCreateView(inflater: LayoutInflater, container: ViewGroup?): View {
-        return LayoutInflater.from(inflater.context).inflate(layoutId, container, false)
-    }
-
     fun onStart() {
         if (isFirstTry && view.isVisible() && systemBarsColorId != IView.UNDEFINED) {
             setStatusBarColor(systemBarsColorId)
@@ -62,15 +55,13 @@ class ViewDelegate<P : BasePresenter<*,*>> {
         }
     }
 
-    fun onBack(): Boolean = false
-
     fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         presenter.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun setStatusBarColor(colorId: Int) {
-        val color = ContextCompat.getColor(thisContext, colorId)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val color = ContextCompat.getColor(thisContext, colorId)
             thisActivity.window.statusBarColor = color
             thisActivity.window.navigationBarColor = color
         }

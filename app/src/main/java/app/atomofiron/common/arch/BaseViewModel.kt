@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import ru.atomofiron.regextool.log2
 
 abstract class BaseViewModel<D, F : Fragment>(app: Application) : AndroidViewModel(app) {
-    protected abstract val scope: CoroutineScope
+    protected open lateinit var scope: CoroutineScope
     protected abstract val component: D
 
     protected val fragmentProperty = MutableWeakProperty<F>()

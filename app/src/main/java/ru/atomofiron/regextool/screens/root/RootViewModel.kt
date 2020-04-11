@@ -21,7 +21,7 @@ class RootViewModel(app: Application) : BaseViewModel<RootRouter>(app) {
     val showExitSnackbar = SingleLiveEvent<Unit>()
     val setTheme = SingleLiveEvent<AppTheme>()
     val setOrientation = SingleLiveEvent<AppOrientation>()
-    val setEscColor = LateinitLiveData<JoystickComposition>()
+    val setJoystick = LateinitLiveData<JoystickComposition>()
     val tasks = MutableLiveData<List<XTask>>()
     var sbExitIsShown: Boolean = false
 
@@ -48,8 +48,8 @@ class RootViewModel(app: Application) : BaseViewModel<RootRouter>(app) {
         settingsStore.appOrientation.addObserver(onClearedCallback) {
             setOrientation.invoke(it)
         }
-        settingsStore.escColor.addObserver(onClearedCallback) {
-            setEscColor.value = it
+        settingsStore.joystickComposition.addObserver(onClearedCallback) {
+            setJoystick.value = it
         }
         tasks.value = Array(16) { XTask() }.toList()
     }

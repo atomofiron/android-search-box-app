@@ -11,11 +11,12 @@ import ru.atomofiron.regextool.log2
 
 abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         protected val viewModel: M,
-        protected val scope: CoroutineScope,
-        private val permissionResultListener: PermissionResultListener
+        private val coroutineScope: CoroutineScope? = null,
+        private val permissionResultListener: PermissionResultListener? = null
 ) : PermissionResultListener {
     protected val context: Context get() = viewModel.getApplication<App>().applicationContext
     protected abstract val router: R
+    protected val scope: CoroutineScope get() = coroutineScope!!
 
     protected val onClearedCallback = viewModel.onClearedCallback
 
@@ -33,7 +34,7 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
 
     protected open fun onCleared() {
         log2("onCleared")
-        scope.cancel("${this.javaClass.simpleName}.onCleared()")
+        coroutineScope?.cancel("${this.javaClass.simpleName}.onCleared()")
     }
 
     fun onAttachChildFragment(childFragment: Fragment) = router.onAttachChildFragment(childFragment)
@@ -41,6 +42,6 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
     open fun onBackButtonClick(): Boolean = router.onBack()
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        permissionResultListener.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionResultListener?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

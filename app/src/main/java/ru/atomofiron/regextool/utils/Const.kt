@@ -18,7 +18,7 @@ object Const {
     const val PREF_CURRENT_DIR = "pref_current_dir"
     const val PREF_EXPORT_IMPORT = "pref_export_import"
     const val PREF_EXPLORER_ITEM = "pref_explorer_item"
-    const val PREF_ESC_COLOR = "pref_esc_color"
+    const val PREF_JOYSTICK = "pref_joystick"
     const val PREF_LEAK_CANARY = "pref_leak_canary"
 
     const val CASE_SENSE = "CASE_SENSE"
@@ -33,5 +33,5 @@ object Const {
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
     const val DEFAULT_MAX_SIZE = 10485760
     const val DEFAULT_EXPLORER_ITEM = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1
-    const val DEFAULT_ESC_COLOR = 16732754 // ff5252
+    const val DEFAULT_JOYSTICK = 16732754 // 0ff5252
 }

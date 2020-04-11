@@ -33,7 +33,7 @@ class ExplorerPresenter(
     init {
         settingsStore.dockGravity.addObserver(onClearedCallback, ::onDockGravityChanged)
         settingsStore.storagePath.addObserver(onClearedCallback, ::onStoragePathChanged)
-        settingsStore.explorerItem.addObserver(onClearedCallback, viewModel.itemComposition::setValue)
+        settingsStore.explorerItemComposition.addObserver(onClearedCallback, viewModel.itemComposition::setValue)
 
         val items = ArrayList<XPlace>()
         items.add(XPlace.InternalStorage(context.getString(R.string.internal_storage), visible = true))

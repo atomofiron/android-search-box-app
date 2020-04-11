@@ -1,55 +1,63 @@
 package ru.atomofiron.regextool.screens.preferences
 
-import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import app.atomofiron.common.base.BaseFragment
+import androidx.preference.PreferenceScreen
+import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.arch.fragment.BasePreferenceFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.screens.preferences.delegate.*
+import ru.atomofiron.regextool.screens.preferences.fragment.ExplorerItemFragmentDelegate
+import ru.atomofiron.regextool.screens.preferences.fragment.ExportImportFragmentDelegate
+import ru.atomofiron.regextool.screens.preferences.fragment.JoystickFragmentDelegate
+import ru.atomofiron.regextool.screens.preferences.fragment.PreferenceFragmentDelegate
 import ru.atomofiron.regextool.utils.Shell
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
+import javax.inject.Inject
 import kotlin.reflect.KClass
 
-class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
+class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, PreferencePresenter>() {
     override val viewModelClass: KClass<PreferenceViewModel> = PreferenceViewModel::class
     override val layoutId: Int = R.layout.fragment_preference
 
-    private lateinit var exportImportDelegate: ExportImportDelegate
-    private lateinit var explorerItemDelegate: ExplorerItemDelegate
-    private lateinit var joystickDelegate: JoystickDelegate
-    private lateinit var preferencesDelegate: PreferencesDelegate
+    @Inject
+    override lateinit var presenter: PreferencePresenter
 
-    // InternalPreferenceFragment like a View
-    private lateinit var childFragment: InternalPreferenceFragment
+    private lateinit var exportImportDelegate: ExportImportFragmentDelegate
+    private lateinit var explorerItemDelegate: ExplorerItemFragmentDelegate
+    private lateinit var joystickDelegate: JoystickFragmentDelegate
+    private lateinit var preferenceDelegate: PreferenceFragmentDelegate
 
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.preference_bsv)
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        preferencesDelegate = PreferencesDelegate(this, viewModel)
-    }
+    override fun inject() = viewModel.inject(this)
 
     override fun onCreate() {
-        if (!::childFragment.isInitialized) {
-            childFragment = InternalPreferenceFragment()
-        }
-        exportImportDelegate = ExportImportDelegate(viewModel)
-        explorerItemDelegate = ExplorerItemDelegate(viewModel)
-        joystickDelegate = JoystickDelegate(viewModel.escColorNode)
+        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter)
+        addPreferencesFromResource(R.xml.preferences)
+
+        exportImportDelegate = ExportImportFragmentDelegate(presenter)
+        explorerItemDelegate = ExplorerItemFragmentDelegate(viewModel.explorerItemComposition, presenter)
+        joystickDelegate = JoystickFragmentDelegate(viewModel.joystickComposition, presenter)
     }
 
-    override fun onAttachFragment(childFragment: Fragment) {
-        super.onAttachFragment(childFragment)
-        this.childFragment = childFragment as? InternalPreferenceFragment
-                ?: return
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        val viewGroup = inflater.inflate(R.layout.fragment_preference, container, false) as ViewGroup
+        viewGroup.addView(view, 0)
+        return viewGroup
+    }
 
-        childFragment.setAppPreferenceFragmentOutput(preferencesDelegate)
-        childFragment.setAppPreferenceFragmentProvider(preferencesDelegate)
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
+
+    override fun onCreateAdapter(preferenceScreen: PreferenceScreen): RecyclerView.Adapter<*> {
+        preferenceDelegate.onUpdateScreen(preferenceScreen)
+        return super.onCreateAdapter(preferenceScreen)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,11 +67,10 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
         explorerItemDelegate.bottomSheetView = bottomSheetView.view
         joystickDelegate.bottomSheetView = bottomSheetView.view
 
-        if (!childFragment.isAdded) {
-            childFragmentManager.beginTransaction()
-                    .add(R.id.preference_fl_container, childFragment)
-                    .commit()
-        }
+        val recyclerView = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
+        recyclerView.clipToPadding = false
+        val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)
+        recyclerView.setPadding(recyclerView.paddingLeft, recyclerView.paddingTop, recyclerView.paddingRight, padding)
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
@@ -78,7 +85,9 @@ class PreferenceFragment : BaseFragment<PreferenceViewModel>() {
 
     fun onExplorerItemClick() = explorerItemDelegate.show()
 
-    fun onEscColorClick() = joystickDelegate.show()
+    fun onJoystickClick() = joystickDelegate.show()
+
+    fun onLeakCanaryClick(isChecked: Boolean) = presenter.onLeakCanaryClick(isChecked)
 
     private fun showAlert(message: String) {
         Snackbar

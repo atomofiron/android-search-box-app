@@ -31,20 +31,15 @@ annotation class ExplorerScope
 interface ExplorerComponent {
     @Component.Builder
     interface Builder {
-
         @BindsInstance
         fun viewModel(viewModel: ExplorerViewModel): Builder
-
         @BindsInstance
         fun fragment(fragment: WeakProperty<ExplorerFragment>): Builder
-
         fun dependencies(dependencies: ExplorerDependencies): Builder
-
         fun build(): ExplorerComponent
     }
 
     fun inject(target: ExplorerViewModel)
-
     fun inject(target: ExplorerFragment)
 }
 

@@ -89,7 +89,7 @@ class SettingsStore(sp: SharedPreferences) {
             fromValue = { AppOrientation.values()[it.toInt()] }
     )
 
-    val explorerItem = PreferenceNode.forInt(
+    val explorerItemComposition = PreferenceNode.forInt(
             sp,
             key = Const.PREF_EXPLORER_ITEM,
             default = Const.DEFAULT_EXPLORER_ITEM,
@@ -97,10 +97,10 @@ class SettingsStore(sp: SharedPreferences) {
             fromValue = { ExplorerItemComposition(it) }
     )
 
-    val escColor = PreferenceNode.forInt(
+    val joystickComposition = PreferenceNode.forInt(
             sp,
-            key = Const.PREF_ESC_COLOR,
-            default = Const.DEFAULT_ESC_COLOR,
+            key = Const.PREF_JOYSTICK,
+            default = Const.DEFAULT_JOYSTICK,
             toValue = { it.data },
             fromValue = { JoystickComposition(it) }
     )

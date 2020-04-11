@@ -68,7 +68,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.setTheme.observeData(owner, ::setTheme)
         viewModel.setOrientation.observeData(owner, ::setOrientation)
-        viewModel.setEscColor.observe(owner, Observer { joystick { setComposition(it) } })
+        viewModel.setJoystick.observe(owner, Observer { joystick { setComposition(it) } })
     }
 
     private fun setOrientation(orientation: AppOrientation) {

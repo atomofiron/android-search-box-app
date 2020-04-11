@@ -1,15 +1,14 @@
-package ru.atomofiron.regextool.screens.preferences.delegate
+package ru.atomofiron.regextool.screens.preferences.fragment
 
 import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.TextView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
 
-class ExportImportDelegate(
-        private val viewModel: PreferenceViewModel
-) : BottomSheetDelegate(R.layout.sheet_export_import) {
+class ExportImportFragmentDelegate(
+        private val output: ExportImportOutput
+) : BottomSheetDelegate(R.layout.sheet_preference_export_import) {
 
     private val tvPath: TextView get() = bottomSheetView.findViewById(R.id.lei_tv_path)
     private val rgTarget: RadioGroup get() = bottomSheetView.findViewById(R.id.lei_rg_target)
@@ -28,23 +27,31 @@ class ExportImportDelegate(
             button.setText(id)
         }
         button.setOnClickListener { onButtonClick() }
-        tvPath.text = viewModel.externalPath
+        tvPath.text = output.externalPath
     }
 
     private fun onButtonClick() {
         when (rgAction.checkedRadioButtonId) {
             R.id.lei_rb_export -> when (rgTarget.checkedRadioButtonId) {
-                R.id.lei_rb_preferences -> viewModel.exportPreferences()
-                R.id.lei_rb_history -> viewModel.exportHistory()
+                R.id.lei_rb_preferences -> output.exportPreferences()
+                R.id.lei_rb_history -> output.exportHistory()
                 else -> throw Exception()
             }
             R.id.lei_rb_import -> when (rgTarget.checkedRadioButtonId) {
-                R.id.lei_rb_preferences -> viewModel.importPreferences()
-                R.id.lei_rb_history -> viewModel.importHistory()
+                R.id.lei_rb_preferences -> output.importPreferences()
+                R.id.lei_rb_history -> output.importHistory()
                 else -> throw Exception()
             }
             else -> throw Exception()
         }
         hide()
+    }
+
+    interface ExportImportOutput {
+        val externalPath: String
+        fun exportPreferences()
+        fun exportHistory()
+        fun importPreferences()
+        fun importHistory()
     }
 }

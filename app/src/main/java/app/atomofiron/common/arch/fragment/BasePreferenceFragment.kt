@@ -3,12 +3,10 @@ package app.atomofiron.common.arch.fragment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceFragmentCompat
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.arch.view.Backable
@@ -19,7 +17,7 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
 
-abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fragment(), IView<P>, Backable {
+abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : PreferenceFragmentCompat(), IView<P>, Backable {
 
     override val systemBarsColorId: Int get() = R.color.transparent
     override val systemBarsLights: Boolean get() = !thisContext.findBooleanByAttr(R.attr.isDarkTheme)
@@ -43,24 +41,14 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
     }
 
     final override fun onCreate(savedInstanceState: Bundle?) {
-        super<Fragment>.onCreate(savedInstanceState)
-        // onAttachChildFragment()
+        super<PreferenceFragmentCompat>.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity()).get(viewModelClass.java)
         delegate.onCreate(this)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return LayoutInflater.from(inflater.context).inflate(layoutId, container, false)
     }
 
     override fun onStart() {
         super.onStart()
         delegate.onStart()
-    }
-
-    override fun onAttachFragment(childFragment: Fragment) {
-        super.onAttachFragment(childFragment)
-        delegate.onAttachChildFragment(childFragment)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
