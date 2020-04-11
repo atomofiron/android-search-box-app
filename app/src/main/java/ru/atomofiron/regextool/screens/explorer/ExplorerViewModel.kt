@@ -14,7 +14,6 @@ import ru.atomofiron.regextool.injectable.service.explorer.model.Change
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
-import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData
 import javax.inject.Inject
@@ -22,8 +21,6 @@ import javax.inject.Inject
 class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, ExplorerFragment>(app) {
     @Inject
     override lateinit var scope: CoroutineScope
-    @Inject
-    public override lateinit var presenter: ExplorerPresenter
 
     val directoryOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
     val oneFileOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename)
@@ -58,6 +55,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, Exp
     override fun inject(fragment: ExplorerFragment) {
         super.inject(fragment)
         component.inject(this)
+        component.inject(fragment)
     }
 
     fun onChanged(items: List<XFile>) {

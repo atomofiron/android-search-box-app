@@ -7,11 +7,9 @@ import app.atomofiron.common.util.KObservable
 import app.atomofiron.common.util.property.MutableWeakProperty
 import kotlinx.coroutines.CoroutineScope
 import ru.atomofiron.regextool.log2
-import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
 
 abstract class BaseViewModel<D, F : Fragment>(app: Application) : AndroidViewModel(app) {
     protected abstract val scope: CoroutineScope
-    protected abstract val presenter: ExplorerPresenter
     protected abstract val component: D
 
     protected val fragmentProperty = MutableWeakProperty<F>()

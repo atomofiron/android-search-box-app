@@ -20,6 +20,7 @@ import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate
 import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
+import javax.inject.Inject
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     override val viewModelClass = ExplorerViewModel::class
@@ -36,7 +37,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
 
-    override val presenter: ExplorerPresenter get() = viewModel.presenter
+    @Inject
+    override lateinit var presenter: ExplorerPresenter
 
     override fun inject() = viewModel.inject(this)
 

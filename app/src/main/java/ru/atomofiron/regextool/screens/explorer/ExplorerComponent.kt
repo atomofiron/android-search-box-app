@@ -44,6 +44,8 @@ interface ExplorerComponent {
     }
 
     fun inject(target: ExplorerViewModel)
+
+    fun inject(target: ExplorerFragment)
 }
 
 @Module
