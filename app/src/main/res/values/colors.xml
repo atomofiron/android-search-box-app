@@ -8,8 +8,6 @@
 	<color name="colorAccentDark">#ff046865</color>
 	<color name="colorRippleDark">#7f043835</color>
 
-	<color name="ic_launcher_background">@color/colorPrimaryDark</color>
-
 	<color name="windowBackgroundWhite">#ffffffff</color>
 	<color name="windowBackgroundDarkLight">#ff222222</color>
 	<color name="windowBackgroundDark">#ff111111</color>
@@ -38,4 +36,7 @@
 	<color name="spanBlue">#5f4f60c0</color>
 	<color name="spanGreen">@color/colorPrimaryDark</color>
 	<color name="item_explorer_background">#20a0a0a0</color>
+
+	<color name="ic_launcher_background">@color/white</color>
+	<color name="ic_launcher_foreground">#30a0a0a0</color>
 </resources>
