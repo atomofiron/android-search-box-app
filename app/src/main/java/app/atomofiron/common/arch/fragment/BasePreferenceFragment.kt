@@ -37,8 +37,7 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
         log2("init")
     }
 
-    final override fun onCreate(savedInstanceState: Bundle?) {
-        super<PreferenceFragmentCompat>.onCreate(savedInstanceState)
+    final override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         viewModel = ViewModelProvider(requireActivity()).get(viewModelClass.java)
         delegate.onCreate(this)
     }

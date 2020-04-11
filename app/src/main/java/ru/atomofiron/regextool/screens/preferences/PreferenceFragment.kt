@@ -52,8 +52,6 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         return viewGroup
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) = Unit
-
     override fun onCreateAdapter(preferenceScreen: PreferenceScreen): RecyclerView.Adapter<*> {
         preferenceDelegate.onUpdateScreen(preferenceScreen)
         return super.onCreateAdapter(preferenceScreen)
@@ -65,11 +63,14 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         exportImportDelegate.bottomSheetView = bottomSheetView.view
         explorerItemDelegate.bottomSheetView = bottomSheetView.view
         joystickDelegate.bottomSheetView = bottomSheetView.view
+    }
 
-        val recyclerView = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
+    override fun onCreateRecyclerView(inflater: LayoutInflater?, parent: ViewGroup?, savedInstanceState: Bundle?): RecyclerView {
+        val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         recyclerView.clipToPadding = false
         val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)
         recyclerView.setPadding(recyclerView.paddingLeft, recyclerView.paddingTop, recyclerView.paddingRight, padding)
+        return recyclerView
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
