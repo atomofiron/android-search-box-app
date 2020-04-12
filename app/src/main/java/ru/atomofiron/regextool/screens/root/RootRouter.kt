@@ -1,6 +1,8 @@
 package ru.atomofiron.regextool.screens.root
 
 import app.atomofiron.common.arch.BaseRouter
+import app.atomofiron.common.arch.fragment.BaseFragment
+import app.atomofiron.common.arch.fragment.BasePreferenceFragment
 import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
@@ -25,10 +27,11 @@ class RootRouter(activity: WeakProperty<RootActivity>) : BaseRouter(activityProp
     fun reattachFragments() {
         manager {
             val transaction = beginTransaction()
-            fragments.forEach {
-                transaction.detach(it)
-                transaction.attach(it)
-            }
+            fragments.filter{ it is BaseFragment<*,*> || it is BasePreferenceFragment<*, *> }
+                    .forEach {
+                        transaction.detach(it)
+                        transaction.attach(it)
+                    }
             transaction.commit()
         }
     }

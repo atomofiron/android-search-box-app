@@ -10,14 +10,16 @@ class SnackbarWrapper(
         private val factory: () -> Snackbar
 ) {
     private var snackbar: Snackbar? = null
+    private var isDark = false
 
     fun show() {
         if (snackbar == null) {
             snackbar = factory()
+            isDark = context.findBooleanByAttr(R.attr.isDarkTheme)
         } else {
-            val isDark = snackbar!!.context.findBooleanByAttr(R.attr.isDarkTheme)
-            val isDarkNow = context.findBooleanByAttr(R.attr.isDarkTheme)
-            if (isDark xor isDarkNow) {
+            val isDark = context.findBooleanByAttr(R.attr.isDarkTheme)
+            if (this.isDark xor isDark) {
+                this.isDark = isDark
                 snackbar = factory()
             }
         }
