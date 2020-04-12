@@ -68,8 +68,8 @@ class ExplorerModule {
                      explorerStore: ExplorerStore,
                      explorerInteractor: ExplorerInteractor): BottomSheetMenuListenerDelegate {
         return BottomSheetMenuListenerDelegate(viewModel, explorerStore, explorerInteractor)
-
     }
+
     @Provides
     @ExplorerScope
     fun presenter(viewModel: ExplorerViewModel,
@@ -81,9 +81,8 @@ class ExplorerModule {
                   itemListener: ExplorerItemActionListenerDelegate,
                   placesListener: PlacesActionListenerDelegate,
                   menuListener: BottomSheetMenuListenerDelegate): ExplorerPresenter {
-        return ExplorerPresenter(
-                viewModel, scope, router, explorerStore, settingsStore, explorerInteractor,
-                itemListener, placesListener, menuListener)
+        return ExplorerPresenter(viewModel, scope, router, explorerStore, settingsStore,
+                explorerInteractor, itemListener, placesListener, menuListener)
     }
 
     @Provides

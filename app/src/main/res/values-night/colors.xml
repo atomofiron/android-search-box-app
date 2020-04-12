@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<color name="windowBackgroundThemed">@android:color/background_dark</color>
-	<color name="ic_launcher_background">@color/black</color>
 </resources>
