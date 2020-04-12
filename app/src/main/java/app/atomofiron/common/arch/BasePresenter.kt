@@ -11,11 +11,11 @@ import ru.atomofiron.regextool.log2
 
 abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         protected val viewModel: M,
+        protected val router: R,
         private val coroutineScope: CoroutineScope? = null,
         private val permissionResultListener: PermissionResultListener? = null
 ) : PermissionResultListener {
     protected val context: Context get() = viewModel.getApplication<App>().applicationContext
-    protected abstract val router: R
     protected val scope: CoroutineScope get() = coroutineScope!!
 
     protected val onClearedCallback = viewModel.onClearedCallback
@@ -26,7 +26,7 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         viewModel.onClearedCallback.addOneTimeObserver(::onCleared)
     }
 
-    fun onCreate(context: Context, intent: Intent) = Unit
+    open fun onCreate(context: Context, intent: Intent) = Unit
 
     open fun onSubscribeData() = Unit
 

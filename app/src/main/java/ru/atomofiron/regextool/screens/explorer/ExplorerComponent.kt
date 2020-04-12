@@ -17,7 +17,6 @@ import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.SettingsStore
 import ru.atomofiron.regextool.screens.explorer.presenter.BottomSheetMenuListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerItemActionListenerDelegate
-import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
 import ru.atomofiron.regextool.screens.explorer.presenter.PlacesActionListenerDelegate
 import javax.inject.Scope
 

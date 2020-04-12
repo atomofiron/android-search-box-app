@@ -21,7 +21,7 @@ interface IView<P : BasePresenter<*,*>> : LifecycleOwner, Backable {
     val thisContext: Context
     val thisActivity: AppCompatActivity
 
-    val intent: Intent
+    val mIntent: Intent
 
     fun isVisible(): Boolean
 

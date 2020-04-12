@@ -11,11 +11,11 @@ import ru.atomofiron.regextool.screens.preferences.presenter.PreferenceUpdatePre
 
 class PreferencePresenter(
         viewModel: PreferenceViewModel,
-        override val router: PreferenceRouter,
+        router: PreferenceRouter,
         joystickDelegate: JoystickPresenterDelegate,
         exportImportDelegate: ExportImportPresenterDelegate,
         preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate
-) : BasePresenter<PreferenceViewModel, PreferenceRouter>(viewModel),
+) : BasePresenter<PreferenceViewModel, PreferenceRouter>(viewModel, router),
         JoystickFragmentDelegate.JoystickPreferenceOutput by joystickDelegate,
         ExportImportFragmentDelegate.ExportImportOutput by exportImportDelegate,
         PreferenceUpdateOutput by preferenceUpdateDelegate

@@ -31,7 +31,7 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
     protected val anchorView: View get() = thisActivity.findViewById(R.id.root_iv_joystick)
 
     private val delegate = ViewDelegate<P>()
-    override val intent: Intent get() = Intent().putExtras(arguments ?: Bundle())
+    override val mIntent: Intent get() = Intent().putExtras(arguments ?: Bundle())
 
     init {
         log2("init")

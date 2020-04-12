@@ -23,19 +23,17 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceComponent,
     val explorerItemComposition: ExplorerItemComposition get() = settingsStore.explorerItemComposition.entity
     val joystickComposition: JoystickComposition get() = settingsStore.joystickComposition.entity
 
-    override val component: PreferenceComponent by lazy(LazyThreadSafetyMode.NONE) {
-        DaggerPreferenceComponent
-                .builder()
-                .viewModel(this)
-                .fragment(fragmentProperty)
-                .dependencies(DaggerInjector.appComponent)
-                .build()
-    }
+    override val component = DaggerPreferenceComponent
+            .builder()
+            .viewModel(this)
+            .fragment(viewProperty)
+            .dependencies(DaggerInjector.appComponent)
+            .build()
 
-    override fun inject(fragment: PreferenceFragment) {
-        super.inject(fragment)
+    override fun inject(view: PreferenceFragment) {
+        super.inject(view)
         component.inject(this)
-        component.inject(fragment)
+        component.inject(view)
     }
 
     fun getCurrentValue(key: String): Any? = settingsStore.getCurrentValue(key)

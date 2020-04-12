@@ -1,14 +1,15 @@
 package ru.atomofiron.regextool.screens.root
 
-import app.atomofiron.common.base.BaseRouter
+import app.atomofiron.common.arch.BaseRouter
+import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.finder.FinderFragment
 
-class RootRouter : BaseRouter() {
+class RootRouter(activity: WeakProperty<RootActivity>) : BaseRouter(activityProperty = activity) {
     override var fragmentContainerId: Int = R.id.root_fl
 
-    fun showMain() {
+    fun showMainIfEmpty() {
         val fragmentsDoNotAdded = manager {
             fragments.isEmpty()
         }

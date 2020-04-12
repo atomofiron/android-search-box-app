@@ -13,7 +13,6 @@ import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
-import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerPresenter
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.screens.explorer.sheet.CreateDelegate
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate

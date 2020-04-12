@@ -44,19 +44,17 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, Exp
     val notifyRemoveRange = SingleLiveEvent<List<XFile>>()
     val notifyInsertRange = SingleLiveEvent<Pair<XFile, List<XFile>>>()
 
-    override val component: ExplorerComponent by lazy(LazyThreadSafetyMode.NONE) {
-        DaggerExplorerComponent
-                .builder()
-                .fragment(fragmentProperty)
-                .viewModel(this)
-                .dependencies(DaggerInjector.appComponent)
-                .build()
-    }
+    override val component = DaggerExplorerComponent
+            .builder()
+            .fragment(viewProperty)
+            .viewModel(this)
+            .dependencies(DaggerInjector.appComponent)
+            .build()
 
-    override fun inject(fragment: ExplorerFragment) {
-        super.inject(fragment)
+    override fun inject(view: ExplorerFragment) {
+        super.inject(view)
         component.inject(this)
-        component.inject(fragment)
+        component.inject(view)
     }
 
     fun onChanged(items: List<XFile>) {

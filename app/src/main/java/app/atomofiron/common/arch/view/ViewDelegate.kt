@@ -32,7 +32,7 @@ class ViewDelegate<P : BasePresenter<*,*>> {
     fun onCreate(view: IView<P>) {
         this.view = view
         view.inject()
-        presenter.onCreate(thisContext, view.intent)
+        presenter.onCreate(thisContext, view.mIntent)
         view.onCreate()
         view.onSubscribeData(view)
     }

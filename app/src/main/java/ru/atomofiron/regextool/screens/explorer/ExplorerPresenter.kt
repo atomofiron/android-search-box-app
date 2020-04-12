@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.screens.explorer.presenter
+package ru.atomofiron.regextool.screens.explorer
 
 import app.atomofiron.common.arch.BasePresenter
 import kotlinx.coroutines.CoroutineScope
@@ -7,25 +7,26 @@ import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.SettingsStore
-import ru.atomofiron.regextool.screens.explorer.ExplorerRouter
-import ru.atomofiron.regextool.screens.explorer.ExplorerViewModel
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
+import ru.atomofiron.regextool.screens.explorer.presenter.BottomSheetMenuListenerDelegate
+import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerItemActionListenerDelegate
+import ru.atomofiron.regextool.screens.explorer.presenter.PlacesActionListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuListener
 
 class ExplorerPresenter(
         viewModel: ExplorerViewModel,
         scope: CoroutineScope,
-        override val router: ExplorerRouter,
+        router: ExplorerRouter,
         private val explorerStore: ExplorerStore,
         private val settingsStore: SettingsStore,
         private val explorerInteractor: ExplorerInteractor,
         itemListener: ExplorerItemActionListenerDelegate,
         placesListener: PlacesActionListenerDelegate,
         menuListener: BottomSheetMenuListenerDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, scope, itemListener.permissions),
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router, scope, itemListener.permissions),
         ExplorerItemActionListener by itemListener,
         PlacesAdapter.ItemActionListener by placesListener,
         BottomSheetMenuListener by menuListener {
