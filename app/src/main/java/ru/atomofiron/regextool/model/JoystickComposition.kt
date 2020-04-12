@@ -24,15 +24,17 @@ data class JoystickComposition(
             flags % BYTE
     )
 
-    val data: Int get() {
-        var flags = red * BYTE * BYTE + green * BYTE + blue
+    val data: Int
+
+    init {
+        var data = red * BYTE * BYTE + green * BYTE + blue
         if (invForDark) {
-            flags += INV_FOR_DARK_MASK
+            data += INV_FOR_DARK_MASK
         }
         if (invGlowing) {
-            flags += INV_GLOWING_MASK
+            data += INV_GLOWING_MASK
         }
-        return flags
+        this.data = data
     }
 
     fun color(isDark: Boolean): Int = when (isDark && invForDark) {
@@ -43,5 +45,16 @@ data class JoystickComposition(
     fun glow(isDark: Boolean): Int = when ((isDark && invForDark) xor invGlowing) {
         true -> Color.argb(FF, FF - red, FF - green, FF - blue)
         else -> Color.argb(FF, red, green, blue)
+    }
+
+    fun text(): String {
+        val builder = StringBuilder("#")
+        val color = red * BYTE * BYTE + green * BYTE + blue
+        val hex = Integer.toHexString(color)
+        for (i in 0..(5 - hex.length)) {
+            builder.append("0")
+        }
+        builder.append(hex)
+        return builder.toString()
     }
 }

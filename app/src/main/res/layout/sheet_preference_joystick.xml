@@ -5,6 +5,17 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/preference_joystick_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/bottom_sheet_title_margin"
+        android:textSize="@dimen/bottom_sheet_title_size"
+        android:textColor="?attr/colorContent"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        />
+
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/preference_sb_red"
         android:layout_width="match_parent"

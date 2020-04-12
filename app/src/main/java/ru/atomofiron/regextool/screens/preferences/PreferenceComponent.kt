@@ -25,9 +25,9 @@ interface PreferenceComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun viewModel(viewModel: PreferenceViewModel): Builder
+        fun bind(viewModel: PreferenceViewModel): Builder
         @BindsInstance
-        fun fragment(fragment: WeakProperty<PreferenceFragment>): Builder
+        fun bind(fragment: WeakProperty<PreferenceFragment>): Builder
         fun dependencies(dependencies: PreferenceDependencies): Builder
         fun build(): PreferenceComponent
     }

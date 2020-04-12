@@ -9,7 +9,7 @@ import ru.atomofiron.regextool.screens.finder.model.FinderItemType
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderStateItem>() {
-    lateinit var onFinderActionListener: OnActionListener
+    lateinit var output: FinderAdapterOutput
 
     init {
         setHasStableIds(true)
@@ -17,12 +17,12 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): GeneralHolder<FinderStateItem> {
         return when (viewType) {
-            FinderItemType.FIND.id -> FieldHolder(parent, viewType, onFinderActionListener)
-            FinderItemType.CHARACTERS.id -> CharactersHolder(parent, viewType, onFinderActionListener)
-            FinderItemType.CONFIGS.id -> ConfigHolder(parent, viewType, onFinderActionListener)
+            FinderItemType.FIND.id -> FieldHolder(parent, viewType, output)
+            FinderItemType.CHARACTERS.id -> CharactersHolder(parent, viewType, output)
+            FinderItemType.CONFIGS.id -> ConfigHolder(parent, viewType, output)
             FinderItemType.TEST.id -> TestHolder(parent, viewType)
-            FinderItemType.PROGRESS.id -> ProgressHolder(parent, viewType, onFinderActionListener)
-            FinderItemType.TARGET.id -> TargetHolder(parent, viewType, onFinderActionListener)
+            FinderItemType.PROGRESS.id -> ProgressHolder(parent, viewType, output)
+            FinderItemType.TARGET.id -> TargetHolder(parent, viewType, output)
             else -> throw IllegalArgumentException("viewType = $viewType")
         }
     }
@@ -30,11 +30,4 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
     override fun getItemId(position: Int): Long = items[position].stableId
 
     override fun getItemViewType(position: Int): Int = items[position].layoutId
-
-    interface OnActionListener :
-            FieldHolder.OnActionListener,
-            CharactersHolder.OnActionListener,
-            ConfigHolder.OnActionListener,
-            ProgressHolder.OnActionListener,
-            TargetHolder.OnActionListener
 }

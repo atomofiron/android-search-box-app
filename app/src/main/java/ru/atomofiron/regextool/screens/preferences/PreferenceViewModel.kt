@@ -25,8 +25,8 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceComponent,
 
     override val component = DaggerPreferenceComponent
             .builder()
-            .viewModel(this)
-            .fragment(viewProperty)
+            .bind(this)
+            .bind(viewProperty)
             .dependencies(DaggerInjector.appComponent)
             .build()
 

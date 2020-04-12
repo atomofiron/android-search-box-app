@@ -46,8 +46,8 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, Exp
 
     override val component = DaggerExplorerComponent
             .builder()
-            .fragment(viewProperty)
-            .viewModel(this)
+            .bind(viewProperty)
+            .bind(this)
             .dependencies(DaggerInjector.appComponent)
             .build()
 

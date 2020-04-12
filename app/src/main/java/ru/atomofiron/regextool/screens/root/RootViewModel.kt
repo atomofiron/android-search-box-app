@@ -22,8 +22,8 @@ class RootViewModel(app: Application) : BaseViewModel<RootComponent, RootActivit
 
     override val component = DaggerRootComponent
             .builder()
-            .viewModel(this)
-            .activity(viewProperty)
+            .bind(this)
+            .bind(viewProperty)
             .dependencies(DaggerInjector.appComponent)
             .build()
 

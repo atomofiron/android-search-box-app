@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.SeekBar
+import android.widget.TextView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
@@ -13,6 +14,7 @@ class JoystickFragmentDelegate(
         private val joystickPreferenceOutput: JoystickPreferenceOutput
 ) : BottomSheetDelegate(R.layout.sheet_preference_joystick) {
 
+    private val tvTitle: TextView get() = bottomSheetView.findViewById(R.id.preference_joystick_tv_title)
     private val sbRed: SeekBar get() = bottomSheetView.findViewById(R.id.preference_sb_red)
     private val sbGreen: SeekBar get() = bottomSheetView.findViewById(R.id.preference_sb_green)
     private val sbBlue: SeekBar get() = bottomSheetView.findViewById(R.id.preference_sb_blue)
@@ -24,6 +26,8 @@ class JoystickFragmentDelegate(
     public override fun show() = super.show()
 
     override fun onViewReady() {
+        tvTitle.text = entity.text()
+
         sbRed.setOnSeekBarChangeListener(listener)
         sbGreen.setOnSeekBarChangeListener(listener)
         sbBlue.setOnSeekBarChangeListener(listener)
@@ -45,6 +49,7 @@ class JoystickFragmentDelegate(
                 R.id.preference_sb_blue -> entity.copy(blue = progress)
                 else -> throw Exception()
             }
+            tvTitle.text = entity.text()
             joystickPreferenceOutput.notify(entity)
         }
 

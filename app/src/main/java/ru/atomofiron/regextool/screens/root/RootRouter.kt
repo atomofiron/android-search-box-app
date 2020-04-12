@@ -8,7 +8,7 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.finder.FinderFragment
 
-class RootRouter(activity: WeakProperty<RootActivity>) : BaseRouter(activityProperty = activity) {
+class RootRouter(activity: WeakProperty<RootActivity>) : BaseRouter(activity) {
     override var fragmentContainerId: Int = R.id.root_fl
 
     fun showMainIfEmpty() {

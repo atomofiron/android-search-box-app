@@ -20,9 +20,9 @@ interface RootComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun viewModel(viewModel: RootViewModel): Builder
+        fun bind(viewModel: RootViewModel): Builder
         @BindsInstance
-        fun activity(activity: WeakProperty<RootActivity>): Builder
+        fun bind(activity: WeakProperty<RootActivity>): Builder
         fun dependencies(dependencies: RootDependencies): Builder
         fun build(): RootComponent
     }

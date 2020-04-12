@@ -9,22 +9,25 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.base.BaseFragment
+import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.screens.finder.adapter.FinderActionListenerDelegate
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
 import ru.atomofiron.regextool.view.custom.BottomMenuBar
 import ru.atomofiron.regextool.view.custom.VerticalDockView
+import javax.inject.Inject
 import kotlin.reflect.KClass
 
-class FinderFragment : BaseFragment<FinderViewModel>() {
+class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
     override val viewModelClass: KClass<FinderViewModel> = FinderViewModel::class
     override val layoutId: Int = R.layout.fragment_finder
+
+    @Inject
+    override lateinit var presenter: FinderPresenter
 
     private val rvContent = Knife<RecyclerView>(this, R.id.finder_rv)
     private val bottomOptionMenu = Knife<BottomMenuBar>(this, R.id.finder_bom)
@@ -35,12 +38,14 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     private val historyAdapter: HistoryAdapter = HistoryAdapter(object : HistoryAdapter.OnItemClickListener {
         override fun onItemClick(node: String) {
             dockView { close() }
-            viewModel.onHistoryItemClick(node)
+            presenter.onHistoryItemClick(node)
         }
     })
 
+    override fun inject() = viewModel.inject(this)
+
     override fun onCreate() {
-        finderAdapter.onFinderActionListener = FinderActionListenerDelegate(viewModel, historyAdapter)
+        finderAdapter.output = presenter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,16 +63,16 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
             setOnMenuItemClickListener { id ->
                 when (id) {
                     R.id.menu_history -> dockView { open() }
-                    R.id.menu_explorer -> viewModel.onExplorerOptionSelected()
-                    R.id.menu_options -> viewModel.onConfigOptionSelected()
-                    R.id.menu_settings -> viewModel.onSettingsOptionSelected()
+                    R.id.menu_explorer -> presenter.onExplorerOptionSelected()
+                    R.id.menu_options -> presenter.onConfigOptionSelected()
+                    R.id.menu_settings -> presenter.onSettingsOptionSelected()
                 }
             }
         }
 
         dockView {
             recyclerView.adapter = historyAdapter
-            onGravityChangeListener = viewModel::onDockGravityChange
+            onGravityChangeListener = presenter::onDockGravityChange
         }
     }
 
@@ -95,6 +100,7 @@ class FinderFragment : BaseFragment<FinderViewModel>() {
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
         viewModel.reloadHistory.observeEvent(owner, historyAdapter::reload)
+        viewModel.history.observeData(owner, historyAdapter::add)
         viewModel.insertInQuery.observeData(owner, ::insertInQuery)
         viewModel.state.observe(owner, Observer(::onStateChange))
         viewModel.updateContent.observeData(owner, ::onContentUpdate)

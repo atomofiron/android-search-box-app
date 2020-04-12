@@ -9,10 +9,10 @@
         android:id="@+id/explorer_menu_tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="20sp"
         android:layout_marginStart="@dimen/bottom_sheet_title_margin"
+        android:textSize="@dimen/bottom_sheet_title_size"
         android:textColor="?attr/colorContent"
+        android:textStyle="bold"
         />
     <include
         android:id="@+id/explorer_menu_item"

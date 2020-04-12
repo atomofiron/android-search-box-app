@@ -31,9 +31,9 @@ interface ExplorerComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun viewModel(viewModel: ExplorerViewModel): Builder
+        fun bind(viewModel: ExplorerViewModel): Builder
         @BindsInstance
-        fun fragment(fragment: WeakProperty<ExplorerFragment>): Builder
+        fun bind(fragment: WeakProperty<ExplorerFragment>): Builder
         fun dependencies(dependencies: ExplorerDependencies): Builder
         fun build(): ExplorerComponent
     }
