@@ -12,14 +12,14 @@ class SnackbarCallbackFragmentDelegate(
     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) = output.onDismissed()
 
     interface SnackbarCallbackOutput {
-        var exitSnackbarIsShown: Boolean
+        var isExitSnackbarShown: Boolean
 
         fun onShown() {
-            exitSnackbarIsShown = true
+            isExitSnackbarShown = true
         }
 
         fun onDismissed() {
-            exitSnackbarIsShown = false
+            isExitSnackbarShown = false
         }
     }
 }

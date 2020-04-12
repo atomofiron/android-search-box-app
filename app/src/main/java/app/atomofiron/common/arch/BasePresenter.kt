@@ -39,8 +39,6 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
 
     fun onAttachChildFragment(childFragment: Fragment) = router.onAttachChildFragment(childFragment)
 
-    open fun onBackButtonClick(): Boolean = router.onBack()
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         permissionResultListener?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }

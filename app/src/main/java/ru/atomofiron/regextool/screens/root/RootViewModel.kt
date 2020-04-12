@@ -18,7 +18,6 @@ class RootViewModel(app: Application) : BaseViewModel<RootComponent, RootActivit
     val setOrientation = SingleLiveEvent<AppOrientation>()
     val setJoystick = LateinitLiveData<JoystickComposition>()
     val tasks = MutableLiveData<List<XTask>>()
-    var sbExitIsShown: Boolean = false
 
     override val component = DaggerRootComponent
             .builder()

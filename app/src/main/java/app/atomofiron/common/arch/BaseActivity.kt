@@ -41,10 +41,6 @@ abstract class BaseActivity<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Ap
         delegate.onStart()
     }
 
-    override fun onBackPressed() {
-        presenter.onBackButtonClick()
-    }
-
     override fun onAttachFragment(childFragment: Fragment) {
         super.onAttachFragment(childFragment)
         delegate.onAttachChildFragment(childFragment)

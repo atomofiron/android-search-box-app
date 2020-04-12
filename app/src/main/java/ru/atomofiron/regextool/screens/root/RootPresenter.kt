@@ -14,7 +14,7 @@ class RootPresenter(
 ) : BasePresenter<RootViewModel, RootRouter>(viewModel, router),
         SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput
 {
-    override var exitSnackbarIsShown: Boolean = false
+    override var isExitSnackbarShown: Boolean = false
 
     init {
         router.showMainIfEmpty()
@@ -41,12 +41,11 @@ class RootPresenter(
 
     fun onExitClick() = router.closeApp()
 
-    override fun onBackButtonClick(): Boolean {
+    fun onBackButtonClick() {
         when {
-            super.onBackButtonClick() -> Unit
-            viewModel.sbExitIsShown -> router.closeApp()
+            router.onBack() -> Unit
+            isExitSnackbarShown -> router.closeApp()
             else -> viewModel.showExitSnackbar()
         }
-        return true
     }
 }

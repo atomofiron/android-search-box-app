@@ -156,28 +156,4 @@ abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
                     .commit()
         }
     }
-
-    fun onBack(): Boolean {
-        return manager {
-            val lastVisible = fragments
-                    .filter { it is Backable }
-                    .findLast { !it.isHidden }
-            when {
-                (lastVisible as Backable?)?.onBack() == true -> true
-                backStackEntryCount > 0 -> {
-                    popBackStack()
-                    true
-                }
-                fragments.size > 1 && fragments[0] != lastVisible -> {
-                    beginTransaction().apply {
-                        hide(lastVisible!!)
-                        show(fragments[fragments.indexOf(lastVisible).dec()])
-                        commit()
-                    }
-                    true
-                }
-                else -> false
-            }
-        }
-    }
 }

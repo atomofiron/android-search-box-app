@@ -73,6 +73,8 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
         viewModel.setJoystick.observe(owner, Observer { joystick { setComposition(it) } })
     }
 
+    override fun onBackPressed() = presenter.onBackButtonClick()
+
     private fun setOrientation(orientation: AppOrientation) {
         if (requestedOrientation != orientation.constant) {
             requestedOrientation = orientation.constant
