@@ -6,13 +6,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import app.atomofiron.common.base.BaseActivity
 import app.atomofiron.common.util.Knife
-import app.atomofiron.common.util.LazyReincarnation
 import app.atomofiron.common.util.findColorByAttr
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.root.util.ExitSnackbarCallback
+import ru.atomofiron.regextool.screens.root.util.SnackbarWrapper
 import ru.atomofiron.regextool.view.custom.Joystick
 import kotlin.reflect.KClass
 
@@ -23,7 +23,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
     private val root = Knife<ConstraintLayout>(this, R.id.root_cl_root)
     private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
 
-    private val sbExit: LazyReincarnation<Snackbar> = LazyReincarnation {
+    private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(joystick.view, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
                 .setAnchorView(joystick.view)
                 .setActionTextColor(this@RootActivity.findColorByAttr(R.attr.colorAccent))
@@ -48,7 +48,7 @@ open class RootActivity : BaseActivity<RootViewModel>() {
         }
 
         viewModel.showExitSnackbar.observeEvent(this) {
-            sbExit { show() }
+            sbExit.show()
         }
 
         setOrientation(viewModel.setOrientation.data!!)
@@ -56,7 +56,6 @@ open class RootActivity : BaseActivity<RootViewModel>() {
 
     override fun setTheme(resId: Int) {
         super.setTheme(resId)
-        sbExit.wipe()
         root {
             setBackgroundColor(findColorByAttr(R.attr.colorBackground))
         }

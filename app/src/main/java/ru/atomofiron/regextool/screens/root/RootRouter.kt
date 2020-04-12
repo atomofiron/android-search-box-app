@@ -1,8 +1,7 @@
 package ru.atomofiron.regextool.screens.root
 
-import ru.atomofiron.regextool.R
-import app.atomofiron.common.base.BaseFragment
 import app.atomofiron.common.base.BaseRouter
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.finder.FinderFragment
 
@@ -25,12 +24,10 @@ class RootRouter : BaseRouter() {
     fun reattachFragments() {
         manager {
             val transaction = beginTransaction()
-            fragments
-                    .filterIsInstance<BaseFragment<*>>()
-                    .forEach {
-                        transaction.detach(it)
-                        transaction.attach(it)
-                    }
+            fragments.forEach {
+                transaction.detach(it)
+                transaction.attach(it)
+            }
             transaction.commit()
         }
     }
