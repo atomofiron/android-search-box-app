@@ -2,7 +2,6 @@ package ru.atomofiron.regextool.injectable.service.explorer
 
 import android.content.SharedPreferences
 import android.content.res.AssetManager
-import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
@@ -24,139 +23,50 @@ class ExplorerService constructor(
     suspend fun setRoots(vararg path: String) {
         val roots = path.map { MutableXFile.byPath(it) }
         log2("setRoots ${roots.size}")
-
-        mutex.withLock {
-            removeExtraRoots(roots.map { it.root })
-            mergeRoots(roots)
-        }
-
-        explorerStore.notifyItems()
-        roots.filter { !it.isOpened }.forEach { updateClosedDir(it) }
-    }
-
-    // withLock
-    private fun removeExtraRoots(roots: List<Int>) {
-        val it = files.iterator()
-        while (it.hasNext()) {
-            if (!roots.contains(it.next().root)) {
-                it.remove()
-            }
-        }
-    }
-
-    // withLock
-    private fun mergeRoots(roots: List<MutableXFile>) {
-        if (files.isEmpty()) {
-            log2("mergeRoots just add ${roots.size}")
-            files.addAll(roots)
-        }
-        var i = -1
-        val itRoot = roots.iterator()
-        var nextRootItem = itRoot.next()
-        loop@ while (++i < files.size) {
-            val root = files[i].root
-            when {
-                root != nextRootItem.root -> {
-                    log2("mergeRoots add $nextRootItem")
-                    files.add(i, nextRootItem)
-                    if (itRoot.hasNext()) {
-                        nextRootItem = itRoot.next()
-                    }
-                }
-                !itRoot.hasNext() -> {
-                    log2("mergeRoots roots merged ${roots.size}")
-                    break@loop
-                }
-                i.inc() != files.size -> nextRootItem = itRoot.next()
-                else -> while (itRoot.hasNext()) {
-                    log2("mergeRoots finally add $nextRootItem")
-                    files.add(itRoot.next())
-                }
-            }
-        }
+        super.setRoots(roots)
     }
 
     fun invalidateDir(dir: XFile) {
-        val item = findItem(dir) ?: return
-        invalidateDir(item)
+        val item = findItem(dir)
+        item ?: return log2("invalidateDir $item")
+        super.invalidateDir(item)
     }
 
-    suspend fun openDir(d: XFile) {
-        val dir = findItem(d) ?: return
-        if (!dir.isDirectory) {
-            log2("openDir return $dir")
-            return
-        }
-        if (!dir.isCached) {
-            return updateClosedDir(dir)
-        }
-        when {
-            dir == currentOpenedDir -> closeDir(dir)
-            dir.isOpened -> reopenDir(dir)
-            else -> openDir(dir)
-        }
+    suspend fun open(it: XFile) {
+        val item = findItem(it)
+        item ?: return log2("open $item")
+        super.open(item)
     }
 
     suspend fun openParent() {
-        val dir = currentOpenedDir ?: return
-        log2("openParent $dir")
-        closeDir(dir)
+        val dir = currentOpenedDir
+        dir ?: return log2("openParent $dir")
+        super.closeDir(dir)
     }
 
-    override suspend fun updateItem(it: XFile) {
-        val file = findItem(it) ?: return
-        log2("updateItem $file")
-        when {
-            file.isOpened && file == currentOpenedDir -> updateCurrentDir(file)
-            file.isOpened -> Unit
-            file.isDirectory -> updateClosedDir(file)
-            else -> return updateFile(file)
-        }
+    suspend fun updateItem(it: XFile) {
+        val item = findItem(it)
+        item ?: return log2("updateItem $item")
+        super.updateItem(item)
     }
 
     fun checkItem(it: XFile, isChecked: Boolean) {
-        val item = findItem(it) ?: return
-        log2("checkItem $isChecked $it")
-        item.isChecked = isChecked
-
-        val dirFiles = item.files ?: arrayListOf()
-        val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
-        when {
-            item.isRoot && item.isChecked -> {
-                if (item.isOpened && !uncheckAllChildren(item)) {
-                    checkChildren(item)
-                }
-                item.isChecked = false
-                explorerStore.notifyUpdate(item)
-            }
-            isNotEmptyOpenedDir && !item.isChecked -> {
-                checkChildren(item)
-                checked.remove(item)
-            }
-            isNotEmptyOpenedDir && item.isChecked -> when {
-                uncheckAllChildren(item) -> {
-                    item.isChecked = false
-                    explorerStore.notifyUpdate(item)
-                }
-                else -> {
-                    uncheckParent(item)
-                    checked.add(item)
-                }
-            }
-            item.isChecked -> {
-                uncheckParent(item)
-                checked.add(item)
-            }
-            !item.isChecked -> checked.remove(item)
-        }
-
-        explorerStore.notifyChecked()
+        val item = findItem(it)
+        item ?: return log2("checkItem $isChecked $item")
+        super.checkItem(item, isChecked)
     }
 
     suspend fun deleteItems(vararg items: XFile) {
+        log2("deleteItems ${items.size}")
         items.forEach {
             val item = findItem(it) ?: return@forEach
-            deleteItem(item)
+            super.deleteItem(item)
         }
+    }
+
+    suspend fun rename(it: XFile, name: String) {
+        val item = findItem(it)
+        item ?: return log2("rename $name $item")
+        super.rename(item, name)
     }
 }

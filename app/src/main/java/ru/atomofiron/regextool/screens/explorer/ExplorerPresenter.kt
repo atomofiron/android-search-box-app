@@ -3,6 +3,7 @@ package ru.atomofiron.regextool.screens.explorer
 import app.atomofiron.common.arch.BasePresenter
 import kotlinx.coroutines.CoroutineScope
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
@@ -14,7 +15,6 @@ import ru.atomofiron.regextool.screens.explorer.presenter.BottomSheetMenuListene
 import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.presenter.PlacesActionListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
-import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 
 class ExplorerPresenter(
         viewModel: ExplorerViewModel,
@@ -85,14 +85,12 @@ class ExplorerPresenter(
         // todo next
     }
 
-    fun onRenameClick(item: XFile, name: String) {
-        // todo next
-    }
+    fun onRenameClick(item: XFile, name: String) = explorerInteractor.rename(item, name)
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 
     fun onVolumeUp() {
-        explorerInteractor.openParent()
         viewModel.scrollToCurrentDir.invoke()
+        explorerInteractor.openParent()
     }
 }

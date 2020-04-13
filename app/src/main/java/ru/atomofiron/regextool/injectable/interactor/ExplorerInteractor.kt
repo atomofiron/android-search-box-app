@@ -1,6 +1,8 @@
 package ru.atomofiron.regextool.injectable.interactor
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 
@@ -24,7 +26,7 @@ class ExplorerInteractor(
 
     fun openDir(dir: XFile) {
         scope.launch(context) {
-            service.openDir(dir)
+            service.open(dir)
             service.persistState()
         }
     }
@@ -46,6 +48,12 @@ class ExplorerInteractor(
     fun deleteItems(vararg file: XFile) {
         scope.launch(context) {
             service.deleteItems(*file)
+        }
+    }
+
+    fun rename(item: XFile, name: String) {
+        scope.launch(context) {
+            service.rename(item, name)
         }
     }
 }

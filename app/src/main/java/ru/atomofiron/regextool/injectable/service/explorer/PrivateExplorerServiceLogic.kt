@@ -21,8 +21,11 @@ abstract class PrivateExplorerServiceLogic constructor(
         protected val explorerStore: ExplorerStore,
         protected val settingsStore: SettingsStore
 ) {
+    companion object {
+        private const val UNKNOWN = -1
+    }
 
-    protected val mutex = Mutex()
+    private val mutex = Mutex()
     protected val files: MutableList<MutableXFile> get() = explorerStore.items
     protected val checked: MutableList<MutableXFile> get() = explorerStore.checked
     protected var currentOpenedDir: MutableXFile? = null
@@ -41,14 +44,70 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
     }
 
+    suspend fun setRoots(roots: List<MutableXFile>) {
+        mutex.withLock {
+            removeExtraRoots(roots.map { it.root })
+            mergeRoots(roots)
+        }
+
+        explorerStore.notifyItems()
+        roots.filter { !it.isOpened }.forEach { updateClosedDir(it) }
+    }
+
+    // withLock
+    private fun removeExtraRoots(roots: List<Int>) {
+        val it = files.iterator()
+        while (it.hasNext()) {
+            val next = it.next()
+            if (!roots.contains(next.root)) {
+                if (next.isRoot) {
+                    log2("removeExtraRoots $next")
+                }
+                it.remove()
+            }
+        }
+    }
+
+    // withLock
+    private fun mergeRoots(roots: List<MutableXFile>) {
+        if (files.isEmpty()) {
+            log2("mergeRoots just add ${roots.size}")
+            files.addAll(roots)
+        }
+        var i = -1
+        val itRoot = roots.iterator()
+        var nextRootItem = itRoot.next()
+        loop@ while (++i < files.size) {
+            val root = files[i].root
+            when {
+                root != nextRootItem.root -> {
+                    log2("mergeRoots add $nextRootItem")
+                    files.add(i, nextRootItem)
+                    if (itRoot.hasNext()) {
+                        nextRootItem = itRoot.next()
+                    }
+                }
+                !itRoot.hasNext() -> {
+                    log2("mergeRoots roots merged ${roots.size}")
+                    break@loop
+                }
+                i.inc() != files.size -> nextRootItem = itRoot.next()
+                else -> while (itRoot.hasNext()) {
+                    log2("mergeRoots finally add $nextRootItem")
+                    files.add(itRoot.next())
+                }
+            }
+        }
+    }
+
     protected fun invalidateDir(dir: MutableXFile) {
         log2("invalidateDir $dir")
         dir.invalidateCache()
     }
 
-    protected fun findItem(f: XFile): MutableXFile? = findItem(f.completedPath, f.root)
+    protected fun findItem(it: XFile): MutableXFile? = findItem(it.completedPath, it.root)
 
-    private fun findParentDir(f: XFile): MutableXFile? = findItem(f.completedParentPath, f.root)
+    private fun findParentDir(it: XFile): MutableXFile? = findItem(it.completedParentPath, it.root)
 
     private fun findItem(completedPath: String, root: Int): MutableXFile? {
         val files = files
@@ -116,9 +175,69 @@ abstract class PrivateExplorerServiceLogic constructor(
         Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
     }
 
-    abstract suspend fun updateItem(it: XFile)
+    protected suspend fun open(item: MutableXFile) {
+        if (!item.isDirectory) {
+            log2("open return !isDirectory $item")
+            return
+        }
+        if (!item.isCached) {
+            log2("open return !isCached $item")
+            return updateClosedDir(item)
+        }
+        log2("open $item")
+        when {
+            item == currentOpenedDir -> closeDir(item)
+            item.isOpened -> reopenDir(item)
+            else -> openDir(item)
+        }
+    }
 
-    protected suspend fun reopenDir(dir: MutableXFile) {
+    protected suspend fun updateItem(item: MutableXFile) = when {
+        item.isOpened && item == currentOpenedDir -> updateCurrentDir(item)
+        item.isOpened -> log2("updateItem return isOpened $item")
+        item.isDirectory -> updateClosedDir(item)
+        else -> updateFile(item)
+    }
+
+    fun checkItem(item: MutableXFile, isChecked: Boolean) {
+        log2("checkItem $isChecked $item")
+        item.isChecked = isChecked
+
+        val dirFiles = item.files ?: arrayListOf()
+        val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
+        when {
+            item.isRoot && item.isChecked -> {
+                if (item.isOpened && !uncheckAllChildren(item)) {
+                    checkChildren(item)
+                }
+                item.isChecked = false
+                explorerStore.notifyUpdate(item)
+            }
+            isNotEmptyOpenedDir && !item.isChecked -> {
+                checkChildren(item)
+                checked.remove(item)
+            }
+            isNotEmptyOpenedDir && item.isChecked -> when {
+                uncheckAllChildren(item) -> {
+                    item.isChecked = false
+                    explorerStore.notifyUpdate(item)
+                }
+                else -> {
+                    uncheckParent(item)
+                    checked.add(item)
+                }
+            }
+            item.isChecked -> {
+                uncheckParent(item)
+                checked.add(item)
+            }
+            !item.isChecked -> checked.remove(item)
+        }
+
+        explorerStore.notifyChecked()
+    }
+
+    private suspend fun reopenDir(dir: MutableXFile) {
         log2("reopenDir $dir")
         if (dir == currentOpenedDir) {
             closeDir(dir)
@@ -138,7 +257,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
     }
 
-    protected suspend fun openDir(dir: MutableXFile) {
+    private suspend fun openDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         log2("openDir $dir")
         val anotherDir = findOpenedDirInParentOf(dir)
@@ -148,8 +267,6 @@ abstract class PrivateExplorerServiceLogic constructor(
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
             explorerStore.notifyUpdate(anotherDir)
-        } else {
-            log2("anotherDir == null $dir")
         }
 
         var anotherRoot = findOpenedAnotherRoot(dir.root)
@@ -180,8 +297,12 @@ abstract class PrivateExplorerServiceLogic constructor(
         updateCurrentDir(dir)
     }
 
-    protected suspend fun closeDir(d: XFile) {
-        val dir = findItem(d) ?: return log2("closeDir not found $d")
+    protected suspend fun closeDir(it: XFile) {
+        val dir = findItem(it)
+        if (dir == null) {
+            log2("closeDir return not found $it")
+            return
+        }
         log2("closeDir $dir")
         val parent = if (dir.isRoot) null else findParentDir(dir)
         mutex.withLock {
@@ -199,7 +320,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
     }
 
-    protected suspend fun updateFile(file: MutableXFile) {
+    private suspend fun updateFile(file: MutableXFile) {
         log2("updateTheFile $file")
         require(!file.isDirectory) { IllegalArgumentException("Is is a directory! $file") }
         when {
@@ -209,25 +330,25 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
     }
 
-    protected suspend fun updateCurrentDir(dir: MutableXFile) {
+    private suspend fun updateCurrentDir(dir: MutableXFile) {
         if (dir != currentOpenedDir) {
-            log2("updateCurrentDir dir != currentOpenedDir $dir")
+            log2("updateCurrentDir return dir != currentOpenedDir $dir")
             return
         }
         if (dir.isDeleting) {
-            log2("updateCurrentDir return $dir")
+            log2("updateCurrentDir return isDeleting $dir")
             return
         }
-        log2("updateCurrentDir $dir")
         val dirFiles = dir.files
         val error = dir.updateCache(useSu)
         if (error != null) {
+            log2("updateCurrentDir return error != null $dir\n$error")
             if (!dir.exists) {
                 closeDir(dir)
             }
-            log2("updateCurrentDir: $error")
             return
         }
+        log2("updateCurrentDir $dir")
         val newFiles = dir.files!!
 
         mutex.withLock {
@@ -236,11 +357,11 @@ abstract class PrivateExplorerServiceLogic constructor(
                 return
             }
             if (!dir.isOpened) {
-                log2("updateCurrentDir !isOpened $dir")
+                log2("updateCurrentDir return !isOpened $dir")
                 return explorerStore.notifyUpdate(dir)
             }
             if (dir != currentOpenedDir) {
-                log2("updateCurrentDir !isCurrentOpenedDir $dir")
+                log2("updateCurrentDir return !isCurrentOpenedDir $dir")
                 return
             }
             if (dirFiles != null) {
@@ -285,7 +406,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
     }
 
-    protected suspend fun updateClosedDir(dir: MutableXFile) {
+    private suspend fun updateClosedDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
         if (dir.isOpened || dir.isDeleting) {
             log2("updateClosedDir return $dir")
@@ -346,7 +467,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         explorerStore.notifyRemove(entity)
     }
 
-    protected fun checkChildren(dir: MutableXFile) {
+    private fun checkChildren(dir: MutableXFile) {
         log2("checkChildren $dir")
         val dirFiles = dir.files!!
         dirFiles.forEach {
@@ -356,7 +477,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         explorerStore.notifyUpdateRange(dirFiles)
     }
 
-    protected fun uncheckAllChildren(dir: MutableXFile): Boolean {
+    private fun uncheckAllChildren(dir: MutableXFile): Boolean {
         log2("uncheckChildren $dir")
         var containedChecked = false
         checked.filter { it.completedParentPath.startsWith(dir.completedPath) }.forEach {
@@ -369,7 +490,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         return containedChecked
     }
 
-    protected fun uncheckParent(item: MutableXFile) {
+    private fun uncheckParent(item: MutableXFile) {
         log2("uncheckParent $item")
         checked.find {
             item.completedParentPath.startsWith(it.completedPath)
@@ -381,6 +502,10 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     protected suspend fun deleteItem(item: MutableXFile) {
+        if (item.isDeleting) {
+            log2("deleteItem return $item")
+            return
+        }
         log2("deleteItem $item")
         if (checked.contains(item)) {
             item.isChecked = false
@@ -388,12 +513,49 @@ abstract class PrivateExplorerServiceLogic constructor(
             explorerStore.notifyChecked()
         }
         explorerStore.notifyUpdate(item)
-        item.delete()
-        explorerStore.notifyUpdate(item)
+        val error = item.delete()
+        if (error != null) {
+            log2("deleteItem error != null $item\n$error")
+        }
         when {
             item.isOpened -> updateCurrentDir(currentOpenedDir!!)
             item.isDirectory -> updateClosedDir(item)
             else -> updateItem(item)
+        }
+    }
+
+    suspend fun rename(item: MutableXFile, name: String) {
+        log2("rename $name $item")
+        val pair = item.rename(name, useSu)
+        val error = pair.first
+        val newItem = pair.second
+        if (error != null) {
+            explorerStore.alerts.setAndNotify(error)
+        }
+        if (newItem != null) {
+            val parent = findParentDir(item)
+            if (parent == null) {
+                log2("rename return no parent $item")
+                return
+            }
+            mutex.withLock {
+                val index = files.indexOf(item)
+                if (index == UNKNOWN) {
+                    log2("rename return -1 $item")
+                    return@withLock
+                }
+                val warning = parent.replace(item, newItem)
+                if (warning != null) {
+                    log2("rename warning != null $item\n$warning")
+                }
+                files.add(index.inc(), newItem)
+                explorerStore.notifyInsert(item, newItem)
+                files.removeAt(index)
+                explorerStore.notifyRemove(item)
+            }
+            if (explorerStore.checked.remove(item)) {
+                explorerStore.notifyChecked()
+            }
         }
     }
 }

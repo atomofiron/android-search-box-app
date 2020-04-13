@@ -11,6 +11,7 @@ class ExplorerStore {
     val store = KObservable<List<XFile>>(items)
     val updates = KObservable<Change>(Change.Nothing, single = true)
     val current = KObservable<XFile?>(null)
+    val alerts = KObservable<String>(single = true)
 
     val checked: MutableList<MutableXFile> = ArrayList()
     val storeChecked = KObservable<List<XFile>>(ArrayList())

@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.injectable.service.explorer.model
 
 import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.util.*
@@ -16,6 +15,8 @@ class MutableXFile : XFile {
         private const val LINK_CHAR = 'l'
         private const val FILE_CHAR = '-'
         private const val NO_SUCH_FILE = "ls: %s: No such file or directory\n"
+
+        private const val UNKNOWN = -1
 
         private val toyboxPath: String by lazy { App.pathToybox }
         private val spaces = Regex(" +")
@@ -93,11 +94,10 @@ class MutableXFile : XFile {
     override var isChecked: Boolean = false
     override var isDeleting: Boolean = false; private set
 
-    @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(
             access: String, owner: String, group: String, size: String, date: String, time: String,
-                name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int)
-    : this(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root as Int?)
+            name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int
+    ) : this(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root as Int?)
 
     private constructor(
             access: String, owner: String, group: String, size: String, date: String, time: String,
@@ -147,6 +147,17 @@ class MutableXFile : XFile {
         isCacheActual = false
     }
 
+    fun replace(item: MutableXFile, with: MutableXFile): String? {
+        val files = files
+        val index = files?.indexOf(item)
+        if (index == null || index == UNKNOWN) {
+            return "Replacing failed. $index $this"
+        }
+        files.removeAt(index)
+        files.add(index, with)
+        return null
+    }
+
     /** @return error or null */
     fun updateCache(su: Boolean): String? {
         dropCaching = false
@@ -162,20 +173,46 @@ class MutableXFile : XFile {
         }
     }
 
-    fun delete(su: Boolean = false): Boolean {
+    fun delete(su: Boolean = false): String? {
         isDeleting = true
+        var error: String? = null
         when {
             isDirectory || su -> {
                 val output = Shell.exec(Shell.RM_RF.format(toyboxPath, completedPath), su)
                 when (output.success) {
                     true -> exists = false
-                    else -> log2("Delete not success. $this\n${output.error}")
+                    else -> error = output.error
                 }
             }
-            else -> exists = !File(completedPath).delete()
+            else -> {
+                val success = File(completedPath).delete()
+                when {
+                    success -> exists = false
+                    else -> error = "Deletion failed. $this"
+                }
+            }
         }
         isDeleting = false
-        return !exists
+        return error
+    }
+
+    fun rename(name: String, su: Boolean = false): Pair<String?, MutableXFile?> {
+        val absolutePath = completedParentPath + name
+        val root = if (isRoot) null else root
+        val item = MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root)
+        item.files = files
+        item.isOpened = isOpened
+        item.isCacheActual = isCacheActual
+        item.isChecked = isChecked
+        val output = Shell.exec(Shell.MV.format(toyboxPath, completedPath, item.completedPath), su)
+        return when {
+            output.success -> {
+                // do not update dir's files
+                item.cacheAsFile()
+                Pair(null, item)
+            }
+            else -> Pair(output.error, null)
+        }
     }
 
     private fun cacheAsDir(su: Boolean = false): String? {
