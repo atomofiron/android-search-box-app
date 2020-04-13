@@ -5,7 +5,7 @@ import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.screens.explorer.ExplorerViewModel
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate
-import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuListener
+import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 
 class BottomSheetMenuListenerDelegate(
         private val viewModel: ExplorerViewModel,

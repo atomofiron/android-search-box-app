@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.preference
 
 import android.content.Context
 import android.content.res.TypedArray

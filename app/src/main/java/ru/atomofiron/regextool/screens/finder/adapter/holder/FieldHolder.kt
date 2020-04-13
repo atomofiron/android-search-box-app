@@ -9,7 +9,7 @@ import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.SearchAndReplaceItem
-import ru.atomofiron.regextool.view.custom.RegexInputField
+import ru.atomofiron.regextool.custom.view.RegexInputField
 import java.util.regex.Pattern
 
 class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionListener) :

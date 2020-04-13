@@ -7,7 +7,7 @@
     android:clipToPadding="false">
     <include layout="@layout/item_place" />
 
-    <ru.atomofiron.regextool.view.custom.DetailProgressView
+    <ru.atomofiron.regextool.custom.view.DetailProgressView
         android:id="@+id/place_dpv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

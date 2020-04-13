@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-    <ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
+    <ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
         android:id="@+id/preference_bsv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

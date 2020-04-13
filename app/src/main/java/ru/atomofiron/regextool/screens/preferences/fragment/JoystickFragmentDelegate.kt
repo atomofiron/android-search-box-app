@@ -7,7 +7,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.JoystickComposition
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 class JoystickFragmentDelegate(
         private var entity: JoystickComposition,

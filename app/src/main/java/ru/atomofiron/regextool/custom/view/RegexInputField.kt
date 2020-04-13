@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.view
 
 import android.content.Context
 import android.text.Editable
@@ -14,8 +14,6 @@ class RegexInputField @JvmOverloads constructor(
         private const val ZERO_CHAR = 0.toChar()
     }
 
-    override val hideKeyboardOnFocusLost = false
-
     private var locked = false
     private var deleted = ZERO_CHAR
     private var start = 0
@@ -25,6 +23,7 @@ class RegexInputField @JvmOverloads constructor(
     private val closeBrackets = charArrayOf(']', '}', ')')
 
     init {
+        hideKeyboardOnFocusLost = false
         addTextChangedListener(this)
     }
 

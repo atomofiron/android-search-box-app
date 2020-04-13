@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.view
 
 import android.content.Context
 import android.graphics.Rect
@@ -7,20 +7,18 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import ru.atomofiron.regextool.R
 
-open class AutoHideKeyboardField @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
-) : AppCompatEditText(context, attrs, defStyleAttr) {
+open class AutoHideKeyboardField : AppCompatEditText {
     private var inputMethodManager: InputMethodManager? = null
 
-    protected open val hideKeyboardOnFocusLost: Boolean
+    var hideKeyboardOnFocusLost: Boolean = true
 
-    init {
+    @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         val styled = context.obtainStyledAttributes(attrs, R.styleable.AutoHideKeyboardField, defStyleAttr, 0)
-        hideKeyboardOnFocusLost = styled.getBoolean(R.styleable.AutoHideKeyboardField_hideKeyboardOnFocusLost, true)
+        hideKeyboardOnFocusLost = styled.getBoolean(R.styleable.AutoHideKeyboardField_hideKeyboardOnFocusLost, hideKeyboardOnFocusLost)
         styled.recycle()
     }
 

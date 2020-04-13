@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -49,7 +49,6 @@ class DetailProgressView @JvmOverloads constructor(
         (vEnd.layoutParams as LayoutParams).weight = max - progress
         vStart.layoutParams = vStart.layoutParams
         vEnd.layoutParams = vEnd.layoutParams
-        //vEnd.layoutParams = vEnd.layoutParams
 
         this.labelStart.text = labelStart
         this.labelProgress.text = labelProgress

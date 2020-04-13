@@ -2,7 +2,7 @@ package ru.atomofiron.regextool.screens.explorer.places
 
 import android.view.View
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.view.custom.DetailProgressView
+import ru.atomofiron.regextool.custom.view.DetailProgressView
 
 class StoragePlaceHolder(itemView: View) : PlaceHolder(itemView) {
     companion object {

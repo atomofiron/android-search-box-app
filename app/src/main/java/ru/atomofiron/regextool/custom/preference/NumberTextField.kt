@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.preference
 
 import android.content.Context
 import android.text.Editable
@@ -12,6 +12,9 @@ class NumberTextField @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null
 ) : TextField(context, attrs) {
+    companion object {
+        private const val ZERO = "0"
+    }
     private var onSubmitListener: ((Int) -> Unit)? = null
 
     init {
@@ -33,13 +36,13 @@ class NumberTextField @JvmOverloads constructor(
         val value = editable.toString()
 
         when {
-            value.length > 1 && value.startsWith("0") -> {
+            value.length > 1 && value.startsWith(ZERO) -> {
                 val start = selectionStart
                 setText(value.substring(1))
                 setSelection(if (start == 0) 0 else start - 1)
             }
             value.isEmpty() -> {
-                setText("0")
+                setText(ZERO)
                 setSelection(1)
             }
         }

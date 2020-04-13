@@ -17,8 +17,8 @@ import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
-import ru.atomofiron.regextool.view.custom.BottomMenuBar
-import ru.atomofiron.regextool.view.custom.VerticalDockView
+import ru.atomofiron.regextool.custom.view.BottomMenuBar
+import ru.atomofiron.regextool.custom.view.VerticalDockView
 import javax.inject.Inject
 import kotlin.reflect.KClass
 

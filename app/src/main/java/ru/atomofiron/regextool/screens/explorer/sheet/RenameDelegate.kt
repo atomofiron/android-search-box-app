@@ -11,7 +11,7 @@ import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.screens.explorer.ExplorerPresenter
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 class RenameDelegate(private val output: ExplorerPresenter) : BottomSheetDelegate(R.layout.sheet_explorer_rename), View.OnClickListener, TextWatcher {
     private val itemView: View get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_item)

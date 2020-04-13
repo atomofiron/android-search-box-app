@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.getAnimatorDurationScale
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import kotlin.math.min
 
 class TasksSheetView @JvmOverloads constructor(

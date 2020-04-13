@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.preference
 
 import android.content.Context
 import android.graphics.Rect
@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import ru.atomofiron.regextool.custom.view.AutoHideKeyboardField
 
 open class TextField @JvmOverloads constructor(
         context: Context,
@@ -19,9 +20,9 @@ open class TextField @JvmOverloads constructor(
 
     init {
         addTextChangedListener(this)
-        imeOptions = EditorInfo.IME_ACTION_DONE
-        inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
-        setSingleLine(true)
+        imeOptions = EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or EditorInfo.IME_ACTION_DONE
+        inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        isSingleLine = true
         isLongClickable = false
         setHintTextColor(0)
     }
@@ -44,7 +45,6 @@ open class TextField @JvmOverloads constructor(
 
     override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
     override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
-
     override fun afterTextChanged(editable: Editable) = Unit
 
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {

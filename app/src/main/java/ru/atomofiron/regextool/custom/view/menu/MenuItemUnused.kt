@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom.menu
+package ru.atomofiron.regextool.custom.view.menu
 
 import android.content.Context
 import android.content.Intent

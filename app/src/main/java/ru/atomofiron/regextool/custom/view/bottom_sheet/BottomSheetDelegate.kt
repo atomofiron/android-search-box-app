@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom.bottom_sheet
+package ru.atomofiron.regextool.custom.view.bottom_sheet
 
 import android.view.View
 

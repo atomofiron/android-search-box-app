@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -13,11 +13,7 @@ import app.atomofiron.common.util.DrawerStateListenerImpl
 import com.google.android.material.navigation.NavigationView
 import ru.atomofiron.regextool.R
 
-class VerticalDockView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
-) : NavigationView(context, attrs, defStyleAttr) {
+class VerticalDockView : NavigationView {
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_drawer_navigation, this, true)
@@ -34,7 +30,8 @@ class VerticalDockView @JvmOverloads constructor(
     private val drawerStateListener = DrawerStateListenerImpl()
     var onGravityChangeListener: ((gravity: Int) -> Unit)? = null
 
-    init {
+    @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         ibDockSide.setOnClickListener {
             val gravity = if (gravity == Gravity.START) Gravity.END else Gravity.START
             onGravityChangeListener?.invoke(gravity)

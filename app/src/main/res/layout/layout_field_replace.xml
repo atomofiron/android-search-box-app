@@ -8,7 +8,7 @@
         android:layout_height="0.5dp"
         android:background="?attr/colorFieldDivider"
         />
-    <ru.atomofiron.regextool.view.custom.AutoHideKeyboardField
+    <ru.atomofiron.regextool.custom.view.AutoHideKeyboardField
         android:id="@+id/rt_replace"
         android:layout_width="match_parent"
         android:layout_height="@dimen/common_size"

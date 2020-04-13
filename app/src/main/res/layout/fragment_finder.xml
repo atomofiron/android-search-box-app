@@ -21,7 +21,7 @@
 			android:paddingBottom="@dimen/joystick_size"
 			/>
 
-		<ru.atomofiron.regextool.view.custom.FixedBottomAppBar
+		<ru.atomofiron.regextool.custom.view.FixedBottomAppBar
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/bottom_tab_bar_height"
 			android:layout_gravity="bottom"
@@ -32,17 +32,17 @@
 				android:layout_height="wrap_content"
 				app:layout_scrollFlags="scroll|exitUntilCollapsed"
 				>
-				<ru.atomofiron.regextool.view.custom.BottomMenuBar
+				<ru.atomofiron.regextool.custom.view.BottomMenuBar
 					android:id="@+id/finder_bom"
 					android:layout_width="match_parent"
 					android:layout_height="@dimen/bottom_tab_bar_height"
 					app:menu="@menu/nav_finder"
 					/>
 			</com.google.android.material.appbar.CollapsingToolbarLayout>
-		</ru.atomofiron.regextool.view.custom.FixedBottomAppBar>
+		</ru.atomofiron.regextool.custom.view.FixedBottomAppBar>
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
-	<ru.atomofiron.regextool.view.custom.VerticalDockView
+	<ru.atomofiron.regextool.custom.view.VerticalDockView
 		android:id="@+id/finder_dv"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"

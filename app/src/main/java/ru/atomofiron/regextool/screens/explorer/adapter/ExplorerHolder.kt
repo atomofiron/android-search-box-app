@@ -14,7 +14,7 @@ import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.setVisibility
-import ru.atomofiron.regextool.view.custom.BallsView
+import ru.atomofiron.regextool.custom.view.BallsView
 
 class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     companion object {

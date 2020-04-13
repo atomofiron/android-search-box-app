@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom.bottom_sheet_menu
+package ru.atomofiron.regextool.custom.view.bottom_sheet_menu
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.view.custom.menu.MenuImpl
+import ru.atomofiron.regextool.custom.view.menu.MenuImpl
 
 class BottomSheetMenuAdapter(context: Context) : RecyclerView.Adapter<BottomSheetMenuHolder>() {
     val menu = MenuImpl(context)

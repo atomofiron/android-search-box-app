@@ -14,7 +14,7 @@ import ru.atomofiron.regextool.screens.explorer.presenter.BottomSheetMenuListene
 import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.presenter.PlacesActionListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
-import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuListener
+import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 
 class ExplorerPresenter(
         viewModel: ExplorerViewModel,

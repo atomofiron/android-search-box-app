@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.view
 
 import android.animation.ValueAnimator
 import android.content.Context

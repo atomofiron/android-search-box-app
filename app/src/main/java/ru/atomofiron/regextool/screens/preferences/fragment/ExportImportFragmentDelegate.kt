@@ -4,7 +4,7 @@ import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.TextView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 class ExportImportFragmentDelegate(
         private val output: ExportImportOutput

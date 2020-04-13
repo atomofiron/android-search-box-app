@@ -13,7 +13,7 @@ import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.root.fragment.SnackbarCallbackFragmentDelegate
 import ru.atomofiron.regextool.screens.root.util.SnackbarWrapper
-import ru.atomofiron.regextool.view.custom.Joystick
+import ru.atomofiron.regextool.custom.view.Joystick
 import javax.inject.Inject
 import kotlin.reflect.KClass
 

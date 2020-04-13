@@ -10,7 +10,7 @@ import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.utils.Const
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 class ExplorerItemFragmentDelegate(
         private var composition: ExplorerItemComposition,

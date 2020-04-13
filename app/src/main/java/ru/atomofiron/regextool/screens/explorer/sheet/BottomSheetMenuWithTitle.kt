@@ -8,8 +8,8 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
-import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenu
-import ru.atomofiron.regextool.view.custom.bottom_sheet_menu.BottomSheetMenuListener
+import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenu
+import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 
 class BottomSheetMenuWithTitle(
         private val context: Context,

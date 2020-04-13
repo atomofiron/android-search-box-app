@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom.bottom_sheet_menu
+package ru.atomofiron.regextool.custom.view.bottom_sheet_menu
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,7 +7,7 @@ import android.view.View
 import androidx.core.view.iterator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetDelegate
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 open class BottomSheetMenu(
         layoutContent: Int = UNDEFINED,

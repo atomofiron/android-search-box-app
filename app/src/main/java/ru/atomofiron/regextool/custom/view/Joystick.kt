@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.view
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -32,7 +32,7 @@ class Joystick @JvmOverloads constructor(
 
     private val density = resources.displayMetrics.density
     private val maxBlurRadius = BLUR_RADIUS_DP * density
-    private var brightnes = 0f
+    private var brightness = 0f
     private val glowAnimator = ValueAnimator.ofFloat(0f, (Math.PI / 2).toFloat())
 
     private lateinit var composition: JoystickComposition
@@ -42,7 +42,7 @@ class Joystick @JvmOverloads constructor(
         glowAnimator.duration = GLOW_DURATION
         glowAnimator.addUpdateListener { animator ->
             val value = animator.animatedValue as Float
-            brightnes = 1f - Math.sin(value.toDouble()).toFloat()
+            brightness = 1f - Math.sin(value.toDouble()).toFloat()
             invalidate()
         }
     }
@@ -83,7 +83,7 @@ class Joystick @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 glowAnimator.cancel()
                 trackTouchEvent = true
-                brightnes = 1f
+                brightness = 1f
                 invalidate()
             }
             MotionEvent.ACTION_MOVE -> {
@@ -114,18 +114,18 @@ class Joystick @JvmOverloads constructor(
         val width = measuredWidth
         val height = measuredHeight
 
-        if (brightnes != 0f) {
+        if (brightness != 0f) {
             val mCanvas = Canvas(bitmap)
             mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
             circle.setBounds(0, 0, width, height)
             circle.draw(mCanvas)
-            paintBlur.maskFilter = BlurMaskFilter(maxBlurRadius * brightnes, BlurMaskFilter.Blur.NORMAL)
+            paintBlur.maskFilter = BlurMaskFilter(maxBlurRadius * brightness, BlurMaskFilter.Blur.NORMAL)
             val glowing = bitmap.extractAlpha(paintBlur, IntArray(2))
             val left = (width - glowing.width).toFloat() / 2
             val top = (height - glowing.height).toFloat() / 2
             canvas.drawBitmap(glowing, left, top, glowingPaint)
         }
-        val offset = (density * brightnes).toInt()
+        val offset = (density * brightness).toInt()
         circle.setBounds(offset, offset, width - offset, height - offset)
         circle.draw(canvas)
 

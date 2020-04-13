@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ru.atomofiron.regextool.view.custom;
+package ru.atomofiron.regextool.custom.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

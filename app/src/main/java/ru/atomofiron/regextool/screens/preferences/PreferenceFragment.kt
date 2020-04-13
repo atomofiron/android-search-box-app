@@ -17,7 +17,7 @@ import ru.atomofiron.regextool.screens.preferences.fragment.ExportImportFragment
 import ru.atomofiron.regextool.screens.preferences.fragment.JoystickFragmentDelegate
 import ru.atomofiron.regextool.screens.preferences.fragment.PreferenceFragmentDelegate
 import ru.atomofiron.regextool.utils.Shell
-import ru.atomofiron.regextool.view.custom.bottom_sheet.BottomSheetView
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import javax.inject.Inject
 import kotlin.reflect.KClass
 

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.view.custom.bottom_sheet_menu
+package ru.atomofiron.regextool.custom.view.bottom_sheet_menu
 
 import android.view.MenuItem
 import android.view.View

@@ -1,7 +1,6 @@
-package ru.atomofiron.regextool.view.custom
+package ru.atomofiron.regextool.custom.view
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MenuInflater
@@ -11,7 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.view.custom.menu.MenuImpl
+import ru.atomofiron.regextool.custom.view.menu.MenuImpl
 
 class BottomMenuBar @JvmOverloads constructor(
         context: Context,
