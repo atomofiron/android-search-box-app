@@ -36,7 +36,7 @@ class SettingsStore(sp: SharedPreferences) {
     val storagePath = PreferenceNode.forString<String>(
             sp,
             key = Const.PREF_STORAGE_PATH,
-            default = Const.ROOT
+            default = Const.SDCARD
     )
 
     val openedDirPath = PreferenceNode.forNullableString<String?>(
