@@ -56,6 +56,11 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
         delegate.onStart()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        delegate.onDestroy()
+    }
+
     override fun onAttachFragment(childFragment: Fragment) {
         super.onAttachFragment(childFragment)
         delegate.onAttachChildFragment(childFragment)

@@ -43,6 +43,8 @@ class ViewDelegate<P : BasePresenter<*,*>> {
         }
     }
 
+    fun onDestroy() = presenter.onDestroy()
+
     fun onAttachChildFragment(childFragment: Fragment) {
         presenter.onAttachChildFragment(childFragment)
     }

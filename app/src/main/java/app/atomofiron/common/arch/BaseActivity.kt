@@ -52,7 +52,7 @@ abstract class BaseActivity<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Ap
 
     override fun onDestroy() {
         super.onDestroy()
-        // todo presenter.onDestroy()
+        delegate.onDestroy()
     }
 
     private fun getAppTheme(): AppTheme {

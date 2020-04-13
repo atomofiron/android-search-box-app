@@ -47,6 +47,11 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
         delegate.onStart()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        delegate.onDestroy()
+    }
+
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         delegate.onHiddenChanged(hidden)

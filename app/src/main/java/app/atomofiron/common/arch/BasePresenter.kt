@@ -28,6 +28,8 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
 
     open fun onCreate(context: Context, intent: Intent) = Unit
 
+    open fun onDestroy() = Unit
+
     open fun onSubscribeData() = Unit
 
     open fun onVisibleChanged(visible: Boolean) = Unit
