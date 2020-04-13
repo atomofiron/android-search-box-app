@@ -38,9 +38,8 @@ class ViewDelegate<P : BasePresenter<*,*>> {
     }
 
     fun onStart() {
-        if (isFirstTry && view.isVisible() && systemBarsColorId != IView.UNDEFINED) {
-            setStatusBarColor(systemBarsColorId)
-            fixSystemBars(systemBarsLights)
+        if (isFirstTry && view.isVisible()) {
+            updateSystemBars()
         }
     }
 
@@ -49,14 +48,20 @@ class ViewDelegate<P : BasePresenter<*,*>> {
     }
 
     fun onHiddenChanged(hidden: Boolean) {
-        if (!hidden && systemBarsColorId != IView.UNDEFINED) {
-            setStatusBarColor(systemBarsColorId)
-            fixSystemBars(systemBarsLights)
+        if (!hidden) {
+            updateSystemBars()
         }
     }
 
     fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         presenter.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun updateSystemBars() {
+        if (systemBarsColorId != IView.UNDEFINED) {
+            setStatusBarColor(systemBarsColorId)
+            fixSystemBars(systemBarsLights)
+        }
     }
 
     private fun setStatusBarColor(colorId: Int) {
