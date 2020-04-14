@@ -47,7 +47,7 @@ class MutableXFile : XFile {
             val date = parts[5]
             val time = parts[6]
             val name = parts[7]
-            val isDirectory = access[0] == DIR_CHAR
+            val isDirectory = access[0] == DIR_CHAR || parts[7] == ROOT
 
             if (parts[7].contains('>')) {
                 // todo links
@@ -111,7 +111,7 @@ class MutableXFile : XFile {
         this.time = time
         this.name = name
         this.suffix = suffix
-        this.isDirectory = isDirectory
+        this.isDirectory = isDirectory || absolutePath == ROOT
         this.isFile = !isDirectory && (access.isEmpty() || access[0] == FILE_CHAR)
 
         completedPath = completePath(absolutePath, isDirectory)

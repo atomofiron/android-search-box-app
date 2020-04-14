@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.di.module
 
+import android.content.Context
 import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
@@ -16,5 +17,5 @@ open class StoreModule {
 
     @Provides
     @Singleton
-    open fun provideSettingsStore(sp: SharedPreferences): SettingsStore = SettingsStore(sp)
+    open fun provideSettingsStore(context: Context, sp: SharedPreferences): SettingsStore = SettingsStore(context, sp)
 }

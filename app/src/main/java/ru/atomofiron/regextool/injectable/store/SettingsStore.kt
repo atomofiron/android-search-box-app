@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.injectable.store
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.view.Gravity
 import leakcanary.AppWatcher
@@ -9,8 +10,10 @@ import ru.atomofiron.regextool.model.AppTheme
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.model.JoystickComposition
 import ru.atomofiron.regextool.utils.Const
+import ru.atomofiron.regextool.utils.Tool
 
-class SettingsStore(sp: SharedPreferences) {
+class SettingsStore(context: Context, sp: SharedPreferences) {
+
     fun getCurrentValue(key: String): Any? {
         return when (key) {
             Const.PREF_STORAGE_PATH -> storagePath.value
@@ -36,7 +39,7 @@ class SettingsStore(sp: SharedPreferences) {
     val storagePath = PreferenceNode.forString<String>(
             sp,
             key = Const.PREF_STORAGE_PATH,
-            default = Const.SDCARD
+            default = Tool.getExternalStorageDirectory(context) ?: Const.ROOT
     )
 
     val openedDirPath = PreferenceNode.forNullableString<String?>(

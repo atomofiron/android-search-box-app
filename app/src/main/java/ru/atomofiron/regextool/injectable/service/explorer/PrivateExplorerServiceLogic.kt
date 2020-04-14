@@ -326,6 +326,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         when {
             file.isDeleting -> Unit
             file.updateCache(useSu) == null -> explorerStore.notifyUpdate(file)
+            file.isRoot -> Unit
             !file.exists -> dropEntity(file)
         }
     }
@@ -407,17 +408,29 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     private suspend fun updateClosedDir(dir: MutableXFile) {
-        require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
-        if (dir.isOpened || dir.isDeleting) {
-            log2("updateClosedDir return $dir")
+        if (!dir.isDirectory) {
+            log2("updateClosedDir return !isDirectory $dir")
+        }
+        if (dir.isOpened) {
+            log2("updateClosedDir return isOpened $dir")
+            return
+        }
+        if (dir.isDeleting) {
+            log2("updateClosedDir return isDeleting $dir")
             return
         }
         log2("updateClosedDir $dir")
+        val cacheWasNotActual = !dir.isCacheActual
         val error = dir.updateCache(useSu)
 
+        if (error != null) {
+            log2("updateClosedDir error != null $dir\n$error")
+        }
         when {
+            cacheWasNotActual && dir.isRoot -> explorerStore.notifyUpdate(dir)
+            dir.isRoot -> Unit
             !dir.exists -> dropEntity(dir)
-            error != null -> log2("updateClosedDir error != null ${dir.completedPath}\n$error")
+            error != null -> Unit
             else -> {
                 explorerStore.notifyUpdate(dir)
                 /*
@@ -443,7 +456,7 @@ abstract class PrivateExplorerServiceLogic constructor(
             loop@ while (each.hasNext()) {
                 val next = each.next()
                 when {
-                    next.root == root && next.completedParentPath.startsWith(path) -> {
+                    !next.isRoot && next.root == root && next.completedParentPath.startsWith(path) -> {
                         each.remove()
                         removed.add(next)
                     }

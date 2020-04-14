@@ -49,11 +49,14 @@ class PreferenceFragmentDelegate(
     private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
         return when (val key = preference.key) {
             Const.PREF_STORAGE_PATH -> {
+                if (newValue is String && newValue.isBlank()) {
+                    return false
+                }
                 preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
                 if (newValue is String) {
                     output.onPreferenceUpdate(key, newValue)
                 }
-                DOES_NOT_MATTER
+                true
             }
             Const.PREF_EXTRA_FORMATS -> {
                 preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String

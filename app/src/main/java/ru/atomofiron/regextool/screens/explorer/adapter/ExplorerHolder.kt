@@ -10,24 +10,25 @@ import android.widget.TextView
 import app.atomofiron.common.recycler.GeneralHolder
 import com.google.android.material.checkbox.MaterialCheckBox
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.BallsView
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.model.ExplorerItemComposition
 import ru.atomofiron.regextool.utils.Const
+import ru.atomofiron.regextool.utils.Tool
 import ru.atomofiron.regextool.utils.setVisibility
-import ru.atomofiron.regextool.custom.view.BallsView
 
-class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
+class ExplorerHolder(itemView: View) : GeneralHolder<XFile>(itemView) {
     companion object {
         private const val BYTE_LETTER = "B"
     }
 
-    val ivIcon = view.findViewById<ImageView>(R.id.item_explorer_iv_icon)
-    private val tvName = view.findViewById<TextView>(R.id.item_explorer_tv_title)
-    private val tvDescription = view.findViewById<TextView>(R.id.item_explorer_tv_description)
-    private val tvDate = view.findViewById<TextView>(R.id.item_explorer_tv_date)
-    val tvSize = view.findViewById<TextView>(R.id.item_explorer_tv_size)
-    val cbBox = view.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
-    private val psProgress = view.findViewById<BallsView>(R.id.item_explorer_ps)
+    val ivIcon = itemView.findViewById<ImageView>(R.id.item_explorer_iv_icon)
+    private val tvName = itemView.findViewById<TextView>(R.id.item_explorer_tv_title)
+    private val tvDescription = itemView.findViewById<TextView>(R.id.item_explorer_tv_description)
+    private val tvDate = itemView.findViewById<TextView>(R.id.item_explorer_tv_date)
+    val tvSize = itemView.findViewById<TextView>(R.id.item_explorer_tv_size)
+    val cbBox = itemView.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
+    private val psProgress = itemView.findViewById<BallsView>(R.id.item_explorer_ps)
 
     /*
     16842910 enabled
@@ -41,10 +42,23 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
     }
      */
 
+    private val context = itemView.context
+
     private val defaultBoxTintList: ColorStateList by lazy(LazyThreadSafetyMode.NONE) { cbBox.buttonTintList!! }
     private val transparentBoxTintList: ColorStateList
 
     var onItemActionListener: ExplorerItemActionListener? = null
+
+    private val rootsAliases = HashMap<String, Int>()
+
+    init {
+        val externalStoragePath = Tool.getExternalStorageDirectory(context)
+        if (externalStoragePath != null) {
+            rootsAliases[externalStoragePath] = R.string.internal_storage
+        }
+        rootsAliases[Const.SDCARD] = R.string.internal_storage
+        rootsAliases[Const.ROOT] = R.string.root
+    }
 
     private var onClickListener: ((View) -> Unit) = {
         onItemActionListener?.onItemClick(item)
@@ -88,7 +102,11 @@ class ExplorerHolder(view: View) : GeneralHolder<XFile>(view) {
         ivIcon.setImageResource(image)
         ivIcon.alpha = if (item.isDirectory && !item.isCached) .4f else 1f
 
-        tvName.text = if (item.completedPath == Const.ROOT) Const.ROOT else item.name
+        val aliasId = rootsAliases[item.completedPath]
+        tvName.text = when {
+            aliasId != null -> context.getString(aliasId)
+            else -> item.name
+        }
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         tvSize.text = when {
