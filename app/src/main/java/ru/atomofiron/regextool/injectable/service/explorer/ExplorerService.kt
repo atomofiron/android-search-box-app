@@ -69,4 +69,10 @@ class ExplorerService constructor(
         item ?: return log2("rename $name $item")
         super.rename(item, name)
     }
+
+    suspend fun create(it: XFile, name: String, directory: Boolean) {
+        val dir = findItem(it)
+        dir ?: return log2("create $name $dir")
+        super.create(dir, name, directory)
+    }
 }

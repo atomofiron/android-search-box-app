@@ -571,4 +571,28 @@ abstract class PrivateExplorerServiceLogic constructor(
             }
         }
     }
+
+    suspend fun create(dir: MutableXFile, name: String, directory: Boolean) {
+        val item = MutableXFile.create(dir.completedPath, name, directory, dir.root)
+        val error = item.create()
+        when {
+            error != null -> explorerStore.alerts.setAndNotify(error)
+            else -> {
+                mutex.withLock {
+                    val index = files.indexOf(dir)
+                    if (index == UNKNOWN) {
+                        log2("create return -1 $dir\n$item -> $dir")
+                        return@withLock
+                    }
+                    val err = dir.add(item)
+                    if (err != null) {
+                        log2("create error != null $dir\n$err $item -> $dir")
+                        return
+                    }
+                    files.add(index.inc(), item)
+                    explorerStore.notifyInsert(dir, item)
+                }
+            }
+        }
+    }
 }

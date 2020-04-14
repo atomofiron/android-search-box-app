@@ -33,6 +33,10 @@ class MutableXFile : XFile {
 
         fun completePathAsDir(absolutePath: String): String = completePath(absolutePath)
 
+        fun create(completedParentPath: String, name: String, isDirectory: Boolean, root: Int): MutableXFile {
+            return MutableXFile("", "", "", "", "", "", name, "", isDirectory, completedParentPath + name, root)
+        }
+
         fun byPath(absolutePath: String): MutableXFile {
             val file = File(absolutePath)
             return MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath, root = null)
@@ -151,10 +155,17 @@ class MutableXFile : XFile {
         val files = files
         val index = files?.indexOf(item)
         if (index == null || index == UNKNOWN) {
-            return "Replacing failed. $index $this"
+            return "Replacing failed. $this"
         }
         files.removeAt(index)
         files.add(index, with)
+        return null
+    }
+
+    fun add(item: MutableXFile): String? {
+        val files = files
+        files ?: return "Addition failed. $this"
+        files.add(0, item)
         return null
     }
 
@@ -176,21 +187,10 @@ class MutableXFile : XFile {
     fun delete(su: Boolean = false): String? {
         isDeleting = true
         var error: String? = null
-        when {
-            isDirectory || su -> {
-                val output = Shell.exec(Shell.RM_RF.format(toyboxPath, completedPath), su)
-                when (output.success) {
-                    true -> exists = false
-                    else -> error = output.error
-                }
-            }
-            else -> {
-                val success = File(completedPath).delete()
-                when {
-                    success -> exists = false
-                    else -> error = "Deletion failed. $this"
-                }
-            }
+        val output = Shell.exec(Shell.RM_RF.format(toyboxPath, completedPath), su)
+        when (output.success) {
+            true -> exists = false
+            else -> error = output.error
         }
         isDeleting = false
         return error
@@ -213,6 +213,14 @@ class MutableXFile : XFile {
             }
             else -> Pair(output.error, null)
         }
+    }
+
+    fun create(su: Boolean = false): String? {
+        val output = when {
+            isDirectory -> Shell.exec(Shell.MKDIR.format(toyboxPath, completedPath), su)
+            else -> Shell.exec(Shell.TOUCH.format(toyboxPath, completedPath), su)
+        }
+        return if (output.success) null else output.error
     }
 
     private fun cacheAsDir(su: Boolean = false): String? {

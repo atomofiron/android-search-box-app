@@ -23,6 +23,7 @@ class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, Exp
     @Inject
     override lateinit var scope: CoroutineScope
 
+    val rootOptions = arrayListOf(R.id.menu_create)
     val directoryOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
     val oneFileOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename)
     val manyFilesOptions = arrayListOf(R.id.menu_remove)

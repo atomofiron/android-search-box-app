@@ -7,13 +7,14 @@ import androidx.lifecycle.Observer
 import app.atomofiron.common.arch.BaseActivity
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.findColorByAttr
+import app.atomofiron.common.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.Joystick
 import ru.atomofiron.regextool.model.AppOrientation
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.root.fragment.SnackbarCallbackFragmentDelegate
 import ru.atomofiron.regextool.screens.root.util.SnackbarWrapper
-import ru.atomofiron.regextool.custom.view.Joystick
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -41,7 +42,11 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
         setContentView(R.layout.activity_root)
 
         joystick.view.setOnClickListener {
-            presenter.onJoystickClick()
+            val viewWithFocus = root.view.findFocus()
+            val consumed = viewWithFocus?.hideKeyboard() != null
+            if (!consumed) {
+                presenter.onJoystickClick()
+            }
         }
 
         viewModel.showExitSnackbar.observeEvent(this) {

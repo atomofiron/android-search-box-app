@@ -11,14 +11,14 @@ import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.BottomMenuBar
+import ru.atomofiron.regextool.custom.view.VerticalDockView
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.screens.explorer.sheet.CreateDelegate
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate
-import ru.atomofiron.regextool.custom.view.BottomMenuBar
-import ru.atomofiron.regextool.custom.view.VerticalDockView
-import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import javax.inject.Inject
 
 class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {

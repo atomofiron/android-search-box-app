@@ -52,31 +52,15 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
     }
 
     fun removeItems(items: List<D>) {
-        var indexFirst = UNKNOWN
-        var indexLast = UNKNOWN
-        val lastCount = items.size.dec()
-
-        for (i in items.indices) {
-            if (indexFirst == UNKNOWN) {
-                indexFirst = this.items.indexOf(items[i])
-            }
-            if (indexLast == UNKNOWN) {
-                indexLast = this.items.indexOf(items[lastCount - i])
-            }
-            if (indexFirst != UNKNOWN && indexLast != UNKNOWN) {
-                break
+        val it = items.iterator()
+        while (it.hasNext()) {
+            val next = it.next()
+            val index = this.items.indexOf(next)
+            if (index != UNKNOWN) {
+                this.items.removeAt(index)
+                notifyItemRemoved(index)
             }
         }
-
-        if (indexFirst == UNKNOWN) {
-            return
-        }
-
-        for (index in indexFirst..indexLast) {
-            this.items.removeAt(indexFirst)
-        }
-
-        notifyItemRangeRemoved(indexFirst, indexLast.inc() - indexFirst)
     }
 
     fun notifyItems(items: List<D>) {

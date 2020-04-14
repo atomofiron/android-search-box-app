@@ -31,6 +31,7 @@ class ExplorerItemActionListenerDelegate(
         }
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions
+            files[0].isRoot -> viewModel.rootOptions
             files[0].isChecked -> viewModel.manyFilesOptions
             files[0].isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
@@ -63,5 +64,4 @@ class ExplorerItemActionListenerDelegate(
     override fun onItemVisible(item: XFile) = explorerInteractor.updateItem(item)
 
     override fun onItemInvalidate(item: XFile) = explorerInteractor.invalidateItem(item)
-
 }

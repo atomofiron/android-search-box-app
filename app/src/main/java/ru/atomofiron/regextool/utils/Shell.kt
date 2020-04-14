@@ -10,6 +10,8 @@ object Shell {
     private const val SH = "sh"
     private const val SUCCESS = 0
 
+    const val TOUCH = "%s touch \"%s\""
+    const val MKDIR = "%s mkdir \"%s\""
     const val RM_RF = "%s rm -rf \"%s\""
     const val MV = "%s mv \"%s\" \"%s\""
     const val LS_LAHL = "%s ls -lAhL \"%s\""

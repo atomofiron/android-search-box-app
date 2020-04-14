@@ -8,7 +8,7 @@ import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.R
 
-interface IView<P : BasePresenter<*,*>> : LifecycleOwner, Backable {
+interface IView<P : BasePresenter<*,*>> : LifecycleOwner {
     companion object {
         const val UNDEFINED = -1
     }

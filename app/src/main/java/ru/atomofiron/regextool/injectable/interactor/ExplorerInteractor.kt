@@ -56,4 +56,10 @@ class ExplorerInteractor(
             service.rename(item, name)
         }
     }
+
+    fun create(dir: XFile, name: String, directory: Boolean) {
+        scope.launch(context) {
+            service.create(dir, name, directory)
+        }
+    }
 }

@@ -82,7 +82,7 @@ class ExplorerPresenter(
     fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
 
     fun onCreateClick(dir: XFile, name: String, directory: Boolean) {
-        // todo next
+        explorerInteractor.create(dir, name, directory)
     }
 
     fun onRenameClick(item: XFile, name: String) = explorerInteractor.rename(item, name)
