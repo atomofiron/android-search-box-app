@@ -2,6 +2,8 @@ package ru.atomofiron.regextool
 
 import android.app.Application
 import android.content.Context
+import com.yandex.metrica.YandexMetrica
+import com.yandex.metrica.YandexMetricaConfig
 import leakcanary.AppWatcher
 import ru.atomofiron.regextool.di.DaggerInjector
 
@@ -19,5 +21,11 @@ class App : Application() {
         DaggerInjector.init(this)
 
         AppWatcher.config = AppWatcher.config.copy(enabled = false)
+
+        val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YANDEX_API_KEY)
+                .withLocationTracking(false)
+                .withCrashReporting(true)
+                .build()
+        YandexMetrica.activate(applicationContext, config);
     }
 }
