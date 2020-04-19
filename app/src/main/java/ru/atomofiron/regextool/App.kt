@@ -22,10 +22,12 @@ class App : Application() {
 
         AppWatcher.config = AppWatcher.config.copy(enabled = false)
 
-        val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YANDEX_API_KEY)
-                .withLocationTracking(false)
-                .withCrashReporting(true)
-                .build()
-        YandexMetrica.activate(applicationContext, config);
+        if (!BuildConfig.DEBUG) {
+            val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YANDEX_API_KEY)
+                    .withLocationTracking(false)
+                    .withCrashReporting(true)
+                    .build()
+            YandexMetrica.activate(applicationContext, config);
+        }
     }
 }

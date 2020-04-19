@@ -21,21 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottom_tab_bar_height"
             android:layout_gravity="bottom"
-            app:hideOnScroll="true"
             >
-            <com.google.android.material.appbar.CollapsingToolbarLayout
+            <ru.atomofiron.regextool.custom.view.BottomMenuBar
+                android:id="@+id/explorer_bom"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                >
-                <ru.atomofiron.regextool.custom.view.BottomMenuBar
-                    android:id="@+id/explorer_bom"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/bottom_tab_bar_height"
-                    android:layout_gravity="bottom"
-                    app:menu="@menu/nav_explorer"
-                    />
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
+                android:layout_height="match_parent"
+                app:menu="@menu/nav_explorer"
+                />
         </ru.atomofiron.regextool.custom.view.FixedBottomAppBar>
         <ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
             android:id="@+id/explorer_bsv"
