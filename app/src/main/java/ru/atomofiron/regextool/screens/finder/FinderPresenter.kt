@@ -4,7 +4,7 @@ import app.atomofiron.common.arch.BasePresenter
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
@@ -13,9 +13,9 @@ import ru.atomofiron.regextool.screens.finder.presenter.FinderAdapterPresenterDe
 class FinderPresenter(
         viewModel: FinderViewModel,
         router: FinderRouter,
-        finderAdapterDelegate: FinderAdapterPresenterDelegate,
+        private val finderAdapterDelegate: FinderAdapterPresenterDelegate,
         private val explorerStore: ExplorerStore,
-        private val settingsStore: SettingsStore,
+        private val preferenceStore: PreferenceStore,
         private val preferenceChannel: PreferenceChannel
 ) : BasePresenter<FinderViewModel, FinderRouter>(viewModel, router),
         FinderAdapterOutput by finderAdapterDelegate
@@ -25,18 +25,18 @@ class FinderPresenter(
 
     init {
         items.add(FinderStateItem.SearchAndReplaceItem())
-        val characters = settingsStore.specialCharacters.entity
+        val characters = preferenceStore.specialCharacters.entity
         items.add(FinderStateItem.SpecialCharactersItem(characters))
         items.add(FinderStateItem.TestItem())
         items.add(FinderStateItem.ProgressItem(777, "9/36"))
         viewModel.state.value = items
 
-        settingsStore
+        preferenceStore
                 .dockGravity
                 .addObserver(onClearedCallback) { gravity ->
                     viewModel.historyDrawerGravity.value = gravity
                 }
-        settingsStore.specialCharacters.addObserver(onClearedCallback) { chs ->
+        preferenceStore.specialCharacters.addObserver(onClearedCallback) { chs ->
             viewModel.updateItem(FinderStateItem.SpecialCharactersItem(chs))
         }
         preferenceChannel.historyImportedEvent.addObserver(onClearedCallback) {
@@ -63,11 +63,15 @@ class FinderPresenter(
             checked.isNotEmpty() -> checked.forEach { items.add(FinderStateItem.TargetItem(it)) }
             currentDir != null -> items.add(FinderStateItem.TargetItem(currentDir))
         }
+        when {
+            checked.isNotEmpty() -> finderAdapterDelegate.targets = checked
+            currentDir != null -> finderAdapterDelegate.targets = arrayListOf(currentDir)
+        }
         // todo replace all postValue() with coroutines
         viewModel.state.postValue(items)
     }
 
-    fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
+    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.push(gravity)
 
     fun onExplorerOptionSelected() = router.showExplorer()
 

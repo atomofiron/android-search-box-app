@@ -5,23 +5,23 @@ import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.injectable.store.SettingsStore
-import ru.atomofiron.regextool.model.ExplorerItemComposition
-import ru.atomofiron.regextool.model.JoystickComposition
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
+import ru.atomofiron.regextool.model.preference.JoystickComposition
 import ru.atomofiron.regextool.utils.Shell
 import javax.inject.Inject
 
 class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceComponent, PreferenceFragment>(app) {
 
     @Inject
-    lateinit var settingsStore: SettingsStore
+    lateinit var preferenceStore: PreferenceStore
 
     val alert = SingleLiveEvent<String>()
     val alertOutputSuccess = SingleLiveEvent<Int>()
     val alertOutputError = SingleLiveEvent<Shell.Output>()
     val isExportImportAvailable: Boolean get() = getApplication<App>().applicationContext.getExternalFilesDir(null) != null
-    val explorerItemComposition: ExplorerItemComposition get() = settingsStore.explorerItemComposition.entity
-    val joystickComposition: JoystickComposition get() = settingsStore.joystickComposition.entity
+    val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
+    val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity
 
     override val component = DaggerPreferenceComponent
             .builder()
@@ -36,5 +36,5 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceComponent,
         component.inject(view)
     }
 
-    fun getCurrentValue(key: String): Any? = settingsStore.getCurrentValue(key)
+    fun getCurrentValue(key: String): Any? = preferenceStore.getCurrentValue(key)
 }

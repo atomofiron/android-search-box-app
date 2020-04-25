@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
-import ru.atomofiron.regextool.model.ExplorerItemComposition
+import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenu
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener

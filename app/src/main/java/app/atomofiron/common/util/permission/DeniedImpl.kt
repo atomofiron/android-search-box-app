@@ -1,6 +1,6 @@
 package app.atomofiron.common.util.permission
 
-internal class DeniedImpl(private val callback: Callback?) : Permissions.Denied {
+internal class DeniedImpl(private val grabber: Callback?) : Permissions.Denied {
     private var used = false
 
     @Throws(Grabber.AlreadyDefinedException::class)
@@ -9,7 +9,7 @@ internal class DeniedImpl(private val callback: Callback?) : Permissions.Denied 
             throw Exception()
         }
         used = true
-        callback?.setForbidden(action)
+        grabber?.setForbidden(action)
     }
 
     interface Callback {

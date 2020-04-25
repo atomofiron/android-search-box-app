@@ -6,7 +6,7 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import ru.atomofiron.regextool.injectable.channel.RootChannel
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import javax.inject.Scope
 
 @Scope
@@ -36,8 +36,8 @@ class RootModule {
 
     @Provides
     @RootScope
-    fun presenter(viewModel: RootViewModel, router: RootRouter, rootChannel: RootChannel, settingsStore: SettingsStore): RootPresenter {
-        return RootPresenter(viewModel, router, rootChannel, settingsStore)
+    fun presenter(viewModel: RootViewModel, router: RootRouter, rootChannel: RootChannel, preferenceStore: PreferenceStore): RootPresenter {
+        return RootPresenter(viewModel, router, rootChannel, preferenceStore)
     }
 
     @Provides
@@ -47,5 +47,5 @@ class RootModule {
 
 interface RootDependencies {
     fun rootChannel(): RootChannel
-    fun settingsStore(): SettingsStore
+    fun settingsStore(): PreferenceStore
 }

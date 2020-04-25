@@ -6,9 +6,10 @@ class LazyView<T : View>(private val id: Int, private val parentView: View) : La
     private var nullableValue: T? = null
 
     override val value: T get() {
-        val value = nullableValue ?: parentView.findViewById(id)
-        nullableValue = value
-        return value
+        if (nullableValue == null) {
+            nullableValue = parentView.findViewById(id)!!
+        }
+        return nullableValue!!
     }
 
     override fun isInitialized(): Boolean = nullableValue != null

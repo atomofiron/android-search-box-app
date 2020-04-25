@@ -19,6 +19,13 @@ class PreferenceNode<E, V> private constructor(
             return PreferenceNode(sp, Type.INT, key, default, toValue, fromValue)
         }
 
+        fun <E> forLong(sp: SharedPreferences,
+                       key: String, default: Long,
+                       toValue: ((E) -> Long)? = null,
+                       fromValue: ((Long) -> E)? = null): PreferenceNode<E, Long> {
+            return PreferenceNode(sp, Type.LONG, key, default, toValue, fromValue)
+        }
+
         fun <E> forString(sp: SharedPreferences,
                           key: String, default: String,
                           toValue: ((E) -> String)? = null,
@@ -61,23 +68,18 @@ class PreferenceNode<E, V> private constructor(
     private fun pullOriginal(sp: SharedPreferences): V {
         return when (type) {
             Type.INT -> sp.getInt(key, default as Int) as V
+            Type.LONG -> sp.getLong(key, default as Long) as V
             Type.STRING -> sp.getString(key, default as String?) as V
             Type.BOOLEAN -> sp.getBoolean(key, default as Boolean) as V
         }
     }
 
-    fun push(entity: E) {
-        when (type) {
-            Type.INT -> sp.edit().putInt(key, toValue(entity) as Int).apply()
-            Type.STRING -> sp.edit().putString(key, toValue(entity) as String?).apply()
-            Type.BOOLEAN -> sp.edit().putBoolean(key, toValue(entity) as Boolean).apply()
-        }
-        observable.setAndNotify(entity)
-    }
+    fun push(entity: E) = pushByOriginal(toValue(entity))
 
     fun pushByOriginal(value: V) {
         when (type) {
             Type.INT -> sp.edit().putInt(key, value as Int).apply()
+            Type.LONG -> sp.edit().putLong(key, value as Long).apply()
             Type.STRING -> sp.edit().putString(key, value as String?).apply()
             Type.BOOLEAN -> sp.edit().putBoolean(key, value as Boolean).apply()
         }
@@ -93,6 +95,6 @@ class PreferenceNode<E, V> private constructor(
     }
 
     private enum class Type {
-        INT, STRING, BOOLEAN
+        INT, LONG, STRING, BOOLEAN
     }
 }

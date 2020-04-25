@@ -58,7 +58,7 @@ class PreferenceFragmentDelegate(
                 }
                 true
             }
-            Const.PREF_EXTRA_FORMATS -> {
+            Const.PREF_TEXT_FORMATS -> {
                 preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
                 if (newValue is String) {
                     output.onPreferenceUpdate(key, newValue)

@@ -2,8 +2,7 @@ package app.atomofiron.common.util.permission
 
 class Grabber(
     private val permission: String,
-    private val isGranted: Boolean,
-    private val isForbidden: Boolean
+    private val isGranted: Boolean
 ) : CheckerImpl.Callback, GrantedImpl.Callback, DeniedImpl.Callback {
     private var granted: (() -> Unit)? = null
     private var denied: ((String) -> Unit)? = null
@@ -35,7 +34,6 @@ class Grabber(
         when {
             isGranted -> return
             forbidden != null -> throw AlreadyDefinedException()
-            isForbidden -> action(permission)
             else -> forbidden = action
         }
     }

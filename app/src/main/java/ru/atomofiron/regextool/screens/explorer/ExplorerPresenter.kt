@@ -7,7 +7,7 @@ import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuList
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
@@ -21,7 +21,7 @@ class ExplorerPresenter(
         scope: CoroutineScope,
         router: ExplorerRouter,
         private val explorerStore: ExplorerStore,
-        private val settingsStore: SettingsStore,
+        private val preferenceStore: PreferenceStore,
         private val explorerInteractor: ExplorerInteractor,
         itemListener: ExplorerItemActionListenerDelegate,
         placesListener: PlacesActionListenerDelegate,
@@ -32,9 +32,9 @@ class ExplorerPresenter(
         BottomSheetMenuListener by menuListener {
 
     init {
-        settingsStore.dockGravity.addObserver(onClearedCallback, ::onDockGravityChanged)
-        settingsStore.storagePath.addObserver(onClearedCallback, ::onStoragePathChanged)
-        settingsStore.explorerItemComposition.addObserver(onClearedCallback, viewModel.itemComposition::setValue)
+        preferenceStore.dockGravity.addObserver(onClearedCallback, ::onDockGravityChanged)
+        preferenceStore.storagePath.addObserver(onClearedCallback, ::onStoragePathChanged)
+        preferenceStore.explorerItemComposition.addObserver(onClearedCallback, viewModel.itemComposition::setValue)
 
         val items = ArrayList<XPlace>()
         items.add(XPlace.InternalStorage(context.getString(R.string.internal_storage), visible = true))
@@ -79,7 +79,7 @@ class ExplorerPresenter(
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onDockGravityChange(gravity: Int) = settingsStore.dockGravity.push(gravity)
+    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.push(gravity)
 
     fun onCreateClick(dir: XFile, name: String, directory: Boolean) {
         explorerInteractor.create(dir, name, directory)

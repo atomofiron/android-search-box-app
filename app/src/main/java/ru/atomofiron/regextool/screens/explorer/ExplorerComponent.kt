@@ -14,7 +14,7 @@ import kotlinx.coroutines.Job
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.explorer.presenter.BottomSheetMenuListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.presenter.PlacesActionListenerDelegate
@@ -49,10 +49,10 @@ class ExplorerModule {
     fun itemListener(fragment: WeakProperty<ExplorerFragment>,
                      viewModel: ExplorerViewModel,
                      explorerStore: ExplorerStore,
-                     settingsStore: SettingsStore,
+                     preferenceStore: PreferenceStore,
                      router: ExplorerRouter,
                      explorerInteractor: ExplorerInteractor): ExplorerItemActionListenerDelegate {
-        return ExplorerItemActionListenerDelegate(fragment, viewModel, explorerStore, settingsStore, router, explorerInteractor)
+        return ExplorerItemActionListenerDelegate(fragment, viewModel, explorerStore, preferenceStore, router, explorerInteractor)
     }
 
     @Provides
@@ -75,12 +75,12 @@ class ExplorerModule {
                   scope: CoroutineScope,
                   router: ExplorerRouter,
                   explorerStore: ExplorerStore,
-                  settingsStore: SettingsStore,
+                  preferenceStore: PreferenceStore,
                   explorerInteractor: ExplorerInteractor,
                   itemListener: ExplorerItemActionListenerDelegate,
                   placesListener: PlacesActionListenerDelegate,
                   menuListener: BottomSheetMenuListenerDelegate): ExplorerPresenter {
-        return ExplorerPresenter(viewModel, scope, router, explorerStore, settingsStore,
+        return ExplorerPresenter(viewModel, scope, router, explorerStore, preferenceStore,
                 explorerInteractor, itemListener, placesListener, menuListener)
     }
 
@@ -107,5 +107,5 @@ interface ExplorerDependencies {
     fun sharedPreferences(): SharedPreferences
     fun explorerService(): ExplorerService
     fun explorerStore(): ExplorerStore
-    fun settingsStore(): SettingsStore
+    fun settingsStore(): PreferenceStore
 }

@@ -6,9 +6,9 @@ import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.model.AppOrientation
-import ru.atomofiron.regextool.model.AppTheme
-import ru.atomofiron.regextool.model.JoystickComposition
+import ru.atomofiron.regextool.model.preference.AppOrientation
+import ru.atomofiron.regextool.model.preference.AppTheme
+import ru.atomofiron.regextool.model.preference.JoystickComposition
 import ru.atomofiron.regextool.screens.root.util.tasks.XTask
 
 class RootViewModel(app: Application) : BaseViewModel<RootComponent, RootActivity>(app) {

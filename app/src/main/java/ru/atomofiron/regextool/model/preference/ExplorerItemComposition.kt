@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.model
+package ru.atomofiron.regextool.model.preference
 
 data class ExplorerItemComposition(
         val visibleAccess: Boolean,

@@ -7,7 +7,7 @@ import android.widget.CompoundButton
 import androidx.core.content.ContextCompat
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
-import ru.atomofiron.regextool.model.ExplorerItemComposition
+import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate

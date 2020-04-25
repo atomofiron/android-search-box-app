@@ -7,8 +7,9 @@ import dagger.Module
 import dagger.Provides
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
+import ru.atomofiron.regextool.injectable.service.FinderService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.finder.presenter.FinderAdapterPresenterDelegate
 import javax.inject.Scope
 
@@ -43,16 +44,16 @@ class FinderModule {
             router: FinderRouter,
             finderAdapterDelegate: FinderAdapterPresenterDelegate,
             explorerStore: ExplorerStore,
-            settingsStore: SettingsStore,
+            preferenceStore: PreferenceStore,
             preferenceChannel: PreferenceChannel
     ): FinderPresenter {
-        return FinderPresenter(viewModel, router, finderAdapterDelegate, explorerStore, settingsStore, preferenceChannel)
+        return FinderPresenter(viewModel, router, finderAdapterDelegate, explorerStore, preferenceStore, preferenceChannel)
     }
 
     @Provides
     @FinderScope
-    fun finderAdapterOutput(viewModel: FinderViewModel): FinderAdapterPresenterDelegate {
-        return FinderAdapterPresenterDelegate(viewModel)
+    fun finderAdapterOutput(viewModel: FinderViewModel, interactor: FinderInteractor): FinderAdapterPresenterDelegate {
+        return FinderAdapterPresenterDelegate(viewModel, interactor)
     }
 
     @Provides
@@ -63,13 +64,14 @@ class FinderModule {
 
     @Provides
     @FinderScope
-    fun interactor(explorerStore: ExplorerStore): FinderInteractor {
-        return FinderInteractor(explorerStore)
+    fun interactor(finderService: FinderService): FinderInteractor {
+        return FinderInteractor(finderService)
     }
 }
 
 interface FinderDependencies {
     fun preferenceChannel(): PreferenceChannel
     fun explorerStore(): ExplorerStore
-    fun settingsStore(): SettingsStore
+    fun settingsStore(): PreferenceStore
+    fun finderService(): FinderService
 }

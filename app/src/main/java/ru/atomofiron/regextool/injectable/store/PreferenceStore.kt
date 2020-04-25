@@ -5,19 +5,19 @@ import android.content.SharedPreferences
 import android.view.Gravity
 import leakcanary.AppWatcher
 import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
-import ru.atomofiron.regextool.model.AppOrientation
-import ru.atomofiron.regextool.model.AppTheme
-import ru.atomofiron.regextool.model.ExplorerItemComposition
-import ru.atomofiron.regextool.model.JoystickComposition
+import ru.atomofiron.regextool.model.preference.AppOrientation
+import ru.atomofiron.regextool.model.preference.AppTheme
+import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
+import ru.atomofiron.regextool.model.preference.JoystickComposition
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Tool
 
-class SettingsStore(context: Context, sp: SharedPreferences) {
+class PreferenceStore(context: Context, sp: SharedPreferences) {
 
     fun getCurrentValue(key: String): Any? {
         return when (key) {
             Const.PREF_STORAGE_PATH -> storagePath.value
-            Const.PREF_EXTRA_FORMATS -> extraFormats.value
+            Const.PREF_TEXT_FORMATS -> textFormats.value
             Const.PREF_SPECIAL_CHARACTERS -> specialCharacters.value
             Const.PREF_APP_THEME -> appTheme.value
             Const.PREF_APP_ORIENTATION -> appOrientation.value
@@ -62,18 +62,30 @@ class SettingsStore(context: Context, sp: SharedPreferences) {
             fromValue = { it.split(" ").toTypedArray() }
     )
 
-    val extraFormats = PreferenceNode.forString(
+    val excludeDirs = PreferenceNode.forBoolean<Boolean>(
             sp,
-            key = Const.PREF_EXTRA_FORMATS,
-            default = Const.DEFAULT_EXTRA_FORMATS,
+            key = Const.PREF_EXCLUDE_DIRS,
+            default = false
+    )
+
+    val textFormats = PreferenceNode.forString(
+            sp,
+            key = Const.PREF_TEXT_FORMATS,
+            default = Const.DEFAULT_TEXT_FORMATS,
             toValue = { it.joinToString(separator = " ") },
             fromValue = { it.split(" ").toTypedArray() }
     )
 
-    val maxFileSizeForSearch = PreferenceNode.forInt<Int>(
+    val maxFileSizeForSearch = PreferenceNode.forLong<Long>(
             sp,
             key = Const.PREF_MAX_SIZE,
             default = Const.DEFAULT_MAX_SIZE
+    )
+
+    val maxDepthForSearch = PreferenceNode.forInt<Int>(
+            sp,
+            key = Const.PREF_MAX_DEPTH,
+            default = Const.DEFAULT_MAX_DEPTH
     )
 
     val appTheme = PreferenceNode.forString(

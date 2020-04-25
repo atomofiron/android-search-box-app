@@ -6,7 +6,7 @@ import android.widget.CompoundButton
 import android.widget.SeekBar
 import android.widget.TextView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.model.JoystickComposition
+import ru.atomofiron.regextool.model.preference.JoystickComposition
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 class JoystickFragmentDelegate(

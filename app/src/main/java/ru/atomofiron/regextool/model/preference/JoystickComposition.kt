@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.model
+package ru.atomofiron.regextool.model.preference
 
 import android.graphics.Color
 

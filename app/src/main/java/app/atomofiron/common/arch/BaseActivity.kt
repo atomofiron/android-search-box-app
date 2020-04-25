@@ -12,7 +12,7 @@ import app.atomofiron.common.arch.view.IView
 import app.atomofiron.common.arch.view.ViewDelegate
 import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.model.AppTheme
+import ru.atomofiron.regextool.model.preference.AppTheme
 import ru.atomofiron.regextool.utils.Const
 import kotlin.reflect.KClass
 
@@ -44,10 +44,6 @@ abstract class BaseActivity<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Ap
     override fun onAttachFragment(childFragment: Fragment) {
         super.onAttachFragment(childFragment)
         delegate.onAttachChildFragment(childFragment)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onDestroy() {

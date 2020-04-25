@@ -12,7 +12,7 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.service.explorer.model.Change
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
-import ru.atomofiron.regextool.model.ExplorerItemComposition
+import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData

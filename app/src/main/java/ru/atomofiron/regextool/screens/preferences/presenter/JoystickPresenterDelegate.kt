@@ -1,7 +1,7 @@
 package ru.atomofiron.regextool.screens.preferences.presenter
 
 import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
-import ru.atomofiron.regextool.model.JoystickComposition
+import ru.atomofiron.regextool.model.preference.JoystickComposition
 import ru.atomofiron.regextool.screens.preferences.fragment.JoystickFragmentDelegate
 
 class JoystickPresenterDelegate(

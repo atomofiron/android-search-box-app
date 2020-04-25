@@ -2,13 +2,17 @@ package ru.atomofiron.regextool.screens.finder.presenter
 
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.screens.finder.FinderViewModel
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 class FinderAdapterPresenterDelegate(
-        private val viewModel: FinderViewModel
+        private val viewModel: FinderViewModel,
+        private val interactor: FinderInteractor
 ) : FinderAdapterOutput {
+    lateinit var targets: List<XFile>
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) {
         val oldItem = viewModel.getItem(FinderStateItem.ConfigItem::class)
@@ -45,6 +49,11 @@ class FinderAdapterPresenterDelegate(
         // do not notify
     }
 
+    override fun onItemClick(item: FinderStateItem.TargetItem) {
+        val context = viewModel.getApplication<App>().applicationContext
+        viewModel.snackbar.invoke(context.getString(R.string.oops_not_working))
+    }
+
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
     }
 
@@ -54,10 +63,9 @@ class FinderAdapterPresenterDelegate(
     override fun onReplaceClick(value: String) {
     }
 
-    override fun onItemClick(item: FinderStateItem.TargetItem) {
-        val context = viewModel.getApplication<App>().applicationContext
-        viewModel.snackbar.invoke(context.getString(R.string.oops_not_working))
+    override fun onSearchClick(value: String) {
+        viewModel.history.invoke(value)
+        val config = viewModel.getItem(FinderStateItem.ConfigItem::class)
+        interactor.search(value, targets, config.ignoreCase, config.useRegex, config.multilineSearch, config.searchInContent)
     }
-
-    override fun onSearchClick(value: String) = viewModel.history.invoke(value)
 }

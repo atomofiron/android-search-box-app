@@ -1,12 +1,13 @@
 package ru.atomofiron.regextool.screens.explorer.presenter
 
 import android.Manifest
+import app.atomofiron.common.util.permission.PermissionResultListener
 import app.atomofiron.common.util.permission.Permissions
 import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.explorer.ExplorerRouter
 import ru.atomofiron.regextool.screens.explorer.ExplorerViewModel
@@ -17,10 +18,10 @@ class ExplorerItemActionListenerDelegate(
         fragment: WeakProperty<ExplorerFragment>,
         private val viewModel: ExplorerViewModel,
         private val explorerStore: ExplorerStore,
-        private val settingsStore: SettingsStore,
+        private val preferenceStore: PreferenceStore,
         private val router: ExplorerRouter,
         private val explorerInteractor: ExplorerInteractor
-) : ExplorerItemActionListener {
+) : ExplorerItemActionListener, PermissionResultListener {
     private var readStorageGranted = false
     val permissions = Permissions(fragment)
 
@@ -41,7 +42,7 @@ class ExplorerItemActionListenerDelegate(
     }
 
     override fun onItemClick(item: XFile) {
-        val useSu = settingsStore.useSu.value
+        val useSu = preferenceStore.useSu.value
         when {
             !useSu && !readStorageGranted -> permissions
                     .check(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -49,12 +50,11 @@ class ExplorerItemActionListenerDelegate(
                         readStorageGranted = true
                         onItemClick(item)
                     }
-                    .denied {  }
                     .forbidden { viewModel.permissionRequiredWarning.invoke() }
             item.isDirectory -> explorerInteractor.openDir(item)
             else -> {
-                val extraFormats = settingsStore.extraFormats.entity
-                router.showFile(item, extraFormats)
+                val textFormats = preferenceStore.textFormats.entity
+                router.showFile(item, textFormats)
             }
         }
     }

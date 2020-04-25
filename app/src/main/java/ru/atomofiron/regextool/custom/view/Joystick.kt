@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import app.atomofiron.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.model.JoystickComposition
+import ru.atomofiron.regextool.model.preference.JoystickComposition
 
 class Joystick @JvmOverloads constructor(
         context: Context,

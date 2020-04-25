@@ -10,12 +10,12 @@ object Const {
     const val PREF_OPENED_DIR_PATH = "pref_opened_dir_path"
     const val PREF_DOCK_GRAVITY = "pref_drawer_gravity"
     const val PREF_SPECIAL_CHARACTERS = "pref_special_characters"
-    const val PREF_EXTRA_FORMATS = "pref_extra_formats"
+    const val PREF_TEXT_FORMATS = "pref_text_formats"
     const val PREF_APP_ORIENTATION = "pref_app_orientation"
     const val PREF_APP_THEME = "pref_app_theme"
-    const val PREF_MAX_SIZE = "max_size"
-    const val PREF_MAX_DEPTH = "max_depth"
-    const val PREF_EXCLUDE_DIRS = "exclude_dirs"
+    const val PREF_MAX_SIZE = "pref_max_size"
+    const val PREF_MAX_DEPTH = "pref_max_depth"
+    const val PREF_EXCLUDE_DIRS = "pref_exclude_dirs"
     const val PREF_USE_SU = "pref_use_su"
     const val PREF_CURRENT_DIR = "pref_current_dir"
     const val PREF_EXPORT_IMPORT = "pref_export_import"
@@ -31,9 +31,10 @@ object Const {
     const val SELECTED_LIST = "SELECTED_LIST"
 
     const val NOTIFICATION_CHANNEL_ID = "channel_id"
-    const val DEFAULT_EXTRA_FORMATS = "md mkd markdown cm ad adoc"
+    const val DEFAULT_TEXT_FORMATS = "txt java xml html htm smali log js css json kt md mkd markdown cm ad adoc"
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
-    const val DEFAULT_MAX_SIZE = 10485760
+    const val DEFAULT_MAX_SIZE = 10485760L
+    const val DEFAULT_MAX_DEPTH = 1024
     const val DEFAULT_EXPLORER_ITEM = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1
     const val DEFAULT_JOYSTICK = 16732754 // 0ff5252
 }

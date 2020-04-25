@@ -11,7 +11,7 @@ import app.atomofiron.common.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.Joystick
-import ru.atomofiron.regextool.model.AppOrientation
+import ru.atomofiron.regextool.model.preference.AppOrientation
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.root.fragment.SnackbarCallbackFragmentDelegate
 import ru.atomofiron.regextool.screens.root.util.SnackbarWrapper

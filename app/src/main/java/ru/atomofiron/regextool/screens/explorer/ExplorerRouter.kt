@@ -19,8 +19,8 @@ class ExplorerRouter(property: WeakProperty<ExplorerFragment>) : BaseRouter(prop
 
     fun showSettings() = startScreen(PreferenceFragment())
 
-    fun showFile(item: XFile, extraFormats: Array<String>) {
-        if (Util.isTextFile(item.completedPath, extraFormats)) {
+    fun showFile(item: XFile, textFormats: Array<String>) {
+        if (Util.isTextFile(item.completedPath, textFormats)) {
             // todo open file
         } else {
             activity {

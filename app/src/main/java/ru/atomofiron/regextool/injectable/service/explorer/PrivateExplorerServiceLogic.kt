@@ -10,7 +10,7 @@ import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
@@ -19,7 +19,7 @@ import java.io.FileOutputStream
 abstract class PrivateExplorerServiceLogic constructor(
         private val assets: AssetManager,
         protected val explorerStore: ExplorerStore,
-        protected val settingsStore: SettingsStore
+        protected val preferenceStore: PreferenceStore
 ) {
     companion object {
         private const val UNKNOWN = -1
@@ -34,7 +34,7 @@ abstract class PrivateExplorerServiceLogic constructor(
             explorerStore.notifyCurrent(value)
         }
 
-    private val useSu: Boolean get() = settingsStore.useSu.value
+    private val useSu: Boolean get() = preferenceStore.useSu.value
 
     init {
         GlobalScope.launch(Dispatchers.IO) {

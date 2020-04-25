@@ -8,7 +8,7 @@ import dagger.Module
 import dagger.Provides
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.service.PreferenceService
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.preferences.presenter.ExportImportPresenterDelegate
 import ru.atomofiron.regextool.screens.preferences.presenter.JoystickPresenterDelegate
 import ru.atomofiron.regextool.screens.preferences.presenter.PreferenceUpdatePresenterDelegate
@@ -41,15 +41,15 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun preferenceUpdatePresenterDelegate(
-            context: Context, viewModel: PreferenceViewModel, settingsStore: SettingsStore
+            context: Context, viewModel: PreferenceViewModel, preferenceStore: PreferenceStore
     ): PreferenceUpdatePresenterDelegate {
-        return PreferenceUpdatePresenterDelegate(context, viewModel, settingsStore)
+        return PreferenceUpdatePresenterDelegate(context, viewModel, preferenceStore)
     }
 
     @Provides
     @PreferenceScope
-    fun joystickPreferenceDelegate(settingsStore: SettingsStore): JoystickPresenterDelegate {
-        return JoystickPresenterDelegate(settingsStore.joystickComposition)
+    fun joystickPreferenceDelegate(preferenceStore: PreferenceStore): JoystickPresenterDelegate {
+        return JoystickPresenterDelegate(preferenceStore.joystickComposition)
     }
 
     @Provides
@@ -80,6 +80,6 @@ class PreferenceModule {
 
 interface PreferenceDependencies {
     fun preferenceChannel(): PreferenceChannel
-    fun settingsStore(): SettingsStore
+    fun settingsStore(): PreferenceStore
     fun context(): Context
 }

@@ -2,7 +2,7 @@ package ru.atomofiron.regextool.screens.preferences.presenter
 
 import android.content.Context
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.injectable.store.SettingsStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel
 import ru.atomofiron.regextool.screens.preferences.fragment.PreferenceUpdateOutput
 import ru.atomofiron.regextool.utils.Const
@@ -11,33 +11,42 @@ import ru.atomofiron.regextool.utils.Shell
 class PreferenceUpdatePresenterDelegate(
         private val context: Context,
         private val viewModel: PreferenceViewModel,
-        private val settingsStore: SettingsStore
+        private val preferenceStore: PreferenceStore
 ) : PreferenceUpdateOutput {
 
     override fun onPreferenceUpdate(key: String, value: Int) {
         when (key) {
-            Const.PREF_MAX_SIZE -> settingsStore.maxFileSizeForSearch.notify(value)
-            Const.PREF_EXPLORER_ITEM -> settingsStore.explorerItemComposition.pushByOriginal(value)
+            Const.PREF_MAX_DEPTH -> preferenceStore.maxDepthForSearch.pushByOriginal(value)
+            Const.PREF_EXPLORER_ITEM -> preferenceStore.explorerItemComposition.pushByOriginal(value)
+            else -> throw Exception()
+        }
+    }
+
+    override fun onPreferenceUpdate(key: String, value: Long) {
+        when (key) {
+            Const.PREF_MAX_SIZE -> preferenceStore.maxFileSizeForSearch.notify(value)
             else -> throw Exception()
         }
     }
 
     override fun onPreferenceUpdate(key: String, value: String) {
         when (key) {
-            Const.PREF_STORAGE_PATH -> settingsStore.storagePath.notify(value)
-            Const.PREF_EXTRA_FORMATS -> settingsStore.extraFormats.notifyByOriginal(value)
-            Const.PREF_SPECIAL_CHARACTERS -> settingsStore.specialCharacters.notifyByOriginal(value.trim())
-            Const.PREF_APP_THEME -> settingsStore.appTheme.notifyByOriginal(value)
-            Const.PREF_APP_ORIENTATION -> settingsStore.appOrientation.notifyByOriginal(value)
+            Const.PREF_STORAGE_PATH -> preferenceStore.storagePath.notify(value)
+            Const.PREF_TEXT_FORMATS -> preferenceStore.textFormats.notifyByOriginal(value)
+            Const.PREF_SPECIAL_CHARACTERS -> preferenceStore.specialCharacters.notifyByOriginal(value.trim())
+            Const.PREF_APP_THEME -> preferenceStore.appTheme.notifyByOriginal(value)
+            Const.PREF_APP_ORIENTATION -> preferenceStore.appOrientation.notifyByOriginal(value)
             else -> throw Exception()
         }
     }
 
     override fun onPreferenceUpdate(key: String, value: Boolean): Boolean {
         when (key) {
+            Const.PREF_EXCLUDE_DIRS -> preferenceStore.excludeDirs.notifyByOriginal(value)
             Const.PREF_USE_SU -> return onUpdateUseSu(value)
             else -> throw Exception()
         }
+        return true
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
@@ -59,7 +68,7 @@ class PreferenceUpdatePresenterDelegate(
         }
 
         if (allowed) {
-            settingsStore.useSu.notify(newValue)
+            preferenceStore.useSu.notify(newValue)
         }
         return allowed
     }

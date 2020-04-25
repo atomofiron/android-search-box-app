@@ -71,12 +71,14 @@ open class Permissions private constructor(
     private fun shouldShowRequestPermissionRationale(permission: String): Boolean {
         var should = activity?.shouldShowRequestPermissionRationale(permission)
         should = should ?: fragment?.shouldShowRequestPermissionRationale(permission)
+        should = should ?: property?.value?.activity?.shouldShowRequestPermissionRationale(permission)
         return should ?: throw NullPointerException()
     }
 
     private fun requestPermission(permission: String, requestCode: Int) {
         activity?.requestPermissions(arrayOf(permission), requestCode)
         fragment?.requestPermissions(arrayOf(permission), requestCode)
+        property?.value?.requestPermissions(arrayOf(permission), requestCode)
     }
 
     fun check(vararg permissions: String): Checker? {
@@ -85,20 +87,15 @@ open class Permissions private constructor(
 
     fun check(permission: String): Checker = when {
         granted.contains(permission) || checkPermission(context, permission) -> {
-            val grabber = Grabber(permission, isGranted = true, isForbidden = false)
-            val denied = DeniedImpl(null)
-            CheckerImpl(grabber, GrantedImpl(null, denied), denied)
+            val grabber = Grabber(permission, isGranted = true)
+            val denied = DeniedImpl(grabber = null)
+            CheckerImpl(grabber, GrantedImpl(grabber = null, denied = denied), denied)
         }
-        !shouldShowRequestPermissionRationale(permission) -> {
-            val grabber = Grabber(permission, isGranted = false, isForbidden = false)
+        else -> {
+            val grabber = Grabber(permission, isGranted = false)
             val requestCode = nextRequestCode
             map[requestCode] = grabber
             requestPermission(permission, requestCode)
-            val denied = DeniedImpl(grabber)
-            CheckerImpl(grabber, GrantedImpl(grabber, denied), denied)
-        }
-        else -> {
-            val grabber = Grabber(permission, isGranted = false, isForbidden = true)
             val denied = DeniedImpl(grabber)
             CheckerImpl(grabber, GrantedImpl(grabber, denied), denied)
         }

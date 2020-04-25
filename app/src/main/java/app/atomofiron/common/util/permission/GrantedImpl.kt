@@ -1,18 +1,18 @@
 package app.atomofiron.common.util.permission
 
 internal class GrantedImpl(
-        private val callback: Callback?,
+        private val grabber: Callback?,
         private val denied: Permissions.Denied
 ) : Permissions.Granted {
 
     @Throws(Grabber.AlreadyDefinedException::class)
     override infix fun denied(action: (String) -> Unit): Permissions.Denied {
-        callback?.setDenied(action)
+        grabber?.setDenied(action)
         return denied
     }
 
     @Throws(Grabber.AlreadyDefinedException::class)
-    override infix fun forbidden(action: (String) -> Unit): Unit? = callback?.setForbidden(action)
+    override infix fun forbidden(action: (String) -> Unit): Unit? = grabber?.setForbidden(action)
 
     interface Callback {
         @Throws(Grabber.AlreadyDefinedException::class)

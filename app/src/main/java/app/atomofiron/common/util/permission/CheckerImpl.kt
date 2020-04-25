@@ -1,25 +1,25 @@
 package app.atomofiron.common.util.permission
 
 internal class CheckerImpl(
-        private val callback: Callback,
+        private val grabber: Callback,
         private val granted: Permissions.Granted,
         private val denied: Permissions.Denied
 ) : Permissions.Checker {
 
     @Throws(Grabber.AlreadyDefinedException::class)
     override infix fun granted(action: () -> Unit): Permissions.Granted {
-        callback.setGranted(action)
+        grabber.setGranted(action)
         return granted
     }
 
     @Throws(Grabber.AlreadyDefinedException::class)
     override infix fun denied(action: (String) -> Unit): Permissions.Denied {
-        callback.setDenied(action)
+        grabber.setDenied(action)
         return denied
     }
 
     @Throws(Grabber.AlreadyDefinedException::class)
-    override infix fun forbidden(action: (String) -> Unit): Unit? = callback.setForbidden(action)
+    override infix fun forbidden(action: (String) -> Unit): Unit? = grabber.setForbidden(action)
 
     interface Callback {
         @Throws(Grabber.AlreadyDefinedException::class)

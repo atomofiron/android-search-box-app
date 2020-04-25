@@ -14,7 +14,7 @@ class ViewDelegate<P : BasePresenter<*,*>> {
     private val systemBarsLights: Boolean get() = view.systemBarsLights
 
     private lateinit var view: IView<P>
-    private val presenter: P get() = view.presenter
+    private val presenter: P get() = view.presenter // todo crash for activity
 
     private val thisContext: Context get() = view.thisContext
     private val thisActivity: AppCompatActivity get() = view.thisActivity
