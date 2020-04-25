@@ -89,6 +89,7 @@
     <string name="pref_category_debug">Debug</string>
     <string name="pref_leak_canary" translatable="false">Leak Canary</string>
     <string name="root">Root</string>
+    <string name="foreground_notification_name">Foreground Notification</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>
         <item quantity="one">%d directory</item>

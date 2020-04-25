@@ -7,7 +7,6 @@ import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
-import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
 import ru.atomofiron.regextool.screens.finder.presenter.FinderAdapterPresenterDelegate
 
 class FinderPresenter(
@@ -21,7 +20,6 @@ class FinderPresenter(
         FinderAdapterOutput by finderAdapterDelegate
 {
     private val items: ArrayList<FinderStateItem> get() = viewModel.items
-    private var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
 
     init {
         items.add(FinderStateItem.SearchAndReplaceItem())
@@ -75,23 +73,7 @@ class FinderPresenter(
 
     fun onExplorerOptionSelected() = router.showExplorer()
 
-    fun onConfigOptionSelected() {
-        when (val configItem = configItem) {
-            null -> {
-                val item = viewModel.getItem(FinderStateItem.ConfigItem::class)
-                this.configItem = item
-                val index = items.indexOf(item)
-                items.removeAt(index)
-                viewModel.updateContent.invoke(FinderStateItemUpdate.Removed(index))
-            }
-            else -> {
-                val index = items.indexOf(viewModel.getItem(FinderStateItem.TestItem::class))
-                items.add(index, configItem)
-                viewModel.updateContent.invoke(FinderStateItemUpdate.Inserted(index, configItem))
-                this.configItem = null
-            }
-        }
-    }
+    fun onConfigOptionSelected() = viewModel.switchConfigItemVisibility()
 
     fun onSettingsOptionSelected() = router.showSettings()
 

@@ -38,7 +38,7 @@
             />
 
         <service
-            android:name=".SearchService"
+            android:name=".android.ForegroundService"
             android:exported="false"
             />
 

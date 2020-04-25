@@ -23,18 +23,16 @@ object Const {
     const val PREF_JOYSTICK = "pref_joystick"
     const val PREF_LEAK_CANARY = "pref_leak_canary"
 
-    const val CASE_SENSE = "CASE_SENSE"
-    const val QUERY = "QUERY"
-    const val SEARCH_IN_FILES = "SEARCH_IN_FILES"
-    const val SEARCH_REGEX = "SEARCH_REGEX"
-    const val MULTILINE = "MULTILINE"
     const val SELECTED_LIST = "SELECTED_LIST"
 
-    const val NOTIFICATION_CHANNEL_ID = "channel_id"
     const val DEFAULT_TEXT_FORMATS = "txt java xml html htm smali log js css json kt md mkd markdown cm ad adoc"
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
     const val DEFAULT_MAX_SIZE = 10485760L
     const val DEFAULT_MAX_DEPTH = 1024
     const val DEFAULT_EXPLORER_ITEM = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1
     const val DEFAULT_JOYSTICK = 16732754 // 0ff5252
+
+    const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "foreground_channel_id"
+    const val FOREGROUND_NOTIFICATION_ID = 101
+    const val FOREGROUND_INTENT_REQUEST_CODE = 102
 }

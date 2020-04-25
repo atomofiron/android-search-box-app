@@ -65,7 +65,7 @@ class FinderAdapterPresenterDelegate(
 
     override fun onSearchClick(value: String) {
         viewModel.history.invoke(value)
-        val config = viewModel.getItem(FinderStateItem.ConfigItem::class)
+        val config = viewModel.configItem ?: viewModel.getItem(FinderStateItem.ConfigItem::class)
         interactor.search(value, targets, config.ignoreCase, config.useRegex, config.multilineSearch, config.searchInContent)
     }
 }

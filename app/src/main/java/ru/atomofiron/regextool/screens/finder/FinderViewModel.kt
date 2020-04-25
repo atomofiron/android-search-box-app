@@ -12,6 +12,8 @@ import kotlin.reflect.KClass
 
 class FinderViewModel(app: Application) : BaseViewModel<FinderComponent, FinderFragment>(app) {
     val items = ArrayList<FinderStateItem>()
+    var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
+        private set
 
     val historyDrawerGravity = MutableLiveData<Int>()
     val state = LateinitLiveData<List<FinderStateItem>>()
@@ -33,6 +35,24 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderComponent, FinderF
         super.inject(view)
         component.inject(this)
         component.inject(view)
+    }
+
+    fun switchConfigItemVisibility() {
+        when (val configItem = configItem) {
+            null -> {
+                val item = getItem(FinderStateItem.ConfigItem::class)
+                this.configItem = item
+                val index = items.indexOf(item)
+                items.removeAt(index)
+                updateContent.invoke(FinderStateItemUpdate.Removed(index))
+            }
+            else -> {
+                val index = items.indexOf(getItem(FinderStateItem.TestItem::class))
+                items.add(index, configItem)
+                updateContent.invoke(FinderStateItemUpdate.Inserted(index, configItem))
+                this.configItem = null
+            }
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

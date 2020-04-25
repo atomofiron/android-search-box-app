@@ -27,7 +27,7 @@ android {
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
-            buildConfigField "String", "YANDEX_API_KEY", "\"null\""
+            buildConfigField "String", "YANDEX_API_KEY", "\"7793f606-fa41-4252-8604-2853747b41df\""
         }
     }
     lintOptions {
@@ -51,6 +51,7 @@ ext {
     dagger = "2.26"
     leakcanary = "2.2"
     metrica = "3.13.1"
+    work = "2.3.4"
 }
 
 dependencies {
@@ -66,6 +67,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
     implementation "com.google.android.material:material:$material"
     implementation "com.google.android:flexbox:$flexbox"
+    implementation "androidx.work:work-runtime-ktx:$work"
 
     implementation "androidx.room:room-runtime:$room"
     kapt "androidx.room:room-compiler:$room"
