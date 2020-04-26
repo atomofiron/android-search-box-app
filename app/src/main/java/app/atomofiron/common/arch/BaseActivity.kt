@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
@@ -39,11 +38,6 @@ abstract class BaseActivity<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Ap
     override fun onStart() {
         super.onStart()
         delegate.onStart()
-    }
-
-    override fun onAttachFragment(childFragment: Fragment) {
-        super.onAttachFragment(childFragment)
-        delegate.onAttachChildFragment(childFragment)
     }
 
     override fun onDestroy() {

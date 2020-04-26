@@ -107,6 +107,8 @@ class FinderWorker(
                     }
                 }
             }
+        } else {
+            log("searchForName depth limit $depth")
         }
     }
 
