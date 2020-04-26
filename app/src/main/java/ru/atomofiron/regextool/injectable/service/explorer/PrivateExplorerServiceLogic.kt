@@ -172,7 +172,10 @@ abstract class PrivateExplorerServiceLogic constructor(
         val output = FileOutputStream(toybox)
         output.write(bytes)
         output.close()
-        Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
+        val response = Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
+        if (response.error != null) {
+            log2("copyToybox error != null\n${response.error}")
+        }
     }
 
     protected suspend fun open(item: MutableXFile) {
@@ -514,18 +517,27 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
     }
 
-    protected suspend fun deleteItem(item: MutableXFile) {
+    protected suspend fun deleteItems(items: List<MutableXFile>) {
+        log2("deleteItems ${items.size}")
+        items.forEach { item ->
+            if (checked.contains(item)) {
+                item.isChecked = false
+                checked.remove(item)
+                explorerStore.notifyUpdate(item)
+            }
+        }
+        explorerStore.notifyChecked()
+        items.forEach { item ->
+            deleteItem(item)
+        }
+    }
+
+    private suspend fun deleteItem(item: MutableXFile) {
         if (item.isDeleting) {
             log2("deleteItem return $item")
             return
         }
         log2("deleteItem $item")
-        if (checked.contains(item)) {
-            item.isChecked = false
-            checked.remove(item)
-            explorerStore.notifyChecked()
-        }
-        explorerStore.notifyUpdate(item)
         val error = item.delete()
         if (error != null) {
             log2("deleteItem error != null $item\n$error")
@@ -543,6 +555,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         val error = pair.first
         val newItem = pair.second
         if (error != null) {
+            log2("rename error != null $item\n$error")
             explorerStore.alerts.setAndNotify(error)
         }
         if (newItem != null) {
@@ -570,13 +583,29 @@ abstract class PrivateExplorerServiceLogic constructor(
                 explorerStore.notifyChecked()
             }
         }
+        if (error != null) {
+            when {
+                item.isOpened -> updateCurrentDir(currentOpenedDir!!)
+                item.isDirectory -> updateClosedDir(item)
+                else -> updateItem(item)
+            }
+        }
     }
 
     suspend fun create(dir: MutableXFile, name: String, directory: Boolean) {
+        log2("create $directory $name $dir")
         val item = MutableXFile.create(dir.completedPath, name, directory, dir.root)
         val error = item.create()
         when {
-            error != null -> explorerStore.alerts.setAndNotify(error)
+            error != null -> {
+                log2("create error != null $dir\n$error")
+                explorerStore.alerts.setAndNotify(error)
+                when {
+                    dir.isOpened -> updateCurrentDir(currentOpenedDir!!)
+                    dir.isDirectory -> updateClosedDir(dir)
+                    else -> updateItem(dir)
+                }
+            }
             else -> {
                 mutex.withLock {
                     val index = files.indexOf(dir)

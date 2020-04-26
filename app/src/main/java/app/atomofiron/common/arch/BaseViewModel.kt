@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import app.atomofiron.common.util.KObservable
+import app.atomofiron.common.util.SingleLiveEvent
 import app.atomofiron.common.util.property.MutableWeakProperty
 import kotlinx.coroutines.CoroutineScope
 import ru.atomofiron.regextool.App
@@ -17,6 +18,7 @@ abstract class BaseViewModel<D, V : Any>(app: Application) : AndroidViewModel(ap
     val context: Context get() = getApplication<App>().applicationContext
 
     val onClearedCallback = KObservable.RemoveObserverCallback()
+    val alerts = SingleLiveEvent<String>()
 
     open fun inject(view: V) {
         log2("inject")

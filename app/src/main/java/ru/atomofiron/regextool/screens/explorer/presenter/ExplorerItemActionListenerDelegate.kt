@@ -45,7 +45,7 @@ class ExplorerItemActionListenerDelegate(
         val useSu = preferenceStore.useSu.value
         when {
             !useSu && !readStorageGranted -> permissions
-                    .check(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .check(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .granted {
                         readStorageGranted = true
                         onItemClick(item)

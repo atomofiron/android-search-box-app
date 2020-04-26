@@ -51,6 +51,7 @@ class ExplorerPresenter(
         explorerStore.store.addObserver(onClearedCallback, viewModel::onChanged)
         explorerStore.updates.addObserver(onClearedCallback, viewModel::onChanged)
         explorerStore.current.addObserver(onClearedCallback, viewModel::onChanged)
+        explorerStore.alerts.addObserver(onClearedCallback, viewModel.alerts::invoke)
     }
 
     private fun onDockGravityChanged(gravity: Int) {

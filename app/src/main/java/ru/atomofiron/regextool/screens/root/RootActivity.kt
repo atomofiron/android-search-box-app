@@ -87,5 +87,4 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
     }
 
     // todo onNewIntent ACTION_SHOW_RESULT, ACTION_SHOW_RESULTS
-    // todo setRequestedOrientation Const.PREF_ORIENTATION
 }

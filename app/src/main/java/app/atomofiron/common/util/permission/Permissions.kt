@@ -55,6 +55,7 @@ open class Permissions private constructor(
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         val grabber = map.remove(requestCode)!!
         when {
+            grantResults.isEmpty() -> Unit // и такое бывает
             grantResults[0] == PermissionChecker.PERMISSION_GRANTED -> {
                 granted.add(permissions[0])
                 grabber.onGranted()

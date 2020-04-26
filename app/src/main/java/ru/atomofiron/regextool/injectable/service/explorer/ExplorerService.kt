@@ -56,12 +56,10 @@ class ExplorerService constructor(
         super.checkItem(item, isChecked)
     }
 
-    suspend fun deleteItems(vararg items: XFile) {
-        log2("deleteItems ${items.size}")
-        items.forEach {
-            val item = findItem(it) ?: return@forEach
-            super.deleteItem(item)
-        }
+    suspend fun deleteItems(vararg its: XFile) {
+        log2("deleteItems ${its.size}")
+        val items = its.mapNotNull { findItem(it) }
+        super.deleteItems(items)
     }
 
     suspend fun rename(it: XFile, name: String) {

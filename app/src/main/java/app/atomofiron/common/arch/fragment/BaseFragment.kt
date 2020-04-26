@@ -15,6 +15,7 @@ import app.atomofiron.common.arch.view.Backable
 import app.atomofiron.common.arch.view.IView
 import app.atomofiron.common.arch.view.ViewDelegate
 import app.atomofiron.common.util.findBooleanByAttr
+import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.log2
 import kotlin.reflect.KClass
@@ -45,6 +46,13 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
         // onAttachChildFragment()
         viewModel = ViewModelProvider(requireActivity()).get(viewModelClass.java)
         delegate.onCreate(this)
+        viewModel.alerts.observeData(this, ::onAlert)
+    }
+
+    protected open fun onAlert(message: String) {
+        Snackbar.make(thisView, message, Snackbar.LENGTH_SHORT)
+                .setAnchorView(anchorView)
+                .show()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
