@@ -1,18 +1,21 @@
 package ru.atomofiron.regextool.work
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
 import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import app.atomofiron.common.util.ServiceConnectionImpl
 import ru.atomofiron.regextool.android.ForegroundService
+import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.model.finder.FinderResult
+import ru.atomofiron.regextool.model.finder.MutableFinderTask
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 class FinderWorker(
         context: Context,
@@ -65,32 +68,38 @@ class FinderWorker(
     private lateinit var textFormats: Array<String>
     private var maxDepth = UNDEFINED
 
-    private val results = ArrayList<Output>()
-    private var passed = 0
+    private val task = MutableFinderTask(id)
+    private val connection = ServiceConnectionImpl()
 
-    private val connection = Connection()
+    @Inject
+    lateinit var finderStore: FinderStore
+
+    init {
+        DaggerInjector.appComponent.inject(this)
+        finderStore.add(task)
+    }
 
     private fun searchForContent(where: List<MutableXFile>, depth: Int) {
         // todo next
     }
 
     private fun searchForName(where: List<MutableXFile>, depth: Int) {
-        log("searchForName $depth ${results.size}/$passed")
+        log("searchForName $depth ${task.results.size}/${task.count}")
         for (item in where) {
             if (isStopped) {
                 return
             }
             if (!item.isDirectory || !excludeDirs) {
-                passed++
+                task.count++
                 if (useRegex) {
                     val matcher = pattern.matcher(item.name)
                     if (matcher.find()) {
-                        val result = Output(item.completedPath)
-                        results.add(result)
+                        val result = FinderResult(item.completedPath)
+                        task.results.add(result)
                     }
                 } else if (item.name.contains(query, ignoreCase)) {
-                    val result = Output(item.completedPath)
-                    results.add(result)
+                    val result = FinderResult(item.completedPath)
+                    task.results.add(result)
                 }
             }
         }
@@ -108,7 +117,7 @@ class FinderWorker(
                 }
             }
         } else {
-            log("searchForName depth limit $depth")
+            log2("searchForName depth limit $depth")
         }
     }
 
@@ -157,21 +166,9 @@ class FinderWorker(
             Data.Builder().putString(KEY_EXCEPTION, e.toString()).build()
         }
 
+        task.inProgress = false
         applicationContext.unbindService(connection)
 
         return Result.success(data)
-    }
-
-    class Output(
-            val completedPath: String,
-            val matches: List<Int>? = null
-    )
-
-    private class Connection : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-        }
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        }
     }
 }

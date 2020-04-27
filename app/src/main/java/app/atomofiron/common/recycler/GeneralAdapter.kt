@@ -23,9 +23,9 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         holder.bind(items[position], position)
     }
 
-    fun setItems(items: List<D>) {
-        this.items.clear()
-        this.items.addAll(items)
+    open fun setItems(new: List<D>) {
+        items.clear()
+        items.addAll(new)
         notifyDataSetChanged()
     }
 

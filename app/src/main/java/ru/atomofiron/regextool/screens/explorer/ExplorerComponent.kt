@@ -72,7 +72,6 @@ class ExplorerModule {
     @Provides
     @ExplorerScope
     fun presenter(viewModel: ExplorerViewModel,
-                  scope: CoroutineScope,
                   router: ExplorerRouter,
                   explorerStore: ExplorerStore,
                   preferenceStore: PreferenceStore,
@@ -80,7 +79,7 @@ class ExplorerModule {
                   itemListener: ExplorerItemActionListenerDelegate,
                   placesListener: PlacesActionListenerDelegate,
                   menuListener: BottomSheetMenuListenerDelegate): ExplorerPresenter {
-        return ExplorerPresenter(viewModel, scope, router, explorerStore, preferenceStore,
+        return ExplorerPresenter(viewModel, router, explorerStore, preferenceStore,
                 explorerInteractor, itemListener, placesListener, menuListener)
     }
 

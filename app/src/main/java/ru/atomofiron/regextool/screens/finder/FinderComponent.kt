@@ -5,6 +5,10 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
 import ru.atomofiron.regextool.injectable.service.FinderService
@@ -42,18 +46,27 @@ class FinderModule {
     fun presenter(
             viewModel: FinderViewModel,
             router: FinderRouter,
+            scope: CoroutineScope,
             finderAdapterDelegate: FinderAdapterPresenterDelegate,
+            finderStore: FinderStore,
             explorerStore: ExplorerStore,
             preferenceStore: PreferenceStore,
             preferenceChannel: PreferenceChannel
     ): FinderPresenter {
-        return FinderPresenter(viewModel, router, finderAdapterDelegate, explorerStore, preferenceStore, preferenceChannel)
+        return FinderPresenter(viewModel, router, scope, finderAdapterDelegate, explorerStore,
+                preferenceStore, finderStore, preferenceChannel)
     }
 
     @Provides
     @FinderScope
     fun finderAdapterOutput(viewModel: FinderViewModel, interactor: FinderInteractor): FinderAdapterPresenterDelegate {
         return FinderAdapterPresenterDelegate(viewModel, interactor)
+    }
+
+    @Provides
+    @FinderScope
+    fun scope(): CoroutineScope {
+        return CoroutineScope(Job() + Dispatchers.Main.immediate)
     }
 
     @Provides
@@ -74,4 +87,5 @@ interface FinderDependencies {
     fun explorerStore(): ExplorerStore
     fun settingsStore(): PreferenceStore
     fun finderService(): FinderService
+    fun finderStore(): FinderStore
 }

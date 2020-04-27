@@ -6,6 +6,9 @@ private var timestamp: Long = 0
 private var nanotimestamp: Long = 0
 
 private const val mute = false
+private const val delay = false
+
+fun Any.sleep(t: Long) = if (delay) Thread.sleep(t) else Unit
 
 fun Any.log(s: String) = log(this.javaClass.simpleName, s)
 

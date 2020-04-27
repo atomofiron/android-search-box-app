@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.finder.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.screens.finder.adapter.holder.*
@@ -13,6 +14,16 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
 
     init {
         setHasStableIds(true)
+    }
+
+    override fun setItems(new: List<FinderStateItem>) {
+        val old = ArrayList<FinderStateItem>()
+        old.addAll(items)
+        items.clear()
+        items.addAll(new)
+        val callback = FinderDiffUtilCallback(old, new)
+        val util = DiffUtil.calculateDiff(callback, false)
+        util.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): GeneralHolder<FinderStateItem> {

@@ -3,7 +3,6 @@ package ru.atomofiron.regextool.screens.finder.presenter
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.screens.finder.FinderViewModel
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
@@ -12,25 +11,24 @@ class FinderAdapterPresenterDelegate(
         private val viewModel: FinderViewModel,
         private val interactor: FinderInteractor
 ) : FinderAdapterOutput {
-    lateinit var targets: List<XFile>
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) {
-        val oldItem = viewModel.getItem(FinderStateItem.ConfigItem::class)
+        val oldItem = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
 
         val ignoreCaseChanged = oldItem.ignoreCase xor item.ignoreCase
         val replaceEnabledChanged = oldItem.replaceEnabled xor item.replaceEnabled
         val useRegexpChanged = oldItem.useRegex xor item.useRegex
 
         if (replaceEnabledChanged || useRegexpChanged) {
-            viewModel.updateItem(FinderStateItem.SearchAndReplaceItem::class) {
+            viewModel.updateUniqueItem(FinderStateItem.SearchAndReplaceItem::class) {
                 it.copy(replaceEnabled = item.replaceEnabled, useRegex = item.useRegex)
             }
         }
 
-        viewModel.updateItem(item)
+        viewModel.updateUniqueItem(item)
 
         if (ignoreCaseChanged || replaceEnabledChanged || useRegexpChanged) {
-            viewModel.updateItem(FinderStateItem.TestItem::class) {
+            viewModel.updateUniqueItem(FinderStateItem.TestItem::class) {
                 it.copy(useRegex = item.useRegex,
                         ignoreCase = item.ignoreCase,
                         multilineSearch = item.multilineSearch)
@@ -41,10 +39,10 @@ class FinderAdapterPresenterDelegate(
     override fun onCharacterClick(value: String) = viewModel.insertInQuery.invoke(value)
 
     override fun onSearchChange(value: String) {
-        viewModel.updateItem(FinderStateItem.TestItem::class) {
+        viewModel.updateUniqueItem(FinderStateItem.TestItem::class) {
             it.copy(searchQuery = value)
         }
-        val item = viewModel.getItem(FinderStateItem.SearchAndReplaceItem::class)
+        val item = viewModel.getUniqueItem(FinderStateItem.SearchAndReplaceItem::class)
         item.query = value
         // do not notify
     }
@@ -58,6 +56,11 @@ class FinderAdapterPresenterDelegate(
     }
 
     override fun onProgressStopClick(item: FinderStateItem.ProgressItem) {
+        interactor.stop(item.finderTask)
+    }
+
+    override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {
+        interactor.drop(item.finderTask)
     }
 
     override fun onReplaceClick(value: String) {
@@ -65,7 +68,7 @@ class FinderAdapterPresenterDelegate(
 
     override fun onSearchClick(value: String) {
         viewModel.history.invoke(value)
-        val config = viewModel.configItem ?: viewModel.getItem(FinderStateItem.ConfigItem::class)
-        interactor.search(value, targets, config.ignoreCase, config.useRegex, config.multilineSearch, config.searchInContent)
+        val config = viewModel.configItem ?: viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
+        interactor.search(value, viewModel.targets, config.ignoreCase, config.useRegex, config.multilineSearch, config.searchInContent)
     }
 }

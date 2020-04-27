@@ -51,7 +51,6 @@ abstract class PrivateExplorerServiceLogic constructor(
         }
 
         explorerStore.notifyItems()
-        roots.filter { !it.isOpened }.forEach { updateClosedDir(it) }
     }
 
     // withLock
@@ -173,7 +172,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         output.write(bytes)
         output.close()
         val response = Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
-        if (response.error != null) {
+        if (response.error.isNotEmpty()) {
             log2("copyToybox error != null\n${response.error}")
         }
     }

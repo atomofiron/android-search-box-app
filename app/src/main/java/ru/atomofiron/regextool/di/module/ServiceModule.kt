@@ -1,10 +1,11 @@
 package ru.atomofiron.regextool.di.module
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
+import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
+import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.service.FinderService
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
@@ -26,8 +27,9 @@ open class ServiceModule {
     @Provides
     @Singleton
     fun finderService(
-            context: Context,
+            workManager: WorkManager,
+            finderStore: FinderStore,
             explorerStore: ExplorerStore,
             preferenceStore: PreferenceStore
-    ): FinderService = FinderService(context, explorerStore, preferenceStore)
+    ): FinderService = FinderService(workManager, explorerStore, finderStore, preferenceStore)
 }

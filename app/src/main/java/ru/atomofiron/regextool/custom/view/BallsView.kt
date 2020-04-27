@@ -52,8 +52,10 @@ class BallsView @JvmOverloads constructor(
     }
 
     override fun setVisibility(visibility: Int) {
-        super.setVisibility(visibility)
-        updateAnimation()
+        if (this.visibility != visibility) {
+            super.setVisibility(visibility)
+            updateAnimation()
+        }
     }
 
     private fun updateAnimation() {

@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.screens.explorer
 
 import app.atomofiron.common.arch.BasePresenter
-import kotlinx.coroutines.CoroutineScope
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
@@ -18,7 +17,6 @@ import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 
 class ExplorerPresenter(
         viewModel: ExplorerViewModel,
-        scope: CoroutineScope,
         router: ExplorerRouter,
         private val explorerStore: ExplorerStore,
         private val preferenceStore: PreferenceStore,
@@ -26,7 +24,12 @@ class ExplorerPresenter(
         itemListener: ExplorerItemActionListenerDelegate,
         placesListener: PlacesActionListenerDelegate,
         menuListener: BottomSheetMenuListenerDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router, scope, itemListener.permissions),
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(
+        viewModel,
+        router,
+        coroutineScope = null,
+        permissionResultListener = itemListener.permissions
+),
         ExplorerItemActionListener by itemListener,
         PlacesAdapter.ItemActionListener by placesListener,
         BottomSheetMenuListener by menuListener {

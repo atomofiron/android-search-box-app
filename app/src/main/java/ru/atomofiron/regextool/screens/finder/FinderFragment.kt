@@ -103,7 +103,6 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
         viewModel.history.observeData(owner, historyAdapter::add)
         viewModel.insertInQuery.observeData(owner, ::insertInQuery)
         viewModel.state.observe(owner, Observer(::onStateChange))
-        viewModel.updateContent.observeData(owner, ::onContentUpdate)
         viewModel.replaceQuery.observeData(owner, ::replaceQuery)
         viewModel.snackbar.observeData(owner, ::showSnackbar)
     }

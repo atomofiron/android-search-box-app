@@ -21,7 +21,7 @@ import javax.inject.Inject
 class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, ExplorerFragment>(app) {
 
     @Inject
-    override lateinit var scope: CoroutineScope
+    lateinit var scope: CoroutineScope
 
     val rootOptions = arrayListOf(R.id.menu_create)
     val directoryOptions = arrayListOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)

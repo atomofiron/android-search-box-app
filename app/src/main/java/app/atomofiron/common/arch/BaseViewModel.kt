@@ -11,7 +11,6 @@ import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.log2
 
 abstract class BaseViewModel<D, V : Any>(app: Application) : AndroidViewModel(app) {
-    protected open lateinit var scope: CoroutineScope
     protected abstract val component: D
 
     protected val viewProperty = MutableWeakProperty<V>()

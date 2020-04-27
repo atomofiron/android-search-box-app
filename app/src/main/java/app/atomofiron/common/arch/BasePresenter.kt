@@ -16,7 +16,6 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         private val permissionResultListener: PermissionResultListener? = null
 ) : PermissionResultListener {
     protected val context: Context get() = viewModel.getApplication<App>().applicationContext
-    protected val scope: CoroutineScope get() = coroutineScope!!
 
     protected val onClearedCallback = viewModel.onClearedCallback
 

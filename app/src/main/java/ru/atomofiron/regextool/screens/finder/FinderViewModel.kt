@@ -6,21 +6,32 @@ import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.finder.FinderTaskChange
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
-import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
 import kotlin.reflect.KClass
 
 class FinderViewModel(app: Application) : BaseViewModel<FinderComponent, FinderFragment>(app) {
-    val items = ArrayList<FinderStateItem>()
+    /* 1 search/replace
+     * characters
+     * config (optional)
+     * test field
+     * progressItems
+     * targetItems
+     */
+    val uniqueItems = ArrayList<FinderStateItem>()
+    val progressItems = ArrayList<FinderStateItem.ProgressItem>()
+    private val targetItems = ArrayList<FinderStateItem.TargetItem>()
+
     var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
         private set
+    val targets = ArrayList<XFile>()
 
     val historyDrawerGravity = MutableLiveData<Int>()
     val state = LateinitLiveData<List<FinderStateItem>>()
     val reloadHistory = SingleLiveEvent<Unit>()
     val insertInQuery = SingleLiveEvent<String>()
     val replaceQuery = SingleLiveEvent<String>()
-    val updateContent = SingleLiveEvent<FinderStateItemUpdate>()
     val snackbar = SingleLiveEvent<String>()
     val history = SingleLiveEvent<String>()
 
@@ -37,42 +48,84 @@ class FinderViewModel(app: Application) : BaseViewModel<FinderComponent, FinderF
         component.inject(view)
     }
 
+    fun updateState() {
+        val items = ArrayList<FinderStateItem>()
+        items.addAll(uniqueItems)
+        items.addAll(progressItems)
+        items.addAll(targetItems)
+        state.value = items
+    }
+
+    fun updateTargets(currentDir: XFile?, checked: List<XFile>) {
+        targetItems.clear()
+        targets.clear()
+        when {
+            checked.isNotEmpty() -> {
+                checked.forEach { targetItems.add(FinderStateItem.TargetItem(it)) }
+                targets.addAll(checked)
+            }
+            currentDir != null -> {
+                targetItems.add(FinderStateItem.TargetItem(currentDir))
+                targets.add(currentDir)
+            }
+        }
+        updateState()
+    }
+
+    fun onFinderTaskUpdate(change: FinderTaskChange) {
+        when (change) {
+            is FinderTaskChange.Add -> {
+                val item = FinderStateItem.ProgressItem(change.task)
+                progressItems.add(item)
+            }
+            is FinderTaskChange.Update -> {
+                val items = progressItems.map { FinderStateItem.ProgressItem(it.finderTask) }
+                progressItems.clear()
+                progressItems.addAll(items)
+            }
+            is FinderTaskChange.Drop -> {
+                val index = progressItems.indexOfFirst { it.finderTask.id == change.task.id }
+                progressItems.removeAt(index)
+            }
+        }
+        updateState()
+    }
+
     fun switchConfigItemVisibility() {
         when (val configItem = configItem) {
             null -> {
-                val item = getItem(FinderStateItem.ConfigItem::class)
+                val item = getUniqueItem(FinderStateItem.ConfigItem::class)
                 this.configItem = item
-                val index = items.indexOf(item)
-                items.removeAt(index)
-                updateContent.invoke(FinderStateItemUpdate.Removed(index))
+                val index = uniqueItems.indexOf(item)
+                uniqueItems.removeAt(index)
             }
             else -> {
-                val index = items.indexOf(getItem(FinderStateItem.TestItem::class))
-                items.add(index, configItem)
-                updateContent.invoke(FinderStateItemUpdate.Inserted(index, configItem))
+                val index = uniqueItems.indexOf(getUniqueItem(FinderStateItem.TestItem::class))
+                uniqueItems.add(index, configItem)
                 this.configItem = null
             }
         }
+        updateState()
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <I : FinderStateItem> getItem(kClass: KClass<I>): I {
-        return items.find { it::class == kClass } as I
+    fun <I : FinderStateItem> getUniqueItem(kClass: KClass<I>): I {
+        return uniqueItems.find { it::class == kClass } as I
     }
 
-    fun <I : FinderStateItem> updateItem(item: I) {
-        val index = items.indexOfFirst { it::class == item::class }
-        items.removeAt(index)
-        items.add(index, item)
-        updateContent.invoke(FinderStateItemUpdate.Changed(index, item))
+    fun <I : FinderStateItem> updateUniqueItem(item: I) {
+        val index = uniqueItems.indexOfFirst { it::class == item::class }
+        uniqueItems.removeAt(index)
+        uniqueItems.add(index, item)
+        updateState()
     }
 
-    fun <I : FinderStateItem> updateItem(kClass: KClass<I>, action: (I) -> I) {
-        val index = items.indexOfFirst { it::class == kClass }
-        val removed = items.removeAt(index)
+    fun <I : FinderStateItem> updateUniqueItem(kClass: KClass<I>, action: (I) -> I) {
+        val index = uniqueItems.indexOfFirst { it::class == kClass }
+        val removed = uniqueItems.removeAt(index)
         @Suppress("UNCHECKED_CAST")
         val item = action(removed as I)
-        items.add(index, item)
-        updateContent.invoke(FinderStateItemUpdate.Changed(index, item))
+        uniqueItems.add(index, item)
+        updateState()
     }
 }

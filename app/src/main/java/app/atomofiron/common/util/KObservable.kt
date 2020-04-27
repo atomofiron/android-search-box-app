@@ -13,29 +13,24 @@ open class KObservable<T : Any?>(private val single: Boolean = false) {
         nullableValue = value
     }
 
+    @Synchronized
     fun addObserver(removeCallback: RemoveObserverCallback, observer: (T) -> Unit) {
-        val added = addObserver(observer)
-        if (added) {
-            removeCallback.addOneTimeObserver {
-                removeObserver(observer)
-            }
+        require(!observers.contains(observer)) { Exception("Observer already added!") }
+        addObserver(observer)
+        removeCallback.addOneTimeObserver {
+            removeObserver(observer)
+        }
+    }
+
+    private fun addObserver(observer: (T) -> Unit) {
+        observers.addElement(observer)
+        if (!single) {
+            observer.invoke(value)
         }
     }
 
     @Synchronized
-    fun addObserver(observer: (T) -> Unit): Boolean = when {
-        !observers.contains(observer) -> {
-            observers.addElement(observer)
-            if (!single) {
-                observer.invoke(value)
-            }
-            true
-        }
-        else -> false
-    }
-
-    @Synchronized
-    fun removeObserver(o: (T) -> Unit) = observers.removeElement(o)
+    private fun removeObserver(o: (T) -> Unit) = observers.removeElement(o)
 
     @Synchronized
     fun setAndNotify(value: T) {

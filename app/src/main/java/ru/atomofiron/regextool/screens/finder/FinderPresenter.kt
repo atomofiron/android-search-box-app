@@ -1,8 +1,10 @@
 package ru.atomofiron.regextool.screens.finder
 
 import app.atomofiron.common.arch.BasePresenter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
@@ -12,61 +14,60 @@ import ru.atomofiron.regextool.screens.finder.presenter.FinderAdapterPresenterDe
 class FinderPresenter(
         viewModel: FinderViewModel,
         router: FinderRouter,
+        private val scope: CoroutineScope,
         private val finderAdapterDelegate: FinderAdapterPresenterDelegate,
         private val explorerStore: ExplorerStore,
         private val preferenceStore: PreferenceStore,
+        private val finderStore: FinderStore,
         private val preferenceChannel: PreferenceChannel
 ) : BasePresenter<FinderViewModel, FinderRouter>(viewModel, router),
         FinderAdapterOutput by finderAdapterDelegate
 {
-    private val items: ArrayList<FinderStateItem> get() = viewModel.items
+    private val uniqueItems: ArrayList<FinderStateItem> get() = viewModel.uniqueItems
+    private val progressItems: ArrayList<FinderStateItem.ProgressItem> get() = viewModel.progressItems
 
     init {
-        items.add(FinderStateItem.SearchAndReplaceItem())
+        uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
         val characters = preferenceStore.specialCharacters.entity
-        items.add(FinderStateItem.SpecialCharactersItem(characters))
-        items.add(FinderStateItem.TestItem())
-        items.add(FinderStateItem.ProgressItem(777, "9/36"))
-        viewModel.state.value = items
+        uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
+        uniqueItems.add(FinderStateItem.TestItem())
 
-        preferenceStore
-                .dockGravity
-                .addObserver(onClearedCallback) { gravity ->
-                    viewModel.historyDrawerGravity.value = gravity
-                }
+        finderStore.tasks.forEach {
+            progressItems.add(FinderStateItem.ProgressItem(it))
+        }
+
+        viewModel.updateState()
+        onSubscribeData()
+    }
+
+    override fun onSubscribeData() {
+        preferenceStore.dockGravity.addObserver(onClearedCallback) { gravity ->
+            viewModel.historyDrawerGravity.value = gravity
+        }
         preferenceStore.specialCharacters.addObserver(onClearedCallback) { chs ->
-            viewModel.updateItem(FinderStateItem.SpecialCharactersItem(chs))
+            viewModel.updateUniqueItem(FinderStateItem.SpecialCharactersItem(chs))
         }
-        preferenceChannel.historyImportedEvent.addObserver(onClearedCallback) {
-            viewModel.reloadHistory.invoke()
-        }
+        preferenceChannel.historyImportedEvent.addObserver(onClearedCallback, viewModel.reloadHistory::invoke)
 
         explorerStore.current.addObserver(onClearedCallback) {
             val checked = explorerStore.storeChecked.value
             if (checked.isEmpty()) {
-                updateTargets(it, checked)
+                scope.launch {
+                    viewModel.updateTargets(it, checked)
+                }
             }
         }
-
         explorerStore.storeChecked.addObserver(onClearedCallback) {
             val currentDir = explorerStore.current.value
-            updateTargets(currentDir, it)
+            scope.launch {
+                viewModel.updateTargets(currentDir, it)
+            }
         }
-    }
-
-    private fun updateTargets(currentDir: XFile?, checked: List<XFile>) {
-        val targets = items.filterIsInstance<FinderStateItem.TargetItem>()
-        targets.forEach { items.remove(it) }
-        when {
-            checked.isNotEmpty() -> checked.forEach { items.add(FinderStateItem.TargetItem(it)) }
-            currentDir != null -> items.add(FinderStateItem.TargetItem(currentDir))
+        finderStore.notifications.addObserver(onClearedCallback) {
+            scope.launch {
+                viewModel.onFinderTaskUpdate(it)
+            }
         }
-        when {
-            checked.isNotEmpty() -> finderAdapterDelegate.targets = checked
-            currentDir != null -> finderAdapterDelegate.targets = arrayListOf(currentDir)
-        }
-        // todo replace all postValue() with coroutines
-        viewModel.state.postValue(items)
     }
 
     fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.push(gravity)
