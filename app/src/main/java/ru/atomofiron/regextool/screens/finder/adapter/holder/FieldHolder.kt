@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import app.atomofiron.common.recycler.GeneralHolder
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.RegexInputField
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem.SearchAndReplaceItem
-import ru.atomofiron.regextool.custom.view.RegexInputField
 import java.util.regex.Pattern
 
 class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionListener) :
@@ -49,6 +49,7 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         }
         etFind.isActivated = false
         btnFind.visibility = View.VISIBLE
+        btnFind.isEnabled = query.isNotEmpty()
     }
 
     interface OnActionListener {

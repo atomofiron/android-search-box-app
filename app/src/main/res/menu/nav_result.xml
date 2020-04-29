@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.atomofiron.regextool.MainActivity">
+    <item
+        android:title=""
+        android:enabled="false"
+        />
+    <item
+        android:id="@+id/menu_stop"
+        android:title="@string/stop"
+        android:icon="@drawable/ic_stop_circle"
+        />
+    <item
+        android:title=""
+        android:enabled="false"
+        />
+    <item
+        android:id="@+id/menu_remove"
+        android:title="@string/remove"
+        android:icon="@drawable/ic_trashbox"
+        />
+    <item
+        android:id="@+id/menu_export"
+        android:title="@string/export_btn"
+        android:icon="@drawable/ic_share"
+        />
+</menu>

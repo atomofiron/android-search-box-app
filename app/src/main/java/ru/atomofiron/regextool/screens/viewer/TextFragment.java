@@ -1,29 +1,6 @@
 package ru.atomofiron.regextool.screens.viewer;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
-import android.os.Bundle;
-import android.text.Layout;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
-
-import ru.atomofiron.regextool.utils.Const;
-import ru.atomofiron.regextool.utils.Util;
-import ru.atomofiron.regextool.utils.finder.RFile;
-import ru.atomofiron.regextool.utils.finder.Result;
-import ru.atomofiron.regextool.screens.result.adapter.ResultsHolder;
-import ru.atomofiron.regextool.R;
+/*
 
 public class TextFragment extends Fragment implements View.OnClickListener {
 	private int spanBackgroundColor;
@@ -150,4 +127,4 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		textView.getEditableText().removeSpan(focusSpan);
 		textView.getEditableText().setSpan(focusSpan, spanRegions[curPos][0], spanRegions[curPos][1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
-}
+}*/

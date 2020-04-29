@@ -80,12 +80,12 @@ class BallsView @JvmOverloads constructor(
         val y1 = centerY + sin
         val x2 = centerX - cos
         val y2 = centerY - sin
-        canvas.drawCircle(centerX.toFloat(), -radius, radiusMask, paintMask)
-        canvas.drawCircle(centerX.toFloat(), radius + height, radiusMask, paintMask)
+        canvas.drawCircle(centerX.toFloat(), centerY - radiusMask - radius, radiusMask, paintMask)
+        canvas.drawCircle(centerX.toFloat(), centerY + radiusMask + radius, radiusMask, paintMask)
         canvas.drawCircle(x1.toFloat(), y1.toFloat(), radius, paintCircle)
         canvas.drawCircle(x2.toFloat(), y2.toFloat(), radius, paintCircle)
-        canvas.drawCircle(centerX.toFloat(), -radius, radiusMask, paintColoredMask)
-        canvas.drawCircle(centerX.toFloat(), radius + height, radiusMask, paintColoredMask)
+        canvas.drawCircle(centerX.toFloat(), centerY - radiusMask - radius, radiusMask, paintColoredMask)
+        canvas.drawCircle(centerX.toFloat(), centerY + radiusMask + radius, radiusMask, paintColoredMask)
     }
 
     override fun onAnimationUpdate(animator: ValueAnimator) {

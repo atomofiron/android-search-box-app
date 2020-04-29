@@ -28,4 +28,5 @@ interface XFile {
     val isRoot: Boolean
     val isChecked: Boolean
     val isDeleting: Boolean
+    val mHashCode: Int
 }

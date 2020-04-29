@@ -11,7 +11,7 @@ import ru.atomofiron.regextool.model.preference.AppTheme
 import ru.atomofiron.regextool.model.preference.JoystickComposition
 import ru.atomofiron.regextool.screens.root.util.tasks.XTask
 
-class RootViewModel(app: Application) : BaseViewModel<RootComponent, RootActivity>(app) {
+class RootViewModel : BaseViewModel<RootComponent, RootActivity>() {
 
     val showExitSnackbar = SingleLiveEvent<Unit>()
     val setTheme = SingleLiveEvent<AppTheme>()

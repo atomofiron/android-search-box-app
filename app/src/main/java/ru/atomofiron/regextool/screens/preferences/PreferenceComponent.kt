@@ -80,6 +80,6 @@ class PreferenceModule {
 
 interface PreferenceDependencies {
     fun preferenceChannel(): PreferenceChannel
-    fun settingsStore(): PreferenceStore
+    fun preferenceStore(): PreferenceStore
     fun context(): Context
 }

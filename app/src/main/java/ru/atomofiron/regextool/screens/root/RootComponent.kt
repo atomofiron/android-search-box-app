@@ -47,5 +47,5 @@ class RootModule {
 
 interface RootDependencies {
     fun rootChannel(): RootChannel
-    fun settingsStore(): PreferenceStore
+    fun preferenceStore(): PreferenceStore
 }

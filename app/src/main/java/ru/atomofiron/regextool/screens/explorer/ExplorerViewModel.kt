@@ -18,7 +18,7 @@ import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle.E
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData
 import javax.inject.Inject
 
-class ExplorerViewModel(app: Application) : BaseViewModel<ExplorerComponent, ExplorerFragment>(app) {
+class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment>() {
 
     @Inject
     lateinit var scope: CoroutineScope

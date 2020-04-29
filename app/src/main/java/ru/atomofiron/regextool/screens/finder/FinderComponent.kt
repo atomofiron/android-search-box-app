@@ -59,8 +59,8 @@ class FinderModule {
 
     @Provides
     @FinderScope
-    fun finderAdapterOutput(viewModel: FinderViewModel, interactor: FinderInteractor): FinderAdapterPresenterDelegate {
-        return FinderAdapterPresenterDelegate(viewModel, interactor)
+    fun finderAdapterOutput(viewModel: FinderViewModel, router: FinderRouter, interactor: FinderInteractor): FinderAdapterPresenterDelegate {
+        return FinderAdapterPresenterDelegate(viewModel, router, interactor)
     }
 
     @Provides
@@ -85,7 +85,7 @@ class FinderModule {
 interface FinderDependencies {
     fun preferenceChannel(): PreferenceChannel
     fun explorerStore(): ExplorerStore
-    fun settingsStore(): PreferenceStore
+    fun preferenceStore(): PreferenceStore
     fun finderService(): FinderService
     fun finderStore(): FinderStore
 }

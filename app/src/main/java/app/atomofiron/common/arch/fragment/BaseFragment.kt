@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.arch.BaseViewModel
@@ -32,10 +33,12 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
     override val thisContext: Context get() = requireContext()
     override val thisActivity: AppCompatActivity get() = requireActivity() as AppCompatActivity
     val thisView: View get() = requireView()
+    val thisArguments: Bundle get() = requireArguments()
     protected val anchorView: View get() = thisActivity.findViewById(R.id.root_iv_joystick)
+    override val lifecycleOwner: LifecycleOwner get() = this // still not viewLifecycleOwner
 
     private val delegate = ViewDelegate<P>()
-    override val mIntent: Intent get() = Intent().putExtras(arguments ?: Bundle())
+    override fun getIntent(): Intent = Intent().putExtras(arguments ?: Bundle())
 
     init {
         log2("init")
@@ -43,8 +46,9 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super<Fragment>.onCreate(savedInstanceState)
+        log2("onCreate")
         // onAttachChildFragment()
-        viewModel = ViewModelProvider(requireActivity()).get(viewModelClass.java)
+        viewModel = ViewModelProvider(this).get(viewModelClass.java)
         delegate.onCreate(this)
         viewModel.alerts.observeData(this, ::onAlert)
     }
@@ -66,6 +70,7 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
 
     override fun onDestroy() {
         super.onDestroy()
+        log2("onDestroy $isRemoving")
         delegate.onDestroy()
     }
 

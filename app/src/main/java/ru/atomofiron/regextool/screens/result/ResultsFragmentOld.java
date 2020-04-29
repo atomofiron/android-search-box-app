@@ -1,42 +1,8 @@
 package ru.atomofiron.regextool.screens.result;
 
 
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-
-import java.io.File;
-import java.util.ArrayList;
-
-import ru.atomofiron.regextool.R;
-import ru.atomofiron.regextool.screens.result.adapter.ResultAdapter;
-import ru.atomofiron.regextool.screens.result.adapter.ResultsHolder;
-import ru.atomofiron.regextool.utils.Const;
-import ru.atomofiron.regextool.utils.SnackbarHelper;
-import ru.atomofiron.regextool.utils.Util;
-import ru.atomofiron.regextool.utils.finder.Result;
-
-public class ResultsFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+/*
+public class ResultsFragmentOld extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
 	private Activity ac;
 	private ListView fragmentView;
@@ -46,7 +12,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	private ArrayList<Result> resultsList;
 	private String startMessage = null;
 
-	public ResultsFragment() {}
+	public ResultsFragmentOld() {}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,10 +23,6 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
-
-		NotificationManager notifier = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		/*if (notifier != null)
-			notifier.cancel(FinderFragment.Companion.getNOTIFICATION_ID());*/
 	}
 
 	@Override
@@ -77,7 +39,7 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 			StringBuilder data = new StringBuilder();
 			for (Result result : resultsList)
 				data.append(result.toMarkdown());
-			String title = "regex_finder_results.txt";
+			String title = "regex_finder_results.md.txt";
 
 			Intent intent = new Intent(Intent.ACTION_SEND)
 					.setType("text/plain")
@@ -176,10 +138,10 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 
 		if (Util.isTextFile(format, extra)) {
 			ResultsHolder.setResult(resultsList.get(position));
-			/*startActivity(
+			*//*startActivity(
 					new Intent(ac, MainActivity.class)
 							.setAction(MainActivity.ACTION_SHOW_RESULT)
-			);*/
+			);*//*
 		} else
 			try {
 				Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
@@ -206,4 +168,4 @@ public class ResultsFragment extends Fragment implements AdapterView.OnItemClick
 		showPathWithCopyAction(listAdapter.getItem(position));
 		return true;
 	}
-}
+}*/

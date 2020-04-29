@@ -2,6 +2,7 @@ package app.atomofiron.common.recycler
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adapter<H>() {
@@ -9,6 +10,9 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         private const val UNKNOWN = -1
     }
     protected val items: MutableList<D> = ArrayList()
+
+    protected open val useDiffUtils = false
+    protected open fun getDiffUtilCallback(old: List<D>, new: List<D>): DiffUtil.Callback? = null
 
     override fun getItemCount(): Int = items.size
 
@@ -24,9 +28,19 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
     }
 
     open fun setItems(new: List<D>) {
-        items.clear()
-        items.addAll(new)
-        notifyDataSetChanged()
+        if (useDiffUtils) {
+            val old = ArrayList<D>()
+            old.addAll(items)
+            items.clear()
+            items.addAll(new)
+            val callback = getDiffUtilCallback(old, new)!!
+            val util = DiffUtil.calculateDiff(callback, false)
+            util.dispatchUpdatesTo(this)
+        } else {
+            items.clear()
+            items.addAll(new)
+            notifyDataSetChanged()
+        }
     }
 
     fun setItem(item: D) {

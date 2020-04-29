@@ -19,5 +19,5 @@ class FinderStore {
         notifications.setAndNotify(FinderTaskChange.Drop(item))
     }
 
-    fun notifyObservers() = notifications.setAndNotify(FinderTaskChange.Update)
+    fun notifyObservers() = notifications.setAndNotify(FinderTaskChange.Update(tasks))
 }

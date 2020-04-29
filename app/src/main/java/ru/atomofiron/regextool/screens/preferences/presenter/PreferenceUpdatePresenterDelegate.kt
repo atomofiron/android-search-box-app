@@ -16,8 +16,8 @@ class PreferenceUpdatePresenterDelegate(
 
     override fun onPreferenceUpdate(key: String, value: Int) {
         when (key) {
-            Const.PREF_MAX_DEPTH -> preferenceStore.maxDepthForSearch.pushByOriginal(value)
-            Const.PREF_EXPLORER_ITEM -> preferenceStore.explorerItemComposition.pushByOriginal(value)
+            Const.PREF_MAX_DEPTH -> preferenceStore.maxDepthForSearch.notifyByOriginal(value)
+            Const.PREF_EXPLORER_ITEM -> preferenceStore.explorerItemComposition.notifyByOriginal(value)
             else -> throw Exception()
         }
     }

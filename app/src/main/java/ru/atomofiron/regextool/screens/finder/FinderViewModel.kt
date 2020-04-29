@@ -11,7 +11,7 @@ import ru.atomofiron.regextool.model.finder.FinderTaskChange
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import kotlin.reflect.KClass
 
-class FinderViewModel(app: Application) : BaseViewModel<FinderComponent, FinderFragment>(app) {
+class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>() {
     /* 1 search/replace
      * characters
      * config (optional)

@@ -106,5 +106,5 @@ interface ExplorerDependencies {
     fun sharedPreferences(): SharedPreferences
     fun explorerService(): ExplorerService
     fun explorerStore(): ExplorerStore
-    fun settingsStore(): PreferenceStore
+    fun preferenceStore(): PreferenceStore
 }

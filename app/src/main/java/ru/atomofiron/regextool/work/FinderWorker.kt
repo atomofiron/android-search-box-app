@@ -10,10 +10,10 @@ import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.model.finder.FinderResult
 import ru.atomofiron.regextool.model.finder.MutableFinderTask
+import ru.atomofiron.regextool.sleep
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -76,7 +76,6 @@ class FinderWorker(
 
     init {
         DaggerInjector.appComponent.inject(this)
-        finderStore.add(task)
     }
 
     private fun searchForContent(where: List<MutableXFile>, depth: Int) {
@@ -84,8 +83,8 @@ class FinderWorker(
     }
 
     private fun searchForName(where: List<MutableXFile>, depth: Int) {
-        log("searchForName $depth ${task.results.size}/${task.count}")
         for (item in where) {
+            sleep(300)
             if (isStopped) {
                 return
             }
@@ -94,11 +93,11 @@ class FinderWorker(
                 if (useRegex) {
                     val matcher = pattern.matcher(item.name)
                     if (matcher.find()) {
-                        val result = FinderResult(item.completedPath)
+                        val result = FinderResult(item)
                         task.results.add(result)
                     }
                 } else if (item.name.contains(query, ignoreCase)) {
-                    val result = FinderResult(item.completedPath)
+                    val result = FinderResult(item)
                     task.results.add(result)
                 }
             }
@@ -123,10 +122,17 @@ class FinderWorker(
 
     override fun doWork(): Result {
         log2("doWork")
+
+        val queryString = inputData.getString(KEY_QUERY)
+
+        if (queryString.isNullOrEmpty()) {
+            log2("[ERROR] Query is empty.")
+            return Result.success()
+        }
+        finderStore.add(task)
         val intent = Intent(applicationContext, ForegroundService::class.java)
         applicationContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
-        val queryString = inputData.getString(KEY_QUERY)!!
         useSu = inputData.getBoolean(KEY_USE_SU, useSu)
         useRegex = inputData.getBoolean(KEY_QUERY, useRegex)
         maxSize = inputData.getLong(KEY_MAX_SIZE, UNDEFINED.toLong())
@@ -143,8 +149,6 @@ class FinderWorker(
             val item = MutableXFile.byPath(paths[i])
             where.add(item)
         }
-
-        require(queryString.isNotEmpty()) { Exception("Query is empty.") }
 
         if (useRegex) {
             var flags = 0
@@ -166,6 +170,7 @@ class FinderWorker(
             Data.Builder().putString(KEY_EXCEPTION, e.toString()).build()
         }
 
+        task.isDone = !isStopped
         task.inProgress = false
         applicationContext.unbindService(connection)
 

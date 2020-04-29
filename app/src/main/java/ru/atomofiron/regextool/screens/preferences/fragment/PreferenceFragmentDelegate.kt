@@ -118,8 +118,16 @@ class PreferenceFragmentDelegate(
                 }
                 DOES_NOT_MATTER
             }
-            Const.PREF_MAX_DEPTH -> DOES_NOT_MATTER
-            Const.PREF_EXCLUDE_DIRS -> DOES_NOT_MATTER
+            Const.PREF_MAX_DEPTH -> {
+                newValue ?: return DOES_NOT_MATTER
+                output.onPreferenceUpdate(key, newValue as Int)
+                DOES_NOT_MATTER
+            }
+            Const.PREF_EXCLUDE_DIRS -> {
+                newValue ?: return DOES_NOT_MATTER
+                output.onPreferenceUpdate(key, newValue as Int)
+                DOES_NOT_MATTER
+            }
             Const.PREF_JOYSTICK -> {
                 preference.setOnPreferenceClickListener {
                     fragment.onJoystickClick()

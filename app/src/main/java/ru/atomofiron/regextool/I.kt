@@ -12,6 +12,8 @@ fun Any.sleep(t: Long) = if (delay) Thread.sleep(t) else Unit
 
 fun Any.log(s: String) = log(this.javaClass.simpleName, s)
 
+fun Any.log(context: Any, s: String) = log(context.javaClass.simpleName, s)
+
 fun Any.log(label: String, s: String) {
     Log.e("regextool", "[$label] $s")
 }

@@ -1,19 +1,16 @@
 package app.atomofiron.common.arch
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import app.atomofiron.common.arch.view.Backable
 import app.atomofiron.common.util.OneTimeBackStackListener
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.common.util.setOneTimeBackStackListener
 import ru.atomofiron.regextool.log2
-import kotlin.reflect.KClass
 
 abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
     private val fragmentProperty: WeakProperty<Fragment> = when (viewProperty.value) {
@@ -56,21 +53,8 @@ abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
     protected fun <R> context(action: Context.() -> R): R = activity!!.action()
     protected fun <R> fragment(action: Fragment.() -> R): R = fragment!!.action()
     protected fun <R> activity(action: AppCompatActivity.() -> R): R = activity!!.action()
-    protected fun <R> childManager(action: FragmentManager.() -> R): R {
-        var manager = fragment?.childFragmentManager
-        manager = manager ?: activity?.supportFragmentManager
-        return manager!!.action()
-    }
     protected fun <R> manager(action: FragmentManager.() -> R): R {
-        //var manager = fragmentReference.get()?.parentFragmentManager
-        val manager = activity?.supportFragmentManager
-        return manager!!.action()
-    }
-
-    protected fun nextIntent(clazz: KClass<out Activity>): Intent {
-        return context {
-            Intent(this, clazz.java)
-        }
+        return activity!!.supportFragmentManager.action()
     }
 
     open fun onAttachChildFragment(childFragment: Fragment) = Unit
@@ -154,6 +138,22 @@ abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
                         }
                     }
                     .commit()
+        }
+    }
+
+    fun popScreen() {
+        if (isDestroyed || isBlocked) {
+            return
+        }
+        manager {
+            if (backStackEntryCount == 0) {
+                return@manager
+            }
+            isBlocked = true
+            setOneTimeBackStackListener {
+                isBlocked = false
+            }
+            popBackStack()
         }
     }
 }

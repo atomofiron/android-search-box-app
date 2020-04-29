@@ -14,7 +14,7 @@ import java.util.regex.Pattern
 
 class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextWatcher {
     private val editText: EditText
-    val span = BackgroundColorSpan(Color.parseColor("#55ff0000"))
+    private val span = BackgroundColorSpan(Color.parseColor("#55ff0000"))
 
     init {
         itemView.isFocusable = false
@@ -48,7 +48,6 @@ class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextW
             offset = index + length
             index = editText.text.indexOf(item.searchQuery, offset, item.ignoreCase)
         }
-
     }
 
     private fun testSearchWithRegexp(item: FinderStateItem.TestItem) {
@@ -69,7 +68,7 @@ class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextW
             return
         }
 
-        while (matcher.find()) {
+        while (matcher.find() && matcher.start() != matcher.end()) {
             editText.text.setSpan(span, matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }

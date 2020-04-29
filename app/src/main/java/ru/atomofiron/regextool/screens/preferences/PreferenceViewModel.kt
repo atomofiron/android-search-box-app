@@ -3,7 +3,6 @@ package ru.atomofiron.regextool.screens.preferences
 import android.app.Application
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
-import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
@@ -11,7 +10,7 @@ import ru.atomofiron.regextool.model.preference.JoystickComposition
 import ru.atomofiron.regextool.utils.Shell
 import javax.inject.Inject
 
-class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceComponent, PreferenceFragment>(app) {
+class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragment>() {
 
     @Inject
     lateinit var preferenceStore: PreferenceStore
@@ -19,7 +18,7 @@ class PreferenceViewModel(app: Application) : BaseViewModel<PreferenceComponent,
     val alert = SingleLiveEvent<String>()
     val alertOutputSuccess = SingleLiveEvent<Int>()
     val alertOutputError = SingleLiveEvent<Shell.Output>()
-    val isExportImportAvailable: Boolean get() = getApplication<App>().applicationContext.getExternalFilesDir(null) != null
+    val isExportImportAvailable: Boolean get() = context.getExternalFilesDir(null) != null
     val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
     val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity
 

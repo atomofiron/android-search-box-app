@@ -5,6 +5,7 @@ import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.arch.fragment.BasePreferenceFragment
 import app.atomofiron.common.arch.view.Backable
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.common.util.setOneTimeBackStackListener
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.finder.FinderFragment
@@ -38,6 +39,9 @@ class RootRouter(activity: WeakProperty<RootActivity>) : BaseRouter(activity) {
     }
 
     fun onBack(): Boolean {
+        if (isBlocked) {
+            return true
+        }
         return manager {
             val lastVisible = fragments
                     .filter { it is Backable }
@@ -45,13 +49,22 @@ class RootRouter(activity: WeakProperty<RootActivity>) : BaseRouter(activity) {
             when {
                 (lastVisible as Backable?)?.onBack() == true -> true
                 backStackEntryCount > 0 -> {
+                    isBlocked = true
+                    setOneTimeBackStackListener {
+                        isBlocked = false
+                    }
                     popBackStack()
+                    beginTransaction().commit()
                     true
                 }
                 fragments.size > 1 && fragments[0] != lastVisible -> {
+                    isBlocked = true
                     beginTransaction().apply {
                         hide(lastVisible!!)
                         show(fragments[fragments.indexOf(lastVisible).dec()])
+                        runOnCommit {
+                            isBlocked = false
+                        }
                         commit()
                     }
                     true

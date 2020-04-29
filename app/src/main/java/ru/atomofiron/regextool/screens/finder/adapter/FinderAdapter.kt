@@ -11,19 +11,14 @@ import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderStateItem>() {
     lateinit var output: FinderAdapterOutput
+    override val useDiffUtils = true
 
     init {
         setHasStableIds(true)
     }
 
-    override fun setItems(new: List<FinderStateItem>) {
-        val old = ArrayList<FinderStateItem>()
-        old.addAll(items)
-        items.clear()
-        items.addAll(new)
-        val callback = FinderDiffUtilCallback(old, new)
-        val util = DiffUtil.calculateDiff(callback, false)
-        util.dispatchUpdatesTo(this)
+    override fun getDiffUtilCallback(old: List<FinderStateItem>, new: List<FinderStateItem>): DiffUtil.Callback? {
+        return FinderDiffUtilCallback(old, new)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): GeneralHolder<FinderStateItem> {

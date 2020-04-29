@@ -46,5 +46,6 @@
         android:text="@string/enable_replace"
         android:ellipsize="none"
         android:singleLine="true"
+        android:visibility="gone"
         />
 </LinearLayout>

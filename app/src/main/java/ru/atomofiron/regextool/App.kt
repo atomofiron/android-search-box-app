@@ -9,7 +9,7 @@ import ru.atomofiron.regextool.di.DaggerInjector
 
 class App : Application() {
     companion object {
-        private lateinit var appContext: Context
+        lateinit var appContext: Context
         val pathToybox: String get() = "${appContext.filesDir}/toybox"
     }
 

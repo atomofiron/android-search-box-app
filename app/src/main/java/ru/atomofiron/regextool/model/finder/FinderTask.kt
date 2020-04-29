@@ -8,4 +8,7 @@ interface FinderTask {
     val results: List<FinderResult>
     val count: Int
     val inProgress: Boolean
+    val isDone: Boolean
+
+    fun copyTask(): FinderTask
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelStore
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.R
@@ -20,8 +21,11 @@ interface IView<P : BasePresenter<*,*>> : LifecycleOwner {
 
     val thisContext: Context
     val thisActivity: AppCompatActivity
+    val lifecycleOwner: LifecycleOwner
 
-    val mIntent: Intent
+    fun getIntent(): Intent
+
+    fun getViewModelStore(): ViewModelStore
 
     fun isVisible(): Boolean
 

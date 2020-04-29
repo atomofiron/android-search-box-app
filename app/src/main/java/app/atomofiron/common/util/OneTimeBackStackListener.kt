@@ -15,3 +15,7 @@ class OneTimeBackStackListener(
         manager.removeOnBackStackChangedListener(this)
     }
 }
+
+fun FragmentManager.setOneTimeBackStackListener(callback: (() -> Unit)?) {
+    OneTimeBackStackListener(this, callback)
+}

@@ -67,14 +67,11 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
             dyConsumed *= -1
             dyUnconsumed *= -1
         }
-        if (dyConsumed < 0) {
-            slideStart(child)
-        }
-        if (dyConsumed > 0) {
-            slideOff(child)
-        }
-        if (dyUnconsumed < 0) {
-            slideStart(child)
+        when {
+            !isTargetReversed && dyUnconsumed != 0 -> slideStart(child)
+            dyUnconsumed < 0 -> slideStart(child)
+            dyConsumed < 0 -> slideStart(child)
+            dyConsumed > 0 -> slideOff(child)
         }
     }
 

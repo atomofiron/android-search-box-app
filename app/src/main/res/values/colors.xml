@@ -9,6 +9,7 @@
 	<color name="colorRippleDark">#7f043835</color>
 
 	<color name="colorAccentRed">#ffaD7874</color>
+	<color name="colorAccentYellow">#ffaDa874</color>
 
 	<color name="windowBackgroundWhite">#ffffffff</color>
 	<color name="windowBackgroundDarkLight">#ff222222</color>

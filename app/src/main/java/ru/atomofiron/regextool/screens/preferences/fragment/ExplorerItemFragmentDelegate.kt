@@ -4,13 +4,15 @@ import android.graphics.Color
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.utils.Const
-import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 class ExplorerItemFragmentDelegate(
         private var composition: ExplorerItemComposition,
@@ -20,6 +22,8 @@ class ExplorerItemFragmentDelegate(
             "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android", root = 0)
 
     private val itemView: View get() = bottomSheetView.findViewById(R.id.preference_explorer_item)
+    private val ivIcon: ImageView get() = itemView.findViewById(R.id.item_explorer_iv_icon)
+    private val tvSize: TextView get() = itemView.findViewById(R.id.item_explorer_tv_size)
 
     private val cbAccess: CheckBox get() = bottomSheetView.findViewById(R.id.preference_access)
     private val cbOwner: CheckBox get() = bottomSheetView.findViewById(R.id.preference_owner)
@@ -58,10 +62,10 @@ class ExplorerItemFragmentDelegate(
         holder = ExplorerHolder(itemView)
         holder.bind(dir)
         holder.bindComposition(composition)
-
-        holder.ivIcon.alpha = 1f
         holder.removeBackground()
-        holder.tvSize.text = dir.size
+
+        ivIcon.alpha = 1f
+        tvSize.text = dir.size
 
         backgroundColor = ContextCompat.getColor(itemView.context, R.color.item_explorer_background)
         bindBackground()

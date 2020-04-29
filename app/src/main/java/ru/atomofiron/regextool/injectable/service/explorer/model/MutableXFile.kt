@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.injectable.service.explorer.model
 
 import ru.atomofiron.regextool.App
+import ru.atomofiron.regextool.sleep
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.util.*
@@ -81,6 +82,8 @@ class MutableXFile : XFile {
     override var completedPath: String private set
     override var completedParentPath: String private set
 
+    override val mHashCode: Int
+
     override var access: String private set
     override var owner: String private set
     override var group: String private set
@@ -123,6 +126,7 @@ class MutableXFile : XFile {
 
         this.root = root ?: completedPath.hashCode()
         isRoot = root == null
+        mHashCode = hashCode()
     }
 
     fun open() {
@@ -225,7 +229,7 @@ class MutableXFile : XFile {
 
     private fun cacheAsDir(su: Boolean = false): String? {
         isCaching = true
-        sleep()
+        sleep((Math.random() * 300).toLong())
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         return when {
             dropCaching -> {
@@ -275,8 +279,6 @@ class MutableXFile : XFile {
         }
     }
 
-    private fun sleep() = Unit//Thread.sleep(1000 + (Math.random() * 700).toLong())
-
     private fun persistOldFiles(oldFiles: MutableList<MutableXFile>?) {
         val newFiles = this.files!!
         if (oldFiles != null) {
@@ -293,7 +295,6 @@ class MutableXFile : XFile {
 
     private fun cacheAsFile(su: Boolean = false): String? {
         isCaching = true
-        sleep()
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         val line = output.output.replace("\n", "")
         if (output.success && line.isNotEmpty()) {
@@ -337,15 +338,13 @@ class MutableXFile : XFile {
     }
 
     override fun equals(other: Any?): Boolean {
-        return when {
-            other !is MutableXFile -> false
-            other.isDirectory != isDirectory -> false
-            other.root != root -> false
-            else -> other.completedPath == completedPath
+        return when (other) {
+            !is MutableXFile -> false
+            else -> other.mHashCode == mHashCode
         }
     }
 
-    override fun hashCode(): Int = completedPath.hashCode() + root
+    override fun hashCode(): Int = completedPath.hashCode() + root + (if (isDirectory) 1 else 0)
 
     override fun toString(): String = completedPath
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceFragmentCompat
 import app.atomofiron.common.arch.BasePresenter
@@ -29,16 +30,18 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
     override val thisActivity: AppCompatActivity get() = requireActivity() as AppCompatActivity
     val thisView: View get() = requireView()
     protected val anchorView: View get() = thisActivity.findViewById(R.id.root_iv_joystick)
+    override val lifecycleOwner: LifecycleOwner get() = this // still not viewLifecycleOwner
 
     private val delegate = ViewDelegate<P>()
-    override val mIntent: Intent get() = Intent().putExtras(arguments ?: Bundle())
+    override fun getIntent(): Intent = Intent().putExtras(arguments ?: Bundle())
 
     init {
         log2("init")
     }
 
     final override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        viewModel = ViewModelProvider(requireActivity()).get(viewModelClass.java)
+        log2("onCreate")
+        viewModel = ViewModelProvider(this).get(viewModelClass.java)
         delegate.onCreate(this)
     }
 
@@ -49,6 +52,7 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
 
     override fun onDestroy() {
         super.onDestroy()
+        log2("onDestroy $isRemoving")
         delegate.onDestroy()
     }
 

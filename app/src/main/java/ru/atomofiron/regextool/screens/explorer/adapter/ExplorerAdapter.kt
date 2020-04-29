@@ -18,11 +18,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         private const val VIEW_POOL_MAX_COUNT = 30
     }
 
-    var itemActionListener: ExplorerItemActionListener? = null
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    lateinit var itemActionListener: ExplorerItemActionListener
     private var viewPool: Array<View?>? = null
     private var recyclerView: RecyclerView? = null
 
@@ -140,20 +136,19 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): ExplorerHolder {
         val view = getNewView(inflater, parent)
-
         return ExplorerHolder(view)
     }
 
     override fun onBindViewHolder(holder: ExplorerHolder, position: Int) {
-        holder.onItemActionListener = itemActionListener
+        holder.setOnItemActionListener(itemActionListener)
         super.onBindViewHolder(holder, position)
         holder.bindComposition(composition)
-        itemActionListener?.onItemVisible(holder.item)
+        itemActionListener.onItemVisible(holder.item)
     }
 
     override fun onViewDetachedFromWindow(holder: ExplorerHolder) {
         super.onViewDetachedFromWindow(holder)
-        itemActionListener?.onItemInvalidate(holder.item)
+        itemActionListener.onItemInvalidate(holder.item)
     }
 
     private fun getNewView(inflater: LayoutInflater, parent: ViewGroup): View {

@@ -1,14 +1,15 @@
 package ru.atomofiron.regextool.screens.finder.presenter
 
-import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
+import ru.atomofiron.regextool.screens.finder.FinderRouter
 import ru.atomofiron.regextool.screens.finder.FinderViewModel
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 class FinderAdapterPresenterDelegate(
         private val viewModel: FinderViewModel,
+        private val router: FinderRouter,
         private val interactor: FinderInteractor
 ) : FinderAdapterOutput {
 
@@ -48,11 +49,12 @@ class FinderAdapterPresenterDelegate(
     }
 
     override fun onItemClick(item: FinderStateItem.TargetItem) {
-        val context = viewModel.getApplication<App>().applicationContext
+        val context = viewModel.context
         viewModel.snackbar.invoke(context.getString(R.string.oops_not_working))
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
+        router.showResult(item.finderTask.id)
     }
 
     override fun onProgressStopClick(item: FinderStateItem.ProgressItem) {
@@ -67,6 +69,9 @@ class FinderAdapterPresenterDelegate(
     }
 
     override fun onSearchClick(value: String) {
+        if (viewModel.targets.isEmpty()) {
+            return
+        }
         viewModel.history.invoke(value)
         val config = viewModel.configItem ?: viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
         interactor.search(value, viewModel.targets, config.ignoreCase, config.useRegex, config.multilineSearch, config.searchInContent)

@@ -32,9 +32,9 @@ class ViewDelegate<P : BasePresenter<*,*>> {
     fun onCreate(view: IView<P>) {
         this.view = view
         view.inject()
-        presenter.onCreate(thisContext, view.mIntent)
+        presenter.onCreate(thisContext, view.getIntent())
         view.onCreate()
-        view.onSubscribeData(view)
+        view.onSubscribeData(view.lifecycleOwner)
     }
 
     fun onStart() {
@@ -43,7 +43,7 @@ class ViewDelegate<P : BasePresenter<*,*>> {
         }
     }
 
-    fun onDestroy() = presenter.onDestroy()
+    fun onDestroy() = view.getViewModelStore().clear()
 
     // for fragments only
     fun onAttachChildFragment(childFragment: Fragment) {

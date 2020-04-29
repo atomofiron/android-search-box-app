@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import app.atomofiron.common.arch.view.IView
@@ -23,8 +24,7 @@ abstract class BaseActivity<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Ap
 
     override val thisContext: Context get() = this
     override val thisActivity: AppCompatActivity get() = this
-
-    override val mIntent: Intent get() = intent
+    override val lifecycleOwner: LifecycleOwner get() = this
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getAppTheme())

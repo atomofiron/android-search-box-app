@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.permission.PermissionResultListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
-import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.log2
 
 abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
@@ -15,7 +14,7 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         private val coroutineScope: CoroutineScope? = null,
         private val permissionResultListener: PermissionResultListener? = null
 ) : PermissionResultListener {
-    protected val context: Context get() = viewModel.getApplication<App>().applicationContext
+    protected val context: Context get() = viewModel.context
 
     protected val onClearedCallback = viewModel.onClearedCallback
 
@@ -26,8 +25,6 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
     }
 
     open fun onCreate(context: Context, intent: Intent) = Unit
-
-    open fun onDestroy() = Unit
 
     open fun onSubscribeData() = Unit
 
