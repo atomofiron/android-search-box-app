@@ -1,7 +1,7 @@
 package ru.atomofiron.regextool.model.explorer
 
 interface XFile {
-    val files: List<XFile>?
+    val children: List<XFile>?
     val isOpened: Boolean
     val isCached: Boolean
     val isCacheActual: Boolean

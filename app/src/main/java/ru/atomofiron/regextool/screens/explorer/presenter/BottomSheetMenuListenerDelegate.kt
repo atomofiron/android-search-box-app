@@ -1,11 +1,11 @@
 package ru.atomofiron.regextool.screens.explorer.presenter
 
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.screens.explorer.ExplorerViewModel
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate
-import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 
 class BottomSheetMenuListenerDelegate(
         private val viewModel: ExplorerViewModel,
@@ -21,12 +21,12 @@ class BottomSheetMenuListenerDelegate(
                 item ?: return
                 val dirFiles = explorerStore.items
                         .find { it.root == item.root && it.completedPath == item.completedParentPath }
-                        ?.files?.map { it.name }
+                        ?.children?.map { it.name }
                 dirFiles ?: return
                 val data = RenameDelegate.RenameData(viewModel.itemComposition.value, item, dirFiles)
                 viewModel.showRename.invoke(data)
             }
-            R.id.menu_remove -> viewModel.showOptions.data?.items?.toTypedArray()?.let(explorerInteractor::deleteItems)
+            R.id.menu_remove -> viewModel.showOptions.data?.items?.let(explorerInteractor::deleteItems)
         }
     }
 }

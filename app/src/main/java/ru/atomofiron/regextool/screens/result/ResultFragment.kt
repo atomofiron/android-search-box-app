@@ -64,6 +64,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         super.onViewCreated(view, savedInstanceState)
 
         rvResults {
+            itemAnimator = null
             layoutManager = LinearLayoutManager(thisContext)
             adapter = resultAdapter
         }
@@ -95,6 +96,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         viewModel.task.observe(this, Observer(::onTaskChange))
         viewModel.enableOptions.observe(this, Observer(::enableOptions))
         viewModel.showOptions.observeData(this, ::showOptions)
+        viewModel.notifyTaskHasChanged.observeEvent(this, resultAdapter::notifyDataSetChanged)
     }
 
     private fun onTaskChange(task: FinderTask) {
@@ -119,6 +121,11 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
             }
         }
         resultAdapter.setItems(task.results)
+
+        if (task.results.isNotEmpty()) {
+            // fix first item offset
+            resultAdapter.notifyItemChanged(0)
+        }
     }
 
     private fun onCompositionChange(composition: ExplorerItemComposition) {

@@ -45,9 +45,9 @@ class ExplorerInteractor(
 
     fun invalidateItem(file: XFile) = service.invalidateDir(file)
 
-    fun deleteItems(vararg file: XFile) {
+    fun deleteItems(file: List<XFile>) {
         scope.launch(context) {
-            service.deleteItems(*file)
+            service.delete(file)
         }
     }
 

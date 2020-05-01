@@ -31,7 +31,7 @@ class CreateDelegate(private val output: ExplorerPresenter) : BottomSheetDelegat
 
     fun show(dir: XFile) {
         this.dir = dir
-        dirFiles = dir.files!!.map { it.name }
+        dirFiles = dir.children!!.map { it.name }
         show()
     }
 

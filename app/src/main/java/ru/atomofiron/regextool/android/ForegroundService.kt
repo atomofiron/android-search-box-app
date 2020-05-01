@@ -11,6 +11,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import ru.atomofiron.regextool.R
@@ -38,7 +39,7 @@ class ForegroundService : IntentService("NotificationService") {
         log2("onCreate")
         startForeground()
         val request = OneTimeWorkRequest.from(NotificationWorker::class.java)
-        val cont = workManager.beginWith(request)
+        val cont = workManager.beginUniqueWork(NotificationWorker.NAME, ExistingWorkPolicy.REPLACE, request)
         cont.enqueue()
         workUUID = request.id
     }

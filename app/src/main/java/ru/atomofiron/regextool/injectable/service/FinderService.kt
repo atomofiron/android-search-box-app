@@ -2,9 +2,8 @@ package ru.atomofiron.regextool.injectable.service
 
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import ru.atomofiron.regextool.injectable.channel.FinderStore
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
-import ru.atomofiron.regextool.log
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderTask
 import ru.atomofiron.regextool.work.FinderWorker
@@ -29,7 +28,6 @@ class FinderService(
         val request = OneTimeWorkRequest.Builder(FinderWorker::class.java)
                 .setInputData(inputData)
                 .build()
-        log("search beginWith")
         workManager.beginWith(request).enqueue()
     }
 

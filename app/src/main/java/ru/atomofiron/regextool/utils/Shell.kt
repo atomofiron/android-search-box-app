@@ -52,7 +52,7 @@ object Shell {
         return Output(success, "", error)
     }
 
-    fun exec(cmd: String, su: Boolean = false): Output {
+    fun exec(cmd: String, su: Boolean): Output {
         var success: Boolean
         var output = ""
         var error = ""

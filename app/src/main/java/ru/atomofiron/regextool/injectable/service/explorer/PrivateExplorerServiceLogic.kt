@@ -7,11 +7,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.model.explorer.MutableXFile
-import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.model.explorer.MutableXFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.utils.Shell
 import java.io.File
 import java.io.FileOutputStream
@@ -171,7 +171,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         val output = FileOutputStream(toybox)
         output.write(bytes)
         output.close()
-        val response = Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox))
+        val response = Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox), su = false)
         if (response.error.isNotEmpty()) {
             log2("copyToybox error != null\n${response.error}")
         }
@@ -205,7 +205,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         log2("checkItem $isChecked $item")
         item.isChecked = isChecked
 
-        val dirFiles = item.files ?: arrayListOf()
+        val dirFiles = item.children ?: arrayListOf()
         val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
         when {
             item.isRoot && item.isChecked -> {
@@ -285,7 +285,7 @@ abstract class PrivateExplorerServiceLogic constructor(
             currentOpenedDir = dir
             invalidateDir(dir)
 
-            val dirFiles = dir.files!!
+            val dirFiles = dir.children!!
             if (dirFiles.isNotEmpty()) {
                 val index = files.indexOf(dir)
                 files.addAll(index.inc(), dirFiles)
@@ -342,7 +342,7 @@ abstract class PrivateExplorerServiceLogic constructor(
             log2("updateCurrentDir return isDeleting $dir")
             return
         }
-        val dirFiles = dir.files
+        val dirFiles = dir.children
         val error = dir.updateCache(useSu)
         if (error != null) {
             log2("updateCurrentDir return error != null $dir\n$error")
@@ -352,7 +352,7 @@ abstract class PrivateExplorerServiceLogic constructor(
             return
         }
         log2("updateCurrentDir $dir")
-        val newFiles = dir.files!!
+        val newFiles = dir.children!!
 
         mutex.withLock {
             if (!dir.isCached || !files.contains(dir)) {
@@ -478,13 +478,14 @@ abstract class PrivateExplorerServiceLogic constructor(
         entity.clear()
         mutex.withLock {
             files.remove(entity)
+            entity.parent?.children?.remove(entity)
         }
         explorerStore.notifyRemove(entity)
     }
 
     private fun checkChildren(dir: MutableXFile) {
         log2("checkChildren $dir")
-        val dirFiles = dir.files!!
+        val dirFiles = dir.children!!
         dirFiles.forEach {
             it.isChecked = true
             checked.add(it)
@@ -537,7 +538,7 @@ abstract class PrivateExplorerServiceLogic constructor(
             return
         }
         log2("deleteItem $item")
-        val error = item.delete()
+        val error = item.delete(useSu)
         if (error != null) {
             log2("deleteItem error != null $item\n$error")
         }
@@ -593,8 +594,8 @@ abstract class PrivateExplorerServiceLogic constructor(
 
     suspend fun create(dir: MutableXFile, name: String, directory: Boolean) {
         log2("create $directory $name $dir")
-        val item = MutableXFile.create(dir.completedPath, name, directory, dir.root)
-        val error = item.create()
+        val item = MutableXFile.create(dir, name, directory, dir.root)
+        val error = item.create(useSu)
         when {
             error != null -> {
                 log2("create error != null $dir\n$error")

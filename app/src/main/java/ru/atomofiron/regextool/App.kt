@@ -2,10 +2,13 @@ package ru.atomofiron.regextool
 
 import android.app.Application
 import android.content.Context
+import androidx.work.WorkManager
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
 import leakcanary.AppWatcher
 import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.work.NotificationWorker
+import javax.inject.Inject
 
 class App : Application() {
     companion object {
@@ -13,12 +16,17 @@ class App : Application() {
         val pathToybox: String get() = "${appContext.filesDir}/toybox"
     }
 
+    @Inject
+    lateinit var workManager: WorkManager
+
     override fun onCreate() {
         super.onCreate()
 
         appContext = applicationContext
 
         DaggerInjector.init(this)
+        DaggerInjector.appComponent.inject(this)
+        workManager.cancelUniqueWork(NotificationWorker.NAME)
 
         AppWatcher.config = AppWatcher.config.copy(enabled = false)
 

@@ -11,4 +11,5 @@ interface FinderTask {
     val isDone: Boolean
 
     fun copyTask(): FinderTask
+    fun areContentsTheSame(other: FinderTask): Boolean
 }

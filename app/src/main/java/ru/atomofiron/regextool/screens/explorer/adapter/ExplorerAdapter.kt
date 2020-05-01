@@ -32,7 +32,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         val item = items[i]
         val nextPosition = i.inc()
         when {
-            item.isOpened && item.files.isNullOrEmpty() -> Divider.BIG
+            item.isOpened && item.children.isNullOrEmpty() -> Divider.BIG
             item.isOpened -> Divider.SMALL
             nextPosition >= items.size -> Divider.NO // не делаем отступ у последнего элемента
             item.isRoot && items[nextPosition].isRoot -> Divider.NO
@@ -52,7 +52,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
         when {
             !isCurrent && !isCurrentChild -> Shadow.NO
-            item.isOpened && item.files.isNullOrEmpty() -> Shadow.DOUBLE
+            item.isOpened && item.children.isNullOrEmpty() -> Shadow.DOUBLE
             item.isOpened -> Shadow.TOP
             nextPosition == items.size -> Shadow.NO // не рисуем под последним элементом
             item.isRoot && items[nextPosition].isRoot -> Shadow.NO
@@ -73,7 +73,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
             item.completedParentPath == currentDir.completedPath -> Separation.NO
             item.root != currentDir.root -> Separation.NO
             item.completedPath == currentDir.completedPath -> Separation.NO
-            item.isOpened && item.files.isNullOrEmpty() -> Separation.NO
+            item.isOpened && item.children.isNullOrEmpty() -> Separation.NO
             item.isOpened -> Separation.TOP
             nextPosition == items.size -> Separation.NO // не рисуем под последним элементом
             item.isRoot && items[nextPosition].isRoot -> Separation.NO

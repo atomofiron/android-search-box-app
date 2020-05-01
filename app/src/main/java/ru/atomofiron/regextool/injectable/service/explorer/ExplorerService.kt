@@ -2,11 +2,11 @@ package ru.atomofiron.regextool.injectable.service.explorer
 
 import android.content.SharedPreferences
 import android.content.res.AssetManager
-import ru.atomofiron.regextool.model.explorer.MutableXFile
-import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.model.explorer.MutableXFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.utils.Const
 
 class ExplorerService constructor(
@@ -56,7 +56,7 @@ class ExplorerService constructor(
         super.checkItem(item, isChecked)
     }
 
-    suspend fun deleteItems(vararg its: XFile) {
+    suspend fun delete(its: List<XFile>) {
         log2("deleteItems ${its.size}")
         val items = its.mapNotNull { findItem(it) }
         super.deleteItems(items)

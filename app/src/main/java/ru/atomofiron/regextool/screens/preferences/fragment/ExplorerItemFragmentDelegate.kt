@@ -19,7 +19,7 @@ class ExplorerItemFragmentDelegate(
         private val output: PreferenceUpdateOutput
 ) : BottomSheetDelegate(R.layout.sheet_preference_explorer_item) {
     private val dir = MutableXFile("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038",
-            "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android", root = 0)
+            "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android")
 
     private val itemView: View get() = bottomSheetView.findViewById(R.id.preference_explorer_item)
     private val ivIcon: ImageView get() = itemView.findViewById(R.id.item_explorer_iv_icon)

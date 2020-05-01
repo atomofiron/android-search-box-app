@@ -6,12 +6,13 @@ import android.content.res.AssetManager
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.service.FinderService
 import ru.atomofiron.regextool.injectable.service.ResultService
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.injectable.store.ResultStore
 import javax.inject.Singleton
 
 @Module
@@ -38,6 +39,9 @@ open class ServiceModule {
     @Singleton
     fun resultService(
             workManager: WorkManager,
+            resultStore: ResultStore,
+            finderStore: FinderStore,
+            preferenceStore: PreferenceStore,
             clipboardManager: ClipboardManager
-    ): ResultService = ResultService(workManager, clipboardManager)
+    ): ResultService = ResultService(workManager, resultStore , finderStore, preferenceStore, clipboardManager)
 }

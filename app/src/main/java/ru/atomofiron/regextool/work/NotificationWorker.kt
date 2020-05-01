@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.injectable.channel.FinderStore
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.log2
 import javax.inject.Inject
 
@@ -13,6 +13,7 @@ class NotificationWorker(
         workerParams: WorkerParameters
 ) : Worker(context, workerParams) {
     companion object {
+        const val NAME = "NotificationWorker"
         private const val PERIOD = 100L
     }
 
@@ -28,8 +29,10 @@ class NotificationWorker(
 
         while (!isStopped) {
             Thread.sleep(PERIOD)
+            log2("!isStopped $isStopped")
             finderStore.notifyObservers()
         }
+        log2("doWork STOPPED $isStopped")
 
         return Result.success()
     }

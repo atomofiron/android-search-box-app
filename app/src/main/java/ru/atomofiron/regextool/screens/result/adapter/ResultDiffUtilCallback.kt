@@ -14,5 +14,5 @@ class ResultDiffUtilCallback(
 
     override fun areItemsTheSame(i: Int, j: Int): Boolean = old[i].mHashCode == new[j].mHashCode
 
-    override fun areContentsTheSame(i: Int, j: Int): Boolean = old[i].matches?.size == new[j].matches?.size
+    override fun areContentsTheSame(i: Int, j: Int): Boolean = old[i].isDeleting == new[j].isDeleting
 }

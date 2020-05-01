@@ -8,7 +8,7 @@ import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import ru.atomofiron.regextool.injectable.channel.FinderStore
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
 import ru.atomofiron.regextool.injectable.service.FinderService

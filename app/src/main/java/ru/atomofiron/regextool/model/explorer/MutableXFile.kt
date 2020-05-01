@@ -34,8 +34,8 @@ class MutableXFile : XFile {
 
         fun completePathAsDir(absolutePath: String): String = completePath(absolutePath)
 
-        fun create(completedParentPath: String, name: String, isDirectory: Boolean, root: Int): MutableXFile {
-            return MutableXFile("", "", "", "", "", "", name, "", isDirectory, completedParentPath + name, root)
+        fun create(parent: MutableXFile, name: String, isDirectory: Boolean, root: Int): MutableXFile {
+            return MutableXFile("", "", "", "", "", "", name, "", isDirectory, parent.completedPath + name, root, parent)
         }
 
         fun byPath(absolutePath: String): MutableXFile {
@@ -43,7 +43,7 @@ class MutableXFile : XFile {
             return MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath, root = null)
         }
 
-        private fun parse(completedParentPath: String, line: String, root: Int): MutableXFile {
+        private fun parse(completedParentPath: String, line: String, root: Int, parent: MutableXFile): MutableXFile {
             val parts = line.split(spaces, 8)
             val access = parts[0]
             val owner = parts[2]
@@ -61,10 +61,12 @@ class MutableXFile : XFile {
             val suffix = ""
             val absolutePath = completedParentPath + name
 
-            return MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root)
+            return MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root, parent)
         }
     }
-    override var files: MutableList<MutableXFile>? = null
+    val parent: MutableXFile?
+
+    override var children: MutableList<MutableXFile>? = null
         private set
 
     override var isOpened: Boolean = false
@@ -75,7 +77,7 @@ class MutableXFile : XFile {
 
     private var dropCaching: Boolean = false
     private var isCaching: Boolean = false
-    override val isCached: Boolean get() = files != null
+    override val isCached: Boolean get() = children != null
     override var isCacheActual: Boolean = false
         private set
 
@@ -101,14 +103,10 @@ class MutableXFile : XFile {
     override var isChecked: Boolean = false
     override var isDeleting: Boolean = false; private set
 
+    @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(
             access: String, owner: String, group: String, size: String, date: String, time: String,
-            name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int
-    ) : this(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root as Int?)
-
-    private constructor(
-            access: String, owner: String, group: String, size: String, date: String, time: String,
-            name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int?
+            name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int? = 0, parent: MutableXFile? = null
     ) {
         this.access = access
         this.owner = owner
@@ -124,6 +122,7 @@ class MutableXFile : XFile {
         completedPath = completePath(absolutePath, isDirectory)
         completedParentPath = completedPath.replace(parentSuffix, "")
 
+        this.parent = parent
         this.root = root ?: completedPath.hashCode()
         isRoot = root == null
         mHashCode = hashCode()
@@ -140,12 +139,12 @@ class MutableXFile : XFile {
     fun clear() {
         dropCaching = true
         isCacheActual = false
-        files = null
+        children = null
         isOpened = false
     }
 
     fun clearChildren() {
-        files!!.forEach {
+        children!!.forEach {
             it.clear()
             it.isChecked = false
         }
@@ -156,7 +155,7 @@ class MutableXFile : XFile {
     }
 
     fun replace(item: MutableXFile, with: MutableXFile): String? {
-        val files = files
+        val files = children
         val index = files?.indexOf(item)
         if (index == null || index == UNKNOWN) {
             return "Replacing failed. $this"
@@ -167,7 +166,7 @@ class MutableXFile : XFile {
     }
 
     fun add(item: MutableXFile): String? {
-        val files = files
+        val files = children
         files ?: return "Addition failed. $this"
         files.add(0, item)
         return null
@@ -188,8 +187,13 @@ class MutableXFile : XFile {
         }
     }
 
-    fun delete(su: Boolean = false): String? {
+    fun willBeDeleted() {
         isDeleting = true
+    }
+
+    fun delete(su: Boolean): String? {
+        isDeleting = true
+        sleep(1000)
         var error: String? = null
         val output = Shell.exec(Shell.RM_RF.format(toyboxPath, completedPath), su)
         when (output.success) {
@@ -200,11 +204,11 @@ class MutableXFile : XFile {
         return error
     }
 
-    fun rename(name: String, su: Boolean = false): Pair<String?, MutableXFile?> {
+    fun rename(name: String, su: Boolean): Pair<String?, MutableXFile?> {
         val absolutePath = completedParentPath + name
         val root = if (isRoot) null else root
-        val item = MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root)
-        item.files = files
+        val item = MutableXFile(access, owner, group, size, date, time, name, suffix, isDirectory, absolutePath, root, parent)
+        item.children = children
         item.isOpened = isOpened
         item.isCacheActual = isCacheActual
         item.isChecked = isChecked
@@ -212,14 +216,14 @@ class MutableXFile : XFile {
         return when {
             output.success -> {
                 // do not update dir's files
-                item.cacheAsFile()
+                item.cacheAsFile(su)
                 Pair(null, item)
             }
             else -> Pair(output.error, null)
         }
     }
 
-    fun create(su: Boolean = false): String? {
+    fun create(su: Boolean): String? {
         val output = when {
             isDirectory -> Shell.exec(Shell.MKDIR.format(toyboxPath, completedPath), su)
             else -> Shell.exec(Shell.TOUCH.format(toyboxPath, completedPath), su)
@@ -227,7 +231,7 @@ class MutableXFile : XFile {
         return if (output.success) null else output.error
     }
 
-    private fun cacheAsDir(su: Boolean = false): String? {
+    private fun cacheAsDir(su: Boolean): String? {
         isCaching = true
         sleep((Math.random() * 300).toLong())
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
@@ -248,7 +252,7 @@ class MutableXFile : XFile {
                     }
                     for (i in start until lines.size) {
                         if (lines[i].isNotEmpty()) {
-                            val file = parse(completedPath, lines[i], root)
+                            val file = parse(completedPath, lines[i], root, this)
                             if (file.isDirectory) {
                                 dirs.add(file)
                             } else {
@@ -262,8 +266,8 @@ class MutableXFile : XFile {
                 files.sortBy { it.name.toLowerCase(Locale.ROOT) }
                 files.addAll(0, dirs)
 
-                val oldFiles = this.files
-                this.files = files
+                val oldFiles = this.children
+                this.children = files
                 persistOldFiles(oldFiles)
                 isCaching = false
                 isCacheActual = true
@@ -271,7 +275,7 @@ class MutableXFile : XFile {
             }
             else -> {
                 parseDoesExists(output.error)
-                files = ArrayList()
+                children = ArrayList()
                 isCaching = false
                 isCacheActual = true
                 output.error
@@ -280,7 +284,7 @@ class MutableXFile : XFile {
     }
 
     private fun persistOldFiles(oldFiles: MutableList<MutableXFile>?) {
-        val newFiles = this.files!!
+        val newFiles = this.children!!
         if (oldFiles != null) {
             newFiles.forEachIndexed { newIndex, new ->
                 val lastIndex = oldFiles.indexOf(new)
@@ -293,7 +297,7 @@ class MutableXFile : XFile {
         }
     }
 
-    private fun cacheAsFile(su: Boolean = false): String? {
+    private fun cacheAsFile(su: Boolean): String? {
         isCaching = true
         val output = Shell.exec(Shell.LS_LAHL.format(toyboxPath, completedPath), su)
         val line = output.output.replace("\n", "")

@@ -18,9 +18,7 @@ class BottomSheetMenuListenerDelegate(
                 interactor.copyToClipboard(item as FinderResult)
                 viewModel.alerts.invoke(viewModel.context.getString(R.string.copied))
             }
-            R.id.menu_remove -> {
-                //viewModel.showOptions.data?.items?.toTypedArray()?.let(interactor::deleteItems)
-            }
+            R.id.menu_remove -> interactor.deleteItems(viewModel.checked, viewModel.task.value.uuid)
         }
     }
 }

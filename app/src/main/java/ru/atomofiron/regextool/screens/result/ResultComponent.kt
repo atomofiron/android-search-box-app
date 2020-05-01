@@ -8,11 +8,11 @@ import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
-import ru.atomofiron.regextool.injectable.service.FinderService
 import ru.atomofiron.regextool.injectable.service.ResultService
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.injectable.store.ResultStore
 import ru.atomofiron.regextool.screens.result.presenter.BottomSheetMenuListenerDelegate
 import ru.atomofiron.regextool.screens.result.presenter.ResultItemActionDelegate
 import javax.inject.Scope
@@ -47,6 +47,7 @@ class ResultModule {
     fun presenter(
             viewModel: ResultViewModel,
             scope: CoroutineScope,
+            resultStore: ResultStore,
             finderStore: FinderStore,
             preferenceStore: PreferenceStore,
             interactor: ResultInteractor,
@@ -54,7 +55,7 @@ class ResultModule {
             itemActionDelegate: ResultItemActionDelegate,
             menuListenerDelegate: BottomSheetMenuListenerDelegate
     ): ResultPresenter {
-        return ResultPresenter(viewModel, scope, finderStore, preferenceStore, interactor, router, itemActionDelegate, menuListenerDelegate)
+        return ResultPresenter(viewModel, scope, resultStore, finderStore, preferenceStore, interactor, router, itemActionDelegate, menuListenerDelegate)
     }
 
     @Provides
@@ -77,7 +78,9 @@ class ResultModule {
 
     @Provides
     @ResultScope
-    fun interactor(resultService: ResultService): ResultInteractor = ResultInteractor(resultService)
+    fun interactor(scope: CoroutineScope, resultService: ResultService): ResultInteractor {
+        return ResultInteractor(scope, resultService)
+    }
 
     @Provides
     @ResultScope
@@ -88,4 +91,5 @@ interface ResultDependencies {
     fun finderStore(): FinderStore
     fun preferenceStore(): PreferenceStore
     fun resultService(): ResultService
+    fun resultStore(): ResultStore
 }

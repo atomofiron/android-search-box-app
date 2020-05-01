@@ -8,9 +8,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
-import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.injectable.store.ResultStore
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.adapter.util.ExplorerItemBinder
@@ -24,6 +25,7 @@ import java.util.*
 class ResultPresenter(
         viewModel: ResultViewModel,
         private val scope: CoroutineScope,
+        private val resultStore: ResultStore,
         private val finderStore: FinderStore,
         private val preferenceStore: PreferenceStore,
         private val interactor: ResultInteractor,
@@ -38,6 +40,10 @@ class ResultPresenter(
     }
     private var taskId = UNDEFINED
 
+    init {
+        onSubscribeData()
+    }
+
     override fun onCreate(context: Context, intent: Intent) {
         if (taskId == UNDEFINED) {
             taskId = intent.getLongExtra(KEY_TASK_ID, UNDEFINED)
@@ -47,7 +53,6 @@ class ResultPresenter(
                 router.popScreen()
             } else {
                 viewModel.task.value = task.copyTask()
-                onSubscribeData()
             }
         }
     }
@@ -55,12 +60,19 @@ class ResultPresenter(
     override fun onSubscribeData() {
         super.onSubscribeData()
         finderStore.notifications.addObserver(onClearedCallback) { update ->
-            scope.launch {
-                viewModel.updateState(update)
+            if (taskId != UNDEFINED) {
+                scope.launch {
+                    viewModel.updateState(update)
+                }
             }
         }
         preferenceStore.explorerItemComposition.addObserver(onClearedCallback) {
             viewModel.composition.value = it
+        }
+        resultStore.itemsChanged.addObserver(onClearedCallback) {
+            scope.launch {
+                viewModel.updateState()
+            }
         }
     }
 

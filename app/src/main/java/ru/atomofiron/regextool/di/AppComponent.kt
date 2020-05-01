@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.AssetManager
 import dagger.BindsInstance
 import dagger.Component
+import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.module.ChannelModule
 import ru.atomofiron.regextool.di.module.CommonModule
@@ -45,6 +46,7 @@ interface AppComponent :
         fun build(): AppComponent
     }
 
+    fun inject(target: App)
     fun inject(target: ForegroundService)
     fun inject(target: NotificationWorker)
     fun inject(target: FinderWorker)

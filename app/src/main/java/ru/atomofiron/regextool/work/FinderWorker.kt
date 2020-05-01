@@ -8,7 +8,7 @@ import androidx.work.WorkerParameters
 import app.atomofiron.common.util.ServiceConnectionImpl
 import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.injectable.channel.FinderStore
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.model.finder.FinderResult
@@ -109,7 +109,7 @@ class FinderWorker(
                         return
                     }
                     item.updateCache(useSu)
-                    val items = item.files
+                    val items = item.children
                     if (items?.isNotEmpty() == true) {
                         searchForName(items, depth.inc())
                     }

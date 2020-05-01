@@ -15,7 +15,7 @@ class TargetHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id) {
 
         val icon = when {
             !item.target.isDirectory -> R.drawable.ic_file_circle
-            item.target.files?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
+            item.target.children?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
             else -> R.drawable.ic_explorer_folder
         }
         ivIcon.setImageResource(icon)

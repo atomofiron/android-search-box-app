@@ -83,7 +83,7 @@ class ExplorerItemBinder(private val itemView: View) {
 
         val image = when {
             !item.isDirectory -> R.drawable.ic_file_circle
-            item.files?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
+            item.children?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
             else -> R.drawable.ic_explorer_folder
         }
         ivIcon.setImageResource(image)
