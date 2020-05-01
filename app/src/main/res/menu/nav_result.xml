@@ -18,10 +18,12 @@
         android:id="@+id/menu_remove"
         android:title="@string/remove"
         android:icon="@drawable/ic_trashbox"
+        android:enabled="false"
         />
     <item
         android:id="@+id/menu_export"
         android:title="@string/export_btn"
         android:icon="@drawable/ic_share"
+        android:enabled="false"
         />
 </menu>

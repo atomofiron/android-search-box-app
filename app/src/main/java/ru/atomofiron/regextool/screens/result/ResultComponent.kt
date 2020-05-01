@@ -9,6 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import ru.atomofiron.regextool.injectable.channel.FinderStore
+import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
+import ru.atomofiron.regextool.injectable.service.FinderService
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.result.presenter.ResultItemActionDelegate
 import javax.inject.Scope
@@ -45,10 +47,11 @@ class ResultModule {
             scope: CoroutineScope,
             finderStore: FinderStore,
             preferenceStore: PreferenceStore,
+            interactor: ResultInteractor,
             router: ResultRouter,
             itemActionDelegate: ResultItemActionDelegate
     ): ResultPresenter {
-        return ResultPresenter(viewModel, scope, finderStore, preferenceStore, router, itemActionDelegate)
+        return ResultPresenter(viewModel, scope, finderStore, preferenceStore, interactor, router, itemActionDelegate)
     }
 
     @Provides
@@ -63,10 +66,15 @@ class ResultModule {
 
     @Provides
     @ResultScope
+    fun interactor(finderService: FinderService): ResultInteractor = ResultInteractor(finderService)
+
+    @Provides
+    @ResultScope
     fun router(activity: WeakProperty<ResultFragment>): ResultRouter = ResultRouter(activity)
 }
 
 interface ResultDependencies {
     fun finderStore(): FinderStore
     fun preferenceStore(): PreferenceStore
+    fun finderService(): FinderService
 }

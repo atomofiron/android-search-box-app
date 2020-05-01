@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.screens.result
 
-import android.app.Application
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import ru.atomofiron.regextool.di.DaggerInjector
@@ -31,12 +30,10 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
         if (update is FinderTaskChange.Update) {
             val task = task.value
             val newTask = update.tasks.find { it.id == task.id }
-            if (newTask == null) {
-                log2("[ERROR] newTask == null")
-            } else {
-                if (task.count != newTask.count || task.inProgress != newTask.inProgress) {
-                    this.task.value = newTask.copyTask()
-                }
+            when {
+                newTask == null -> log2("[ERROR] newTask == null")
+                task.count != newTask.count -> this.task.value = newTask.copyTask()
+                task.inProgress != newTask.inProgress -> this.task.value = newTask.copyTask()
             }
         }
     }

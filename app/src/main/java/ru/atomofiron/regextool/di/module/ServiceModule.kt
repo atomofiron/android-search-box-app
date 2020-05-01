@@ -29,7 +29,6 @@ open class ServiceModule {
     fun finderService(
             workManager: WorkManager,
             finderStore: FinderStore,
-            explorerStore: ExplorerStore,
             preferenceStore: PreferenceStore
-    ): FinderService = FinderService(workManager, explorerStore, finderStore, preferenceStore)
+    ): FinderService = FinderService(workManager, finderStore, preferenceStore)
 }

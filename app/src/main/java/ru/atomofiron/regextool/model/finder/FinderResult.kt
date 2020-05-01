@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.model.finder
 
 import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.utils.Const
 
 class FinderResult(
         item: XFile,
@@ -31,6 +32,11 @@ class FinderResult(
     override val isRoot: Boolean = false
     override val isChecked: Boolean = false
     override val isDeleting: Boolean = false
+
+    fun toMarkdown(): String? {
+        val name = if (isDirectory) name + Const.SLASH else name
+        return String.format("[%s](%s)\n", name, completedPath.replace(" ", "\\ "))
+    }
 
     override fun equals(other: Any?): Boolean {
         return when (other) {

@@ -6,5 +6,4 @@ interface FinderAdapterOutput :
         FieldHolder.OnActionListener,
         CharactersHolder.OnActionListener,
         ConfigHolder.OnActionListener,
-        ProgressHolder.OnActionListener,
-        TargetHolder.OnActionListener
+        ProgressHolder.OnActionListener

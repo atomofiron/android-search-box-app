@@ -48,17 +48,12 @@ class FinderAdapterPresenterDelegate(
         // do not notify
     }
 
-    override fun onItemClick(item: FinderStateItem.TargetItem) {
-        val context = viewModel.context
-        viewModel.snackbar.invoke(context.getString(R.string.oops_not_working))
-    }
-
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
         router.showResult(item.finderTask.id)
     }
 
     override fun onProgressStopClick(item: FinderStateItem.ProgressItem) {
-        interactor.stop(item.finderTask)
+        interactor.stop(item.finderTask.uuid)
     }
 
     override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {

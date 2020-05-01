@@ -12,6 +12,7 @@ import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
+import ru.atomofiron.regextool.custom.view.BottomMenuBar
 import ru.atomofiron.regextool.model.finder.FinderTask
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.result.adapter.ResultAdapter
@@ -38,6 +39,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
     private val bView = Knife<BallsView>(this, R.id.result_bv)
     private val ivStatus = Knife<ImageView>(this, R.id.result_iv_status)
     private val tvCounter = Knife<TextView>(this, R.id.result_tv_counter)
+    private val mbmBar = Knife<BottomMenuBar>(this, R.id.result_bmb)
 
     private val resultAdapter = ResultAdapter()
 
@@ -59,6 +61,25 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
             layoutManager = LinearLayoutManager(thisContext)
             adapter = resultAdapter
         }
+        mbmBar {
+            setOnMenuItemClickListener(::onBottomMenuItemClick)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        rvResults {
+            adapter = null
+        }
+    }
+
+    private fun onBottomMenuItemClick(id: Int) {
+        when (id) {
+            R.id.menu_stop -> presenter.onStopClick()
+            R.id.menu_remove -> presenter.onRemoveClick()
+            R.id.menu_export -> presenter.onExportClick()
+        }
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
@@ -77,6 +98,16 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         }
         tvCounter {
             text = "${task.results.size}/${task.count}"
+        }
+        mbmBar {
+            var item = menu.findItem(R.id.menu_stop)
+            if (item.isEnabled != task.inProgress) {
+                item.isEnabled = task.inProgress
+            }
+            item = menu.findItem(R.id.menu_export)
+            if (item.isEnabled != task.results.isNotEmpty()) {
+                item.isEnabled = task.results.isNotEmpty()
+            }
         }
         resultAdapter.setItems(task.results)
     }

@@ -2,9 +2,7 @@ package ru.atomofiron.regextool.custom.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.MenuInflater
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -19,7 +17,7 @@ class BottomMenuBar @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
     companion object {
         private const val ALPHA_ENABLED = 1f
-        private const val ALPHA_DISABLED = 0.5f
+        private const val ALPHA_DISABLED = 0.3f
     }
 
     private var onMenuItemClickListener: ((id: Int) -> Unit)? = null
@@ -44,7 +42,22 @@ class BottomMenuBar @JvmOverloads constructor(
     }
 
     private fun onMenuChanged() {
-        // todo wtf?
+        for (index in 0 until menu.size()) {
+            val item = menu.getItem(index)
+            val view = findViewById<View>(item.itemId)
+            view ?: continue
+            updateItem(view, item)
+        }
+        for (index in 0 until childCount) {
+            val view = getChildAt(index)
+            val item = menu.findItem(view.id)
+            if (item == null) {
+                view.findViewById<ImageView>(R.id.iv_icon).setImageDrawable(null)
+                view.findViewById<TextView>(R.id.tv_label).text = null
+                view.isEnabled = false
+                view.isFocusable = false
+            }
+        }
     }
 
     fun setOnMenuItemClickListener(listener: (id: Int) -> Unit) {
@@ -61,10 +74,15 @@ class BottomMenuBar @JvmOverloads constructor(
             view.findViewById<ImageView>(R.id.iv_icon).setImageDrawable(item.icon)
             view.findViewById<TextView>(R.id.tv_label).text = item.title
             view.setOnClickListener { onMenuItemClickListener?.invoke(id) }
-            view.alpha = if (item.isEnabled) ALPHA_ENABLED else ALPHA_DISABLED
-            view.isEnabled = item.isEnabled
             view.clipToPadding = true
+            view.id = id
+            updateItem(view, item)
             addView(view)
         }
+    }
+
+    private fun updateItem(view: View, item: MenuItem) {
+        view.alpha = if (item.isEnabled) ALPHA_ENABLED else ALPHA_DISABLED
+        view.isEnabled = item.isEnabled
     }
 }

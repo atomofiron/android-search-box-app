@@ -28,7 +28,7 @@ class FinderAdapter : GeneralAdapter<GeneralHolder<FinderStateItem>, FinderState
             FinderItemType.CONFIGS.id -> ConfigHolder(parent, viewType, output)
             FinderItemType.TEST.id -> TestHolder(parent, viewType)
             FinderItemType.PROGRESS.id -> ProgressHolder(parent, viewType, output)
-            FinderItemType.TARGET.id -> TargetHolder(parent, viewType, output)
+            FinderItemType.TARGET.id -> TargetHolder(parent, viewType)
             else -> throw IllegalArgumentException("viewType = $viewType")
         }
     }

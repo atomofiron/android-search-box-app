@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/bottom_sheet_title_margin"
+        android:layout_marginBottom="@dimen/common_margin_half"
         android:textSize="@dimen/bottom_sheet_title_size"
         android:textColor="?attr/colorContent"
         android:textStyle="bold"
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/padding_large"
         android:max="255"
+        android:background="@color/item_explorer_background"
         />
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/preference_sb_green"
@@ -29,14 +31,14 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/padding_large"
         android:max="255"
-        android:background="@color/item_explorer_background"
         />
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/preference_sb_blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="255"
         android:padding="@dimen/padding_large"
+        android:max="255"
+        android:background="@color/item_explorer_background"
         />
     <LinearLayout
         android:layout_width="match_parent"

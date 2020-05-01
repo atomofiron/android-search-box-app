@@ -2,10 +2,9 @@ package ru.atomofiron.regextool.utils
 
 object Const {
     const val ROOT = "/"
+    const val SLASH = "/"
     const val SDCARD = "/sdcard/"
     const val ANDROID_DIR = "/Android/"
-    const val PREF_LAST_VERSION = "PREF_LAST_VERSION"
-    const val PREF_FIRST_START = "PREF_FIRST_START"
     const val PREF_STORAGE_PATH = "pref_storage_path"
     const val PREF_OPENED_DIR_PATH = "pref_opened_dir_path"
     const val PREF_DOCK_GRAVITY = "pref_drawer_gravity"
@@ -23,8 +22,6 @@ object Const {
     const val PREF_JOYSTICK = "pref_joystick"
     const val PREF_LEAK_CANARY = "pref_leak_canary"
 
-    const val SELECTED_LIST = "SELECTED_LIST"
-
     const val DEFAULT_TEXT_FORMATS = "txt java xml html htm smali log js css json kt md mkd markdown cm ad adoc"
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
     const val DEFAULT_MAX_SIZE = 10485760L
@@ -35,4 +32,7 @@ object Const {
     const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "foreground_channel_id"
     const val FOREGROUND_NOTIFICATION_ID = 101
     const val FOREGROUND_INTENT_REQUEST_CODE = 102
+
+    const val DATE_PATTERN = "YYYY-MM-DD_HH-mm-ss"
+    const val MIME_TYPE_TEXT = "text/plain"
 }

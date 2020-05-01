@@ -134,7 +134,7 @@ class FinderWorker(
         applicationContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         useSu = inputData.getBoolean(KEY_USE_SU, useSu)
-        useRegex = inputData.getBoolean(KEY_QUERY, useRegex)
+        useRegex = inputData.getBoolean(KEY_USE_REGEX, useRegex)
         maxSize = inputData.getLong(KEY_MAX_SIZE, UNDEFINED.toLong())
         ignoreCase = inputData.getBoolean(KEY_CASE_INSENSITIVE, ignoreCase)
         excludeDirs = inputData.getBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
