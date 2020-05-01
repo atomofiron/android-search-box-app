@@ -1,6 +1,6 @@
 package ru.atomofiron.regextool.model.finder
 
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.utils.Const
 
 class FinderResult(
@@ -21,6 +21,8 @@ class FinderResult(
     override val name = item.name
     override val suffix = item.suffix
 
+    override var isChecked: Boolean = false
+
     // does not matter
     override val files: List<XFile>? = null
     override val isOpened: Boolean = false
@@ -30,7 +32,6 @@ class FinderResult(
     override val completedParentPath: String = "/"
     override val root: Int = -1
     override val isRoot: Boolean = false
-    override val isChecked: Boolean = false
     override val isDeleting: Boolean = false
 
     fun toMarkdown(): String? {

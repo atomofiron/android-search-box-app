@@ -3,9 +3,9 @@ package ru.atomofiron.regextool.injectable.service
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import ru.atomofiron.regextool.injectable.channel.FinderStore
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.log
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderTask
 import ru.atomofiron.regextool.work.FinderWorker
 import java.util.*

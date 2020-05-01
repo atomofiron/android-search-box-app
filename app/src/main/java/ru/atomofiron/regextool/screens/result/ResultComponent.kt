@@ -11,7 +11,9 @@ import kotlinx.coroutines.Job
 import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
 import ru.atomofiron.regextool.injectable.service.FinderService
+import ru.atomofiron.regextool.injectable.service.ResultService
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.screens.result.presenter.BottomSheetMenuListenerDelegate
 import ru.atomofiron.regextool.screens.result.presenter.ResultItemActionDelegate
 import javax.inject.Scope
 
@@ -49,14 +51,23 @@ class ResultModule {
             preferenceStore: PreferenceStore,
             interactor: ResultInteractor,
             router: ResultRouter,
-            itemActionDelegate: ResultItemActionDelegate
+            itemActionDelegate: ResultItemActionDelegate,
+            menuListenerDelegate: BottomSheetMenuListenerDelegate
     ): ResultPresenter {
-        return ResultPresenter(viewModel, scope, finderStore, preferenceStore, interactor, router, itemActionDelegate)
+        return ResultPresenter(viewModel, scope, finderStore, preferenceStore, interactor, router, itemActionDelegate, menuListenerDelegate)
     }
 
     @Provides
     @ResultScope
-    fun resultItemActionDelegate(): ResultItemActionDelegate = ResultItemActionDelegate()
+    fun resultItemActionDelegate(viewModel: ResultViewModel): ResultItemActionDelegate {
+        return ResultItemActionDelegate(viewModel)
+    }
+
+    @Provides
+    @ResultScope
+    fun menuListenerDelegate(viewModel: ResultViewModel, interactor: ResultInteractor): BottomSheetMenuListenerDelegate {
+        return BottomSheetMenuListenerDelegate(viewModel, interactor)
+    }
 
     @Provides
     @ResultScope
@@ -66,7 +77,7 @@ class ResultModule {
 
     @Provides
     @ResultScope
-    fun interactor(finderService: FinderService): ResultInteractor = ResultInteractor(finderService)
+    fun interactor(resultService: ResultService): ResultInteractor = ResultInteractor(resultService)
 
     @Provides
     @ResultScope
@@ -76,5 +87,5 @@ class ResultModule {
 interface ResultDependencies {
     fun finderStore(): FinderStore
     fun preferenceStore(): PreferenceStore
-    fun finderService(): FinderService
+    fun resultService(): ResultService
 }

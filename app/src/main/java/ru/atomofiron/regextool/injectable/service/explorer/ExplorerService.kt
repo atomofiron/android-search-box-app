@@ -2,8 +2,8 @@ package ru.atomofiron.regextool.injectable.service.explorer
 
 import android.content.SharedPreferences
 import android.content.res.AssetManager
-import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.MutableXFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.log2

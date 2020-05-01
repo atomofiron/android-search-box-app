@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.atomofiron.regextool.MainActivity">
+    <item
+        android:id="@+id/menu_copy_path"
+        android:title="@string/copy_path"
+        android:icon="@drawable/ic_copy"
+        />
+    <item
+        android:id="@+id/menu_remove"
+        android:title="@string/remove"
+        android:icon="@drawable/ic_trashbox"
+        >
+        <menu />
+    </item>
+</menu>

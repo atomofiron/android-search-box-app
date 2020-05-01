@@ -7,12 +7,15 @@ import app.atomofiron.common.arch.BasePresenter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.adapter.util.ExplorerItemBinder
 import ru.atomofiron.regextool.screens.result.ResultFragment.Companion.KEY_TASK_ID
+import ru.atomofiron.regextool.screens.result.presenter.BottomSheetMenuListenerDelegate
 import ru.atomofiron.regextool.screens.result.presenter.ResultItemActionDelegate
 import ru.atomofiron.regextool.utils.Const
 import java.text.SimpleDateFormat
@@ -25,9 +28,11 @@ class ResultPresenter(
         private val preferenceStore: PreferenceStore,
         private val interactor: ResultInteractor,
         router: ResultRouter,
-        itemActionDelegate: ResultItemActionDelegate
+        itemActionDelegate: ResultItemActionDelegate,
+        menuListenerDelegate: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
-        ExplorerItemBinder.ExplorerItemBinderActionListener by itemActionDelegate {
+        ExplorerItemBinder.ExplorerItemBinderActionListener by itemActionDelegate,
+        BottomSheetMenuListener by menuListenerDelegate {
     companion object {
         private const val UNDEFINED = -1L
     }
@@ -61,8 +66,13 @@ class ResultPresenter(
 
     fun onStopClick() = interactor.stop(viewModel.task.value.uuid)
 
-    fun onRemoveClick() {
-
+    fun onOptionsClick() {
+        val ids = when (viewModel.checked.size) {
+            1 -> viewModel.oneFileOptions
+            else -> viewModel.manyFilesOptions
+        }
+        val options = ExplorerItemOptions(ids, viewModel.checked, viewModel.composition.value)
+        viewModel.showOptions.invoke(options)
     }
 
     fun onExportClick() {

@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.custom.view.bottom_sheet_menu
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -27,10 +26,8 @@ class BottomSheetMenuAdapter(context: Context) : RecyclerView.Adapter<BottomShee
         return BottomSheetMenuHolder(view, menuItemClickListener)
     }
 
-    @SuppressLint("RestrictedApi")
     override fun getItemCount(): Int = menu.size()
 
-    @SuppressLint("RestrictedApi")
     override fun onBindViewHolder(holder: BottomSheetMenuHolder, position: Int) {
         holder.bind(menu.getItem(position))
     }

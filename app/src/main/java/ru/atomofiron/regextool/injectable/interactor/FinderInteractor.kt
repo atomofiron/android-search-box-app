@@ -1,7 +1,7 @@
 package ru.atomofiron.regextool.injectable.interactor
 
 import ru.atomofiron.regextool.injectable.service.FinderService
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderTask
 import java.util.*
 

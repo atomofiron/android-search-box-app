@@ -4,16 +4,16 @@ import app.atomofiron.common.arch.BasePresenter
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
 import ru.atomofiron.regextool.screens.explorer.presenter.BottomSheetMenuListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import ru.atomofiron.regextool.screens.explorer.presenter.PlacesActionListenerDelegate
-import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 
 class ExplorerPresenter(
         viewModel: ExplorerViewModel,
@@ -78,7 +78,7 @@ class ExplorerPresenter(
             files[0].isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }
-        viewModel.showOptions.invoke(BottomSheetMenuWithTitle.ExplorerItemOptions(ids, files, viewModel.itemComposition.value))
+        viewModel.showOptions.invoke(ExplorerItemOptions(ids, files, viewModel.itemComposition.value))
     }
 
     fun onSettingsOptionSelected() = router.showSettings()

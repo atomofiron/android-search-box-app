@@ -5,14 +5,14 @@ import app.atomofiron.common.util.permission.PermissionResultListener
 import app.atomofiron.common.util.permission.Permissions
 import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.explorer.ExplorerRouter
 import ru.atomofiron.regextool.screens.explorer.ExplorerViewModel
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
-import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 
 class ExplorerItemActionListenerDelegate(
         fragment: WeakProperty<ExplorerFragment>,
@@ -37,7 +37,7 @@ class ExplorerItemActionListenerDelegate(
             files[0].isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }
-        val options = BottomSheetMenuWithTitle.ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
+        val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
         viewModel.showOptions.invoke(options)
     }
 

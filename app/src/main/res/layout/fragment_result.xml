@@ -65,4 +65,9 @@
                 />
         </LinearLayout>
     </ru.atomofiron.regextool.custom.view.FixedBottomAppBar>
+    <ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
+        android:id="@+id/result_bsv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

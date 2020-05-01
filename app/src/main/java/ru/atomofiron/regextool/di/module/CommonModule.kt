@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.di.module
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
@@ -21,5 +22,11 @@ open class CommonModule {
     @Singleton
     open fun provideWorkManager(context: Context): WorkManager {
         return WorkManager.getInstance(context)
+    }
+
+    @Provides
+    @Singleton
+    open fun provideClipboardManager(context: Context): ClipboardManager {
+        return context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 }

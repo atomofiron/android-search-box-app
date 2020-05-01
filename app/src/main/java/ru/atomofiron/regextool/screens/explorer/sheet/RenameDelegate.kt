@@ -8,7 +8,7 @@ import android.widget.EditText
 import app.atomofiron.common.util.showKeyboard
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.ExplorerPresenter
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder

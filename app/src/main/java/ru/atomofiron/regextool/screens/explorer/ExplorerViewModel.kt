@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.screens.explorer
 
-import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
@@ -10,11 +9,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.injectable.service.explorer.model.Change
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.Change
+import ru.atomofiron.regextool.model.explorer.XFile
+import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.places.XPlace
-import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.sheet.RenameDelegate.RenameData
 import javax.inject.Inject
 

@@ -4,7 +4,7 @@ import android.content.Intent
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.util.permission.Permissions
 import app.atomofiron.common.util.property.WeakProperty
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.screens.finder.FinderFragment
 import ru.atomofiron.regextool.screens.preferences.PreferenceFragment
 import ru.atomofiron.regextool.utils.Util

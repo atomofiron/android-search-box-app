@@ -1,12 +1,11 @@
 package ru.atomofiron.regextool.screens.finder
 
-import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderTaskChange
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 import kotlin.reflect.KClass

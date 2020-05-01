@@ -15,9 +15,9 @@
         android:enabled="false"
         />
     <item
-        android:id="@+id/menu_remove"
-        android:title="@string/remove"
-        android:icon="@drawable/ic_trashbox"
+        android:id="@+id/menu_options"
+        android:title="@string/options"
+        android:icon="@drawable/ic_options"
         android:enabled="false"
         />
     <item

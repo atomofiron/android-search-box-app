@@ -18,6 +18,15 @@
         android:id="@+id/explorer_menu_item"
         layout="@layout/item_explorer"
         />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/explorer_menu_tv_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/common_margin"
+        android:layout_marginTop="@dimen/common_margin_half"
+        android:layout_marginEnd="@dimen/common_margin"
+        android:visibility="gone"
+        />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/explorer_menu_rv"
         android:layout_width="match_parent"

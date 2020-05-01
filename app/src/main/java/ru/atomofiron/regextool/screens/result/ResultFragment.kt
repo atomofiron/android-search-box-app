@@ -13,8 +13,11 @@ import app.atomofiron.common.util.Knife
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
 import ru.atomofiron.regextool.custom.view.BottomMenuBar
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import ru.atomofiron.regextool.model.finder.FinderTask
+import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
+import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.screens.result.adapter.ResultAdapter
 import ru.atomofiron.regextool.utils.setVisibility
 import javax.inject.Inject
@@ -35,13 +38,15 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
     override val viewModelClass: KClass<ResultViewModel> = ResultViewModel::class
     override val layoutId: Int = R.layout.fragment_result
 
+    private val mbmBar = Knife<BottomMenuBar>(this, R.id.result_bmb)
+    private val bottomSheetView = Knife<BottomSheetView>(this, R.id.result_bsv)
     private val rvResults = Knife<RecyclerView>(this, R.id.result_rv)
     private val bView = Knife<BallsView>(this, R.id.result_bv)
     private val ivStatus = Knife<ImageView>(this, R.id.result_iv_status)
     private val tvCounter = Knife<TextView>(this, R.id.result_tv_counter)
-    private val mbmBar = Knife<BottomMenuBar>(this, R.id.result_bmb)
 
     private val resultAdapter = ResultAdapter()
+    private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
 
     @Inject
     override lateinit var presenter: ResultPresenter
@@ -52,6 +57,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         super.onCreate()
 
         resultAdapter.itemActionListener = presenter
+        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_result, thisContext, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,6 +70,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         mbmBar {
             setOnMenuItemClickListener(::onBottomMenuItemClick)
         }
+        bottomItemMenu.bottomSheetView = bottomSheetView.view
     }
 
     override fun onDestroyView() {
@@ -77,7 +84,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
     private fun onBottomMenuItemClick(id: Int) {
         when (id) {
             R.id.menu_stop -> presenter.onStopClick()
-            R.id.menu_remove -> presenter.onRemoveClick()
+            R.id.menu_options -> presenter.onOptionsClick()
             R.id.menu_export -> presenter.onExportClick()
         }
     }
@@ -86,6 +93,8 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         super.onSubscribeData(owner)
         viewModel.composition.observe(this, Observer(::onCompositionChange))
         viewModel.task.observe(this, Observer(::onTaskChange))
+        viewModel.enableOptions.observe(this, Observer(::enableOptions))
+        viewModel.showOptions.observeData(this, ::showOptions)
     }
 
     private fun onTaskChange(task: FinderTask) {
@@ -114,5 +123,24 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
 
     private fun onCompositionChange(composition: ExplorerItemComposition) {
         resultAdapter.setComposition(composition)
+    }
+
+    private fun enableOptions(enable: Boolean) {
+        mbmBar {
+            val item = menu.findItem(R.id.menu_options)
+            if (item.isEnabled != enable) {
+                item.isEnabled = enable
+            }
+        }
+    }
+
+    private fun showOptions(options: ExplorerItemOptions) {
+        bottomItemMenu.show(options)
+        if (options.items.size == 1) {
+            bottomItemMenu.tvDescription.visibility = View.VISIBLE
+            bottomItemMenu.tvDescription.text = options.items[0].completedPath
+        } else {
+            bottomItemMenu.tvDescription.visibility = View.GONE
+        }
     }
 }

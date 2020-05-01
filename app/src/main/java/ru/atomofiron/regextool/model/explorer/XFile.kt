@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.injectable.service.explorer.model
+package ru.atomofiron.regextool.model.explorer
 
 interface XFile {
     val files: List<XFile>?

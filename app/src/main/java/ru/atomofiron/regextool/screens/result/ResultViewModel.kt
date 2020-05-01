@@ -2,16 +2,26 @@ package ru.atomofiron.regextool.screens.result
 
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
+import app.atomofiron.common.util.SingleLiveEvent
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.model.finder.FinderTask
 import ru.atomofiron.regextool.model.finder.FinderTaskChange
+import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 
 class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
+    val checked = ArrayList<XFile>()
+
+    val oneFileOptions = arrayListOf(R.id.menu_copy_path, R.id.menu_remove)
+    val manyFilesOptions = arrayListOf(R.id.menu_remove)
 
     val task = LateinitLiveData<FinderTask>()
     val composition = LateinitLiveData<ExplorerItemComposition>()
+    val enableOptions = LateinitLiveData(false)
+    val showOptions = SingleLiveEvent<ExplorerItemOptions>()
 
     override val component = DaggerResultComponent
             .builder()

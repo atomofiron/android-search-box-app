@@ -47,7 +47,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
 
         renameDelegate = RenameDelegate(presenter)
         createDelegate = CreateDelegate(presenter)
-        bottomItemMenu = BottomSheetMenuWithTitle(thisContext, presenter)
+        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_explorer, thisContext, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

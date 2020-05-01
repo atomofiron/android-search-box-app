@@ -5,19 +5,20 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.injectable.service.explorer.model.XFile
-import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
-import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenu
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
+import ru.atomofiron.regextool.model.other.ExplorerItemOptions
+import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 
 class BottomSheetMenuWithTitle(
+        menuId: Int,
         private val context: Context,
         menuItemClickListener: BottomSheetMenuListener
-) : BottomSheetMenu(R.layout.sheet_explorer_options, context, R.menu.explorer_item_options, menuItemClickListener) {
+) : BottomSheetMenu(R.layout.sheet_explorer_options, context, menuId, menuItemClickListener) {
     private val tvTitle: TextView get() = bottomSheetView.contentView.findViewById(R.id.explorer_menu_tv_title)
     private val exItem: View get() = bottomSheetView.contentView.findViewById(R.id.explorer_menu_item)
     private val exItemCheckBox: View get() = exItem.findViewById(R.id.item_explorer_cb)
+    val tvDescription: TextView get() = bottomSheetView.contentView.findViewById(R.id.explorer_menu_tv_description)
     override val recyclerView: RecyclerView get() = bottomSheetView.contentView.findViewById(R.id.explorer_menu_rv)
     override var contentView: View? = null
 
@@ -64,10 +65,4 @@ class BottomSheetMenuWithTitle(
         exItemCheckBox.isFocusable = false
         exItemCheckBox.isClickable = false
     }
-
-    data class ExplorerItemOptions(
-            val ids: List<Int>,
-            val items: List<XFile>,
-            val composition: ExplorerItemComposition
-    )
 }

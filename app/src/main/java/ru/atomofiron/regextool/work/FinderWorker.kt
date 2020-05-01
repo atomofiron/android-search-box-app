@@ -9,7 +9,7 @@ import app.atomofiron.common.util.ServiceConnectionImpl
 import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.channel.FinderStore
-import ru.atomofiron.regextool.injectable.service.explorer.model.MutableXFile
+import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.log2
 import ru.atomofiron.regextool.model.finder.FinderResult
 import ru.atomofiron.regextool.model.finder.MutableFinderTask

@@ -1,4 +1,4 @@
-package ru.atomofiron.regextool.injectable.service.explorer.model
+package ru.atomofiron.regextool.model.explorer
 
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.sleep

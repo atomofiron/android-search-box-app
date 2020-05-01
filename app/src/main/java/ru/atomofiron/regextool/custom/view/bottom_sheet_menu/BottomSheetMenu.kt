@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.custom.view.bottom_sheet_menu
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.view.MenuInflater
 import android.view.View
@@ -33,7 +32,6 @@ open class BottomSheetMenu(
         recyclerView.adapter = menuAdapter
     }
 
-    @SuppressLint("RestrictedApi")
     open fun show(items: List<Int>) {
         menuImpl.clear()
         MenuInflater(context).inflate(menuId, menuImpl)

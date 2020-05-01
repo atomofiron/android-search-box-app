@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.di.module
 
+import android.content.ClipboardManager
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.work.WorkManager
@@ -7,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import ru.atomofiron.regextool.injectable.channel.FinderStore
 import ru.atomofiron.regextool.injectable.service.FinderService
+import ru.atomofiron.regextool.injectable.service.ResultService
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
@@ -31,4 +33,11 @@ open class ServiceModule {
             finderStore: FinderStore,
             preferenceStore: PreferenceStore
     ): FinderService = FinderService(workManager, finderStore, preferenceStore)
+
+    @Provides
+    @Singleton
+    fun resultService(
+            workManager: WorkManager,
+            clipboardManager: ClipboardManager
+    ): ResultService = ResultService(workManager, clipboardManager)
 }
