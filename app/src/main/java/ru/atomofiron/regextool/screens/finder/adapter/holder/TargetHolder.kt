@@ -10,6 +10,11 @@ class TargetHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id) {
     private val ivIcon = itemView.findViewById<ImageView>(R.id.item_iv_icon)
     private val tvTitle = itemView.findViewById<TextView>(R.id.item_tv_title)
 
+    init {
+        itemView.isClickable = false
+        itemView.isFocusable = false
+    }
+
     override fun onBind(item: FinderStateItem, position: Int) {
         item as FinderStateItem.TargetItem
 
