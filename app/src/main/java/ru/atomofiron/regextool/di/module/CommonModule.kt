@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.di.module
 
+import android.app.NotificationManager
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
@@ -16,6 +17,12 @@ open class CommonModule {
     @Singleton
     open fun provideSharedPreferences(context: Context): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(context)
+    }
+
+    @Provides
+    @Singleton
+    open fun provideNotificationManager(context: Context): NotificationManager {
+        return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
     @Provides

@@ -52,7 +52,7 @@
     <string name="waiting_for_results">Waiting for the results…</string>
     <string name="no_access">No access</string>
     <string name="data_was_lost">Data was lost</string>
-    <string name="search_completed">Search completed</string>
+    <string name="search_completed">Search completed %d/%d</string>
     <string name="pref_special_characters">Special characters</string>
     <string name="search">Search</string>
     <string name="use_regular_expression">Use regular expression</string>
@@ -89,7 +89,8 @@
     <string name="pref_category_debug">Debug</string>
     <string name="pref_leak_canary" translatable="false">Leak Canary</string>
     <string name="root">Root</string>
-    <string name="foreground_notification_name">Foreground Notification</string>
+    <string name="foreground_notification_name" translatable="false">Foreground Notification</string>
+    <string name="result_notification_name" translatable="false">Result Notification</string>
     <string name="copy_path">Copy the absolute path</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>

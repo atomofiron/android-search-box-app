@@ -29,6 +29,6 @@ class FinderStore {
         val task = mutableTasks.find { it.uuid == uuid }
         task ?: return
         task.results.remove(item)
-        notifications.setAndNotify(FinderTaskChange.Update(arrayListOf(task)))
+        notifications.setAndNotify(FinderTaskChange.Update(listOf(task)))
     }
 }

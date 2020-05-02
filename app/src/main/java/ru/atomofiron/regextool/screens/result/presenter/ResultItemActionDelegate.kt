@@ -14,7 +14,7 @@ class ResultItemActionDelegate(private val viewModel: ResultViewModel) : Explore
         val options = if (viewModel.checked.contains(item)) {
             ExplorerItemOptions(viewModel.manyFilesOptions, viewModel.checked, viewModel.composition.value)
         } else {
-            ExplorerItemOptions(viewModel.oneFileOptions, arrayListOf(item), viewModel.composition.value)
+            ExplorerItemOptions(viewModel.oneFileOptions, listOf(item), viewModel.composition.value)
         }
         viewModel.showOptions.invoke(options)
     }

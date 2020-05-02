@@ -52,7 +52,7 @@
     <string name="waiting_for_results">Ожидание результатов…</string>
     <string name="no_access">Нет доступа</string>
     <string name="data_was_lost">Данные были утеряны</string>
-    <string name="search_completed">Поиск завершён</string>
+    <string name="search_completed">Поиск завершён %d/%d</string>
     <string name="pref_special_characters">Специальные символы</string>
     <string name="search">Поиск</string>
     <string name="use_regular_expression">Использовать регулярное выражение</string>
@@ -88,8 +88,7 @@
     <string name="inverse_for_dark">Инвертировать при тёмной теме</string>
     <string name="pref_category_debug">Отладка</string>
     <string name="root">Корень</string>
-    <string name="foreground_notification_name">Foreground Notification</string>
-    <string name="copy_path">Copy the absolute path</string>
+    <string name="copy_path">Скопировать путь</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>

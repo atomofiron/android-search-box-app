@@ -1,24 +1,33 @@
 package ru.atomofiron.regextool.work
 
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.atomofiron.common.util.ServiceConnectionImpl
+import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.FinderStore
-import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.finder.FinderResult
 import ru.atomofiron.regextool.model.finder.MutableFinderTask
+import ru.atomofiron.regextool.screens.root.RootActivity
 import ru.atomofiron.regextool.sleep
+import ru.atomofiron.regextool.utils.ChannelUtil
+import ru.atomofiron.regextool.utils.Const
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 class FinderWorker(
-        context: Context,
+        private val context: Context,
         workerParams: WorkerParameters
 ) : Worker(context, workerParams) {
     companion object {
@@ -73,6 +82,8 @@ class FinderWorker(
 
     @Inject
     lateinit var finderStore: FinderStore
+    @Inject
+    lateinit var notificationManager: NotificationManager
 
     init {
         DaggerInjector.appComponent.inject(this)
@@ -172,8 +183,33 @@ class FinderWorker(
 
         task.isDone = !isStopped
         task.inProgress = false
+
+        showNotification()
         applicationContext.unbindService(connection)
 
         return Result.success(data)
+    }
+
+    private fun showNotification() {
+        val id = task.id.toInt()
+        val intent = Intent(context, RootActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val color = ContextCompat.getColor(context, R.color.colorPrimaryLight)
+        val notification = NotificationCompat.Builder(context, Const.RESULT_NOTIFICATION_CHANNEL_ID)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setContentTitle(context.getString(R.string.search_completed, task.results.size, task.count))
+                .setSmallIcon(R.drawable.ic_notification_done)
+                .setColor(color)
+                .setContentIntent(pendingIntent)
+                .build()
+
+        notification.flags = notification.flags or NotificationCompat.FLAG_AUTO_CANCEL
+
+        ChannelUtil.id(Const.RESULT_NOTIFICATION_CHANNEL_ID)
+                .name(context.getString(R.string.result_notification_name))
+                .importance(NotificationManager.IMPORTANCE_DEFAULT)
+                .fix(context)
+
+        notificationManager.notify(id, notification)
     }
 }

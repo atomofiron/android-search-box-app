@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.di.module
 
+import android.app.NotificationManager
 import android.content.ClipboardManager
 import android.content.SharedPreferences
 import android.content.res.AssetManager
@@ -31,9 +32,10 @@ open class ServiceModule {
     @Singleton
     fun finderService(
             workManager: WorkManager,
+            notificationManager: NotificationManager,
             finderStore: FinderStore,
             preferenceStore: PreferenceStore
-    ): FinderService = FinderService(workManager, finderStore, preferenceStore)
+    ): FinderService = FinderService(workManager, notificationManager, finderStore, preferenceStore)
 
     @Provides
     @Singleton

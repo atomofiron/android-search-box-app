@@ -12,13 +12,13 @@ class BottomSheetMenuListenerDelegate(
 ) : BottomSheetMenuListener {
 
     override fun onMenuItemSelected(id: Int) {
+        val item = viewModel.showOptions.data!!.items[0]
         when (id) {
             R.id.menu_copy_path -> {
-                val item = viewModel.showOptions.data!!.items[0]
                 interactor.copyToClipboard(item as FinderResult)
                 viewModel.alerts.invoke(viewModel.context.getString(R.string.copied))
             }
-            R.id.menu_remove -> interactor.deleteItems(viewModel.checked, viewModel.task.value.uuid)
+            R.id.menu_remove -> interactor.deleteItems(listOf(item), viewModel.task.value.uuid)
         }
     }
 }

@@ -5,9 +5,9 @@ import app.atomofiron.common.util.permission.PermissionResultListener
 import app.atomofiron.common.util.permission.Permissions
 import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.ExplorerFragment
 import ru.atomofiron.regextool.screens.explorer.ExplorerRouter
@@ -28,7 +28,7 @@ class ExplorerItemActionListenerDelegate(
     override fun onItemLongClick(item: XFile) {
         val files: List<XFile> = when {
             item.isChecked -> explorerStore.checked
-            else -> arrayListOf(item)
+            else -> listOf(item)
         }
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions

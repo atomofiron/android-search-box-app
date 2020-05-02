@@ -15,8 +15,8 @@ import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
     val checked = ArrayList<XFile>()
 
-    val oneFileOptions = arrayListOf(R.id.menu_copy_path, R.id.menu_remove)
-    val manyFilesOptions = arrayListOf(R.id.menu_remove)
+    val oneFileOptions = listOf(R.id.menu_copy_path, R.id.menu_remove)
+    val manyFilesOptions = listOf(R.id.menu_remove)
 
     val task = LateinitLiveData<FinderTask>()
     val composition = LateinitLiveData<ExplorerItemComposition>()

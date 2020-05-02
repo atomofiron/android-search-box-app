@@ -4,9 +4,9 @@ import app.atomofiron.common.arch.BasePresenter
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import ru.atomofiron.regextool.injectable.interactor.ExplorerInteractor
-import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerItemActionListener
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
@@ -69,7 +69,7 @@ class ExplorerPresenter(
         val current = explorerStore.current.value
         val files = when {
             explorerStore.checked.isNotEmpty() -> ArrayList(explorerStore.checked)
-            current != null -> arrayListOf(current)
+            current != null -> listOf(current)
             else -> return
         }
         val ids = when {

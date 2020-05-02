@@ -29,10 +29,9 @@ class NotificationWorker(
 
         while (!isStopped) {
             Thread.sleep(PERIOD)
-            log2("!isStopped $isStopped")
             finderStore.notifyObservers()
         }
-        log2("doWork STOPPED $isStopped")
+        log2("doWork END")
 
         return Result.success()
     }

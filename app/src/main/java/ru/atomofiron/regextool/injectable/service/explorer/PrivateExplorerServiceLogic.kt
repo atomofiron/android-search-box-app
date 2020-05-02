@@ -205,7 +205,7 @@ abstract class PrivateExplorerServiceLogic constructor(
         log2("checkItem $isChecked $item")
         item.isChecked = isChecked
 
-        val dirFiles = item.children ?: arrayListOf()
+        val dirFiles: List<MutableXFile> = item.children ?: listOf()
         val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
         when {
             item.isRoot && item.isChecked -> {

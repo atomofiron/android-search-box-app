@@ -30,6 +30,7 @@ object Const {
     const val DEFAULT_JOYSTICK = 16732754 // 0ff5252
 
     const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "foreground_channel_id"
+    const val RESULT_NOTIFICATION_CHANNEL_ID = "result_channel_id"
     const val FOREGROUND_NOTIFICATION_ID = 101
     const val FOREGROUND_INTENT_REQUEST_CODE = 102
 

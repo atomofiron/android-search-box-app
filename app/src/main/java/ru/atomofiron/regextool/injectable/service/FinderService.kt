@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.injectable.service
 
+import android.app.NotificationManager
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import ru.atomofiron.regextool.injectable.store.FinderStore
@@ -11,6 +12,7 @@ import java.util.*
 
 class FinderService(
         private val workManager: WorkManager,
+        private val notificationManager: NotificationManager,
         private val finderStore: FinderStore,
         private val preferenceStore: PreferenceStore
 ) {
@@ -33,5 +35,8 @@ class FinderService(
 
     fun stop(uuid: UUID) = workManager.cancelWorkById(uuid)
 
-    fun drop(task: FinderTask) = finderStore.drop(task)
+    fun drop(task: FinderTask) {
+        finderStore.drop(task)
+        notificationManager.cancel(task.id.toInt())
+    }
 }
