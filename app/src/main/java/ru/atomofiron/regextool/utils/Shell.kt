@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.utils
 
+import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.logI
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -7,7 +8,6 @@ import java.io.OutputStream
 
 
 object Shell {
-    private const val LOG_LIMIT = 128
     const val SU = "su"
     const val SH = "sh"
     const val SUCCESS = 0
@@ -75,6 +75,7 @@ object Shell {
     }
 
     fun exec(cmd: String, su: Boolean, forEachLine: ((String) -> Unit)? = null): Output {
+        logI("exec cmd $cmd")
         var success: Boolean
         var output = ""
         var error = ""
@@ -106,6 +107,8 @@ object Shell {
 
             logI("waitFor ${System.currentTimeMillis() - tik} $cmd")
         } catch (e: Exception) {
+            logE(e.toString())
+            output = e.toString()
             success = false
         } finally {
             try {

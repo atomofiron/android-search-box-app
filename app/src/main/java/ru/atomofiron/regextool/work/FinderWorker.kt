@@ -104,7 +104,6 @@ class FinderWorker(
             if (isStopped) {
                 return
             }
-            task.count++
             val template = when {
                 useRegex && ignoreCase -> Shell.FIND_GREP_I
                 useRegex && !ignoreCase -> Shell.FIND_GREP
@@ -128,7 +127,7 @@ class FinderWorker(
             }
             if (!output.success) {
                 task.error = output.error
-                logE("${output.error}")
+                logE(output.error)
             }
         }
     }
@@ -180,6 +179,8 @@ class FinderWorker(
             logE("Query is empty.")
             return Result.success()
         }
+        query = queryString
+
         finderStore.add(task)
         val intent = Intent(applicationContext, ForegroundService::class.java)
         applicationContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
@@ -201,13 +202,11 @@ class FinderWorker(
             where.add(item)
         }
 
-        if (useRegex) {
+        if (useRegex && !forContent) {
             var flags = 0
             if (isMultiline) flags += Pattern.MULTILINE
             if (ignoreCase) flags += Pattern.CASE_INSENSITIVE
             pattern = Pattern.compile(queryString, flags)
-        } else {
-            query = queryString
         }
 
         val data = try {
@@ -236,11 +235,16 @@ class FinderWorker(
         val intent = Intent(context, RootActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val color = ContextCompat.getColor(context, R.color.colorPrimaryLight)
+        val icon = when {
+            task.error != null -> R.drawable.ic_notification_error
+            task.isDone -> R.drawable.ic_notification_done
+            else -> R.drawable.ic_notification_stopped
+        }
         val notification = NotificationCompat.Builder(context, Const.RESULT_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle(context.getString(R.string.search_completed, task.results.size, task.count))
                 .setContentText(task.error)
-                .setSmallIcon(R.drawable.ic_notification_done)
+                .setSmallIcon(icon)
                 .setColor(color)
                 .setContentIntent(pendingIntent)
                 .build()
