@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.permission.PermissionResultListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 
 abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         protected val viewModel: M,
@@ -19,7 +19,7 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
     protected val onClearedCallback = viewModel.onClearedCallback
 
     init {
-        log2("init")
+        logI("init")
 
         viewModel.onClearedCallback.addOneTimeObserver(::onCleared)
     }
@@ -31,7 +31,7 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
     open fun onVisibleChanged(visible: Boolean) = Unit
 
     protected open fun onCleared() {
-        log2("onCleared")
+        logI("onCleared")
         coroutineScope?.cancel("${this.javaClass.simpleName}.onCleared()")
     }
 

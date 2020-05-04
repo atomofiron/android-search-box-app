@@ -2,7 +2,12 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_activated="true"
-        android:drawable="@drawable/ic_check_circle"
+        android:state_enabled="true"
+        android:drawable="@drawable/ic_circle_check"
         />
-    <item android:drawable="@drawable/ic_stop_circle" />
+    <item
+        android:state_enabled="false"
+        android:drawable="@drawable/ic_circle_cross"
+        />
+    <item android:drawable="@drawable/ic_circle_stop" />
 </selector>

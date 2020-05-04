@@ -16,5 +16,8 @@ class FinderDiffUtilCallback(
         return old[i].layoutId == new[j].layoutId && old[i].stableId == new[j].stableId
     }
 
-    override fun areContentsTheSame(i: Int, j: Int): Boolean = old[i] === new[j]
+    override fun areContentsTheSame(i: Int, j: Int): Boolean {
+        val a = old[i].hashCode() == new[j].hashCode()
+        return a
+    }
 }

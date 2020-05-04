@@ -43,5 +43,12 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         else -> other.stableId == stableId
     }
 
-    override fun hashCode(): Int = stableId.toInt()
+    override fun hashCode(): Int = when (this) {
+        is SearchAndReplaceItem -> stableId.toInt()
+        is SpecialCharactersItem -> characters.size.hashCode()
+        is ConfigItem -> stableId.toInt()
+        is TestItem -> stableId.toInt()
+        is ProgressItem -> finderTask.hashCode()
+        is TargetItem -> stableId.toInt()
+    }
 }

@@ -4,7 +4,7 @@ import app.atomofiron.common.util.KObservable
 import ru.atomofiron.regextool.model.explorer.Change
 import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.explorer.XFile
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 
 class ExplorerStore {
     val items: MutableList<MutableXFile> = ArrayList()
@@ -17,12 +17,12 @@ class ExplorerStore {
     val storeChecked = KObservable<List<XFile>>(ArrayList())
 
     fun notifyCurrent(item: XFile?) {
-        log2("notifyCurrent $item")
+        logI("notifyCurrent $item")
         current.setAndNotify(item)
     }
 
     fun notifyUpdate(item: XFile) {
-        log2("notifyUpdate $item")
+        logI("notifyUpdate $item")
         updates.setAndNotify(Change.Update(item))
 
         if (checked.contains(item)) {
@@ -31,12 +31,12 @@ class ExplorerStore {
     }
 
     fun notifyUpdateRange(items: List<XFile>) {
-        log2("notifyUpdateRange ${items.size}")
+        logI("notifyUpdateRange ${items.size}")
         updates.setAndNotify(Change.UpdateRange(items))
     }
 
     fun notifyRemove(item: XFile) {
-        log2("notifyRemove $item")
+        logI("notifyRemove $item")
         updates.setAndNotify(Change.Remove(item))
 
         if (checked.remove(item)) {
@@ -45,12 +45,12 @@ class ExplorerStore {
     }
 
     fun notifyInsert(previous: XFile, item: XFile) {
-        log2("notifyInsert $item after $previous")
+        logI("notifyInsert $item after $previous")
         updates.setAndNotify(Change.Insert(previous, item))
     }
 
     fun notifyRemoveRange(items: List<XFile>) {
-        log2("notifyRemoveRange ${items.size}")
+        logI("notifyRemoveRange ${items.size}")
         updates.setAndNotify(Change.RemoveRange(items))
 
         if (checked.removeAll(items)) {
@@ -59,12 +59,12 @@ class ExplorerStore {
     }
 
     fun notifyInsertRange(previous: XFile, items: List<XFile>) {
-        log2("notifyInsert ${items.size} after $previous")
+        logI("notifyInsert ${items.size} after $previous")
         updates.setAndNotify(Change.InsertRange(previous, items))
     }
 
     fun notifyItems() {
-        log2("notifyItems ${items.size}")
+        logI("notifyItems ${items.size}")
         store.setAndNotify(items)
 
         val size = checked.size
@@ -76,7 +76,7 @@ class ExplorerStore {
     }
 
     fun notifyChecked() {
-        log2("notifyChecked")
+        logI("notifyChecked")
         storeChecked.setAndNotify(ArrayList(checked))
     }
 }

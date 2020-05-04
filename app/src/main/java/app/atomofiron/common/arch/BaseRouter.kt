@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentTransaction
 import app.atomofiron.common.util.OneTimeBackStackListener
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.common.util.setOneTimeBackStackListener
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 
 abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
     private val fragmentProperty: WeakProperty<Fragment> = when (viewProperty.value) {
@@ -104,7 +104,7 @@ abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
             when (manager.fragments.find { added -> added.tag == tag } == null) {
                 true -> true
                 else -> {
-                    log2("Fragment with tag = $tag is already added!")
+                    logI("Fragment with tag = $tag is already added!")
                     false
                 }
             }

@@ -5,7 +5,7 @@
     <string name="case_sens">Учитывать регистр</string>
     <string name="storage_err">Ошибка доступа к памяти</string>
     <string name="searching">Поиск…</string>
-    <string name="error">Ошибка :(</string>
+    <string name="error">Ошибка</string>
     <string name="nothing">Ничего не найдено</string>
     <string name="warning">Вы не выбрали ни одной директории. Поиск будет произведён по всему корневому разделу</string>
     <string name="cancel">Отмена</string>
@@ -29,6 +29,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="look">Наблюдать</string>
+    <string name="done">Завершено</string>
+    <string name="stopped">Остановлено</string>
     <string name="options">Опции</string>
     <string name="explorer">Проводник</string>
     <string name="replace">Заменить</string>

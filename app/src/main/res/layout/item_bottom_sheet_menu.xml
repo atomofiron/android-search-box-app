@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/common_margin"
+        android:paddingStart="12dp"
         android:paddingTop="@dimen/common_margin"
         android:paddingEnd="@dimen/common_margin"
         android:paddingBottom="@dimen/common_margin"

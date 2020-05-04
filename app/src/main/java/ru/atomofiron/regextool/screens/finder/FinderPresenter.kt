@@ -3,9 +3,9 @@ package ru.atomofiron.regextool.screens.finder
 import app.atomofiron.common.arch.BasePresenter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
+import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem

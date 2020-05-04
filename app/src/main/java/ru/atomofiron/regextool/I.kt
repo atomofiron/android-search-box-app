@@ -10,18 +10,22 @@ private const val delay = false
 
 fun Any.sleep(t: Long) = if (delay) Thread.sleep(t) else Unit
 
-fun Any.log(s: String) = log(this.javaClass.simpleName, s)
+fun Any.logE(s: String) {
+    Log.e("regextool", "[ERROR] [${this.javaClass.simpleName}] $s")
+}
 
-fun Any.log(context: Any, s: String) = log(context.javaClass.simpleName, s)
+fun Any.logD(s: String) = logD(this.javaClass.simpleName, s)
 
-fun Any.log(label: String, s: String) {
+fun Any.logD(context: Any, s: String) = logD(context.javaClass.simpleName, s)
+
+fun Any.logD(label: String, s: String) {
     Log.e("regextool", "[$label] $s")
 }
 
-fun Any.log2(s: String) {
+fun Any.logI(s: String) {
     if (mute) return
 
-    Log.e("regextool", "[${this.javaClass.simpleName}] $s")
+    Log.d("regextool", "[${this.javaClass.simpleName}] $s")
 }
 
 fun Any.tik(s: String) {

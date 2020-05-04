@@ -12,10 +12,10 @@ import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
 import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.injectable.store.ResultStore
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.other.ExplorerItemOptions
-import ru.atomofiron.regextool.screens.explorer.adapter.util.ExplorerItemBinder
 import ru.atomofiron.regextool.screens.result.ResultFragment.Companion.KEY_TASK_ID
+import ru.atomofiron.regextool.screens.result.adapter.ResultItemActionListener
 import ru.atomofiron.regextool.screens.result.presenter.BottomSheetMenuListenerDelegate
 import ru.atomofiron.regextool.screens.result.presenter.ResultItemActionDelegate
 import ru.atomofiron.regextool.utils.Const
@@ -33,7 +33,7 @@ class ResultPresenter(
         itemActionDelegate: ResultItemActionDelegate,
         menuListenerDelegate: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
-        ExplorerItemBinder.ExplorerItemBinderActionListener by itemActionDelegate,
+        ResultItemActionListener by itemActionDelegate,
         BottomSheetMenuListener by menuListenerDelegate {
     companion object {
         private const val UNDEFINED = -1L
@@ -49,7 +49,7 @@ class ResultPresenter(
             taskId = intent.getLongExtra(KEY_TASK_ID, UNDEFINED)
             val task = finderStore.tasks.find { it.id == taskId }
             if (task == null) {
-                log2("No task found!")
+                logI("No task found!")
                 router.popScreen()
             } else {
                 viewModel.task.value = task.copyTask()
@@ -69,7 +69,7 @@ class ResultPresenter(
         preferenceStore.explorerItemComposition.addObserver(onClearedCallback) {
             viewModel.composition.value = it
         }
-        resultStore.itemsChanged.addObserver(onClearedCallback) {
+        resultStore.itemsShellBeDeleted.addObserver(onClearedCallback) {
             scope.launch {
                 viewModel.updateState()
             }

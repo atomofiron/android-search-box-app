@@ -15,7 +15,7 @@ import app.atomofiron.common.arch.view.IView
 import app.atomofiron.common.arch.view.ViewDelegate
 import app.atomofiron.common.util.findBooleanByAttr
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import kotlin.reflect.KClass
 
 abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : PreferenceFragmentCompat(), IView<P>, Backable {
@@ -36,11 +36,11 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
     override fun getIntent(): Intent = Intent().putExtras(arguments ?: Bundle())
 
     init {
-        log2("init")
+        logI("init")
     }
 
     final override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        log2("onCreate")
+        logI("onCreate")
         viewModel = ViewModelProvider(this).get(viewModelClass.java)
         delegate.onCreate(this)
     }
@@ -52,7 +52,7 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
 
     override fun onDestroy() {
         super.onDestroy()
-        log2("onDestroy $isRemoving")
+        logI("onDestroy $isRemoving")
         delegate.onDestroy()
     }
 

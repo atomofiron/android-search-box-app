@@ -10,11 +10,10 @@ import ru.atomofiron.regextool.model.finder.FinderResult
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemBackgroundDecorator
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemGravityDecorator
-import ru.atomofiron.regextool.screens.explorer.adapter.util.ExplorerItemBinder
 
 class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResult>() {
     override val useDiffUtils = true
-    lateinit var itemActionListener: ExplorerItemBinder.ExplorerItemBinderActionListener
+    lateinit var itemActionListener: ResultItemActionListener
 
     private lateinit var composition: ExplorerItemComposition
 

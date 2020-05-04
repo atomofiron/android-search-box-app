@@ -18,7 +18,7 @@ import app.atomofiron.common.arch.view.ViewDelegate
 import app.atomofiron.common.util.findBooleanByAttr
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import kotlin.reflect.KClass
 
 abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fragment(), IView<P>, Backable {
@@ -41,12 +41,12 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
     override fun getIntent(): Intent = Intent().putExtras(arguments ?: Bundle())
 
     init {
-        log2("init")
+        logI("init")
     }
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super<Fragment>.onCreate(savedInstanceState)
-        log2("onCreate")
+        logI("onCreate")
         // onAttachChildFragment()
         viewModel = ViewModelProvider(this).get(viewModelClass.java)
         delegate.onCreate(this)
@@ -70,7 +70,7 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
 
     override fun onDestroy() {
         super.onDestroy()
-        log2("onDestroy $isRemoving")
+        logI("onDestroy $isRemoving")
         delegate.onDestroy()
     }
 

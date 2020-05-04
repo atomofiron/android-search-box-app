@@ -16,7 +16,7 @@ class FinderService(
         private val finderStore: FinderStore,
         private val preferenceStore: PreferenceStore
 ) {
-    fun search(query: String, where: List<XFile>, caseSensitive: Boolean, useRegex: Boolean, isMultiline: Boolean, forContent: Boolean) {
+    fun search(query: String, where: List<XFile>, ignoreCase: Boolean, useRegex: Boolean, isMultiline: Boolean, forContent: Boolean) {
         val maxSize = preferenceStore.maxFileSizeForSearch.value
         val maxDepth = preferenceStore.maxDepthForSearch.value
         val useSu = preferenceStore.useSu.value
@@ -24,7 +24,7 @@ class FinderService(
         val textFormats = preferenceStore.textFormats.value
 
         val inputData = FinderWorker.inputData(
-                query, useSu, useRegex, maxSize, caseSensitive, excludeDirs, isMultiline, forContent,
+                query, useSu, useRegex, maxSize, ignoreCase, excludeDirs, isMultiline, forContent,
                 textFormats.split(' ').toTypedArray(), maxDepth, where.map { it.completedPath }.toTypedArray()
         )
         val request = OneTimeWorkRequest.Builder(FinderWorker::class.java)

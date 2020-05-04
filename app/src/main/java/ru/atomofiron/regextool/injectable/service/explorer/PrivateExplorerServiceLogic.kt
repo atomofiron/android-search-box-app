@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.utils.Shell
@@ -60,7 +60,7 @@ abstract class PrivateExplorerServiceLogic constructor(
             val next = it.next()
             if (!roots.contains(next.root)) {
                 if (next.isRoot) {
-                    log2("removeExtraRoots $next")
+                    logI("removeExtraRoots $next")
                 }
                 it.remove()
             }
@@ -70,7 +70,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     // withLock
     private fun mergeRoots(roots: List<MutableXFile>) {
         if (files.isEmpty()) {
-            log2("mergeRoots just add ${roots.size}")
+            logI("mergeRoots just add ${roots.size}")
             files.addAll(roots)
         }
         var i = -1
@@ -80,19 +80,19 @@ abstract class PrivateExplorerServiceLogic constructor(
             val root = files[i].root
             when {
                 root != nextRootItem.root -> {
-                    log2("mergeRoots add $nextRootItem")
+                    logI("mergeRoots add $nextRootItem")
                     files.add(i, nextRootItem)
                     if (itRoot.hasNext()) {
                         nextRootItem = itRoot.next()
                     }
                 }
                 !itRoot.hasNext() -> {
-                    log2("mergeRoots roots merged ${roots.size}")
+                    logI("mergeRoots roots merged ${roots.size}")
                     break@loop
                 }
                 i.inc() != files.size -> nextRootItem = itRoot.next()
                 else -> while (itRoot.hasNext()) {
-                    log2("mergeRoots finally add $nextRootItem")
+                    logI("mergeRoots finally add $nextRootItem")
                     files.add(itRoot.next())
                 }
             }
@@ -100,7 +100,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     protected fun invalidateDir(dir: MutableXFile) {
-        log2("invalidateDir $dir")
+        logI("invalidateDir $dir")
         dir.invalidateCache()
     }
 
@@ -173,20 +173,20 @@ abstract class PrivateExplorerServiceLogic constructor(
         output.close()
         val response = Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox), su = false)
         if (response.error.isNotEmpty()) {
-            log2("copyToybox error != null\n${response.error}")
+            logI("copyToybox error != null\n${response.error}")
         }
     }
 
     protected suspend fun open(item: MutableXFile) {
         if (!item.isDirectory) {
-            log2("open return !isDirectory $item")
+            logI("open return !isDirectory $item")
             return
         }
         if (!item.isCached) {
-            log2("open return !isCached $item")
+            logI("open return !isCached $item")
             return updateClosedDir(item)
         }
-        log2("open $item")
+        logI("open $item")
         when {
             item == currentOpenedDir -> closeDir(item)
             item.isOpened -> reopenDir(item)
@@ -196,13 +196,13 @@ abstract class PrivateExplorerServiceLogic constructor(
 
     protected suspend fun updateItem(item: MutableXFile) = when {
         item.isOpened && item == currentOpenedDir -> updateCurrentDir(item)
-        item.isOpened -> log2("updateItem return isOpened $item")
+        item.isOpened -> logI("updateItem return isOpened $item")
         item.isDirectory -> updateClosedDir(item)
         else -> updateFile(item)
     }
 
     fun checkItem(item: MutableXFile, isChecked: Boolean) {
-        log2("checkItem $isChecked $item")
+        logI("checkItem $isChecked $item")
         item.isChecked = isChecked
 
         val dirFiles: List<MutableXFile> = item.children ?: listOf()
@@ -240,14 +240,14 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     private suspend fun reopenDir(dir: MutableXFile) {
-        log2("reopenDir $dir")
+        logI("reopenDir $dir")
         if (dir == currentOpenedDir) {
             closeDir(dir)
             return
         }
         val childDir = findOpenedDirIn(dir)
         if (childDir != null) {
-            log2("reopenDir anotherDir != null $childDir")
+            logI("reopenDir anotherDir != null $childDir")
             childDir.close()
             childDir.clearChildren()
             currentOpenedDir = dir
@@ -261,10 +261,10 @@ abstract class PrivateExplorerServiceLogic constructor(
 
     private suspend fun openDir(dir: MutableXFile) {
         require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
-        log2("openDir $dir")
+        logI("openDir $dir")
         val anotherDir = findOpenedDirInParentOf(dir)
         if (anotherDir != null) {
-            log2("openDir $dir anotherDir == $anotherDir")
+            logI("openDir $dir anotherDir == $anotherDir")
             anotherDir.close()
             anotherDir.clearChildren()
             removeAllChildren(anotherDir)
@@ -302,10 +302,10 @@ abstract class PrivateExplorerServiceLogic constructor(
     protected suspend fun closeDir(it: XFile) {
         val dir = findItem(it)
         if (dir == null) {
-            log2("closeDir return not found $it")
+            logI("closeDir return not found $it")
             return
         }
-        log2("closeDir $dir")
+        logI("closeDir $dir")
         val parent = if (dir.isRoot) null else findParentDir(dir)
         mutex.withLock {
             dir.close()
@@ -323,7 +323,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     private suspend fun updateFile(file: MutableXFile) {
-        log2("updateTheFile $file")
+        logI("updateTheFile $file")
         require(!file.isDirectory) { IllegalArgumentException("Is is a directory! $file") }
         when {
             file.isDeleting -> Unit
@@ -335,36 +335,36 @@ abstract class PrivateExplorerServiceLogic constructor(
 
     private suspend fun updateCurrentDir(dir: MutableXFile) {
         if (dir != currentOpenedDir) {
-            log2("updateCurrentDir return dir != currentOpenedDir $dir")
+            logI("updateCurrentDir return dir != currentOpenedDir $dir")
             return
         }
         if (dir.isDeleting) {
-            log2("updateCurrentDir return isDeleting $dir")
+            logI("updateCurrentDir return isDeleting $dir")
             return
         }
         val dirFiles = dir.children
         val error = dir.updateCache(useSu)
         if (error != null) {
-            log2("updateCurrentDir return error != null $dir\n$error")
+            logI("updateCurrentDir return error != null $dir\n$error")
             if (!dir.exists) {
                 closeDir(dir)
             }
             return
         }
-        log2("updateCurrentDir $dir")
+        logI("updateCurrentDir $dir")
         val newFiles = dir.children!!
 
         mutex.withLock {
             if (!dir.isCached || !files.contains(dir)) {
-                log2("updateCurrentDir return $dir")
+                logI("updateCurrentDir return $dir")
                 return
             }
             if (!dir.isOpened) {
-                log2("updateCurrentDir return !isOpened $dir")
+                logI("updateCurrentDir return !isOpened $dir")
                 return explorerStore.notifyUpdate(dir)
             }
             if (dir != currentOpenedDir) {
-                log2("updateCurrentDir return !isCurrentOpenedDir $dir")
+                logI("updateCurrentDir return !isCurrentOpenedDir $dir")
                 return
             }
             if (dirFiles != null) {
@@ -411,22 +411,22 @@ abstract class PrivateExplorerServiceLogic constructor(
 
     private suspend fun updateClosedDir(dir: MutableXFile) {
         if (!dir.isDirectory) {
-            log2("updateClosedDir return !isDirectory $dir")
+            logI("updateClosedDir return !isDirectory $dir")
         }
         if (dir.isOpened) {
-            log2("updateClosedDir return isOpened $dir")
+            logI("updateClosedDir return isOpened $dir")
             return
         }
         if (dir.isDeleting) {
-            log2("updateClosedDir return isDeleting $dir")
+            logI("updateClosedDir return isDeleting $dir")
             return
         }
-        log2("updateClosedDir $dir")
+        logI("updateClosedDir $dir")
         val cacheWasNotActual = !dir.isCacheActual
         val error = dir.updateCache(useSu)
 
         if (error != null) {
-            log2("updateClosedDir error != null $dir\n$error")
+            logI("updateClosedDir error != null $dir\n$error")
         }
         when {
             cacheWasNotActual && dir.isRoot -> explorerStore.notifyUpdate(dir)
@@ -451,7 +451,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     private suspend fun removeAllChildren(dir: XFile) {
         val path = dir.completedPath
         val root = dir.root
-        log2("removeAllChildren $path")
+        logI("removeAllChildren $path")
         val removed = mutex.withLock {
             val removed = ArrayList<XFile>()
             val each = files.iterator()
@@ -468,13 +468,13 @@ abstract class PrivateExplorerServiceLogic constructor(
             removed
         }
         when (removed.isEmpty()) {
-            true -> log2("removeAllChildren not found $path")
+            true -> logI("removeAllChildren not found $path")
             false -> explorerStore.notifyRemoveRange(removed)
         }
     }
 
     private suspend fun dropEntity(entity: MutableXFile) {
-        log2("dropEntity $entity")
+        logI("dropEntity $entity")
         entity.clear()
         mutex.withLock {
             files.remove(entity)
@@ -484,7 +484,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     private fun checkChildren(dir: MutableXFile) {
-        log2("checkChildren $dir")
+        logI("checkChildren $dir")
         val dirFiles = dir.children!!
         dirFiles.forEach {
             it.isChecked = true
@@ -494,7 +494,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     private fun uncheckAllChildren(dir: MutableXFile): Boolean {
-        log2("uncheckChildren $dir")
+        logI("uncheckChildren $dir")
         var containedChecked = false
         checked.filter { it.completedParentPath.startsWith(dir.completedPath) }.forEach {
             containedChecked = true
@@ -507,7 +507,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     private fun uncheckParent(item: MutableXFile) {
-        log2("uncheckParent $item")
+        logI("uncheckParent $item")
         checked.find {
             item.completedParentPath.startsWith(it.completedPath)
         }?.let { checkedParent ->
@@ -518,7 +518,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     protected suspend fun deleteItems(items: List<MutableXFile>) {
-        log2("deleteItems ${items.size}")
+        logI("deleteItems ${items.size}")
         items.forEach { item ->
             if (checked.contains(item)) {
                 item.isChecked = false
@@ -534,13 +534,13 @@ abstract class PrivateExplorerServiceLogic constructor(
 
     private suspend fun deleteItem(item: MutableXFile) {
         if (item.isDeleting) {
-            log2("deleteItem return $item")
+            logI("deleteItem return $item")
             return
         }
-        log2("deleteItem $item")
+        logI("deleteItem $item")
         val error = item.delete(useSu)
         if (error != null) {
-            log2("deleteItem error != null $item\n$error")
+            logI("deleteItem error != null $item\n$error")
         }
         when {
             item.isOpened -> updateCurrentDir(currentOpenedDir!!)
@@ -550,29 +550,29 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     suspend fun rename(item: MutableXFile, name: String) {
-        log2("rename $name $item")
+        logI("rename $name $item")
         val pair = item.rename(name, useSu)
         val error = pair.first
         val newItem = pair.second
         if (error != null) {
-            log2("rename error != null $item\n$error")
+            logI("rename error != null $item\n$error")
             explorerStore.alerts.setAndNotify(error)
         }
         if (newItem != null) {
             val parent = findParentDir(item)
             if (parent == null) {
-                log2("rename return no parent $item")
+                logI("rename return no parent $item")
                 return
             }
             mutex.withLock {
                 val index = files.indexOf(item)
                 if (index == UNKNOWN) {
-                    log2("rename return -1 $item")
+                    logI("rename return -1 $item")
                     return@withLock
                 }
                 val warning = parent.replace(item, newItem)
                 if (warning != null) {
-                    log2("rename warning != null $item\n$warning")
+                    logI("rename warning != null $item\n$warning")
                 }
                 files.add(index.inc(), newItem)
                 explorerStore.notifyInsert(item, newItem)
@@ -593,12 +593,12 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     suspend fun create(dir: MutableXFile, name: String, directory: Boolean) {
-        log2("create $directory $name $dir")
+        logI("create $directory $name $dir")
         val item = MutableXFile.create(dir, name, directory, dir.root)
         val error = item.create(useSu)
         when {
             error != null -> {
-                log2("create error != null $dir\n$error")
+                logI("create error != null $dir\n$error")
                 explorerStore.alerts.setAndNotify(error)
                 when {
                     dir.isOpened -> updateCurrentDir(currentOpenedDir!!)
@@ -610,12 +610,12 @@ abstract class PrivateExplorerServiceLogic constructor(
                 mutex.withLock {
                     val index = files.indexOf(dir)
                     if (index == UNKNOWN) {
-                        log2("create return -1 $dir\n$item -> $dir")
+                        logI("create return -1 $dir\n$item -> $dir")
                         return@withLock
                     }
                     val err = dir.add(item)
                     if (err != null) {
-                        log2("create error != null $dir\n$err $item -> $dir")
+                        logI("create error != null $dir\n$err $item -> $dir")
                         return
                     }
                     files.add(index.inc(), item)

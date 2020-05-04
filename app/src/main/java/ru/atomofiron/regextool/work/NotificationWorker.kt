@@ -5,7 +5,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.FinderStore
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import javax.inject.Inject
 
 class NotificationWorker(
@@ -25,19 +25,18 @@ class NotificationWorker(
     }
 
     override fun doWork(): Result {
-        log2("doWork")
+        logI("doWork")
 
         while (!isStopped) {
             Thread.sleep(PERIOD)
             finderStore.notifyObservers()
         }
-        log2("doWork END")
 
         return Result.success()
     }
 
     override fun onStopped() {
         super.onStopped()
-        log2("onStopped")
+        logI("onStopped")
     }
 }

@@ -5,7 +5,7 @@ import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderTask
 import ru.atomofiron.regextool.model.finder.FinderTaskChange
@@ -44,7 +44,7 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
                 val task = task.value
                 val newTask = update.tasks.find { it.id == task.id }
                 when {
-                    newTask == null -> log2("[ERROR] newTask == null")
+                    newTask == null -> logI("[ERROR] newTask == null")
                     !task.areContentsTheSame(newTask) -> this.task.value = newTask.copyTask()
                 }
             }

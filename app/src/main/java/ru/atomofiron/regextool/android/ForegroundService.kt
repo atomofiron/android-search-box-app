@@ -13,7 +13,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.di.DaggerInjector
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.screens.root.RootActivity
 import ru.atomofiron.regextool.utils.ChannelUtil
 import ru.atomofiron.regextool.utils.Const
@@ -34,7 +34,7 @@ class ForegroundService : IntentService("NotificationService") {
 
     override fun onCreate() {
         super.onCreate()
-        log2("onCreate")
+        logI("onCreate")
         startForeground()
         val request = OneTimeWorkRequest.from(NotificationWorker::class.java)
         val cont = workManager.beginUniqueWork(NotificationWorker.NAME, ExistingWorkPolicy.REPLACE, request)
@@ -44,7 +44,7 @@ class ForegroundService : IntentService("NotificationService") {
 
     override fun onDestroy() {
         super.onDestroy()
-        log2("onDestroy")
+        logI("onDestroy")
         stopForeground(true)
         workManager.cancelWorkById(workUUID)
     }
@@ -69,12 +69,12 @@ class ForegroundService : IntentService("NotificationService") {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        log2("onBind")
+        logI("onBind")
         return null
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        log2("onUnbind")
+        logI("onUnbind")
         return super.onUnbind(intent)
     }
 

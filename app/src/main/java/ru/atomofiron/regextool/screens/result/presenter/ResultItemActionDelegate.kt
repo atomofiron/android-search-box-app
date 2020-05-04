@@ -3,10 +3,10 @@ package ru.atomofiron.regextool.screens.result.presenter
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderResult
 import ru.atomofiron.regextool.model.other.ExplorerItemOptions
-import ru.atomofiron.regextool.screens.explorer.adapter.util.ExplorerItemBinder
 import ru.atomofiron.regextool.screens.result.ResultViewModel
+import ru.atomofiron.regextool.screens.result.adapter.ResultItemActionListener
 
-class ResultItemActionDelegate(private val viewModel: ResultViewModel) : ExplorerItemBinder.ExplorerItemBinderActionListener {
+class ResultItemActionDelegate(private val viewModel: ResultViewModel) : ResultItemActionListener {
     override fun onItemClick(item: XFile) {
     }
 
@@ -28,5 +28,9 @@ class ResultItemActionDelegate(private val viewModel: ResultViewModel) : Explore
             viewModel.checked.remove(item)
         }
         viewModel.enableOptions.value = viewModel.checked.isNotEmpty()
+    }
+
+    override fun onItemVisible(item: XFile) {
+
     }
 }

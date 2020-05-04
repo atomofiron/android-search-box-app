@@ -38,9 +38,16 @@ class MutableXFile : XFile {
             return MutableXFile("", "", "", "", "", "", name, "", isDirectory, parent.completedPath + name, root, parent)
         }
 
-        fun byPath(absolutePath: String): MutableXFile {
+        fun asRoot(absolutePath: String): MutableXFile = byPath(absolutePath, asRoot = true)
+
+        fun byPath(absolutePath: String): MutableXFile = byPath(absolutePath, asRoot = false)
+
+        private fun byPath(absolutePath: String, asRoot: Boolean): MutableXFile {
             val file = File(absolutePath)
-            return MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath, root = null)
+            return when {
+                asRoot -> MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath, root = null)
+                else -> MutableXFile("", "", "", "", "", "", file.name, "", file.isDirectory, file.absolutePath)
+            }
         }
 
         private fun parse(completedParentPath: String, line: String, root: Int, parent: MutableXFile): MutableXFile {

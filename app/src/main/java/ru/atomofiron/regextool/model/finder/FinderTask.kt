@@ -9,6 +9,7 @@ interface FinderTask {
     val count: Int
     val inProgress: Boolean
     val isDone: Boolean
+    val error: String?
 
     fun copyTask(): FinderTask
     fun areContentsTheSame(other: FinderTask): Boolean

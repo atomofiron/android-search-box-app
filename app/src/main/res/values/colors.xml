@@ -4,9 +4,9 @@
 	<color name="colorAccentLight">#ff1D7874</color>
 	<color name="colorRippleLight">#7f4Dc8c4</color>
 
-	<color name="colorPrimaryDark">#ff046865</color>
-	<color name="colorAccentDark">#ff046865</color>
-	<color name="colorRippleDark">#7f043835</color>
+	<color name="colorPrimaryDark">#ff5BC0BE</color>
+	<color name="colorAccentDark">#ff5BC0BE</color>
+	<color name="colorRippleDark">#7f5BC0BE</color>
 
 	<color name="colorAccentRed">#ffaD7874</color>
 	<color name="colorAccentYellow">#ffaDa874</color>
@@ -25,7 +25,7 @@
 	<color name="black">#ff000000</color>
 	<color name="black_low">#33000000</color>
 	<color name="overlay_black">#a0000000</color>
-	<color name="overlay_colored">#7f043835</color>
+	<color name="overlay_colored">#7f1B302E</color>
 	<color name="grey_middle">#ff787878</color>
 	<color name="grey_middle_lite">#aa787878</color>
 	<color name="grey_dark">#ff333333</color>

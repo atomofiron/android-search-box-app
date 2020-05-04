@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BasePresenter
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 
 class ViewDelegate<P : BasePresenter<*,*>> {
     private val systemBarsColorId: Int get() = view.systemBarsColorId
@@ -26,7 +26,7 @@ class ViewDelegate<P : BasePresenter<*,*>> {
     }
 
     init {
-        log2("init")
+        logI("init")
     }
 
     fun onCreate(view: IView<P>) {

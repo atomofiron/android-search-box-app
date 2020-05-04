@@ -4,7 +4,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 
 class SingleLiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
@@ -37,7 +37,7 @@ class SingleLiveEvent<T> : LifecycleEventObserver {
     fun observeData(source: LifecycleOwner, listener: (T) -> Unit) {
         check()
         source.lifecycle.addObserver(this)
-        log2("observeData source: ${source.javaClass.simpleName}")
+        logI("observeData source: ${source.javaClass.simpleName}")
         this.parameterizedListener = listener
     }
 
@@ -45,7 +45,7 @@ class SingleLiveEvent<T> : LifecycleEventObserver {
         val state = source.lifecycle.currentState
         this.state = state
         if (state == State.DESTROYED) {
-            log2("Destroyed. source: ${source.javaClass.simpleName}")
+            logI("Destroyed. source: ${source.javaClass.simpleName}")
             source.lifecycle.removeObserver(this)
             listener = null
             parameterizedListener = null

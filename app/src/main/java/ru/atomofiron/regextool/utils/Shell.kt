@@ -1,14 +1,16 @@
 package ru.atomofiron.regextool.utils
 
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logI
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
+
 
 object Shell {
     private const val LOG_LIMIT = 128
-    private const val SU = "su"
-    private const val SH = "sh"
-    private const val SUCCESS = 0
+    const val SU = "su"
+    const val SH = "sh"
+    const val SUCCESS = 0
 
     const val TOUCH = "%s touch \"%s\""
     const val MKDIR = "%s mkdir \"%s\""
@@ -16,9 +18,29 @@ object Shell {
     const val MV = "%s mv \"%s\" \"%s\""
     const val LS_LAHL = "%s ls -lAhL \"%s\""
     const val NATIVE_CHMOD_X = "chmod +x \"%s\""
-    const val FIND = "cd %1\$s && find %1\$s -maxdepth %2\$d -exec ls -lAhLd \"{}\" \\;"
+
+    const val FIND_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -e \"%s\""
+    const val FIND_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -e \"%s\""
+    const val FIND_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -F -e \"%s\""
+    const val FIND_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -F -e \"%s\""
+
+    const val FIND_EXEC_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -e \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -e \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -F -e \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -F -e \"%s\" {} \\;"
+
+    const val FIND = "%s find %s -type f -maxdepth %d -exec ls -lAhLd \"{}\" \\;"
     const val FOR_LS = "for f in `ls -A \"%s\"`; do echo \$f; ls -lAh \"%s\$f\"; done"
     //for f in `ls -A "/sdcard/"`; do ls -ld "/sdcard/$f"; if [ -d /sdcard/$f ]; then ls -lAh "/sdcard/$f"; fi; done
+
+    // %s grep -c -s -F -i -e "%s" "%s"
+
+    // FASTEST toybox find %s -name "*.%s" -type f | xargs grep "%s" -c
+    // find . -maxdepth 2 -exec grep -H -c -s "k[e]" {} \;
+
+    /*
+    toybox find /storage/emulated/0/0/ -type f -maxdepth 1024 \( -name '*.txt' -o -name '*.java' -o -name '*.xml' -o -name '*.html' -o -name '*.htm' -o -name '*.smali' -o -name '*.log' -o -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.kt' -o -name '*.md' -o -name '*.mkd' -o -name '*.markdown' -o -name '*.cm' -o -name '*.ad' -o -name '*.adoc' \) | xargs toybox grep -c -s -F -e "kva"
+     */
 
     fun checkSu(): Output {
         var success: Boolean
@@ -52,7 +74,7 @@ object Shell {
         return Output(success, "", error)
     }
 
-    fun exec(cmd: String, su: Boolean): Output {
+    fun exec(cmd: String, su: Boolean, forEachLine: ((String) -> Unit)? = null): Output {
         var success: Boolean
         var output = ""
         var error = ""
@@ -74,11 +96,15 @@ object Shell {
             osw.close()
 
             val tik = System.currentTimeMillis()
-            output = inputStream.reader().readText()
+
+            when (forEachLine) {
+                null -> output = inputStream.reader().readText()
+                else -> InputStreamReader(inputStream, Charsets.UTF_8).forEachLine(forEachLine)
+            }
             error = errorStream.reader().readText()
             success = process.waitFor() == SUCCESS
 
-            log2("waitFor ${System.currentTimeMillis() - tik} $cmd")
+            logI("waitFor ${System.currentTimeMillis() - tik} $cmd")
         } catch (e: Exception) {
             success = false
         } finally {

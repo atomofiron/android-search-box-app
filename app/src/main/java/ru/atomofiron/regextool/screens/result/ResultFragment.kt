@@ -106,6 +106,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         ivStatus {
             setVisibility(!task.inProgress)
             isActivated = task.isDone
+            isEnabled = task.error == null
         }
         tvCounter {
             text = "${task.results.size}/${task.count}"

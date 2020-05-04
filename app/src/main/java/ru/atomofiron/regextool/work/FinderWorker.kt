@@ -11,18 +11,21 @@ import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.atomofiron.common.util.ServiceConnectionImpl
+import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.FinderStore
-import ru.atomofiron.regextool.log2
+import ru.atomofiron.regextool.logE
+import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.explorer.MutableXFile
+import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.finder.FinderResult
 import ru.atomofiron.regextool.model.finder.MutableFinderTask
 import ru.atomofiron.regextool.screens.root.RootActivity
-import ru.atomofiron.regextool.sleep
 import ru.atomofiron.regextool.utils.ChannelUtil
 import ru.atomofiron.regextool.utils.Const
+import ru.atomofiron.regextool.utils.Shell
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -48,14 +51,14 @@ class FinderWorker(
         private const val KEY_WHERE_PATHS = "KEY_WHERE_PATHS"
 
         fun inputData(query: String, useSu: Boolean, useRegex: Boolean, maxSize: Long,
-                      caseSensitive: Boolean, excludeDirs: Boolean, isMultiline: Boolean,
+                      ignoreCase: Boolean, excludeDirs: Boolean, isMultiline: Boolean,
                       forContent: Boolean, textFormats: Array<String>, maxDepth: Int, where: Array<String>): Data {
             val builder = Data.Builder()
                     .putString(KEY_QUERY, query)
                     .putBoolean(KEY_USE_SU, useSu)
                     .putBoolean(KEY_USE_REGEX, useRegex)
                     .putLong(KEY_MAX_SIZE, maxSize)
-                    .putBoolean(KEY_CASE_INSENSITIVE, !caseSensitive)
+                    .putBoolean(KEY_CASE_INSENSITIVE, ignoreCase)
                     .putBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
                     .putBoolean(KEY_MULTILINE, isMultiline)
                     .putBoolean(KEY_FOR_CONTENT, forContent)
@@ -66,6 +69,7 @@ class FinderWorker(
             return builder.build()
         }
     }
+    private val toyboxPath: String by lazy { App.pathToybox }
     private var useSu = false
     private var useRegex = false
     private lateinit var query: String
@@ -79,6 +83,7 @@ class FinderWorker(
 
     private val task = MutableFinderTask(id)
     private val connection = ServiceConnectionImpl()
+    private var process: Process? = null
 
     @Inject
     lateinit var finderStore: FinderStore
@@ -89,13 +94,48 @@ class FinderWorker(
         DaggerInjector.appComponent.inject(this)
     }
 
-    private fun searchForContent(where: List<MutableXFile>, depth: Int) {
-        // todo next
+    override fun onStopped() {
+        super.onStopped()
+        process?.destroy()
+    }
+
+    private fun searchForContent(where: List<MutableXFile>) {
+        for (item in where) {
+            if (isStopped) {
+                return
+            }
+            task.count++
+            val template = when {
+                useRegex && ignoreCase -> Shell.FIND_GREP_I
+                useRegex && !ignoreCase -> Shell.FIND_GREP
+                !useRegex && ignoreCase -> Shell.FIND_GREP_IF
+                !useRegex && !ignoreCase -> Shell.FIND_GREP_F
+                else -> throw Exception()
+            }
+            val nameArgs = textFormats.joinToString(" -o ") { "-name '*.$it'" }
+            val command = template.format(toyboxPath, item.completedPath, maxDepth, nameArgs, toyboxPath, query)
+            val output = Shell.exec(command, useSu) { line ->
+                val index = line.lastIndexOf(':')
+                val count = line.substring(index.inc()).toInt()
+                if (count > 0) {
+                    val path = line.substring(0, index)
+                    val xFile = MutableXFile.byPath(path)
+                    val params = FinderQueryParams(query, useRegex, ignoreCase)
+                    val result = FinderResult(xFile, count, params)
+                    task.results.add(result)
+                }
+                task.count++
+            }
+            if (!output.success) {
+                task.error = output.error
+                logE("${output.error}")
+            }
+        }
     }
 
     private fun searchForName(where: List<MutableXFile>, depth: Int) {
         for (item in where) {
-            sleep(300)
+            //sleep(300)
             if (isStopped) {
                 return
             }
@@ -127,17 +167,17 @@ class FinderWorker(
                 }
             }
         } else {
-            log2("searchForName depth limit $depth")
+            logI("searchForName depth limit $depth")
         }
     }
 
     override fun doWork(): Result {
-        log2("doWork")
+        logI("doWork")
 
         val queryString = inputData.getString(KEY_QUERY)
 
         if (queryString.isNullOrEmpty()) {
-            log2("[ERROR] Query is empty.")
+            logE("Query is empty.")
             return Result.success()
         }
         finderStore.add(task)
@@ -157,7 +197,7 @@ class FinderWorker(
         val paths = inputData.getStringArray(KEY_WHERE_PATHS)!!
 
         for (i in paths.indices) {
-            val item = MutableXFile.byPath(paths[i])
+            val item = MutableXFile.asRoot(paths[i])
             where.add(item)
         }
 
@@ -172,7 +212,7 @@ class FinderWorker(
 
         val data = try {
             if (forContent) {
-                searchForContent(where, depth = 0)
+                searchForContent(where)
             } else {
                 searchForName(where, depth = 0)
             }
@@ -183,6 +223,7 @@ class FinderWorker(
 
         task.isDone = !isStopped
         task.inProgress = false
+        finderStore.notifyObservers()
 
         showNotification()
         applicationContext.unbindService(connection)
@@ -198,6 +239,7 @@ class FinderWorker(
         val notification = NotificationCompat.Builder(context, Const.RESULT_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle(context.getString(R.string.search_completed, task.results.size, task.count))
+                .setContentText(task.error)
                 .setSmallIcon(R.drawable.ic_notification_done)
                 .setColor(color)
                 .setContentIntent(pendingIntent)
