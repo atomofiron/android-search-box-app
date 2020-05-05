@@ -23,12 +23,15 @@ class HistoryAdapter(
     private lateinit var dao: HistoryDao
     private lateinit var items: ArrayList<ItemHistory>
 
+    private var recyclerView: RecyclerView? = null
+
     init {
         setHasStableIds(true)
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
 
         recyclerView.layoutManager ?: { recyclerView.layoutManager = LinearLayoutManager(recyclerView.context) }()
 
@@ -43,10 +46,14 @@ class HistoryAdapter(
         super.onDetachedFromRecyclerView(recyclerView)
 
         db.close()
+        this.recyclerView = null
     }
 
     fun add(string: String) {
-        if (string.isEmpty()) {
+        if (string.isBlank()) {
+            return
+        }
+        if (recentlyContains(string)) {
             return
         }
         var index = items.indexOfFirst { !it.pinned }
@@ -58,6 +65,16 @@ class HistoryAdapter(
         items.add(index, item)
         item.id = dao.insert(item)
         notifyItemInserted(index)
+    }
+
+    private fun recentlyContains(string: String): Boolean {
+        val limit = recyclerView?.childCount ?: 0
+        for (i in 0..limit) {
+            if (items[i].title == string) {
+                return true
+            }
+        }
+        return false
     }
 
     fun reload() {
