@@ -125,7 +125,7 @@ class PreferenceFragmentDelegate(
             }
             Const.PREF_EXCLUDE_DIRS -> {
                 newValue ?: return DOES_NOT_MATTER
-                output.onPreferenceUpdate(key, newValue as Int)
+                output.onPreferenceUpdate(key, newValue as Boolean)
                 DOES_NOT_MATTER
             }
             Const.PREF_JOYSTICK -> {
