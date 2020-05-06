@@ -59,9 +59,11 @@ class BallsView @JvmOverloads constructor(
     }
 
     private fun updateAnimation() {
-        when (isAttachedToWindow && visibility == VISIBLE) {
-            true -> animator.start()
-            else -> animator.pause()
+        val enable = isAttachedToWindow && visibility == VISIBLE
+        when {
+            !enable -> animator.pause()
+            animator.isPaused -> animator.resume()
+            !animator.isStarted -> animator.start()
         }
     }
 

@@ -13,11 +13,21 @@ class FinderDiffUtilCallback(
     override fun getNewListSize(): Int = new.size
 
     override fun areItemsTheSame(i: Int, j: Int): Boolean {
-        return old[i].layoutId == new[j].layoutId && old[i].stableId == new[j].stableId
+        val old = old[i]
+        val new = new[j]
+        return when {
+            old.layoutId != new.layoutId -> false
+            old.stableId != new.stableId -> false
+            else -> false
+        }
     }
 
     override fun areContentsTheSame(i: Int, j: Int): Boolean {
-        val a = old[i].hashCode() == new[j].hashCode()
-        return a
+        val old = old[i]
+        val new = new[j]
+        return when (old) {
+            is FinderStateItem.ProgressItem -> false
+            else -> old.hashCode() == new.hashCode()
+        }
     }
 }

@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.finder.adapter.holder
 
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.CompoundButton
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
@@ -17,55 +18,54 @@ class ConfigHolder(
     private val cbReplace = itemView.findViewById<CheckBox>(R.id.config_cb_replace)
 
     private var checkMultilineWhenEnabled = false
-    private var skipUpdate = false
 
     init {
         itemView.isFocusable = false
         itemView.isClickable = false
 
-        cbCaseSense.setOnCheckedChangeListener { _, isChecked ->
-            update { it.copy(ignoreCase = !isChecked) }
+        cbCaseSense.setOnClickListener { view ->
+            view as CompoundButton
+            update { it.copy(ignoreCase = !view.isChecked) }
         }
-        cbUseRegexp.setOnCheckedChangeListener { _, isChecked ->
+        cbUseRegexp.setOnClickListener { view ->
+            view as CompoundButton
             when {
-                isChecked && checkMultilineWhenEnabled -> {
+                view.isChecked && checkMultilineWhenEnabled -> {
                     checkMultilineWhenEnabled = false
-                    update { it.copy(useRegex = isChecked, multilineSearch = true) }
+                    update { it.copy(useRegex = view.isChecked, multilineSearch = true) }
                 }
-                !isChecked -> {
+                !view.isChecked -> {
                     checkMultilineWhenEnabled = cbMultiline.isChecked
-                    update { it.copy(useRegex = isChecked, multilineSearch = false) }
+                    update { it.copy(useRegex = view.isChecked, multilineSearch = false) }
                 }
-                isChecked -> update { it.copy(useRegex = isChecked) }
+                view.isChecked -> update { it.copy(useRegex = view.isChecked) }
             }
-            cbMultiline.isEnabled = isChecked
+            cbMultiline.isEnabled = view.isChecked
         }
-        cpSearchInContent.setOnCheckedChangeListener { _, isChecked ->
-            update { it.copy(searchInContent = isChecked) }
+        cpSearchInContent.setOnClickListener { view ->
+            view as CompoundButton
+            update { it.copy(searchInContent = view.isChecked) }
         }
-        cbMultiline.setOnCheckedChangeListener { _, isChecked ->
-            update { it.copy(multilineSearch = isChecked) }
+        cbMultiline.setOnClickListener { view ->
+            view as CompoundButton
+            update { it.copy(multilineSearch = view.isChecked) }
         }
-        cbReplace.setOnCheckedChangeListener { _, isChecked ->
-            update { it.copy(replaceEnabled = isChecked) }
+        cbReplace.setOnClickListener { view ->
+            view as CompoundButton
+            update { it.copy(replaceEnabled = view.isChecked) }
         }
     }
 
     override fun onBind(item: FinderStateItem, position: Int) {
         item as FinderStateItem.ConfigItem
-        skipUpdate = true
         cbCaseSense.isChecked = !item.ignoreCase
         cbUseRegexp.isChecked = item.useRegex
         cpSearchInContent.isChecked = item.searchInContent
         cbMultiline.isChecked = item.multilineSearch
         cbReplace.isChecked = item.replaceEnabled
-        skipUpdate = false
     }
 
     private fun update(block: (FinderStateItem.ConfigItem) -> FinderStateItem.ConfigItem) {
-        if (skipUpdate) {
-            return
-        }
         var item = item as FinderStateItem.ConfigItem
         item = block(item)
         listener.onConfigChange(item)

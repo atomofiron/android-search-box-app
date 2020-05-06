@@ -68,8 +68,8 @@ class HistoryAdapter(
     }
 
     private fun recentlyContains(string: String): Boolean {
-        val limit = recyclerView?.childCount ?: 0
-        for (i in 0..limit) {
+        val limit = Math.min(items.size, recyclerView?.childCount ?: 1)
+        for (i in 0 until limit) {
             if (items[i].title == string) {
                 return true
             }

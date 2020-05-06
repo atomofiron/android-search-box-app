@@ -134,7 +134,7 @@ class FinderWorker(
 
     private fun searchForName(where: List<MutableXFile>, depth: Int) {
         for (item in where) {
-            //sleep(300)
+            Thread.sleep(1000)
             if (isStopped) {
                 return
             }

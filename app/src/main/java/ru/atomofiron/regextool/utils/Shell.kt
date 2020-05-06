@@ -19,15 +19,15 @@ object Shell {
     const val LS_LAHL = "%s ls -lAhL \"%s\""
     const val NATIVE_CHMOD_X = "chmod +x \"%s\""
 
-    const val FIND_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -e \"%s\""
-    const val FIND_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -e \"%s\""
-    const val FIND_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -F -e \"%s\""
-    const val FIND_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -F -e \"%s\""
+    const val FIND_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -E \"%s\""
+    const val FIND_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -E \"%s\""
+    const val FIND_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -F -E \"%s\""
+    const val FIND_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -F -E \"%s\""
 
-    const val FIND_EXEC_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -e \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -e \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -F -e \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -F -e \"%s\" {} \\;"
+    const val FIND_EXEC_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -F -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -F -E \"%s\" {} \\;"
 
     const val FIND = "%s find %s -type f -maxdepth %d -exec ls -lAhLd \"{}\" \\;"
     const val FOR_LS = "for f in `ls -A \"%s\"`; do echo \$f; ls -lAh \"%s\$f\"; done"

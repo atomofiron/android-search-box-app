@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.screens.finder.presenter
 
-import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.interactor.FinderInteractor
 import ru.atomofiron.regextool.screens.finder.FinderRouter
 import ru.atomofiron.regextool.screens.finder.FinderViewModel
@@ -19,6 +18,7 @@ class FinderAdapterPresenterDelegate(
         val ignoreCaseChanged = oldItem.ignoreCase xor item.ignoreCase
         val replaceEnabledChanged = oldItem.replaceEnabled xor item.replaceEnabled
         val useRegexpChanged = oldItem.useRegex xor item.useRegex
+        val multilineSearchChanged = oldItem.multilineSearch xor item.multilineSearch
 
         if (replaceEnabledChanged || useRegexpChanged) {
             viewModel.updateUniqueItem(FinderStateItem.SearchAndReplaceItem::class) {
@@ -28,7 +28,7 @@ class FinderAdapterPresenterDelegate(
 
         viewModel.updateUniqueItem(item)
 
-        if (ignoreCaseChanged || replaceEnabledChanged || useRegexpChanged) {
+        if (ignoreCaseChanged || useRegexpChanged || multilineSearchChanged) {
             viewModel.updateUniqueItem(FinderStateItem.TestItem::class) {
                 it.copy(useRegex = item.useRegex,
                         ignoreCase = item.ignoreCase,

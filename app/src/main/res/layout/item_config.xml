@@ -30,6 +30,7 @@
         android:ellipsize="none"
         android:singleLine="true"
         android:enabled="false"
+        android:visibility="gone"
         />
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/config_cb_in_content"
