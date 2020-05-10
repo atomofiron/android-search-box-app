@@ -75,6 +75,14 @@
             />
     </PreferenceCategory>
     <PreferenceCategory
+        android:key="pref_category_system"
+        app:title="@string/pref_category_system">
+        <Preference
+            app:title="@string/pref_toybox"
+            app:key="pref_toybox"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory
         android:key="pref_category_debug"
         app:title="@string/pref_category_debug">
         <SwitchPreference

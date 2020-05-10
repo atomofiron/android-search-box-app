@@ -71,7 +71,9 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun preferenceService(context: Context): PreferenceService = PreferenceService(context)
+    fun preferenceService(context: Context, preferenceStore: PreferenceStore): PreferenceService {
+        return PreferenceService(context, preferenceStore)
+    }
 
     @Provides
     @PreferenceScope

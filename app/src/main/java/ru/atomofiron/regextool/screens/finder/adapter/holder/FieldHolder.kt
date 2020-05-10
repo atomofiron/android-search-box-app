@@ -33,6 +33,7 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         etFind.imeOptions = if (item.replaceEnabled) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_SEARCH
         if (etFind.text.toString() != item.query) {
             etFind.setText(item.query)
+            etFind.setSelection(item.query.length)
         }
         updateWarning(etFind.text.toString())
     }

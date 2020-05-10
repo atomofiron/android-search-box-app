@@ -5,10 +5,7 @@ import android.content.SharedPreferences
 import android.view.Gravity
 import leakcanary.AppWatcher
 import ru.atomofiron.regextool.injectable.store.util.PreferenceNode
-import ru.atomofiron.regextool.model.preference.AppOrientation
-import ru.atomofiron.regextool.model.preference.AppTheme
-import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
-import ru.atomofiron.regextool.model.preference.JoystickComposition
+import ru.atomofiron.regextool.model.preference.*
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Tool
 
@@ -118,5 +115,13 @@ class PreferenceStore(context: Context, sp: SharedPreferences) {
             default = Const.DEFAULT_JOYSTICK,
             toValue = { it.data },
             fromValue = { JoystickComposition(it) }
+    )
+
+    val toyboxVariant = PreferenceNode.forSet(
+            sp,
+            key = Const.PREF_TOYBOX,
+            default = setOf(Const.VALUE_TOYBOX_CUSTOM, Const.DEFAULT_TOYBOX_PATH),
+            toValue = { throw Exception() },
+            fromValue = { ToyboxVariant.fromSet(context, it) }
     )
 }

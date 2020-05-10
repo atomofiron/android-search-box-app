@@ -9,5 +9,5 @@ class JoystickPresenterDelegate(
 ) : JoystickFragmentDelegate.JoystickPreferenceOutput {
     override fun notify(composition: JoystickComposition) = node.notify(composition)
 
-    override fun push(composition: JoystickComposition) = node.push(composition)
+    override fun push(composition: JoystickComposition) = node.pushByEntity(composition)
 }

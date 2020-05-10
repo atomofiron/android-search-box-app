@@ -1,12 +1,12 @@
 package ru.atomofiron.regextool.screens.preferences
 
-import android.app.Application
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.model.preference.JoystickComposition
+import ru.atomofiron.regextool.model.preference.ToyboxVariant
 import ru.atomofiron.regextool.utils.Shell
 import javax.inject.Inject
 
@@ -21,6 +21,7 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
     val isExportImportAvailable: Boolean get() = context.getExternalFilesDir(null) != null
     val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
     val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity
+    val toyboxVariant: ToyboxVariant get() = preferenceStore.toyboxVariant.entity
 
     override val component = DaggerPreferenceComponent
             .builder()

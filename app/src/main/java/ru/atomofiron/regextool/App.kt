@@ -13,7 +13,8 @@ import javax.inject.Inject
 class App : Application() {
     companion object {
         lateinit var appContext: Context
-        val pathToybox: String get() = "${appContext.filesDir}/toybox"
+        val pathToybox32: String get() = "${appContext.filesDir}/toybox32"
+        val pathToybox64: String get() = "${appContext.filesDir}/toybox64"
     }
 
     @Inject

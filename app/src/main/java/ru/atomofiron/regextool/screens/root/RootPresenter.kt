@@ -5,12 +5,13 @@ import ru.atomofiron.regextool.injectable.channel.RootChannel
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.root.fragment.SnackbarCallbackFragmentDelegate
 import ru.atomofiron.regextool.screens.root.util.tasks.XTask
+import ru.atomofiron.regextool.utils.Shell
 
 class RootPresenter(
         viewModel: RootViewModel,
         router: RootRouter,
         private val rootChannel: RootChannel,
-        private val preferenceStore: PreferenceStore
+        preferenceStore: PreferenceStore
 ) : BasePresenter<RootViewModel, RootRouter>(viewModel, router),
         SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput
 {
@@ -28,6 +29,9 @@ class RootPresenter(
         }
         preferenceStore.joystickComposition.addObserver(onClearedCallback) {
             viewModel.setJoystick.value = it
+        }
+        preferenceStore.toyboxVariant.addObserver(onClearedCallback) {
+            Shell.toyboxPath = it.toyboxPath
         }
         viewModel.tasks.value = Array(16) { XTask() }.toList()
     }

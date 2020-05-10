@@ -12,12 +12,9 @@ import app.atomofiron.common.arch.fragment.BasePreferenceFragment
 import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.screens.preferences.fragment.ExplorerItemFragmentDelegate
-import ru.atomofiron.regextool.screens.preferences.fragment.ExportImportFragmentDelegate
-import ru.atomofiron.regextool.screens.preferences.fragment.JoystickFragmentDelegate
-import ru.atomofiron.regextool.screens.preferences.fragment.PreferenceFragmentDelegate
-import ru.atomofiron.regextool.utils.Shell
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
+import ru.atomofiron.regextool.screens.preferences.fragment.*
+import ru.atomofiron.regextool.utils.Shell
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -30,6 +27,7 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
     private lateinit var exportImportDelegate: ExportImportFragmentDelegate
     private lateinit var explorerItemDelegate: ExplorerItemFragmentDelegate
     private lateinit var joystickDelegate: JoystickFragmentDelegate
+    private lateinit var toyboxDelegate: ToyboxFragmentDelegate
     private lateinit var preferenceDelegate: PreferenceFragmentDelegate
 
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.preference_bsv)
@@ -43,6 +41,7 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         exportImportDelegate = ExportImportFragmentDelegate(presenter)
         explorerItemDelegate = ExplorerItemFragmentDelegate(viewModel.explorerItemComposition, presenter)
         joystickDelegate = JoystickFragmentDelegate(viewModel.joystickComposition, presenter)
+        toyboxDelegate = ToyboxFragmentDelegate(viewModel.toyboxVariant, presenter)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -63,6 +62,7 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         exportImportDelegate.bottomSheetView = bottomSheetView.view
         explorerItemDelegate.bottomSheetView = bottomSheetView.view
         joystickDelegate.bottomSheetView = bottomSheetView.view
+        toyboxDelegate.bottomSheetView = bottomSheetView.view
     }
 
     override fun onCreateRecyclerView(inflater: LayoutInflater?, parent: ViewGroup?, savedInstanceState: Bundle?): RecyclerView {
@@ -86,6 +86,8 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
     fun onExplorerItemClick() = explorerItemDelegate.show()
 
     fun onJoystickClick() = joystickDelegate.show()
+
+    fun onToyboxClick() = toyboxDelegate.show()
 
     fun onLeakCanaryClick(isChecked: Boolean) = presenter.onLeakCanaryClick(isChecked)
 

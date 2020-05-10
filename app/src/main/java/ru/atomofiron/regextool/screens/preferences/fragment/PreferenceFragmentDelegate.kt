@@ -135,6 +135,13 @@ class PreferenceFragmentDelegate(
                 }
                 DOES_NOT_MATTER
             }
+            Const.PREF_TOYBOX -> {
+                preference.setOnPreferenceClickListener {
+                    fragment.onToyboxClick()
+                    true
+                }
+                DOES_NOT_MATTER
+            }
             Const.PREF_LEAK_CANARY -> {
                 preference as SwitchPreference
                 preference.isChecked = viewModel.getCurrentValue(preference.key) as Boolean

@@ -83,7 +83,7 @@ class ExplorerPresenter(
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.push(gravity)
+    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.pushByEntity(gravity)
 
     fun onCreateClick(dir: XFile, name: String, directory: Boolean) {
         explorerInteractor.create(dir, name, directory)

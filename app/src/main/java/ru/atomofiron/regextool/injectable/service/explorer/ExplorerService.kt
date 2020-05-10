@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.injectable.service.explorer
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
@@ -10,11 +11,12 @@ import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.utils.Const
 
 class ExplorerService constructor(
+        context: Context,
         assets: AssetManager,
         private val preferences: SharedPreferences,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore
-) : PrivateExplorerServiceLogic(assets, explorerStore, preferenceStore) {
+) : PrivateExplorerServiceLogic(context, assets, explorerStore, preferenceStore) {
 
     fun persistState() {
         preferences.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()

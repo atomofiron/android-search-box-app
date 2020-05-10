@@ -20,6 +20,7 @@ object Const {
     const val PREF_EXPORT_IMPORT = "pref_export_import"
     const val PREF_EXPLORER_ITEM = "pref_explorer_item"
     const val PREF_JOYSTICK = "pref_joystick"
+    const val PREF_TOYBOX = "pref_toybox"
     const val PREF_LEAK_CANARY = "pref_leak_canary"
 
     const val DEFAULT_TEXT_FORMATS = "txt java xml html htm smali log js css json kt md mkd markdown cm ad adoc"
@@ -28,6 +29,11 @@ object Const {
     const val DEFAULT_MAX_DEPTH = 1024
     const val DEFAULT_EXPLORER_ITEM = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1
     const val DEFAULT_JOYSTICK = 16732754 // 0ff5252
+    const val DEFAULT_TOYBOX_PATH = "/system/bin/toybox"
+
+    const val VALUE_TOYBOX_ARM_32 = "toybox_arm_32"
+    const val VALUE_TOYBOX_ARM_64 = "toybox_arm_64"
+    const val VALUE_TOYBOX_CUSTOM = "toybox_custom"
 
     const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "foreground_channel_id"
     const val RESULT_NOTIFICATION_CHANNEL_ID = "result_channel_id"
@@ -36,4 +42,7 @@ object Const {
 
     const val DATE_PATTERN = "YYYY-MM-DD_HH-mm-ss"
     const val MIME_TYPE_TEXT = "text/plain"
+
+    const val TOYBOX_32 = "/toybox32"
+    const val TOYBOX_64 = "/toybox64"
 }

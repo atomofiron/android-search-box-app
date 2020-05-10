@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.di.module
 
 import android.app.NotificationManager
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.work.WorkManager
@@ -22,11 +23,12 @@ open class ServiceModule {
     @Provides
     @Singleton
     fun explorerService(
+            context: Context,
             assets: AssetManager,
             preferences: SharedPreferences,
             explorerStore: ExplorerStore,
             preferenceStore: PreferenceStore
-    ): ExplorerService = ExplorerService(assets, preferences, explorerStore, preferenceStore)
+    ): ExplorerService = ExplorerService(context, assets, preferences, explorerStore, preferenceStore)
 
     @Provides
     @Singleton

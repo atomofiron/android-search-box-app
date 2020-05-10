@@ -12,24 +12,26 @@ object Shell {
     const val SH = "sh"
     const val SUCCESS = 0
 
-    const val TOUCH = "%s touch \"%s\""
-    const val MKDIR = "%s mkdir \"%s\""
-    const val RM_RF = "%s rm -rf \"%s\""
-    const val MV = "%s mv \"%s\" \"%s\""
-    const val LS_LAHL = "%s ls -lAhL \"%s\""
-    const val NATIVE_CHMOD_X = "chmod +x \"%s\""
+    private val TOYBOX = Regex("^\\{toybox\\}")
+    lateinit var toyboxPath: String
 
-    const val FIND_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -E \"%s\""
-    const val FIND_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -E \"%s\""
-    const val FIND_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -F -E \"%s\""
-    const val FIND_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -F -E \"%s\""
+    const val TOUCH = "{toybox} touch \"%s\""
+    const val MKDIR = "{toybox} mkdir \"%s\""
+    const val RM_RF = "{toybox} rm -rf \"%s\""
+    const val MV = "{toybox} mv \"%s\" \"%s\""
+    const val LS_LAHL = "{toybox} ls -lAhL \"%s\""
 
-    const val FIND_EXEC_GREP = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_I = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_F = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -F -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_IF = "%s find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -F -E \"%s\" {} \\;"
+    const val FIND_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -E \"%s\""
+    const val FIND_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -E \"%s\""
+    const val FIND_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -F -E \"%s\""
+    const val FIND_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -F -E \"%s\""
 
-    const val FIND = "%s find %s -type f -maxdepth %d -exec ls -lAhLd \"{}\" \\;"
+    const val FIND_EXEC_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -F -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -F -E \"%s\" {} \\;"
+
+    const val FIND = "{toybox} find %s -type f -maxdepth %d -exec ls -lAhLd \"{}\" \\;"
     const val FOR_LS = "for f in `ls -A \"%s\"`; do echo \$f; ls -lAh \"%s\$f\"; done"
     //for f in `ls -A "/sdcard/"`; do ls -ld "/sdcard/$f"; if [ -d /sdcard/$f ]; then ls -lAh "/sdcard/$f"; fi; done
 
@@ -75,7 +77,7 @@ object Shell {
     }
 
     fun exec(cmd: String, su: Boolean, forEachLine: ((String) -> Unit)? = null): Output {
-        logI("exec cmd $cmd")
+        logI("exec $cmd")
         var success: Boolean
         var output = ""
         var error = ""
@@ -92,7 +94,8 @@ object Shell {
             errorStream = process.errorStream
             val osw = outputStream.writer()
 
-            osw.write(String.format("%s\n", cmd))
+            val command = cmd.replace(TOYBOX, toyboxPath)
+            osw.write(String.format("%s\n", command))
             osw.flush()
             osw.close()
 

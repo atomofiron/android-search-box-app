@@ -70,7 +70,7 @@ class FinderPresenter(
         }
     }
 
-    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.push(gravity)
+    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.pushByEntity(gravity)
 
     fun onExplorerOptionSelected() = router.showExplorer()
 

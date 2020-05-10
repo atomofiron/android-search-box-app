@@ -1,22 +1,24 @@
 package ru.atomofiron.regextool.injectable.service.explorer
 
+import android.content.Context
 import android.content.res.AssetManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.explorer.XFile
-import ru.atomofiron.regextool.utils.Shell
+import ru.atomofiron.regextool.model.preference.ToyboxVariant
+import ru.atomofiron.regextool.utils.Const
 import java.io.File
 import java.io.FileOutputStream
 
 abstract class PrivateExplorerServiceLogic constructor(
+        context: Context,
         private val assets: AssetManager,
         protected val explorerStore: ExplorerStore,
         protected val preferenceStore: PreferenceStore
@@ -39,7 +41,7 @@ abstract class PrivateExplorerServiceLogic constructor(
     init {
         GlobalScope.launch(Dispatchers.IO) {
             mutex.withLock {
-                copyToybox()
+                copyToybox(context)
             }
         }
     }
@@ -160,20 +162,23 @@ abstract class PrivateExplorerServiceLogic constructor(
         return null
     }
 
-    private fun copyToybox() {
-        val pathToybox = App.pathToybox
-        val toybox = File(pathToybox)
-        toybox.deleteRecursively()
-        toybox.parentFile!!.mkdirs()
-        val input = assets.open("toybox/toybox64")
-        val bytes = input.readBytes()
-        input.close()
-        val output = FileOutputStream(toybox)
-        output.write(bytes)
-        output.close()
-        val response = Shell.exec(Shell.NATIVE_CHMOD_X.format(pathToybox), su = false)
-        if (response.error.isNotEmpty()) {
-            logI("copyToybox error != null\n${response.error}")
+    private fun copyToybox(context: Context) {
+        val variants = arrayOf(Const.VALUE_TOYBOX_ARM_32, Const.VALUE_TOYBOX_ARM_64)
+        context.filesDir.mkdirs()
+
+        for (variant in variants) {
+            val path = ToyboxVariant.getToyboxPath(context, variant)
+            val file = File(path)
+            if (file.exists() && file.canExecute()) {
+                continue
+            }
+            val input = assets.open("toybox/" + file.name)
+            val bytes = input.readBytes()
+            input.close()
+            val output = FileOutputStream(file)
+            output.write(bytes)
+            output.close()
+            file.setExecutable(true, true)
         }
     }
 

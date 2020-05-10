@@ -11,11 +11,11 @@ import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.atomofiron.common.util.ServiceConnectionImpl
-import ru.atomofiron.regextool.App
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.FinderStore
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.explorer.MutableXFile
@@ -69,7 +69,7 @@ class FinderWorker(
             return builder.build()
         }
     }
-    private val toyboxPath: String by lazy { App.pathToybox }
+    private val toyboxPath: String by lazy { preferenceStore.toyboxVariant.entity.toyboxPath }
     private var useSu = false
     private var useRegex = false
     private lateinit var query: String
@@ -87,6 +87,8 @@ class FinderWorker(
 
     @Inject
     lateinit var finderStore: FinderStore
+    @Inject
+    lateinit var preferenceStore: PreferenceStore
     @Inject
     lateinit var notificationManager: NotificationManager
 

@@ -29,6 +29,15 @@ class PreferenceUpdatePresenterDelegate(
         }
     }
 
+    override fun onPreferenceUpdate(key: String, value: Boolean): Boolean {
+        when (key) {
+            Const.PREF_EXCLUDE_DIRS -> preferenceStore.excludeDirs.notifyByOriginal(value)
+            Const.PREF_USE_SU -> return onUpdateUseSu(value)
+            else -> throw Exception()
+        }
+        return true
+    }
+
     override fun onPreferenceUpdate(key: String, value: String) {
         when (key) {
             Const.PREF_STORAGE_PATH -> preferenceStore.storagePath.notify(value)
@@ -40,13 +49,11 @@ class PreferenceUpdatePresenterDelegate(
         }
     }
 
-    override fun onPreferenceUpdate(key: String, value: Boolean): Boolean {
+    override fun onPreferenceUpdate(key: String, value: Set<String>) {
         when (key) {
-            Const.PREF_EXCLUDE_DIRS -> preferenceStore.excludeDirs.notifyByOriginal(value)
-            Const.PREF_USE_SU -> return onUpdateUseSu(value)
+            Const.PREF_TOYBOX -> preferenceStore.toyboxVariant.pushByOriginal(value)
             else -> throw Exception()
         }
-        return true
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")

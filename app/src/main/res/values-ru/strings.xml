@@ -91,6 +91,9 @@
     <string name="pref_category_debug">Отладка</string>
     <string name="root">Корень</string>
     <string name="copy_path">Скопировать путь</string>
+    <string name="pref_category_system">Системные</string>
+    <string name="pref_toybox">Toybox версия</string>
+    <string name="path_to_toybox">Путь к toybox</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>
