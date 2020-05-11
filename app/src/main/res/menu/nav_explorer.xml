@@ -3,8 +3,7 @@
     tools:context="ru.atomofiron.regextool.MainActivity">
     <item
         android:id="@+id/menu_places"
-        android:title="@string/places"
-        android:icon="@drawable/ic_home"
+        android:title=""
         android:enabled="false"
         />
     <item

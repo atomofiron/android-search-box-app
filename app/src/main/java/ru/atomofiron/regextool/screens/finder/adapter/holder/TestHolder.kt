@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextWatcher {
@@ -51,25 +50,26 @@ class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextW
     }
 
     private fun testSearchWithRegexp(item: FinderStateItem.TestItem) {
-        val text = editText.text.toString()
         var flags = 0
+        flags = flags or Pattern.MULTILINE
         if (item.ignoreCase) {
             flags = flags or Pattern.CASE_INSENSITIVE
         }
-        if (item.multilineSearch) {
-            flags = flags or Pattern.MULTILINE
-        }
         val pattern: Pattern
-        val matcher: Matcher
         try {
             pattern = Pattern.compile(item.searchQuery, flags)
-            matcher = pattern.matcher(text)
-        } catch (e: Exception) {
-            return
-        }
 
-        while (matcher.find() && matcher.start() != matcher.end()) {
-            editText.text.setSpan(span, matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            var offset = 0
+            val lines = editText.text.toString().split('\n')
+            for (line in lines) {
+                val matcher = pattern.matcher(line)
+
+                while (matcher.find() && matcher.start() != matcher.end()) {
+                    editText.text.setSpan(span, offset + matcher.start(), offset + matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+                offset += line.length.inc()
+            }
+        } catch (e: Exception) {
         }
     }
 

@@ -104,6 +104,11 @@ class ExplorerItemBinder(private val itemView: View) {
 
         cbBox.isChecked = item.isChecked
         cbBox.setVisibility(!item.isDeleting)
+        when {
+            item.isDeleting -> cbBox.setVisibility(false)
+            item.isRoot && !item.isOpened -> cbBox.setVisibility(false, View.INVISIBLE)
+            else -> cbBox.setVisibility(true)
+        }
         psProgress.setVisibility(item.isDeleting)
     }
 
