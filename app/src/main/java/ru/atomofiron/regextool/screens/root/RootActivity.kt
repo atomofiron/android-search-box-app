@@ -1,7 +1,9 @@
 package ru.atomofiron.regextool.screens.root
 
 import android.view.KeyEvent
+import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import app.atomofiron.common.arch.BaseActivity
@@ -28,6 +30,8 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
     private val root = Knife<ConstraintLayout>(this, R.id.root_cl_root)
     private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
 
+    private lateinit var explorerFragment: ExplorerFragment
+
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(joystick.view, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
                 .setAnchorView(joystick.view)
@@ -41,13 +45,7 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
     override fun onCreate() {
         setContentView(R.layout.activity_root)
 
-        joystick.view.setOnClickListener {
-            val viewWithFocus = root.view.findFocus()
-            val consumed = viewWithFocus?.hideKeyboard() != null
-            if (!consumed) {
-                presenter.onJoystickClick()
-            }
-        }
+        joystick.view.setOnClickListener { onEscClick() }
 
         viewModel.showExitSnackbar.observeEvent(this) {
             sbExit.show()
@@ -56,10 +54,21 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
         setOrientation(viewModel.setOrientation.data!!)
     }
 
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+        if (fragment is ExplorerFragment) {
+            explorerFragment = fragment
+        }
+    }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        val fragment = supportFragmentManager.fragments.find { it is ExplorerFragment } as ExplorerFragment?
-        val consumed = fragment?.onKeyDown(keyCode) == true
-        return consumed || super.onKeyDown(keyCode, event)
+        when  {
+            super.onKeyDown(keyCode, event) -> Unit
+            keyCode == KeyEvent.KEYCODE_ESCAPE -> onEscClick()
+            explorerFragment.onKeyDown(keyCode) -> Unit
+            else -> return false
+        }
+        return true
     }
 
     override fun setTheme(resId: Int) {
@@ -79,6 +88,14 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
     }
 
     override fun onBackPressed() = presenter.onBackButtonClick()
+
+    private fun onEscClick() {
+        val viewWithFocus = root.view.findFocus() as? EditText
+        val consumed = viewWithFocus?.hideKeyboard() != null
+        if (!consumed) {
+            presenter.onJoystickClick()
+        }
+    }
 
     private fun setOrientation(orientation: AppOrientation) {
         if (requestedOrientation != orientation.constant) {

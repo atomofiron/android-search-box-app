@@ -6,8 +6,8 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import ru.atomofiron.regextool.custom.view.AutoHideKeyboardField
 
 open class TextField @JvmOverloads constructor(
@@ -47,35 +47,23 @@ open class TextField @JvmOverloads constructor(
     override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
     override fun afterTextChanged(editable: Editable) = Unit
 
-    override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK && hasFocus()) {
-            isFocusable = false
-            // перехватываем событие, чтобы оно не обработалось при уже закрытой клавиатуре
-            return true
-        }
-        return false
-    }
-
     override fun onEditorAction(actionCode: Int) {
         super.onEditorAction(actionCode)
         if (actionCode == EditorInfo.IME_ACTION_DONE) {
             submittedValue = text.toString()
             onSubmit(text.toString())
-            isFocusable = false
+            clearFocus()
         }
     }
 
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect)
         if (!focused) {
-            isFocusable = false
-            setText(submittedValue, BufferType.NORMAL)
+            setText(submittedValue, TextView.BufferType.NORMAL)
         }
     }
 
     override fun performClick(): Boolean {
-        isFocusable = true
-        isFocusableInTouchMode = true
         requestFocus()
         return super.performClick()
     }

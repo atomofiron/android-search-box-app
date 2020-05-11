@@ -54,7 +54,6 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
     private fun initField(context: Context) {
         editText = TextField(context)
         editText.visibility = View.GONE
-        editText.isFocusable = false
         editText.setOnSubmitListener(::onSubmit)
         editText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
