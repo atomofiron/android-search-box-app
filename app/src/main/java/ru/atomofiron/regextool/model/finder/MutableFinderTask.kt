@@ -3,7 +3,7 @@ package ru.atomofiron.regextool.model.finder
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MutableFinderTask constructor(
+class MutableFinderTask(
         override val uuid: UUID,
         override val id: Long = nextId,
         override val results: ArrayList<FinderResult> = ArrayList(),

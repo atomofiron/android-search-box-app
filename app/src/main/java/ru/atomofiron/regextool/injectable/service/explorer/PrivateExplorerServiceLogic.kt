@@ -17,7 +17,7 @@ import ru.atomofiron.regextool.utils.Const
 import java.io.File
 import java.io.FileOutputStream
 
-abstract class PrivateExplorerServiceLogic constructor(
+abstract class PrivateExplorerServiceLogic(
         context: Context,
         private val assets: AssetManager,
         protected val explorerStore: ExplorerStore,

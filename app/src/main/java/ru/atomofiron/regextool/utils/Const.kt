@@ -27,7 +27,7 @@ object Const {
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
     const val DEFAULT_MAX_SIZE = 10485760L
     const val DEFAULT_MAX_DEPTH = 1024
-    const val DEFAULT_EXPLORER_ITEM = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1
+    const val DEFAULT_EXPLORER_ITEM = 251
     const val DEFAULT_JOYSTICK = 16732754 // 0ff5252
     const val DEFAULT_TOYBOX_PATH = "/system/bin/toybox"
 

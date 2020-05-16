@@ -79,7 +79,7 @@ object Shell {
         return Output(success, "", error)
     }
 
-    fun exec(cmd: String, su: Boolean, forEachLine: ((String) -> Unit)? = null): Output {
+    fun exec(cmd: String, su: Boolean, processObserver: ((Process) -> Unit)? = null, forEachLine: ((String) -> Unit)? = null): Output {
         logI("exec $cmd")
         var success: Boolean
         var output = ""
@@ -92,6 +92,7 @@ object Shell {
 
         try {
             process = Runtime.getRuntime().exec(if (su) SU else SH)
+            processObserver?.invoke(process)
             inputStream = process.inputStream!!
             outputStream = process.outputStream
             errorStream = process.errorStream!!

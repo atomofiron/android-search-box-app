@@ -131,7 +131,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
                 item.isEnabled = task.results.isNotEmpty()
             }
         }
-        resultAdapter.setItems(task.results)
+        resultAdapter.setResults(task.results)
 
         if (task.results.isNotEmpty()) {
             // fix first item offset

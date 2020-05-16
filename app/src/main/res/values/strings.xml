@@ -54,7 +54,7 @@
     <string name="waiting_for_results">Waiting for the results…</string>
     <string name="no_access">No access</string>
     <string name="data_was_lost">Data was lost</string>
-    <string name="search_completed">Search completed %d/%d</string>
+    <string name="search_completed">Search completed: %d/%d</string>
     <string name="pref_special_characters">Special characters</string>
     <string name="search">Search</string>
     <string name="use_regular_expression">Use regular expression</string>

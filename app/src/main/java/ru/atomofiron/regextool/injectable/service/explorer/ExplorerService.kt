@@ -10,7 +10,7 @@ import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.utils.Const
 
-class ExplorerService constructor(
+class ExplorerService(
         context: Context,
         assets: AssetManager,
         private val preferences: SharedPreferences,

@@ -11,21 +11,49 @@ import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemBackgroundDecorator
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemGravityDecorator
 
-class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResult>() {
+class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
+    companion object {
+        private const val POSITION_HEADER = 0
+        private const val TYPE_HEADER = 2
+    }
     override val useDiffUtils = true
     lateinit var itemActionListener: ResultItemActionListener
 
     private lateinit var composition: ExplorerItemComposition
 
     private val gravityDecorator = ItemGravityDecorator()
-    private val backgroundDecorator = ItemBackgroundDecorator()
+    private val backgroundDecorator = ItemBackgroundDecorator(atFirst = false)
+
+    private val header = FinderResultItem.Header(0, 0)
+
+    fun setResults(results: List<FinderResult>) {
+        val items = results.map { FinderResultItem.Item(it) }
+        super.setItems(items)
+
+        header.dirsCount = 0
+        header.filesCount = 0
+        for (item in items) {
+            when {
+                item.item.isDirectory -> header.dirsCount++
+                else -> header.filesCount++
+            }
+        }
+        notifyItemChanged(POSITION_HEADER)
+    }
 
     fun setComposition(composition: ExplorerItemComposition) {
         this.composition = composition
         backgroundDecorator.enabled = composition.visibleBg
     }
 
-    override fun getDiffUtilCallback(old: List<FinderResult>, new: List<FinderResult>): DiffUtil.Callback? {
+    override fun getItemViewType(position: Int): Int = when (position) {
+        POSITION_HEADER -> TYPE_HEADER
+        else -> super.getItemViewType(position)
+    }
+
+    override fun getItemCount(): Int = items.size.inc()
+
+    override fun getDiffUtilCallback(old: List<FinderResultItem>, new: List<FinderResultItem>): DiffUtil.Callback? {
         return ResultDiffUtilCallback(old, new)
     }
 
@@ -42,13 +70,25 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResult>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): ResultsHolder {
-        val itemView = inflater.inflate(R.layout.item_explorer, parent, false)
-        return ResultsHolder(itemView)
+        return when (viewType) {
+            TYPE_HEADER -> {
+                val itemView = inflater.inflate(R.layout.item_header, parent, false)
+                ResultsHeaderHolder(itemView)
+            }
+            else -> {
+                val itemView = inflater.inflate(R.layout.item_explorer, parent, false)
+                ResultsItemHolder(itemView)
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: ResultsHolder, position: Int) {
-        holder.setOnItemActionListener(itemActionListener)
-        super.onBindViewHolder(holder, position)
-        holder.bindComposition(composition)
+    override fun onBindViewHolder(holder: ResultsHolder, position: Int) = when (position) {
+        POSITION_HEADER -> holder.bind(header)
+        else -> {
+            holder as ResultsItemHolder
+            holder.setOnItemActionListener(itemActionListener)
+            super.onBindViewHolder(holder, position.dec())
+            holder.bindComposition(composition)
+        }
     }
 }

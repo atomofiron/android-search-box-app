@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
 
-class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
+class ItemBackgroundDecorator(val atFirst: Boolean = true) : RecyclerView.ItemDecoration() {
     companion object {
         private const val UNDEFINED = -1
     }
@@ -34,7 +34,8 @@ class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
             val child = it.value
             val position = parent.getChildLayoutPosition(child)
 
-            if (position % 2 == 0) {
+            val remainder = if (atFirst) 0 else 1
+            if (position % 2 == remainder) {
                 background.setBounds(child.left, child.top, child.right, child.bottom)
                 background.draw(canvas)
             }

@@ -97,6 +97,8 @@ class FinderWorker(
         process?.destroy()
     }
 
+    private val processObserver: (Process) -> Unit = { process = it }
+
     private fun searchForContent(where: List<MutableXFile>) {
         for (item in where) {
             if (isStopped) {
@@ -111,23 +113,23 @@ class FinderWorker(
             }
             val nameArgs = textFormats.joinToString(" -o ") { "-name '*.$it'" }
             val command = template.format(item.completedPath, maxDepth, nameArgs, query)
-            val output = Shell.exec(command, useSu) { line ->
-                val index = line.lastIndexOf(':')
-                val count = line.substring(index.inc()).toInt()
-                if (count > 0) {
-                    val path = line.substring(0, index)
-                    val xFile = MutableXFile.byPath(path)
-                    val params = FinderQueryParams(query, useRegex, ignoreCase)
-                    val result = FinderResult(xFile, count, params)
-                    task.results.add(result)
-                }
-                task.count++
-            }
-            if (!output.success) {
+            val output = Shell.exec(command, useSu, processObserver, forContentLineListener)
+            if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
                 task.error = output.error
             }
         }
+    }
+
+    private val forContentLineListener: (String) -> Unit = { line ->
+        val index = line.lastIndexOf(':')
+        val count = line.substring(index.inc()).toInt()
+        if (count > 0) {
+            val path = line.substring(0, index)
+            val params = FinderQueryParams(query, useRegex, ignoreCase)
+            addToResults(path, count, params)
+        }
+        task.count++
     }
 
     private fun searchForName(where: List<MutableXFile>) {
@@ -137,24 +139,26 @@ class FinderWorker(
                 else -> Shell.FIND_FD
             }
             val command = template.format(item, maxDepth)
-            val output = Shell.exec(command, useSu) { line ->
-                task.count++
-                if (useRegex) {
-                    val matcher = pattern.matcher(line)
-                    if (matcher.find()) {
-                        val result = FinderResult(MutableXFile.byPath(line))
-                        task.results.add(result)
-                    }
-                } else if (line.contains(query, ignoreCase)) {
-                    val result = FinderResult(MutableXFile.byPath(line))
-                    task.results.add(result)
-                }
-            }
-            if (!output.success) {
+            val output = Shell.exec(command, useSu, processObserver, forNameLineListener)
+            if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
                 task.error = output.error
             }
         }
+    }
+
+    private val forNameLineListener: (String) -> Unit = { line ->
+        when {
+            useRegex && pattern.matcher(line).find() -> addToResults(line)
+            !useRegex && line.contains(query, ignoreCase) -> addToResults(line)
+        }
+        task.count++
+    }
+
+    private fun addToResults(path: String, count: Int = 0, finderQueryParams: FinderQueryParams? = null) {
+        val xFile = MutableXFile.byPath(path)
+        val result = FinderResult(xFile, count, finderQueryParams)
+        task.results.add(result)
     }
 
     override fun doWork(): Result {
@@ -185,7 +189,7 @@ class FinderWorker(
         val paths = inputData.getStringArray(KEY_WHERE_PATHS)!!
 
         for (i in paths.indices) {
-            val item = MutableXFile.asRoot(paths[i])
+            val item = MutableXFile.byPath(paths[i])
             where.add(item)
         }
 

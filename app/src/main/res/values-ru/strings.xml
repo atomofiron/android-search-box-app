@@ -54,7 +54,7 @@
     <string name="waiting_for_results">Ожидание результатов…</string>
     <string name="no_access">Нет доступа</string>
     <string name="data_was_lost">Данные были утеряны</string>
-    <string name="search_completed">Поиск завершён %d/%d</string>
+    <string name="search_completed">Поиск завершён: %d/%d</string>
     <string name="pref_special_characters">Специальные символы</string>
     <string name="search">Поиск</string>
     <string name="use_regular_expression">Использовать регулярное выражение</string>

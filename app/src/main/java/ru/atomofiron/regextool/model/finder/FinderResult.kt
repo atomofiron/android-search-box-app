@@ -5,15 +5,12 @@ import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.utils.Const
 
 class FinderResult(
-        item: XFile,
+        item: MutableXFile,
         val count: Int = 0,
         val finderQueryParams: FinderQueryParams? = null
 ) : XFile {
 
-    private val xFile = MutableXFile(
-            item.access, item.owner, item.group, item.size, item.date, item.time, item.name,
-            item.suffix, item.isDirectory, item.completedPath, item.root
-    )
+    private val xFile = item
 
     override val completedPath = xFile.completedPath
     override val isDirectory: Boolean = xFile.isDirectory
