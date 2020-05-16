@@ -67,5 +67,12 @@
             android:text="@string/toybox_32"
             android:padding="@dimen/common_margin_half"
             />
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/preference_rb_toybox_x86_64"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/toybox_x86_64"
+            android:padding="@dimen/common_margin_half"
+            />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

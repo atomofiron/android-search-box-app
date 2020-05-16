@@ -163,7 +163,11 @@ abstract class PrivateExplorerServiceLogic constructor(
     }
 
     private fun copyToybox(context: Context) {
-        val variants = arrayOf(Const.VALUE_TOYBOX_ARM_32, Const.VALUE_TOYBOX_ARM_64)
+        val variants = arrayOf(
+                Const.VALUE_TOYBOX_ARM_32,
+                Const.VALUE_TOYBOX_ARM_64,
+                Const.VALUE_TOYBOX_X86_64
+        )
         context.filesDir.mkdirs()
 
         for (variant in variants) {

@@ -12,7 +12,7 @@ object Shell {
     const val SH = "sh"
     const val SUCCESS = 0
 
-    private val TOYBOX = Regex("^\\{toybox\\}")
+    private val TOYBOX = "{toybox}"
     lateinit var toyboxPath: String
 
     const val TOUCH = "{toybox} touch \"%s\""
@@ -21,15 +21,16 @@ object Shell {
     const val MV = "{toybox} mv \"%s\" \"%s\""
     const val LS_LAHL = "{toybox} ls -lAhL \"%s\""
 
-    const val FIND_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -E \"%s\""
-    const val FIND_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -E \"%s\""
-    const val FIND_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -F -E \"%s\""
-    const val FIND_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs %s grep -c -s -i -F -E \"%s\""
+    // grep: No 'E' with 'F'
+    const val FIND_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -E \"%s\""
+    const val FIND_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -E \"%s\""
+    const val FIND_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -F -e \"%s\""
+    const val FIND_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -F -e \"%s\""
 
-    const val FIND_EXEC_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -F -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec %s grep -H -c -s -i -F -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -F -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -F -E \"%s\" {} \\;"
 
     const val FIND = "{toybox} find %s -type f -maxdepth %d -exec ls -lAhLd \"{}\" \\;"
     const val FOR_LS = "for f in `ls -A \"%s\"`; do echo \$f; ls -lAh \"%s\$f\"; done"

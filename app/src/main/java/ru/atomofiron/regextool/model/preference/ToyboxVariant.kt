@@ -8,7 +8,12 @@ class ToyboxVariant(context: Context, val variant: String, val customPath: Strin
         fun fromSet(context: Context, set: Set<String>): ToyboxVariant {
             require(set.size == 2) { IllegalArgumentException() }
 
-            val variants = arrayOf(Const.VALUE_TOYBOX_CUSTOM, Const.VALUE_TOYBOX_ARM_64, Const.VALUE_TOYBOX_ARM_32)
+            val variants = arrayOf(
+                    Const.VALUE_TOYBOX_CUSTOM,
+                    Const.VALUE_TOYBOX_ARM_64,
+                    Const.VALUE_TOYBOX_ARM_32,
+                    Const.VALUE_TOYBOX_X86_64
+            )
             val first = set.first()
             val last = set.last()
             return when {
@@ -21,6 +26,7 @@ class ToyboxVariant(context: Context, val variant: String, val customPath: Strin
         fun getToyboxPath(context: Context, variant: String): String = when (variant) {
             Const.VALUE_TOYBOX_ARM_32 -> context.filesDir.absolutePath + Const.TOYBOX_32
             Const.VALUE_TOYBOX_ARM_64 -> context.filesDir.absolutePath + Const.TOYBOX_64
+            Const.VALUE_TOYBOX_X86_64 -> context.filesDir.absolutePath + Const.TOYBOX_86_64
             else -> throw Exception("Unknown variant $variant")
         }
     }

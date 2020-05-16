@@ -69,7 +69,6 @@ class FinderWorker(
             return builder.build()
         }
     }
-    private val toyboxPath: String by lazy { preferenceStore.toyboxVariant.entity.toyboxPath }
     private var useSu = false
     private var useRegex = false
     private lateinit var query: String
@@ -114,7 +113,7 @@ class FinderWorker(
                 else -> throw Exception()
             }
             val nameArgs = textFormats.joinToString(" -o ") { "-name '*.$it'" }
-            val command = template.format(toyboxPath, item.completedPath, maxDepth, nameArgs, toyboxPath, query)
+            val command = template.format(item.completedPath, maxDepth, nameArgs, query)
             val output = Shell.exec(command, useSu) { line ->
                 val index = line.lastIndexOf(':')
                 val count = line.substring(index.inc()).toInt()
@@ -136,7 +135,6 @@ class FinderWorker(
 
     private fun searchForName(where: List<MutableXFile>, depth: Int) {
         for (item in where) {
-            Thread.sleep(1000)
             if (isStopped) {
                 return
             }
@@ -212,13 +210,14 @@ class FinderWorker(
         }
 
         val data = try {
-            if (forContent) {
-                searchForContent(where)
-            } else {
-                searchForName(where, depth = 0)
+            when {
+                forContent -> searchForContent(where)
+                else -> searchForName(where, depth = 0)
             }
             Data.Builder().build()
         } catch (e: Exception) {
+            logI("$e")
+            task.error = e.toString()
             Data.Builder().putString(KEY_EXCEPTION, e.toString()).build()
         }
 

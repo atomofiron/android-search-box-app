@@ -33,6 +33,7 @@ object Const {
 
     const val VALUE_TOYBOX_ARM_32 = "toybox_arm_32"
     const val VALUE_TOYBOX_ARM_64 = "toybox_arm_64"
+    const val VALUE_TOYBOX_X86_64 = "toybox_x86_64"
     const val VALUE_TOYBOX_CUSTOM = "toybox_custom"
 
     const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "foreground_channel_id"
@@ -45,4 +46,5 @@ object Const {
 
     const val TOYBOX_32 = "/toybox32"
     const val TOYBOX_64 = "/toybox64"
+    const val TOYBOX_86_64 = "/toybox86_64"
 }
