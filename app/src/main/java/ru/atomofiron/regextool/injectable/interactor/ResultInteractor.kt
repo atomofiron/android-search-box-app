@@ -16,6 +16,8 @@ class ResultInteractor(
 
     fun stop(uuid: UUID) = resultService.stop(uuid)
 
+    fun dropTaskError(taskId: Long) = resultService.dropTaskError(taskId)
+
     fun copyToClipboard(finderResult: FinderResult) = resultService.copyToClipboard(finderResult)
 
     fun deleteItems(items: List<XFile>, uuid: UUID) {

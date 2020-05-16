@@ -29,6 +29,10 @@ class MutableFinderTask constructor(
                 other.results.size == results.size
     }
 
+    fun dropError() {
+        error = null
+    }
+
     override fun equals(other: Any?): Boolean = when (other) {
         !is MutableFinderTask -> false
         else -> other.id == id

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
+import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
 import ru.atomofiron.regextool.custom.view.BottomMenuBar
@@ -47,6 +48,15 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
 
     private val resultAdapter = ResultAdapter()
     private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
+    private val errorSnackbar: Snackbar by lazy(LazyThreadSafetyMode.NONE) {
+        Snackbar.make(thisView, "", Snackbar.LENGTH_INDEFINITE)
+                .setAnchorView(anchorView)
+                .setAction(R.string.dismiss) {
+                    errorSnackbar.dismiss()
+                    presenter.onDropTaskErrorClick()
+                }
+    }
+    private var snackbarError: String? = null
 
     @Inject
     override lateinit var presenter: ResultPresenter
@@ -126,6 +136,10 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         if (task.results.isNotEmpty()) {
             // fix first item offset
             resultAdapter.notifyItemChanged(0)
+        }
+
+        if (task.error != snackbarError) {
+            errorSnackbar.setText(task.error!!).show()
         }
     }
 

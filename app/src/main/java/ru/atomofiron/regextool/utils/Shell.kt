@@ -32,7 +32,9 @@ object Shell {
     const val FIND_EXEC_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -F -E \"%s\" {} \\;"
     const val FIND_EXEC_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -F -E \"%s\" {} \\;"
 
-    const val FIND = "{toybox} find %s -type f -maxdepth %d -exec ls -lAhLd \"{}\" \\;"
+    const val FIND_FD = "{toybox} find %s -maxdepth %d \\( -type f -o -type d \\)"
+    const val FIND_F = "{toybox} find %s -maxdepth %d -type f"
+
     const val FOR_LS = "for f in `ls -A \"%s\"`; do echo \$f; ls -lAh \"%s\$f\"; done"
     //for f in `ls -A "/sdcard/"`; do ls -ld "/sdcard/$f"; if [ -d /sdcard/$f ]; then ls -lAh "/sdcard/$f"; fi; done
 
@@ -90,9 +92,9 @@ object Shell {
 
         try {
             process = Runtime.getRuntime().exec(if (su) SU else SH)
-            inputStream = process.inputStream
+            inputStream = process.inputStream!!
             outputStream = process.outputStream
-            errorStream = process.errorStream
+            errorStream = process.errorStream!!
             val osw = outputStream.writer()
 
             val command = cmd.replace(TOYBOX, toyboxPath)

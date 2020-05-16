@@ -20,6 +20,8 @@ class ResultService(
 ) {
     fun stop(uuid: UUID) = workManager.cancelWorkById(uuid)
 
+    fun dropTaskError(taskId: Long) = finderStore.dropTaskError(taskId)
+
     fun copyToClipboard(finderResult: FinderResult) {
         val clip = ClipData.newPlainText(finderResult.name, finderResult.completedPath)
         clipboardManager.setPrimaryClip(clip)

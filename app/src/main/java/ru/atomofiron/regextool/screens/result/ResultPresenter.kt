@@ -104,6 +104,10 @@ class ResultPresenter(
             viewModel.alerts.invoke(resources.getString(R.string.no_activity))
         }
     }
+
+    fun onDropTaskErrorClick() {
+        interactor.dropTaskError(taskId)
+    }
 }
 
 /*

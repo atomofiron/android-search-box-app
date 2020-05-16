@@ -23,6 +23,11 @@ class FinderStore {
         notifications.setAndNotify(FinderTaskChange.Drop(item))
     }
 
+    fun dropTaskError(taskId: Long) {
+        val task = mutableTasks.find { it.id == taskId }
+        task?.dropError()
+    }
+
     fun notifyObservers() = notifications.setAndNotify(FinderTaskChange.Update(tasks))
 
     fun deleteResultFromTask(item: FinderResult, uuid: UUID) {

@@ -15,7 +15,6 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.android.ForegroundService
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.FinderStore
-import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.explorer.MutableXFile
@@ -87,8 +86,6 @@ class FinderWorker(
     @Inject
     lateinit var finderStore: FinderStore
     @Inject
-    lateinit var preferenceStore: PreferenceStore
-    @Inject
     lateinit var notificationManager: NotificationManager
 
     init {
@@ -127,46 +124,36 @@ class FinderWorker(
                 task.count++
             }
             if (!output.success) {
-                task.error = output.error
                 logE(output.error)
+                task.error = output.error
             }
         }
     }
 
-    private fun searchForName(where: List<MutableXFile>, depth: Int) {
+    private fun searchForName(where: List<MutableXFile>) {
         for (item in where) {
-            if (isStopped) {
-                return
+            val template = when {
+                excludeDirs -> Shell.FIND_F
+                else -> Shell.FIND_FD
             }
-            if (!item.isDirectory || !excludeDirs) {
+            val command = template.format(item, maxDepth)
+            val output = Shell.exec(command, useSu) { line ->
                 task.count++
                 if (useRegex) {
-                    val matcher = pattern.matcher(item.name)
+                    val matcher = pattern.matcher(line)
                     if (matcher.find()) {
-                        val result = FinderResult(item)
+                        val result = FinderResult(MutableXFile.byPath(line))
                         task.results.add(result)
                     }
-                } else if (item.name.contains(query, ignoreCase)) {
-                    val result = FinderResult(item)
+                } else if (line.contains(query, ignoreCase)) {
+                    val result = FinderResult(MutableXFile.byPath(line))
                     task.results.add(result)
                 }
             }
-        }
-        if (depth < maxDepth) {
-            for (item in where) {
-                if (item.isDirectory) {
-                    if (isStopped) {
-                        return
-                    }
-                    item.updateCache(useSu)
-                    val items = item.children
-                    if (items?.isNotEmpty() == true) {
-                        searchForName(items, depth.inc())
-                    }
-                }
+            if (!output.success) {
+                logE(output.error)
+                task.error = output.error
             }
-        } else {
-            logI("searchForName depth limit $depth")
         }
     }
 
@@ -212,7 +199,7 @@ class FinderWorker(
         val data = try {
             when {
                 forContent -> searchForContent(where)
-                else -> searchForName(where, depth = 0)
+                else -> searchForName(where)
             }
             Data.Builder().build()
         } catch (e: Exception) {
