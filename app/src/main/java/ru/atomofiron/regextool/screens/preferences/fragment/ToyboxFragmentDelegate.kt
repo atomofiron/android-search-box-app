@@ -4,10 +4,12 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.RadioButton
 import app.atomofiron.common.util.RadioGroupImpl
+import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 import ru.atomofiron.regextool.model.preference.ToyboxVariant
 import ru.atomofiron.regextool.utils.Const
+import ru.atomofiron.regextool.utils.Shell
 
 class ToyboxFragmentDelegate(
         toyboxVariant: ToyboxVariant,
@@ -25,6 +27,8 @@ class ToyboxFragmentDelegate(
     private var variant = toyboxVariant.variant
     private var customPath = toyboxVariant.customPath
 
+    private lateinit var snackbar: Snackbar
+
     init {
         radioGroup.onCheckedChangeListener = ::onPathChanged
     }
@@ -38,6 +42,16 @@ class ToyboxFragmentDelegate(
         }
         customPath = etPath.text.toString()
         output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, customPath))
+        test()
+    }
+
+    private fun test() {
+        val output = Shell.exec(Shell.VERSION, su = false)
+        when {
+            !output.error.isBlank() -> snackbar.setText(output.error)
+            else -> snackbar.setText(output.output.trim())
+        }
+        snackbar.show()
     }
 
     public override fun show() = super.show()
@@ -65,5 +79,9 @@ class ToyboxFragmentDelegate(
             }
             false
         }
+
+        snackbar = Snackbar
+                .make(bottomSheetView, "", 1000)
+                .setAnchorView(bottomSheetView.anchorView)
     }
 }

@@ -39,6 +39,7 @@ open class BottomSheetView @JvmOverloads constructor(
 
     private val overlay: View = findViewById(R.id.bottom_sheet_overlay)
     private val viewContainer: ViewGroup = findViewById(R.id.bottom_container)
+    val anchorView: View get() = viewContainer
     lateinit var contentView: View private set
     var contentViewId: Int = UNDEFINED; private set
 

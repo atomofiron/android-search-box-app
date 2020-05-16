@@ -16,6 +16,7 @@ object Shell {
     lateinit var toyboxPath: String
 
     const val TOUCH = "{toybox} touch \"%s\""
+    const val VERSION = "{toybox} --version"
     const val MKDIR = "{toybox} mkdir \"%s\""
     const val RM_RF = "{toybox} rm -rf \"%s\""
     const val MV = "{toybox} mv \"%s\" \"%s\""
