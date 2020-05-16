@@ -44,6 +44,8 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
 
     override fun onCreate() {
         setContentView(R.layout.activity_root)
+        val displayMetrics = resources.displayMetrics
+        root.view.maxWidth = Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels)
 
         joystick.view.setOnClickListener { onEscClick() }
 

@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.result
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -107,6 +108,11 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         viewModel.enableOptions.observe(this, Observer(::enableOptions))
         viewModel.showOptions.observeData(this, ::showOptions)
         viewModel.notifyTaskHasChanged.observeEvent(this, resultAdapter::notifyDataSetChanged)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        resultAdapter.notifyItemChanged(0)
     }
 
     private fun onTaskChange(task: FinderTask) {

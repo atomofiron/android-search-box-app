@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.explorer
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -121,6 +122,11 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
             true
         }
         else -> false
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        explorerAdapter.notifyItemChanged(0)
     }
 
     private fun showPermissionRequiredWarning() {
