@@ -36,6 +36,8 @@ class FinderPresenter(
             progressItems.add(FinderStateItem.ProgressItem(it))
         }
 
+        val excludeDirs = preferenceStore.excludeDirs.value
+        viewModel.setExcludeDirsValue(excludeDirs)
         viewModel.updateState()
         onSubscribeData()
     }

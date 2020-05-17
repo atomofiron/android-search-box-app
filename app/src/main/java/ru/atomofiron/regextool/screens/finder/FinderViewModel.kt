@@ -90,6 +90,10 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>() {
         updateState()
     }
 
+    fun setExcludeDirsValue(excludeDirs: Boolean) {
+        configItem = configItem?.copy(excludeDirs = excludeDirs)
+    }
+
     fun switchConfigItemVisibility() {
         when (val configItem = configItem) {
             null -> {

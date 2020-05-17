@@ -24,4 +24,8 @@
     <declare-styleable name="AutoHideKeyboardField">
         <attr name="hideKeyboardOnFocusLost" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="BallsView">
+        <attr name="oneBall" format="boolean" />
+    </declare-styleable>
 </resources>

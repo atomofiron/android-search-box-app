@@ -15,6 +15,7 @@ import ru.atomofiron.regextool.screens.finder.FinderDependencies
 import ru.atomofiron.regextool.screens.preferences.PreferenceDependencies
 import ru.atomofiron.regextool.screens.result.ResultDependencies
 import ru.atomofiron.regextool.screens.root.RootDependencies
+import ru.atomofiron.regextool.screens.viewer.TextViewerDependencies
 import ru.atomofiron.regextool.work.FinderWorker
 import ru.atomofiron.regextool.work.NotificationWorker
 import javax.inject.Singleton
@@ -27,6 +28,7 @@ import javax.inject.Singleton
 ])
 @Singleton
 interface AppComponent :
+        TextViewerDependencies,
         ResultDependencies,
         FinderDependencies,
         ExplorerDependencies,

@@ -51,7 +51,6 @@ class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextW
 
     private fun testSearchWithRegexp(item: FinderStateItem.TestItem) {
         var flags = 0
-        flags = flags or Pattern.MULTILINE
         if (item.ignoreCase) {
             flags = flags or Pattern.CASE_INSENSITIVE
         }

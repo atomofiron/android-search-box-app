@@ -23,21 +23,18 @@
         android:singleLine="true"
         />
     <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/config_cb_multiline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/multiline"
-        android:ellipsize="none"
-        android:singleLine="true"
-        android:enabled="false"
-        android:visibility="gone"
-        />
-    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/config_cb_in_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/search_in_the_content"
         android:ellipsize="none"
+        android:singleLine="true"
+        />
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/config_cb_exclude_dirs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/pref_exclude_dirs"
         android:singleLine="true"
         />
     <com.google.android.material.checkbox.MaterialCheckBox

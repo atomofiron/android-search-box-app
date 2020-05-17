@@ -7,6 +7,7 @@ import app.atomofiron.common.util.property.WeakProperty
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.screens.finder.FinderFragment
 import ru.atomofiron.regextool.screens.preferences.PreferenceFragment
+import ru.atomofiron.regextool.screens.viewer.TextViewerFragment
 import ru.atomofiron.regextool.utils.Util
 
 class ExplorerRouter(property: WeakProperty<ExplorerFragment>) : BaseRouter(property) {
@@ -21,7 +22,7 @@ class ExplorerRouter(property: WeakProperty<ExplorerFragment>) : BaseRouter(prop
 
     fun showFile(item: XFile, textFormats: Array<String>) {
         if (Util.isTextFile(item.completedPath, textFormats)) {
-            // todo open file
+            startScreen(TextViewerFragment())
         } else {
             activity {
                 val intent = Intent(Intent.ACTION_VIEW)

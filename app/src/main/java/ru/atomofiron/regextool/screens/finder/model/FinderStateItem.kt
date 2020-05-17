@@ -20,16 +20,15 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         : FinderStateItem(CHARACTERS_ID, R.layout.item_characters)
 
     data class ConfigItem(val ignoreCase: Boolean = false,
-                     val useRegex: Boolean = false,
-                     val searchInContent: Boolean = false,
-                     val multilineSearch: Boolean = false,
-                     val replaceEnabled: Boolean = false)
+                          val useRegex: Boolean = false,
+                          val searchInContent: Boolean = false,
+                          val excludeDirs: Boolean = false,
+                          val replaceEnabled: Boolean = false)
         : FinderStateItem(CONFIG_ID, R.layout.item_config)
 
     data class TestItem(val searchQuery: String = "",
-                   val useRegex: Boolean = false,
-                   val ignoreCase: Boolean = true,
-                   val multilineSearch: Boolean = false)
+                        val useRegex: Boolean = false,
+                        val ignoreCase: Boolean = true)
         : FinderStateItem(TEST_ID, R.layout.item_test)
 
     class ProgressItem(val finderTask: FinderTask)

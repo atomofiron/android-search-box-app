@@ -18,7 +18,7 @@ class FinderAdapterPresenterDelegate(
         val ignoreCaseChanged = oldItem.ignoreCase xor item.ignoreCase
         val replaceEnabledChanged = oldItem.replaceEnabled xor item.replaceEnabled
         val useRegexpChanged = oldItem.useRegex xor item.useRegex
-        val multilineSearchChanged = oldItem.multilineSearch xor item.multilineSearch
+        val multilineSearchChanged = oldItem.excludeDirs xor item.excludeDirs
 
         if (replaceEnabledChanged || useRegexpChanged) {
             viewModel.updateUniqueItem(FinderStateItem.SearchAndReplaceItem::class) {
@@ -30,9 +30,7 @@ class FinderAdapterPresenterDelegate(
 
         if (ignoreCaseChanged || useRegexpChanged || multilineSearchChanged) {
             viewModel.updateUniqueItem(FinderStateItem.TestItem::class) {
-                it.copy(useRegex = item.useRegex,
-                        ignoreCase = item.ignoreCase,
-                        multilineSearch = item.multilineSearch)
+                it.copy(useRegex = item.useRegex, ignoreCase = item.ignoreCase)
             }
         }
     }
@@ -69,6 +67,6 @@ class FinderAdapterPresenterDelegate(
         }
         viewModel.history.invoke(value)
         val config = viewModel.configItem ?: viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
-        interactor.search(value, viewModel.targets, config.ignoreCase, config.useRegex, config.multilineSearch, config.searchInContent)
+        interactor.search(value, viewModel.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
     }
 }

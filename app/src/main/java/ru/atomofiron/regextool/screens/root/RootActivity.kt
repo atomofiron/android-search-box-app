@@ -104,6 +104,4 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
             requestedOrientation = orientation.constant
         }
     }
-
-    // todo onNewIntent ACTION_SHOW_RESULT, ACTION_SHOW_RESULTS
 }

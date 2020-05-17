@@ -14,10 +14,10 @@ class ConfigHolder(
     private val cbCaseSense = itemView.findViewById<CheckBox>(R.id.config_cb_case_sense)
     private val cbUseRegexp = itemView.findViewById<CheckBox>(R.id.config_cb_use_regexp)
     private val cpSearchInContent = itemView.findViewById<CheckBox>(R.id.config_cb_in_content)
-    private val cbMultiline = itemView.findViewById<CheckBox>(R.id.config_cb_multiline)
+    private val cbExcludeDirs = itemView.findViewById<CheckBox>(R.id.config_cb_exclude_dirs)
     private val cbReplace = itemView.findViewById<CheckBox>(R.id.config_cb_replace)
 
-    private var checkMultilineWhenEnabled = false
+    private var checkExcludeDirsWhenEnabled = false
 
     init {
         itemView.isFocusable = false
@@ -29,26 +29,26 @@ class ConfigHolder(
         }
         cbUseRegexp.setOnClickListener { view ->
             view as CompoundButton
-            when {
-                view.isChecked && checkMultilineWhenEnabled -> {
-                    checkMultilineWhenEnabled = false
-                    update { it.copy(useRegex = view.isChecked, multilineSearch = true) }
-                }
-                !view.isChecked -> {
-                    checkMultilineWhenEnabled = cbMultiline.isChecked
-                    update { it.copy(useRegex = view.isChecked, multilineSearch = false) }
-                }
-                view.isChecked -> update { it.copy(useRegex = view.isChecked) }
-            }
-            cbMultiline.isEnabled = view.isChecked
+            update { it.copy(useRegex = view.isChecked) }
         }
         cpSearchInContent.setOnClickListener { view ->
             view as CompoundButton
-            update { it.copy(searchInContent = view.isChecked) }
+            val excludeDirs = when {
+                !view.isChecked && checkExcludeDirsWhenEnabled -> true
+                view.isChecked -> false
+                else -> cbExcludeDirs.isChecked
+            }
+            checkExcludeDirsWhenEnabled = when {
+                !view.isChecked && checkExcludeDirsWhenEnabled -> false
+                view.isChecked -> cbExcludeDirs.isChecked
+                else -> checkExcludeDirsWhenEnabled
+            }
+            update { it.copy(searchInContent = view.isChecked, excludeDirs = excludeDirs) }
+            cbExcludeDirs.isEnabled = !view.isChecked
         }
-        cbMultiline.setOnClickListener { view ->
+        cbExcludeDirs.setOnClickListener { view ->
             view as CompoundButton
-            update { it.copy(multilineSearch = view.isChecked) }
+            update { it.copy(excludeDirs = view.isChecked) }
         }
         cbReplace.setOnClickListener { view ->
             view as CompoundButton
@@ -61,8 +61,13 @@ class ConfigHolder(
         cbCaseSense.isChecked = !item.ignoreCase
         cbUseRegexp.isChecked = item.useRegex
         cpSearchInContent.isChecked = item.searchInContent
-        cbMultiline.isChecked = item.multilineSearch
+        cbExcludeDirs.isChecked = item.excludeDirs
         cbReplace.isChecked = item.replaceEnabled
+
+        if (item.searchInContent && item.excludeDirs) {
+            checkExcludeDirsWhenEnabled = true
+            cbExcludeDirs.isChecked = false
+        }
     }
 
     private fun update(block: (FinderStateItem.ConfigItem) -> FinderStateItem.ConfigItem) {
