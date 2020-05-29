@@ -8,11 +8,11 @@ import java.io.OutputStream
 
 
 object Shell {
-    const val SU = "su"
-    const val SH = "sh"
-    const val SUCCESS = 0
+    private const val SU = "su"
+    private const val SH = "sh"
+    private const val SUCCESS = 0
 
-    private val TOYBOX = "{toybox}"
+    private const val TOYBOX = "{toybox}"
     lateinit var toyboxPath: String
 
     const val TOUCH = "{toybox} touch \"%s\""
@@ -36,17 +36,12 @@ object Shell {
     const val FIND_FD = "{toybox} find %s -maxdepth %d \\( -type f -o -type d \\)"
     const val FIND_F = "{toybox} find %s -maxdepth %d -type f"
 
-    const val FOR_LS = "for f in `ls -A \"%s\"`; do echo \$f; ls -lAh \"%s\$f\"; done"
-    //for f in `ls -A "/sdcard/"`; do ls -ld "/sdcard/$f"; if [ -d /sdcard/$f ]; then ls -lAh "/sdcard/$f"; fi; done
+    const val HEAD_TAIL = "{toybox} head -n %d | {toybox} tail -n %d"
 
     // %s grep -c -s -F -i -e "%s" "%s"
 
     // FASTEST toybox find %s -name "*.%s" -type f | xargs grep "%s" -c
     // find . -maxdepth 2 -exec grep -H -c -s "k[e]" {} \;
-
-    /*
-    toybox find /storage/emulated/0/0/ -type f -maxdepth 1024 \( -name '*.txt' -o -name '*.java' -o -name '*.xml' -o -name '*.html' -o -name '*.htm' -o -name '*.smali' -o -name '*.log' -o -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.kt' -o -name '*.md' -o -name '*.mkd' -o -name '*.markdown' -o -name '*.cm' -o -name '*.ad' -o -name '*.adoc' \) | xargs toybox grep -c -s -F -e "kva"
-     */
 
     fun checkSu(): Output {
         var success: Boolean
