@@ -5,6 +5,8 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
+import ru.atomofiron.regextool.injectable.service.TextViewerService
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import javax.inject.Scope
 
@@ -35,9 +37,13 @@ class TextViewerModule {
 
     @Provides
     @TextViewerScope
-    fun presenter(viewModel: TextViewerViewModel, router: TextViewerRouter, preferenceStore: PreferenceStore): TextViewerPresenter {
-        return TextViewerPresenter(viewModel, router, preferenceStore)
+    fun presenter(viewModel: TextViewerViewModel, router: TextViewerRouter, textViewerService: TextViewerInteractor, preferenceStore: PreferenceStore): TextViewerPresenter {
+        return TextViewerPresenter(viewModel, router, textViewerService, preferenceStore)
     }
+
+    @Provides
+    @TextViewerScope
+    fun textViewerInteractor(textViewerService: TextViewerService): TextViewerInteractor = TextViewerInteractor(textViewerService)
 
     @Provides
     @TextViewerScope

@@ -22,7 +22,8 @@ class ExplorerRouter(property: WeakProperty<ExplorerFragment>) : BaseRouter(prop
 
     fun showFile(item: XFile, textFormats: Array<String>) {
         if (Util.isTextFile(item.completedPath, textFormats)) {
-            startScreen(TextViewerFragment())
+            val fragment = TextViewerFragment.openTextFile(item.completedPath)
+            startScreen(fragment)
         } else {
             activity {
                 val intent = Intent(Intent.ACTION_VIEW)

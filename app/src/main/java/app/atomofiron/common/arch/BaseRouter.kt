@@ -59,17 +59,13 @@ abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
 
     open fun onAttachChildFragment(childFragment: Fragment) = Unit
 
-    protected fun startScreen(vararg fragmentsArg: Fragment,
-                              addToBackStack: Boolean = true,
-                              runOnCommit: (() -> Unit)? = null) {
+    protected fun startScreen(fragment: Fragment, addToBackStack: Boolean = true, runOnCommit: (() -> Unit)? = null) {
         if (isDestroyed || isBlocked) {
             return
         }
         manager {
-            val filteredFragments = filterAddedFragments(this, fragmentsArg)
-            if (filteredFragments.isEmpty()) {
-                return@manager
-            }
+            val validFragment = filterAddedFragments(this, fragment)
+            validFragment ?: return@manager
             isBlocked = true
             val current = fragments.find { !it.isHidden }
             beginTransaction().apply {
@@ -77,10 +73,7 @@ abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
                 if (current != null) {
                     hide(current)
                 }
-                filteredFragments.forEach {
-                    val tag = it.javaClass.simpleName
-                    add(fragmentContainerId, it, tag)
-                }
+                add(fragmentContainerId, validFragment, validFragment.javaClass.simpleName)
                 if (addToBackStack) {
                     addToBackStack(null)
                     OneTimeBackStackListener(this@manager) {
@@ -98,15 +91,13 @@ abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
         }
     }
 
-    private fun filterAddedFragments(manager: FragmentManager, fragments: Array<out Fragment>): List<Fragment> {
-        return fragments.filter {
-            val tag = it.javaClass.simpleName
-            when (manager.fragments.find { added -> added.tag == tag } == null) {
-                true -> true
-                else -> {
-                    logI("Fragment with tag = $tag is already added!")
-                    false
-                }
+    private fun filterAddedFragments(manager: FragmentManager, fragment: Fragment): Fragment? {
+        val tag = fragment.javaClass.simpleName
+        return when (manager.fragments.find { added -> added.tag == tag } == null) {
+            true -> fragment
+            else -> {
+                logI("Fragment with tag = $tag is already added!")
+                null
             }
         }
     }

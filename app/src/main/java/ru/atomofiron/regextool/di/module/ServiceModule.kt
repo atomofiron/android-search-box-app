@@ -10,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import ru.atomofiron.regextool.injectable.service.FinderService
 import ru.atomofiron.regextool.injectable.service.ResultService
+import ru.atomofiron.regextool.injectable.service.TextViewerService
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.FinderStore
@@ -48,4 +49,8 @@ open class ServiceModule {
             preferenceStore: PreferenceStore,
             clipboardManager: ClipboardManager
     ): ResultService = ResultService(workManager, resultStore , finderStore, preferenceStore, clipboardManager)
+
+    @Provides
+    @Singleton
+    fun textViewerService(): TextViewerService = TextViewerService()
 }
