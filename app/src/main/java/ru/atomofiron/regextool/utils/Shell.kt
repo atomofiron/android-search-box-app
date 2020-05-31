@@ -21,6 +21,7 @@ object Shell {
     const val RM_RF = "{toybox} rm -rf \"%s\""
     const val MV = "{toybox} mv \"%s\" \"%s\""
     const val LS_LAHL = "{toybox} ls -lAhL \"%s\""
+    const val LS_LAHLD = "{toybox} ls -lAhLd \"%s\""
 
     // grep: No 'E' with 'F'
     const val FIND_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -E \"%s\""

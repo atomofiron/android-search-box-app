@@ -25,10 +25,10 @@ class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
 
     override fun onBind(item: FinderResultItem, position: Int) {
         item as FinderResultItem.Item
-        val data = item.item
-        binder.onBind(data)
-        tvCounter.setVisibility(data.count > 0)
-        tvCounter.text = data.count.toString()
+        val xFile = item.item
+        binder.onBind(xFile)
+        tvCounter.setVisibility(xFile.count > 0)
+        tvCounter.text = xFile.count.toString()
     }
 
     fun bindComposition(composition: ExplorerItemComposition) = binder.bindComposition(composition)

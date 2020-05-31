@@ -3,7 +3,6 @@ package ru.atomofiron.regextool.injectable.interactor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.injectable.service.TextViewerService
-import ru.atomofiron.regextool.logD
 
 class TextViewerInteractor(
         private val scope: CoroutineScope,

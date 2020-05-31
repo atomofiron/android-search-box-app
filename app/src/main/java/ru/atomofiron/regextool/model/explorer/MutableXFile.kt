@@ -178,7 +178,7 @@ class MutableXFile : XFile {
     }
 
     /** @return error or null */
-    fun updateCache(su: Boolean): String? {
+    fun updateCache(su: Boolean, completely: Boolean = false): String? {
         dropCaching = false
         when {
             !exists -> return "Item does not exist. $this"
@@ -187,6 +187,13 @@ class MutableXFile : XFile {
             isCacheActual -> return "Cache is actual. $this"
         }
         return when {
+            completely -> {
+                var error = cacheAsFile(su)
+                if (error == null && isDirectory) {
+                    error = cacheAsDir(su)
+                }
+                error
+            }
             isDirectory -> cacheAsDir(su)
             else -> cacheAsFile(su)
         }
@@ -304,18 +311,10 @@ class MutableXFile : XFile {
 
     private fun cacheAsFile(su: Boolean): String? {
         isCaching = true
-        val output = Shell.exec(Shell.LS_LAHL.format(completedPath), su)
+        val output = Shell.exec(Shell.LS_LAHLD.format(completedPath), su)
         val line = output.output.replace("\n", "")
         if (output.success && line.isNotEmpty()) {
-            val parts = line.split(spaces, 8)
-            access = parts[0]
-            owner = parts[2]
-            group = parts[3]
-            size = parts[4]
-            date = parts[5]
-            time = parts[6]
-            isDirectory = access[0] == DIR_CHAR
-            isFile = !isDirectory && access[0] == FILE_CHAR
+            updateAttributes(line)
         }
         isCaching = false
         isCacheActual = true
@@ -327,6 +326,18 @@ class MutableXFile : XFile {
                 output.error
             }
         }
+    }
+
+    private fun updateAttributes(line: String) {
+        val parts = line.split(spaces, 8)
+        access = parts[0]
+        owner = parts[2]
+        group = parts[3]
+        size = parts[4]
+        date = parts[5]
+        time = parts[6]
+        isDirectory = access[0] == DIR_CHAR
+        isFile = !isDirectory && access[0] == FILE_CHAR
     }
 
     private fun parseDoesExists(error: String) {
