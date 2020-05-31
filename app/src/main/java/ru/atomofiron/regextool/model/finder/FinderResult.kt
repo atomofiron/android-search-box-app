@@ -25,6 +25,7 @@ class FinderResult(
     override val time = xFile.time
     override val name = xFile.name
     override val suffix = xFile.suffix
+    override val isCached: Boolean get() = xFile.isCached
 
     override var isChecked: Boolean = false
     override val isDeleting: Boolean get() = xFile.isDeleting
@@ -32,7 +33,6 @@ class FinderResult(
     // does not matter
     override val children: List<XFile>? = null
     override val isOpened: Boolean = false
-    override val isCached: Boolean = true
     override val isCacheActual: Boolean = true
     override val exists: Boolean = true
     override val completedParentPath: String = "/"
@@ -48,6 +48,8 @@ class FinderResult(
     fun willBeDeleted() = xFile.willBeDeleted()
 
     fun delete(su: Boolean) = xFile.delete(su)
+
+    fun updateCache(useSu: Boolean) = xFile.updateCache(useSu)
 
     override fun equals(other: Any?): Boolean {
         return when (other) {

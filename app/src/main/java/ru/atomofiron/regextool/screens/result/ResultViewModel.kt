@@ -11,6 +11,7 @@ import ru.atomofiron.regextool.model.finder.FinderTask
 import ru.atomofiron.regextool.model.finder.FinderTaskChange
 import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
+import ru.atomofiron.regextool.screens.result.adapter.FinderResultItem
 
 class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
     val checked = ArrayList<XFile>()
@@ -23,6 +24,7 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
     val enableOptions = LateinitLiveData(false)
     val showOptions = SingleLiveEvent<ExplorerItemOptions>()
     val notifyTaskHasChanged = SingleLiveEvent<Unit>()
+    val notifyItemChanged = SingleLiveEvent<FinderResultItem.Item>()
 
     override val component = DaggerResultComponent
             .builder()

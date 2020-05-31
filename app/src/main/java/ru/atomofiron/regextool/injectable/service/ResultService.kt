@@ -3,16 +3,19 @@ package ru.atomofiron.regextool.injectable.service
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.work.WorkManager
+import ru.atomofiron.regextool.injectable.channel.ResultChannel
 import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.injectable.store.ResultStore
 import ru.atomofiron.regextool.logI
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderResult
+import ru.atomofiron.regextool.screens.result.adapter.FinderResultItem
 import java.util.*
 
 class ResultService(
         private val workManager: WorkManager,
+        private val resultChannel: ResultChannel,
         private val resultStore: ResultStore,
         private val finderStore: FinderStore,
         private val preferenceStore: PreferenceStore,
@@ -40,6 +43,14 @@ class ResultService(
                 null -> finderStore.deleteResultFromTask(it, uuid)
                 else -> logI("deleteItems error != null $it\n$error")
             }
+        }
+    }
+
+    fun cacheFile(item: FinderResultItem.Item) {
+        val useSu = preferenceStore.useSu.value
+        if (!item.item.isCached) {
+            item.item.updateCache(useSu)
+            resultChannel.notifyItemChanged.setAndNotify(item)
         }
     }
 }

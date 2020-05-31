@@ -10,6 +10,14 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 
+fun View.setVisible(visible: Boolean, invisibleMode: Int = View.GONE) = when {
+    visible && visibility == View.VISIBLE -> Unit
+    visible -> visibility = View.VISIBLE
+    !visible && visibility == invisibleMode -> Unit
+    !visible -> visibility = invisibleMode
+    else -> Unit
+}
+
 fun View.showKeyboard() {
     this.requestFocus()
     val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

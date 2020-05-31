@@ -5,6 +5,10 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
 import ru.atomofiron.regextool.injectable.service.TextViewerService
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
@@ -37,17 +41,42 @@ class TextViewerModule {
 
     @Provides
     @TextViewerScope
-    fun presenter(viewModel: TextViewerViewModel, router: TextViewerRouter, textViewerService: TextViewerInteractor, preferenceStore: PreferenceStore): TextViewerPresenter {
-        return TextViewerPresenter(viewModel, router, textViewerService, preferenceStore)
+    fun presenter(
+            viewModel: TextViewerViewModel,
+            router: TextViewerRouter,
+            textViewerInteractor: TextViewerInteractor,
+            textViewerChannel: TextViewerChannel
+    ): TextViewerPresenter {
+        return TextViewerPresenter(viewModel, router, textViewerInteractor, textViewerChannel)
     }
 
     @Provides
     @TextViewerScope
-    fun textViewerInteractor(textViewerService: TextViewerService): TextViewerInteractor = TextViewerInteractor(textViewerService)
+    fun textViewerService(
+            textViewerChannel: TextViewerChannel,
+            preferenceStore: PreferenceStore
+    ): TextViewerService = TextViewerService(textViewerChannel, preferenceStore)
+
+    @Provides
+    @TextViewerScope
+    fun textViewerInteractor(
+            scope: CoroutineScope,
+            textViewerService: TextViewerService
+    ): TextViewerInteractor = TextViewerInteractor(scope, textViewerService)
+
+    @Provides
+    @TextViewerScope
+    fun textViewerChannel(): TextViewerChannel = TextViewerChannel()
 
     @Provides
     @TextViewerScope
     fun router(activity: WeakProperty<TextViewerFragment>): TextViewerRouter = TextViewerRouter(activity)
+
+    @Provides
+    @TextViewerScope
+    fun scope(): CoroutineScope {
+        return CoroutineScope(Job() + Dispatchers.Main.immediate)
+    }
 }
 
 interface TextViewerDependencies {

@@ -8,6 +8,7 @@ import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import ru.atomofiron.regextool.injectable.channel.ResultChannel
 import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
 import ru.atomofiron.regextool.injectable.service.ResultService
 import ru.atomofiron.regextool.injectable.store.FinderStore
@@ -52,16 +53,17 @@ class ResultModule {
             preferenceStore: PreferenceStore,
             interactor: ResultInteractor,
             router: ResultRouter,
+            resultChannel: ResultChannel,
             itemActionDelegate: ResultItemActionDelegate,
             menuListenerDelegate: BottomSheetMenuListenerDelegate
     ): ResultPresenter {
-        return ResultPresenter(viewModel, scope, resultStore, finderStore, preferenceStore, interactor, router, itemActionDelegate, menuListenerDelegate)
+        return ResultPresenter(viewModel, scope, resultStore, finderStore, preferenceStore, interactor, router, resultChannel, itemActionDelegate, menuListenerDelegate)
     }
 
     @Provides
     @ResultScope
-    fun resultItemActionDelegate(viewModel: ResultViewModel): ResultItemActionDelegate {
-        return ResultItemActionDelegate(viewModel)
+    fun resultItemActionDelegate(viewModel: ResultViewModel, interactor: ResultInteractor): ResultItemActionDelegate {
+        return ResultItemActionDelegate(viewModel, interactor)
     }
 
     @Provides
@@ -92,4 +94,5 @@ interface ResultDependencies {
     fun preferenceStore(): PreferenceStore
     fun resultService(): ResultService
     fun resultStore(): ResultStore
+    fun resultChannel(): ResultChannel
 }

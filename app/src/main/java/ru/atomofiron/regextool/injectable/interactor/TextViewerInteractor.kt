@@ -1,10 +1,23 @@
 package ru.atomofiron.regextool.injectable.interactor
 
-import ru.atomofiron.regextool.injectable.service.FinderService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.injectable.service.TextViewerService
-import ru.atomofiron.regextool.model.explorer.XFile
-import ru.atomofiron.regextool.model.finder.FinderTask
-import java.util.*
+import ru.atomofiron.regextool.logD
 
-class TextViewerInteractor(private val textViewerService: TextViewerService) {
+class TextViewerInteractor(
+        private val scope: CoroutineScope,
+        private val textViewerService: TextViewerService
+) {
+    fun loadFile(path: String) {
+        scope.launch {
+            textViewerService.loadFile(path)
+        }
+    }
+
+    fun onLineVisible(index: Int) {
+        scope.launch {
+            textViewerService.onLineVisible(index)
+        }
+    }
 }

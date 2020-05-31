@@ -8,9 +8,9 @@ import android.content.res.AssetManager
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
+import ru.atomofiron.regextool.injectable.channel.ResultChannel
 import ru.atomofiron.regextool.injectable.service.FinderService
 import ru.atomofiron.regextool.injectable.service.ResultService
-import ru.atomofiron.regextool.injectable.service.TextViewerService
 import ru.atomofiron.regextool.injectable.service.explorer.ExplorerService
 import ru.atomofiron.regextool.injectable.store.ExplorerStore
 import ru.atomofiron.regextool.injectable.store.FinderStore
@@ -44,13 +44,10 @@ open class ServiceModule {
     @Singleton
     fun resultService(
             workManager: WorkManager,
+            resultChannel: ResultChannel,
             resultStore: ResultStore,
             finderStore: FinderStore,
             preferenceStore: PreferenceStore,
             clipboardManager: ClipboardManager
-    ): ResultService = ResultService(workManager, resultStore , finderStore, preferenceStore, clipboardManager)
-
-    @Provides
-    @Singleton
-    fun textViewerService(): TextViewerService = TextViewerService()
+    ): ResultService = ResultService(workManager, resultChannel, resultStore , finderStore, preferenceStore, clipboardManager)
 }

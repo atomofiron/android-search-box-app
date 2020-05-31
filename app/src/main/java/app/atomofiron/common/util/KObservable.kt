@@ -24,7 +24,7 @@ open class KObservable<T : Any?>(private val single: Boolean = false) {
 
     private fun addObserver(observer: (T) -> Unit) {
         observers.addElement(observer)
-        if (!single) {
+        if (!single && nullableValue != null) {
             observer.invoke(value)
         }
     }

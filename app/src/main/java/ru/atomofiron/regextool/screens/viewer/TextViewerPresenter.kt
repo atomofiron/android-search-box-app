@@ -3,16 +3,30 @@ package ru.atomofiron.regextool.screens.viewer
 import android.content.Context
 import android.content.Intent
 import app.atomofiron.common.arch.BasePresenter
+import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
-import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 
 class TextViewerPresenter(
         viewModel: TextViewerViewModel,
         router: TextViewerRouter,
-        private val textViewerService: TextViewerInteractor,
-        private val preferenceStore: PreferenceStore
-) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router) {
-    override fun onCreate(context: Context, intent: Intent) {
+        private val interactor: TextViewerInteractor,
+        textViewerChannel: TextViewerChannel
+) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router), TextViewerAdapter.TextViewerListener {
 
+    init {
+        textViewerChannel.textFromFile.addObserver(onClearedCallback) {
+            viewModel.textLines.postValue(it)
+        }
+        textViewerChannel.textFromFileLoading.addObserver(onClearedCallback) {
+            viewModel.loading.postValue(it)
+        }
     }
+
+    override fun onCreate(context: Context, intent: Intent) {
+        val path = intent.getStringExtra(TextViewerFragment.KEY_PATH)!!
+        interactor.loadFile(path)
+    }
+
+    override fun onLineVisible(index: Int) = interactor.onLineVisible(index)
 }

@@ -1,15 +1,24 @@
 package ru.atomofiron.regextool.screens.viewer
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.fragment.BaseFragment
+import app.atomofiron.common.util.Knife
+import app.atomofiron.common.util.setVisible
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.BallsView
+import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter>() {
     companion object {
-        private const val KEY_PATH = "KEY_PATH"
+        const val KEY_PATH = "KEY_PATH"
 
         fun openTextFile(path: String): Fragment {
             val bundle = Bundle()
@@ -22,8 +31,41 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
     override val viewModelClass: KClass<TextViewerViewModel> = TextViewerViewModel::class
     override val layoutId: Int = R.layout.fragment_text_viewer
 
+    private val rvTextViewer = Knife<RecyclerView>(this, R.id.text_viewer_rv)
+    private val bvLoading = Knife<BallsView>(this, R.id.text_viewer_bv)
+
     @Inject
     override lateinit var presenter: TextViewerPresenter
 
+    private val viewerAdapter = TextViewerAdapter()
+
     override fun inject() = viewModel.inject(this)
+
+    override fun onCreate() {
+        super.onCreate()
+
+        viewerAdapter.textViewerListener = presenter
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        rvTextViewer {
+            layoutManager = LinearLayoutManager(context)
+            adapter = viewerAdapter
+        }
+    }
+
+    override fun onSubscribeData(owner: LifecycleOwner) {
+        super.onSubscribeData(owner)
+
+        viewModel.textLines.observe(owner, Observer(viewerAdapter::setItems))
+        viewModel.loading.observe(owner, Observer(::setLoading))
+    }
+
+    private fun setLoading(visible: Boolean) {
+        bvLoading {
+            setVisible(visible)
+        }
+    }
 }

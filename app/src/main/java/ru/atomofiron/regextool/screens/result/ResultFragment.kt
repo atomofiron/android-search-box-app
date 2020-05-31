@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.result
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
@@ -108,6 +109,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         viewModel.enableOptions.observe(this, Observer(::enableOptions))
         viewModel.showOptions.observeData(this, ::showOptions)
         viewModel.notifyTaskHasChanged.observeEvent(this, resultAdapter::notifyDataSetChanged)
+        viewModel.notifyItemChanged.observeData(this, resultAdapter::setItem) // todo works poor
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -115,6 +117,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         resultAdapter.notifyItemChanged(0)
     }
 
+    @SuppressLint("RestrictedApi")
     private fun onTaskChange(task: FinderTask) {
         bView {
             setVisibility(task.inProgress)
@@ -153,6 +156,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         resultAdapter.setComposition(composition)
     }
 
+    @SuppressLint("RestrictedApi")
     private fun enableOptions(enable: Boolean) {
         mbmBar {
             val item = menu.findItem(R.id.menu_options)

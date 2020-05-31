@@ -89,6 +89,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
             holder.setOnItemActionListener(itemActionListener)
             super.onBindViewHolder(holder, position.dec())
             holder.bindComposition(composition)
+            itemActionListener.onItemVisible(items[position.dec()] as FinderResultItem.Item)
         }
     }
 }

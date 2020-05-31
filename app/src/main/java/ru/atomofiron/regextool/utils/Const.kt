@@ -47,4 +47,7 @@ object Const {
     const val TOYBOX_32 = "/toybox32"
     const val TOYBOX_64 = "/toybox64"
     const val TOYBOX_86_64 = "/toybox86_64"
+
+    const val TEXT_FILE_PAGINATION_STEP = 128
+    const val TEXT_FILE_PAGINATION_STEP_OFFSET = 16
 }

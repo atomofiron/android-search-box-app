@@ -8,11 +8,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet_menu.BottomSheetMenuListener
+import ru.atomofiron.regextool.injectable.channel.ResultChannel
 import ru.atomofiron.regextool.injectable.interactor.ResultInteractor
 import ru.atomofiron.regextool.injectable.store.FinderStore
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.injectable.store.ResultStore
-import ru.atomofiron.regextool.logI
+import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.model.other.ExplorerItemOptions
 import ru.atomofiron.regextool.screens.result.ResultFragment.Companion.KEY_TASK_ID
 import ru.atomofiron.regextool.screens.result.adapter.ResultItemActionListener
@@ -30,6 +31,7 @@ class ResultPresenter(
         private val preferenceStore: PreferenceStore,
         private val interactor: ResultInteractor,
         router: ResultRouter,
+        private val resultChannel: ResultChannel,
         itemActionDelegate: ResultItemActionDelegate,
         menuListenerDelegate: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
@@ -49,7 +51,7 @@ class ResultPresenter(
             taskId = intent.getLongExtra(KEY_TASK_ID, UNDEFINED)
             val task = finderStore.tasks.find { it.id == taskId }
             if (task == null) {
-                logI("No task found!")
+                logE("No task found!")
                 router.popScreen()
             } else {
                 viewModel.task.value = task.copyTask()
@@ -72,6 +74,11 @@ class ResultPresenter(
         resultStore.itemsShellBeDeleted.addObserver(onClearedCallback) {
             scope.launch {
                 viewModel.updateState()
+            }
+        }
+        resultChannel.notifyItemChanged.addObserver(onClearedCallback) {
+            scope.launch {
+                viewModel.notifyItemChanged.invoke(it)
             }
         }
     }

@@ -109,7 +109,7 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         notifyItemRangeInserted(index, items.size)
     }
 
-    fun setItem(index: Int, item: D) {
+    fun setItemAt(index: Int, item: D) {
         items[index] = item
         notifyItemChanged(index)
     }
