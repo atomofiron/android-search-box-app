@@ -84,7 +84,7 @@ class BallsView @JvmOverloads constructor(
         var size = Math.min(width, height).toFloat()
         size -= size % 2
         val radius = size / 6
-        val radiusRotate = size / 3
+        val radiusRotate = size / (if (oneBall) 4 else 3)
         val radiusMask = size / 2
         val sin = Math.sin(radians) * radiusRotate
         val cos = Math.cos(radians) * radiusRotate
