@@ -25,6 +25,10 @@ class TextViewerPresenter(
 
     override fun onCreate(context: Context, intent: Intent) {
         val path = intent.getStringExtra(TextViewerFragment.KEY_PATH)!!
+        val query = intent.getStringExtra(TextViewerFragment.KEY_QUERY)
+        val useRegex = intent.getStringExtra(TextViewerFragment.KEY_USE_SU)
+        val ignoreCase = intent.getStringExtra(TextViewerFragment.KEY_IGNORE_CASE)
+        // todo next
         interactor.loadFile(path)
     }
 

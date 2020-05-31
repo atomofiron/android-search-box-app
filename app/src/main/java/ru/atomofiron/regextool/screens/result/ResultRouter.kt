@@ -3,6 +3,8 @@ package ru.atomofiron.regextool.screens.result
 import android.content.Intent
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.util.property.WeakProperty
+import ru.atomofiron.regextool.model.finder.FinderQueryParams
+import ru.atomofiron.regextool.screens.viewer.TextViewerFragment
 import ru.atomofiron.regextool.utils.Const
 
 class ResultRouter(property: WeakProperty<ResultFragment>) : BaseRouter(property) {
@@ -22,4 +24,6 @@ class ResultRouter(property: WeakProperty<ResultFragment>) : BaseRouter(property
         }
         return success
     }
+
+    fun openFile(path: String, params: FinderQueryParams?) = startScreen(TextViewerFragment.openTextFile(path, params))
 }

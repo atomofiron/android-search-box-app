@@ -12,6 +12,7 @@ import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.setVisible
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
+import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -19,10 +20,16 @@ import kotlin.reflect.KClass
 class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter>() {
     companion object {
         const val KEY_PATH = "KEY_PATH"
+        const val KEY_QUERY = "KEY_QUERY"
+        const val KEY_USE_SU = "KEY_USE_SU"
+        const val KEY_IGNORE_CASE = "KEY_IGNORE_CASE"
 
-        fun openTextFile(path: String): Fragment {
+        fun openTextFile(path: String, params: FinderQueryParams? = null): Fragment {
             val bundle = Bundle()
             bundle.putString(KEY_PATH, path)
+            bundle.putString(KEY_QUERY, params?.query)
+            bundle.putBoolean(KEY_USE_SU, params?.useRegex ?: false)
+            bundle.putBoolean(KEY_IGNORE_CASE, params?.ignoreCase ?: false)
             val fragment = TextViewerFragment()
             fragment.arguments = bundle
             return fragment

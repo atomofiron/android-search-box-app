@@ -62,8 +62,13 @@ class ResultModule {
 
     @Provides
     @ResultScope
-    fun resultItemActionDelegate(viewModel: ResultViewModel, interactor: ResultInteractor): ResultItemActionDelegate {
-        return ResultItemActionDelegate(viewModel, interactor)
+    fun resultItemActionDelegate(
+            viewModel: ResultViewModel,
+            router: ResultRouter,
+            interactor: ResultInteractor,
+            preferenceStore: PreferenceStore
+    ): ResultItemActionDelegate {
+        return ResultItemActionDelegate(viewModel, router, interactor, preferenceStore)
     }
 
     @Provides
