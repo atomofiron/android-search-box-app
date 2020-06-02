@@ -105,10 +105,10 @@ class FinderWorker(
                 return
             }
             val template = when {
-                useRegex && ignoreCase -> Shell.FIND_GREP_I
-                useRegex && !ignoreCase -> Shell.FIND_GREP
-                !useRegex && ignoreCase -> Shell.FIND_GREP_IF
-                !useRegex && !ignoreCase -> Shell.FIND_GREP_F
+                useRegex && ignoreCase -> Shell[Shell.FIND_GREP_I]
+                useRegex && !ignoreCase -> Shell[Shell.FIND_GREP]
+                !useRegex && ignoreCase -> Shell[Shell.FIND_GREP_IF]
+                !useRegex && !ignoreCase -> Shell[Shell.FIND_GREP_F]
                 else -> throw Exception()
             }
             val nameArgs = textFormats.joinToString(" -o ") { "-name '*.$it'" }
@@ -135,8 +135,8 @@ class FinderWorker(
     private fun searchForName(where: List<MutableXFile>) {
         for (item in where) {
             val template = when {
-                excludeDirs -> Shell.FIND_F
-                else -> Shell.FIND_FD
+                excludeDirs -> Shell[Shell.FIND_F]
+                else -> Shell[Shell.FIND_FD]
             }
             val command = template.format(item, maxDepth)
             val output = Shell.exec(command, useSu, processObserver, forNameLineListener)

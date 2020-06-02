@@ -26,23 +26,30 @@ object Shell {
     // grep: No 'E' with 'F'
     const val FIND_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -E \"%s\""
     const val FIND_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -E \"%s\""
-    const val FIND_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -F -e \"%s\""
-    const val FIND_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -F -e \"%s\""
+    const val FIND_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -e \"%s\""
+    const val FIND_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -e \"%s\""
 
     const val FIND_EXEC_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
     const val FIND_EXEC_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -F -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -F -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
 
     const val FIND_FD = "{toybox} find %s -maxdepth %d \\( -type f -o -type d \\)"
     const val FIND_F = "{toybox} find %s -maxdepth %d -type f"
 
     const val HEAD_TAIL = "{toybox} head %s -n %d | {toybox} tail -n %d"
 
+    const val GREP = "{toybox} grep -bons -e %s %s"
+    const val GREP_I = "{toybox} grep -bons -ie %s %s"
+    const val GREP_E = "{toybox} grep -bons -E %s %s"
+    const val GREP_IE = "{toybox} grep -bons -iE %s %s"
+
     // %s grep -c -s -F -i -e "%s" "%s"
 
     // FASTEST toybox find %s -name "*.%s" -type f | xargs grep "%s" -c
     // find . -maxdepth 2 -exec grep -H -c -s "k[e]" {} \;
+
+    operator fun get(template: String): String = template.replace(TOYBOX, toyboxPath)
 
     fun checkSu(): Output {
         var success: Boolean
@@ -76,8 +83,8 @@ object Shell {
         return Output(success, "", error)
     }
 
-    fun exec(cmd: String, su: Boolean, processObserver: ((Process) -> Unit)? = null, forEachLine: ((String) -> Unit)? = null): Output {
-        logI("exec $cmd")
+    fun exec(command: String, su: Boolean, processObserver: ((Process) -> Unit)? = null, forEachLine: ((String) -> Unit)? = null): Output {
+        logI("exec $command")
         var success: Boolean
         var output = ""
         var error = ""
@@ -95,7 +102,6 @@ object Shell {
             errorStream = process.errorStream!!
             val osw = outputStream.writer()
 
-            val command = cmd.replace(TOYBOX, toyboxPath)
             osw.write(String.format("%s\n", command))
             osw.flush()
             osw.close()
@@ -109,7 +115,7 @@ object Shell {
             error = errorStream.reader().readText()
             success = process.waitFor() == SUCCESS
 
-            logI("waitFor ${System.currentTimeMillis() - tik} $cmd")
+            logI("waitFor ${System.currentTimeMillis() - tik} $command")
         } catch (e: Exception) {
             logE(e.toString())
             output = e.toString()

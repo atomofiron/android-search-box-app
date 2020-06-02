@@ -4,6 +4,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
 
@@ -22,9 +23,12 @@ class TextViewerService(
         textViewerChannel.textFromFile.setAndNotify(lines)
     }
 
-    suspend fun loadFile(path: String) {
+    suspend fun loadFile(path: String, params: FinderQueryParams?) {
         this.path = path
-        onLineVisible(0)
+        when (params) {
+            null -> onLineVisible(0)
+            else -> searchInFile(params)
+        }
     }
 
     suspend fun onLineVisible(index: Int) {
@@ -46,10 +50,24 @@ class TextViewerService(
 
     private fun loadNext() {
         val offset = lines.size
-        val cmd = Shell.HEAD_TAIL.format(path, offset + Const.TEXT_FILE_PAGINATION_STEP, Const.TEXT_FILE_PAGINATION_STEP)
+        val cmd = Shell[Shell.HEAD_TAIL].format(path, offset + Const.TEXT_FILE_PAGINATION_STEP, Const.TEXT_FILE_PAGINATION_STEP)
         Shell.exec(cmd, useSu) { line ->
             lines.add(line)
         }
         textViewerChannel.textFromFile.setAndNotify(ArrayList(lines))
+    }
+
+    private suspend fun searchInFile(params: FinderQueryParams) {
+        val template = when {
+            params.useRegex && params.ignoreCase -> Shell.GREP_IE
+            params.useRegex -> Shell.GREP_E
+            params.ignoreCase -> Shell.GREP_I
+            else -> Shell.GREP
+        }
+        val cmd = Shell[template].format(params.query, path)
+        Shell.exec(cmd, useSu) {
+            // todo next "line:byte:match"
+        }
+        onLineVisible(0)
     }
 }

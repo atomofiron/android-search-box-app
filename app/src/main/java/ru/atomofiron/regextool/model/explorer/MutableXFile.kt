@@ -207,7 +207,7 @@ class MutableXFile : XFile {
         isDeleting = true
         sleep(1000)
         var error: String? = null
-        val output = Shell.exec(Shell.RM_RF.format(completedPath), su)
+        val output = Shell.exec(Shell[Shell.RM_RF].format(completedPath), su)
         when (output.success) {
             true -> exists = false
             else -> error = output.error
@@ -224,7 +224,7 @@ class MutableXFile : XFile {
         item.isOpened = isOpened
         item.isCacheActual = isCacheActual
         item.isChecked = isChecked
-        val output = Shell.exec(Shell.MV.format(completedPath, item.completedPath), su)
+        val output = Shell.exec(Shell[Shell.MV].format(completedPath, item.completedPath), su)
         return when {
             output.success -> {
                 // do not update dir's files
@@ -237,8 +237,8 @@ class MutableXFile : XFile {
 
     fun create(su: Boolean): String? {
         val output = when {
-            isDirectory -> Shell.exec(Shell.MKDIR.format(completedPath), su)
-            else -> Shell.exec(Shell.TOUCH.format(completedPath), su)
+            isDirectory -> Shell.exec(Shell[Shell.MKDIR].format(completedPath), su)
+            else -> Shell.exec(Shell[Shell.TOUCH].format(completedPath), su)
         }
         return if (output.success) null else output.error
     }
@@ -246,7 +246,7 @@ class MutableXFile : XFile {
     private fun cacheAsDir(su: Boolean): String? {
         isCaching = true
         sleep((Math.random() * 300).toLong())
-        val output = Shell.exec(Shell.LS_LAHL.format(completedPath), su)
+        val output = Shell.exec(Shell[Shell.LS_LAHL].format(completedPath), su)
         return when {
             dropCaching -> {
                 isCaching = false
@@ -311,7 +311,7 @@ class MutableXFile : XFile {
 
     private fun cacheAsFile(su: Boolean): String? {
         isCaching = true
-        val output = Shell.exec(Shell.LS_LAHLD.format(completedPath), su)
+        val output = Shell.exec(Shell[Shell.LS_LAHLD].format(completedPath), su)
         val line = output.output.replace("\n", "")
         if (output.success && line.isNotEmpty()) {
             updateAttributes(line)

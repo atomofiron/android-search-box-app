@@ -46,7 +46,7 @@ class ToyboxFragmentDelegate(
     }
 
     private fun test() {
-        val output = Shell.exec(Shell.VERSION, su = false)
+        val output = Shell.exec(Shell[Shell.VERSION], su = false)
         when {
             !output.error.isBlank() -> snackbar.setText(output.error)
             else -> snackbar.setText(output.output.trim())
