@@ -9,25 +9,17 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
 
 class ItemBackgroundDecorator(val atFirst: Boolean = true) : RecyclerView.ItemDecoration() {
-    companion object {
-        private const val UNDEFINED = -1
-    }
-    private val background = ShapeDrawable()
-    private var color = UNDEFINED
+    private lateinit var background: ShapeDrawable
     var enabled = false
-
-    init {
-        background.paint.color = Color.BLUE
-    }
 
     override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(canvas, parent, state)
 
         if (!enabled) return
 
-        if (color == UNDEFINED) {
-            color = ContextCompat.getColor(parent.context, R.color.item_explorer_background)
-            background.paint.color = color
+        if (!::background.isInitialized) {
+            background = ShapeDrawable()
+            background.paint.color = ContextCompat.getColor(parent.context, R.color.item_explorer_background)
         }
 
         parent.getSortedChildren().forEach {

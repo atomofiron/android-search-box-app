@@ -32,7 +32,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="@string/search_in_the_content">
+        app:title="@string/pref_search_in_the_content">
 
         <ru.atomofiron.regextool.custom.preference.TextFieldPreference
             app:title="@string/pref_text_formats"

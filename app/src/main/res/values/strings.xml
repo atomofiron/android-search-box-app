@@ -14,6 +14,7 @@
     <string name="results">Your search returned %d results</string>
     <string name="find">Find</string>
     <string name="search_in_the_content">Search in the files content</string>
+    <string name="pref_search_in_the_content">@string/search_in_the_content</string>
     <string name="regex">Use regexp</string>
     <string name="multiline">\'Multiline\' flag</string>
     <string name="bad_ex">Incorrect regular expression</string>

@@ -29,4 +29,9 @@ interface XFile {
     val isChecked: Boolean
     val isDeleting: Boolean
     val mHashCode: Int
+
+    fun hasChild(item: XFile?): Boolean {
+        item ?: return false
+        return root == item.root && completedPath == item.completedParentPath
+    }
 }
