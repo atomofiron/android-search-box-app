@@ -6,8 +6,9 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.TextView
 import app.atomofiron.common.recycler.GeneralAdapter
+import ru.atomofiron.regextool.model.textviewer.TextLine
 
-class TextViewerAdapter : GeneralAdapter<TextViewerHolder, String>() {
+class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
     lateinit var textViewerListener: TextViewerListener
 
     init {

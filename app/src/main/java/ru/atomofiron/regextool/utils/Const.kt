@@ -3,6 +3,7 @@ package ru.atomofiron.regextool.utils
 object Const {
     const val ROOT = "/"
     const val SLASH = "/"
+    const val SPACE = ' '
     const val SDCARD = "/sdcard/"
     const val ANDROID_DIR = "/Android/"
     const val PREF_STORAGE_PATH = "pref_storage_path"

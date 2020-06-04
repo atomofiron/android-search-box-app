@@ -3,6 +3,7 @@ package ru.atomofiron.regextool.screens.viewer
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.model.textviewer.TextLine
 
 class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragment>() {
     override val component = DaggerTextViewerComponent.builder()
@@ -17,6 +18,6 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         component.inject(view)
     }
 
-    val textLines = LateinitLiveData<List<String>>()
+    val textLines = LateinitLiveData<List<TextLine>>()
     val loading = LateinitLiveData<Boolean>()
 }

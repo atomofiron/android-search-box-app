@@ -38,6 +38,7 @@ object Shell {
     const val FIND_F = "{toybox} find %s -maxdepth %d -type f"
 
     const val HEAD_TAIL = "{toybox} head %s -n %d | {toybox} tail -n %d"
+    const val LS_LOG = "{toybox} ls -log %s"
 
     const val GREP = "{toybox} grep -bons -e %s %s"
     const val GREP_I = "{toybox} grep -bons -ie %s %s"
