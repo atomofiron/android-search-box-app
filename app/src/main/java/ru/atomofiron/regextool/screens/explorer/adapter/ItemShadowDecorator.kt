@@ -33,8 +33,8 @@ class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDec
     private lateinit var background: ShapeDrawable
     private var headerItem: XFile? = null
 
-    private var backgroundClear = 0
     private var backgroundGrey = 0
+    private var backgroundColor = 0
 
     fun onHeaderChanged(item: XFile?) {
         headerPosition = UNDEFINED
@@ -62,8 +62,8 @@ class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDec
     private fun drawHeader(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
         if (!::background.isInitialized) {
             background = ShapeDrawable()
+            backgroundColor = parent.context.findColorByAttr(R.attr.colorBackground)
             backgroundGrey = ContextCompat.getColor(parent.context, R.color.item_explorer_background)
-            backgroundClear = parent.context.findColorByAttr(R.attr.colorBackground)
         }
 
         when {
@@ -80,12 +80,17 @@ class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDec
         headerView.top = top
         headerView.bottom = top + headerView.measuredHeight
 
-        background.paint.color = when {
-            headerPosition % 2 == 0 -> backgroundGrey
-            else -> backgroundClear
-        }
+        drawHeaderBackground(canvas)
+    }
+
+    private fun drawHeaderBackground(canvas: Canvas) {
         background.setBounds(headerView.left, headerView.top, headerView.right, headerView.bottom)
+        background.paint.color = backgroundColor
         background.draw(canvas)
+        if (headerPosition % 2 == 0) {
+            background.paint.color = backgroundGrey
+            background.draw(canvas)
+        }
     }
 
     private fun drawShadows(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {

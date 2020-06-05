@@ -12,6 +12,8 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
+import ru.atomofiron.regextool.utils.Const
+import ru.atomofiron.regextool.utils.Tool
 import ru.atomofiron.regextool.utils.setVisibility
 
 class ExplorerItemBinder(private val itemView: View) {
@@ -72,6 +74,13 @@ class ExplorerItemBinder(private val itemView: View) {
         val states = arrayOf(stateEnabledChecked, stateDisabledChecked, stateEnabledUnchecked, stateDisabledUnchecked)
         val colors = intArrayOf(colorEnabledChecked, colorDisabledChecked, Color.TRANSPARENT, colorDisabledUnchecked)
         transparentBoxTintList = ColorStateList(states, colors)
+
+        val externalStoragePath = Tool.getExternalStorageDirectory(itemView.context)
+        if (externalStoragePath != null) {
+            rootsAliases[externalStoragePath] = R.string.internal_storage
+        }
+        rootsAliases[Const.SDCARD] = R.string.internal_storage
+        rootsAliases[Const.ROOT] = R.string.root
     }
 
     fun onBind(item: XFile) {
