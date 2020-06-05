@@ -78,7 +78,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     fun setHeaderView(view: ExplorerHeaderView) {
         headerView = view
-        shadowDecorator.headerView = view
+        shadowDecorator.setHeaderView(view)
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
@@ -139,6 +139,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         holder.bindComposition(composition)
         itemActionListener.onItemVisible(holder.item)
         if (position == headerItemPosition) {
+            headerView.setComposition(composition)
             headerView.onBind(items[position])
         }
     }

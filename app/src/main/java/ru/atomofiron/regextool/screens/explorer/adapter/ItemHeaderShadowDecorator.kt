@@ -21,12 +21,11 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         private const val SHADOW_ALPHA = 100
     }
 
-    private var initiate = false
     private lateinit var topShadow: Drawable
     private lateinit var bottomShadow: Drawable
     private var shadowSize = 0
 
-    lateinit var headerView: ExplorerHeaderView
+    private lateinit var headerView: ExplorerHeaderView
     private val headerHeight: Int get() = headerView.measuredHeight
 
     private var headerItemPosition: Int = UNDEFINED
@@ -41,6 +40,14 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         headerItemPosition = position
     }
 
+    fun setHeaderView(headerView: ExplorerHeaderView) {
+        this.headerView = headerView
+        initShadow(headerView.context)
+        background = ShapeDrawable()
+        backgroundColor = headerView.context.findColorByAttr(R.attr.colorBackground)
+        backgroundGrey = ContextCompat.getColor(headerView.context, R.color.item_explorer_background)
+    }
+
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         initShadow(parent.context)
         val headerItem = headerItem ?: return
@@ -52,12 +59,6 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     }
 
     private fun bindHeader(headerItem: XFile, children: Map<Int, View>, parent: RecyclerView) {
-        if (!::background.isInitialized) {
-            background = ShapeDrawable()
-            backgroundColor = parent.context.findColorByAttr(R.attr.colorBackground)
-            backgroundGrey = ContextCompat.getColor(parent.context, R.color.item_explorer_background)
-        }
-
         when {
             headerItemPosition == UNDEFINED -> return
             headerView.visibility == View.GONE -> return
@@ -153,11 +154,6 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     }
 
     private fun initShadow(context: Context) {
-        if (initiate) {
-            return
-        }
-        initiate = true
-
         topShadow = ContextCompat.getDrawable(context, R.drawable.item_explorer_opened_dir_shadow_top)!!
         bottomShadow = ContextCompat.getDrawable(context, R.drawable.item_explorer_opened_dir_shadow_bottom)!!
         topShadow.alpha = SHADOW_ALPHA
