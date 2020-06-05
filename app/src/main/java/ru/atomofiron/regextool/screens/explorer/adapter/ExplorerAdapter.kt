@@ -7,13 +7,16 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.ExplorerHeaderView
+import ru.atomofiron.regextool.logD
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
+import java.text.FieldPosition
 
 class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     companion object {
+        private const val UNDEFINED = -1
         private const val VIEW_TYPE = 1
         private const val VIEW_POOL_MAX_COUNT = 30
     }
@@ -25,6 +28,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     private var currentDir: XFile? = null
     private lateinit var composition: ExplorerItemComposition
     private lateinit var headerView: ExplorerHeaderView
+    private var headerItemPosition: Int = UNDEFINED
 
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
@@ -69,8 +73,9 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     fun setCurrentDir(dir: XFile?) {
         currentDir = dir
+        headerItemPosition = items.indexOf(dir)
         headerView.onBind(dir)
-        shadowDecorator.onHeaderChanged(dir)
+        shadowDecorator.onHeaderChanged(dir, headerItemPosition)
     }
 
     fun setHeaderView(view: ExplorerHeaderView) {
@@ -135,6 +140,9 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         super.onBindViewHolder(holder, position)
         holder.bindComposition(composition)
         itemActionListener.onItemVisible(holder.item)
+        if (position == headerItemPosition) {
+            headerView.onBind(items[position])
+        }
     }
 
     override fun onViewDetachedFromWindow(holder: ExplorerHolder) {

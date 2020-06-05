@@ -36,18 +36,9 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     private var backgroundGrey = 0
     private var backgroundColor = 0
 
-    fun onHeaderChanged(item: XFile?) {
-        headerPosition = UNDEFINED
+    fun onHeaderChanged(item: XFile?, position: Int) {
         headerItem = item
-        item ?: return
-
-        headerPosition = items.indexOf(item)
-        val wasGone = headerView.visibility == View.GONE
-        headerView.onBind()
-        if (wasGone) {
-            // чтобы не мелкало сверху экрна
-            headerView.visibility = View.INVISIBLE
-        }
+        headerPosition = position
     }
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -56,10 +47,10 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
 
         val children = parent.getSortedChildren()
         drawShadows(children, canvas, parent)
-        drawHeader(children, canvas, parent)
+        bindHeader(children, canvas, parent)
     }
 
-    private fun drawHeader(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
+    private fun bindHeader(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
         if (!::background.isInitialized) {
             background = ShapeDrawable()
             backgroundColor = parent.context.findColorByAttr(R.attr.colorBackground)
@@ -69,7 +60,6 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         when {
             headerPosition == UNDEFINED -> return
             headerView.visibility == View.GONE -> return
-            headerView.visibility == View.INVISIBLE -> headerView.visibility = View.VISIBLE
         }
 
         val firstVisiblePosition = children.keys.first()
@@ -82,6 +72,11 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         headerView.bottom = top + headerView.measuredHeight
 
         drawHeaderBackground(canvas)
+
+        if (headerView.visibility == View.INVISIBLE) {
+            // чтобы не мелькало сверху экрна
+            headerView.visibility = View.VISIBLE
+        }
     }
 
     private fun drawHeaderBackground(canvas: Canvas) {
