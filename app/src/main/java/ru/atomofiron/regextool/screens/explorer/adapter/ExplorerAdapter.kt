@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.ExplorerHeaderView
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSeparationDecorator.Separation
-import ru.atomofiron.regextool.screens.explorer.adapter.ItemShadowDecorator.Shadow
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
 
 class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
@@ -24,6 +24,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     private var currentDir: XFile? = null
     private lateinit var composition: ExplorerItemComposition
+    private lateinit var headerView: ExplorerHeaderView
 
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
@@ -37,31 +38,13 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
             nextPosition >= items.size -> Divider.NO // не делаем отступ у последнего элемента
             item.isRoot && items[nextPosition].isRoot -> Divider.NO
             nextPosition == items.size && item.completedParentPath == currentDir?.completedPath -> Divider.SMALL
-            nextPosition != items.size && item.completedParentPath != items[nextPosition].completedParentPath ||
-                    item.root != items[nextPosition].root -> Divider.SMALL
+            item.root != items[nextPosition].root -> Divider.SMALL
+            nextPosition != items.size && item.completedParentPath != items[nextPosition].completedParentPath -> Divider.SMALL
             else -> Divider.NO
         }
     }
 
-    private val shadowDecorator = ItemShadowDecorator { position ->
-        val currentDir = currentDir ?: return@ItemShadowDecorator Shadow.NO
-        val item = items[position]
-        val isCurrent = item.completedPath == currentDir.completedPath
-        val isCurrentChild = item.completedParentPath == currentDir.completedPath
-        val nextPosition = position.inc()
-
-        when {
-            !isCurrent && !isCurrentChild -> Shadow.NO
-            item.isOpened && item.children.isNullOrEmpty() -> Shadow.DOUBLE
-            item.isOpened -> Shadow.TOP
-            nextPosition == items.size -> Shadow.NO // не рисуем под последним элементом
-            item.isRoot && items[nextPosition].isRoot -> Shadow.NO
-            item.completedParentPath != items[nextPosition].completedParentPath ||
-                    item.root != items[nextPosition].root -> Shadow.BOTTOM
-            isCurrentChild -> Shadow.TOP_SLIDE
-            else -> Shadow.NO
-        }
-    }
+    private val shadowDecorator = ItemShadowDecorator(items)
 
     private val separationDecorator = ItemSeparationDecorator { position ->
         val currentDir = currentDir ?: return@ItemSeparationDecorator Separation.NO
@@ -78,18 +61,26 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
             nextPosition == items.size -> Separation.NO // не рисуем под последним элементом
             item.isRoot && items[nextPosition].isRoot -> Separation.NO
             currentDir.isRoot -> Separation.NO
-            item.completedParentPath != items[nextPosition].completedParentPath ||
-                    item.root != items[nextPosition].root -> Separation.BOTTOM
+            item.root != items[nextPosition].root -> Separation.BOTTOM
+            item.completedParentPath != items[nextPosition].completedParentPath -> Separation.BOTTOM
             else -> Separation.NO
         }
     }
 
     fun setCurrentDir(dir: XFile?) {
         currentDir = dir
+        headerView.onBind(dir)
+        shadowDecorator.onHeaderChanged(dir)
+    }
+
+    fun setHeaderView(view: ExplorerHeaderView) {
+        headerView = view
+        shadowDecorator.headerView = view
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
         this.composition = composition
+        headerView.setComposition(composition)
         backgroundDecorator.enabled = composition.visibleBg
         notifyItemRangeChanged(0, items.size)
     }

@@ -17,6 +17,12 @@
             android:paddingBottom="@dimen/joystick_size"
             android:overScrollMode="never"
             />
+        <ru.atomofiron.regextool.custom.view.ExplorerHeaderView
+            android:id="@+id/explorer_ehv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            />
         <ru.atomofiron.regextool.custom.view.FixedBottomAppBar
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottom_tab_bar_height"

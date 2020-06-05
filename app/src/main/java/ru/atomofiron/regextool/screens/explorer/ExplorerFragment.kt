@@ -13,6 +13,7 @@ import app.atomofiron.common.util.Knife
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BottomMenuBar
+import ru.atomofiron.regextool.custom.view.ExplorerHeaderView
 import ru.atomofiron.regextool.custom.view.VerticalDockView
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
@@ -30,6 +31,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.explorer_bom)
     private val dockView = Knife<VerticalDockView>(this, R.id.explorer_dv)
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.explorer_bsv)
+    private val headerView = Knife<ExplorerHeaderView>(this, R.id.explorer_ehv)
     private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
     private lateinit var renameDelegate: RenameDelegate
     private lateinit var createDelegate: CreateDelegate
@@ -79,10 +81,13 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
         renameDelegate.bottomSheetView = bottomSheetView.view
         createDelegate.bottomSheetView = bottomSheetView.view
         bottomItemMenu.bottomSheetView = bottomSheetView.view
+
+        explorerAdapter.setHeaderView(headerView.view)
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
         viewModel.items.observe(owner, Observer(explorerAdapter::setItems))
+        viewModel.itemComposition.observe(owner, Observer(explorerAdapter::setComposition))
         viewModel.current.observe(owner, Observer(explorerAdapter::setCurrentDir))
         viewModel.notifyUpdate.observeData(owner, explorerAdapter::setItem)
         viewModel.notifyRemove.observeData(owner, explorerAdapter::removeItem)
@@ -96,7 +101,6 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
         viewModel.showOptions.observeData(owner, bottomItemMenu::show)
         viewModel.showRename.observeData(owner, renameDelegate::show)
         viewModel.showCreate.observeData(owner, createDelegate::show)
-        viewModel.itemComposition.observe(owner, Observer(explorerAdapter::setComposition))
         viewModel.scrollToCurrentDir.observeEvent(owner, explorerAdapter::scrollToCurrentDir)
     }
 

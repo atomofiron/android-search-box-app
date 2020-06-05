@@ -4,18 +4,21 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.ShapeDrawable
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.view.ExplorerHeaderView
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
+import kotlin.math.max
 
-class ItemShadowDecorator(private val shadowType: (position: Int) -> Shadow) : RecyclerView.ItemDecoration() {
+class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDecoration() {
     companion object {
+        private const val UNDEFINED = -1
         private const val SHADOW_ALPHA = 100
-    }
-    enum class Shadow {
-        NO, TOP, TOP_SLIDE, BOTTOM, DOUBLE
     }
 
     private var initiate = false
@@ -23,52 +26,122 @@ class ItemShadowDecorator(private val shadowType: (position: Int) -> Shadow) : R
     private lateinit var bottomShadow: Drawable
     private var shadowSize = 0
 
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        initShadow(parent.context)
+    lateinit var headerView: ExplorerHeaderView
+    private val topLimit: Int get() = headerView.measuredHeight
 
-        parent.getSortedChildren().forEach {
-            val child = it.value
-            val position = parent.getChildLayoutPosition(child)
+    private var headerPosition: Int = UNDEFINED
+    private lateinit var background: ShapeDrawable
+    private var headerItem: XFile? = null
 
-            val shadowType = shadowType(position)
-            if (shadowType == Shadow.NO) {
-                return@forEach
-            }
+    private var backgroundClear = 0
+    private var backgroundGrey = 0
 
-            val dynamicOffset = child.bottom * shadowSize / parent.measuredHeight
+    fun onHeaderChanged(item: XFile?) {
+        headerPosition = UNDEFINED
+        headerItem = item
+        item ?: return
 
-            when (shadowType) {
-                Shadow.TOP -> drawTop(canvas, child, dynamicOffset, pinned = true)
-                Shadow.BOTTOM -> {
-                    if (child.top <= 0) {
-                        drawSlide(canvas, child, pinned = false)
-                    }
-                    val rect = Rect()
-                    parent.getDecoratedBoundsWithMargins(child, rect)
-                    drawBottom(canvas, rect)
-                }
-                Shadow.DOUBLE -> {
-                    val rect = Rect()
-                    parent.getDecoratedBoundsWithMargins(child, rect)
-                    drawTop(canvas, child, dynamicOffset, pinned = false)
-                    drawBottom(canvas, rect)
-                }
-                Shadow.TOP_SLIDE -> {
-                    if (child.top <= 0) {
-                        drawSlide(canvas, child, pinned = true)
-                    }
-                }
-                Shadow.NO -> Unit
-            }
+        headerPosition = items.indexOf(item)
+        val wasGone = headerView.visibility == View.GONE
+        headerView.onBind()
+        if (wasGone) {
+            // чтобы не мелкало сверху экрна
+            headerView.visibility = View.INVISIBLE
         }
     }
 
-    private fun drawTop(canvas: Canvas, child: View, dynamicOffset: Int, pinned: Boolean) {
-        val bottom = when {
-            pinned -> Math.max(0, child.bottom)
-            else -> child.bottom
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        initShadow(parent.context)
+        headerItem ?: return
+
+        val children = parent.getSortedChildren()
+        drawShadows(children, canvas, parent)
+        drawHeader(children, canvas, parent)
+    }
+
+    private fun drawHeader(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
+        if (!::background.isInitialized) {
+            background = ShapeDrawable()
+            backgroundGrey = ContextCompat.getColor(parent.context, R.color.item_explorer_background)
+            backgroundClear = parent.context.findColorByAttr(R.attr.colorBackground)
         }
-        topShadow.setBounds(child.left, bottom, child.right, bottom + shadowSize + dynamicOffset)
+
+        when {
+            headerPosition == UNDEFINED -> return
+            headerView.visibility == View.GONE -> return
+            headerView.visibility == View.INVISIBLE -> headerView.visibility = View.VISIBLE
+        }
+
+        val headerItemView = children[headerPosition]
+        var top = max(0, headerItemView?.top ?: 0)
+        if (top > 0) {
+            top = -headerView.measuredHeight
+        }
+        headerView.top = top
+        headerView.bottom = top + headerView.measuredHeight
+
+        background.paint.color = when {
+            headerPosition % 2 == 0 -> backgroundGrey
+            else -> backgroundClear
+        }
+        background.setBounds(headerView.left, headerView.top, headerView.right, headerView.bottom)
+        background.draw(canvas)
+    }
+
+    private fun drawShadows(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
+        val currentDir = headerItem ?: return
+        var currentIndex = UNDEFINED
+        var lastIndex = UNDEFINED
+        children.forEach {
+            val index = it.key
+            val item = items[index]
+            if (item == currentDir) {
+                currentIndex = index
+            }
+            val nextItem = if (items.size == index.inc()) null else items[index.inc()]
+            if (nextItem != null && !currentDir.hasChild(nextItem) && currentDir.hasChild(item)) {
+                lastIndex = index
+            }
+        }
+
+        var child = children[lastIndex]
+        if (child != null) {
+            drawForLastChild(canvas, child, parent)
+        }
+
+        child = children[currentIndex]
+        val currentIsNullOrEmpty = currentDir.children.isNullOrEmpty()
+        if (child != null) {
+            val dynamicOffset = child.bottom * shadowSize / parent.measuredHeight
+            when {
+                currentIsNullOrEmpty -> drawForEmpty(canvas, child, parent, dynamicOffset, drawTop = child.top >= 0)
+                child.top >= 0 -> drawTop(canvas, child, dynamicOffset)
+            }
+        }
+
+        child = children[currentIndex] ?: children.iterator().next().value
+        if (currentIndex == -1 || child.top < 0) {
+            drawTopPinned(canvas, child)
+        }
+    }
+
+    private fun drawForLastChild(canvas: Canvas, child: View, parent: RecyclerView) {
+        val rect = Rect()
+        parent.getDecoratedBoundsWithMargins(child, rect)
+        drawBottom(canvas, rect)
+    }
+
+    private fun drawForEmpty(canvas: Canvas, child: View, parent: RecyclerView, dynamicOffset: Int, drawTop: Boolean) {
+        val rect = Rect()
+        parent.getDecoratedBoundsWithMargins(child, rect)
+        drawBottom(canvas, rect)
+        if (drawTop) {
+            drawTop(canvas, child, dynamicOffset)
+        }
+    }
+
+    private fun drawTop(canvas: Canvas, child: View, dynamicOffset: Int) {
+        topShadow.setBounds(child.left, child.bottom, child.right, child.bottom + shadowSize + dynamicOffset)
         topShadow.draw(canvas)
     }
 
@@ -77,12 +150,9 @@ class ItemShadowDecorator(private val shadowType: (position: Int) -> Shadow) : R
         bottomShadow.draw(canvas)
     }
 
-    private fun drawSlide(canvas: Canvas, child: View, pinned: Boolean) {
-        val top = when {
-            pinned -> 0
-            else -> child.top
-        }
-        topShadow.setBounds(child.left, top, child.right, top + shadowSize)
+    private fun drawTopPinned(canvas: Canvas, anyChild: View) {
+        val top = topLimit
+        topShadow.setBounds(anyChild.left, top, anyChild.right, top + shadowSize)
         topShadow.draw(canvas)
     }
 
