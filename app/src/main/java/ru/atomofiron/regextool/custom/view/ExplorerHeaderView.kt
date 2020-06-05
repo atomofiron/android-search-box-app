@@ -41,9 +41,8 @@ class ExplorerHeaderView @JvmOverloads constructor(
         when (val item = item) {
             null -> visibility = View.GONE
             else -> {
-                if (visibility == View.GONE) {
-                    // чтобы не мелькало сверху экрна
-                    visibility = View.INVISIBLE
+                if (visibility != View.VISIBLE) {
+                    visibility = View.VISIBLE
                 }
                 binder.onBind(item)
                 binder.bindComposition(composition)

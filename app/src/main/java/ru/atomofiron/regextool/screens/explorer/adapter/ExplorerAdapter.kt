@@ -7,12 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.ExplorerHeaderView
-import ru.atomofiron.regextool.logD
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import ru.atomofiron.regextool.screens.explorer.adapter.ItemSpaceDecorator.Divider
-import java.text.FieldPosition
 
 class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     companion object {

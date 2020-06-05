@@ -13,7 +13,7 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.ExplorerHeaderView
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
-import kotlin.math.max
+import kotlin.math.min
 
 class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDecoration() {
     companion object {
@@ -27,30 +27,31 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     private var shadowSize = 0
 
     lateinit var headerView: ExplorerHeaderView
-    private val topLimit: Int get() = headerView.measuredHeight
+    private val headerHeight: Int get() = headerView.measuredHeight
 
-    private var headerPosition: Int = UNDEFINED
-    private lateinit var background: ShapeDrawable
+    private var headerItemPosition: Int = UNDEFINED
     private var headerItem: XFile? = null
 
+    private lateinit var background: ShapeDrawable
     private var backgroundGrey = 0
     private var backgroundColor = 0
 
     fun onHeaderChanged(item: XFile?, position: Int) {
         headerItem = item
-        headerPosition = position
+        headerItemPosition = position
     }
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         initShadow(parent.context)
-        headerItem ?: return
+        val headerItem = headerItem ?: return
 
         val children = parent.getSortedChildren()
+        bindHeader(headerItem, children, parent)
         drawShadows(children, canvas, parent)
-        bindHeader(children, canvas, parent)
+        drawHeaderBackground(canvas)
     }
 
-    private fun bindHeader(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
+    private fun bindHeader(headerItem: XFile, children: Map<Int, View>, parent: RecyclerView) {
         if (!::background.isInitialized) {
             background = ShapeDrawable()
             backgroundColor = parent.context.findColorByAttr(R.attr.colorBackground)
@@ -58,32 +59,30 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         }
 
         when {
-            headerPosition == UNDEFINED -> return
+            headerItemPosition == UNDEFINED -> return
             headerView.visibility == View.GONE -> return
         }
 
         val firstVisiblePosition = children.keys.first()
-        val headerItemView = children[headerPosition]
-        var top = max(0, headerItemView?.top ?: 0)
-        if (top > 0 || firstVisiblePosition < headerPosition) {
-            top = -headerView.measuredHeight
+        val notChildPosition = children.keys.find { !headerItem.hasChild(items[it]) } ?: UNDEFINED
+        val childPosition = children.keys.find { headerItem.hasChild(items[it]) } ?: Int.MAX_VALUE
+        val top = when {
+            notChildPosition > childPosition -> min(0, children.getValue(notChildPosition).top - headerHeight)
+            children[headerItemPosition]?.top ?: 0 > 0 -> -headerHeight
+            firstVisiblePosition == headerItemPosition -> 0
+            firstVisiblePosition == childPosition -> 0
+            else -> -headerHeight
         }
+
         headerView.top = top
-        headerView.bottom = top + headerView.measuredHeight
-
-        drawHeaderBackground(canvas)
-
-        if (headerView.visibility == View.INVISIBLE) {
-            // чтобы не мелькало сверху экрна
-            headerView.visibility = View.VISIBLE
-        }
+        headerView.bottom = top + headerHeight
     }
 
     private fun drawHeaderBackground(canvas: Canvas) {
         background.setBounds(headerView.left, headerView.top, headerView.right, headerView.bottom)
         background.paint.color = backgroundColor
         background.draw(canvas)
-        if (headerPosition % 2 == 0) {
+        if (headerItemPosition % 2 == 0) {
             background.paint.color = backgroundGrey
             background.draw(canvas)
         }
@@ -106,7 +105,7 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
             drawForLastChild(canvas, child, parent)
         }
 
-        child = children[headerPosition]
+        child = children[headerItemPosition]
         val currentIsNullOrEmpty = currentDir.children.isNullOrEmpty()
         if (child != null) {
             val dynamicOffset = child.bottom * shadowSize / parent.measuredHeight
@@ -148,7 +147,7 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     }
 
     private fun drawTopPinned(canvas: Canvas, anyChild: View) {
-        val top = topLimit
+        val top = headerView.bottom
         topShadow.setBounds(anyChild.left, top, anyChild.right, top + shadowSize)
         topShadow.draw(canvas)
     }
