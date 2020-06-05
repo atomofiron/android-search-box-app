@@ -15,7 +15,7 @@ import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.screens.explorer.adapter.util.getSortedChildren
 import kotlin.math.max
 
-class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDecoration() {
+class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDecoration() {
     companion object {
         private const val UNDEFINED = -1
         private const val SHADOW_ALPHA = 100

@@ -44,7 +44,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         }
     }
 
-    private val shadowDecorator = ItemShadowDecorator(items)
+    private val shadowDecorator = ItemHeaderShadowDecorator(items)
 
     private val separationDecorator = ItemSeparationDecorator { position ->
         val currentDir = currentDir ?: return@ItemSeparationDecorator Separation.NO
