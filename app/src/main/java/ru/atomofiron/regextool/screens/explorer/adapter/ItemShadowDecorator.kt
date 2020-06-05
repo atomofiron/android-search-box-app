@@ -72,9 +72,10 @@ class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDec
             headerView.visibility == View.INVISIBLE -> headerView.visibility = View.VISIBLE
         }
 
+        val firstVisiblePosition = children.keys.first()
         val headerItemView = children[headerPosition]
         var top = max(0, headerItemView?.top ?: 0)
-        if (top > 0) {
+        if (top > 0 || firstVisiblePosition < headerPosition) {
             top = -headerView.measuredHeight
         }
         headerView.top = top
@@ -95,14 +96,10 @@ class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDec
 
     private fun drawShadows(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
         val currentDir = headerItem ?: return
-        var currentIndex = UNDEFINED
         var lastIndex = UNDEFINED
         children.forEach {
             val index = it.key
             val item = items[index]
-            if (item == currentDir) {
-                currentIndex = index
-            }
             val nextItem = if (items.size == index.inc()) null else items[index.inc()]
             if (nextItem != null && !currentDir.hasChild(nextItem) && currentDir.hasChild(item)) {
                 lastIndex = index
@@ -114,18 +111,18 @@ class ItemShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDec
             drawForLastChild(canvas, child, parent)
         }
 
-        child = children[currentIndex]
+        child = children[headerPosition]
         val currentIsNullOrEmpty = currentDir.children.isNullOrEmpty()
         if (child != null) {
             val dynamicOffset = child.bottom * shadowSize / parent.measuredHeight
             when {
-                currentIsNullOrEmpty -> drawForEmpty(canvas, child, parent, dynamicOffset, drawTop = child.top >= 0)
-                child.top >= 0 -> drawTop(canvas, child, dynamicOffset)
+                currentIsNullOrEmpty -> drawForEmpty(canvas, child, parent, dynamicOffset, drawTop = child.top > 0)
+                child.top > 0 -> drawTop(canvas, child, dynamicOffset)
             }
         }
 
-        child = children[currentIndex] ?: children.iterator().next().value
-        if (currentIndex == -1 || child.top < 0) {
+        child = child ?: children.values.first()
+        if (child.top <= 0) {
             drawTopPinned(canvas, child)
         }
     }

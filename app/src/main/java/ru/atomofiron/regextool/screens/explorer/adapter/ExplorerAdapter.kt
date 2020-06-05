@@ -105,8 +105,8 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
         recyclerView.addItemDecoration(backgroundDecorator)
         recyclerView.addItemDecoration(spaceDecorator)
-        recyclerView.addItemDecoration(shadowDecorator)
         recyclerView.addItemDecoration(separationDecorator)
+        recyclerView.addItemDecoration(shadowDecorator)
         recyclerView.addItemDecoration(gravityDecorator)
     }
 
@@ -116,8 +116,8 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
         recyclerView.removeItemDecoration(backgroundDecorator)
         recyclerView.removeItemDecoration(spaceDecorator)
-        recyclerView.removeItemDecoration(shadowDecorator)
         recyclerView.removeItemDecoration(separationDecorator)
+        recyclerView.removeItemDecoration(shadowDecorator)
         recyclerView.removeItemDecoration(gravityDecorator)
     }
 
