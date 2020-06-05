@@ -53,12 +53,12 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         val headerItem = headerItem ?: return
 
         val children = parent.getSortedChildren()
-        bindHeader(headerItem, children, parent)
+        bindHeader(headerItem, children)
         drawShadows(children, canvas, parent)
         drawHeaderBackground(canvas)
     }
 
-    private fun bindHeader(headerItem: XFile, children: Map<Int, View>, parent: RecyclerView) {
+    private fun bindHeader(headerItem: XFile, children: Map<Int, View>) {
         when {
             headerItemPosition == UNDEFINED -> return
             headerView.visibility == View.GONE -> return

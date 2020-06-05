@@ -78,6 +78,10 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     fun setHeaderView(view: ExplorerHeaderView) {
         headerView = view
+        if (::composition.isInitialized) {
+            view.setComposition(composition)
+        }
+        view.onBind(currentDir)
         shadowDecorator.setHeaderView(view)
     }
 
