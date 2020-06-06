@@ -68,9 +68,18 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         val notChildPosition = children.keys.find { !headerItem.hasChild(items[it]) } ?: UNDEFINED
         val childPosition = children.keys.find { headerItem.hasChild(items[it]) } ?: Int.MAX_VALUE
         val top = when {
-            notChildPosition > childPosition -> min(0, children.getValue(notChildPosition).top - headerHeight)
             children[headerItemPosition]?.top ?: 0 > 0 -> -headerHeight
-            firstVisiblePosition == headerItemPosition -> 0
+            notChildPosition > childPosition -> {
+                val itemView = children.getValue(notChildPosition)
+                min(0, itemView.top - headerHeight)
+            }
+            firstVisiblePosition == headerItemPosition -> when {
+                headerItem.children.isNullOrEmpty() -> {
+                    val itemView = children.getValue(firstVisiblePosition.inc())
+                    min(0, itemView.top - headerHeight)
+                }
+                else -> 0
+            }
             firstVisiblePosition == childPosition -> 0
             else -> -headerHeight
         }
