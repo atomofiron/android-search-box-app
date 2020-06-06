@@ -1,19 +1,23 @@
 package ru.atomofiron.regextool.screens.finder.adapter.holder
 
-import android.graphics.Color
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
-import android.text.style.BackgroundColorSpan
 import android.view.ViewGroup
 import android.widget.EditText
+import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
+import ru.atomofiron.regextool.utils.RoundedBackgroundSpan
 import java.util.regex.Pattern
 
 class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextWatcher {
     private val editText: EditText
-    private val span = BackgroundColorSpan(Color.parseColor("#55ff0000"))
+    private val span = RoundedBackgroundSpan(
+            context.findColorByAttr(R.attr.colorAccent),
+            context.findColorByAttr(R.attr.colorNegative),
+            context.resources.getDimension(R.dimen.background_span_corner_radius)
+    )
 
     init {
         itemView.isFocusable = false
@@ -26,7 +30,7 @@ class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextW
     override fun onBind(item: FinderStateItem, position: Int) = test(item)
 
     private fun test(item: FinderStateItem) {
-        editText.text.getSpans(0, editText.text.length, BackgroundColorSpan::class.java).forEach {
+        editText.text.getSpans(0, editText.text.length, RoundedBackgroundSpan::class.java).forEach {
             editText.text.removeSpan(it)
         }
         item as FinderStateItem.TestItem

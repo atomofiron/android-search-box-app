@@ -9,6 +9,9 @@ import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.TextLine
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class TextViewerService(
         private val textViewerChannel: TextViewerChannel,
@@ -19,7 +22,7 @@ class TextViewerService(
     }
     private class Match(
             val byteOffset: Long,
-            val text: String
+            val textLength: Int
     )
     private val matches = HashMap<Int, MutableList<Match>>()
     private val lines = ArrayList<TextLine>()
@@ -72,8 +75,15 @@ class TextViewerService(
         val offset = lines.size
         val cmd = Shell[Shell.HEAD_TAIL].format(path, offset + Const.TEXT_FILE_PAGINATION_STEP, Const.TEXT_FILE_PAGINATION_STEP)
         Shell.exec(cmd, useSu) { line ->
-            // todo next map text lines with matches
-            val textLine = TextLine(line)
+            val index = lines.size
+            val match = matches[index]
+            val lineMatches = match?.map {
+                val byteOffsetInLine = (it.byteOffset - textOffset).toInt()
+                val bytes = Arrays.copyOf(line.toByteArray(Charsets.UTF_8), byteOffsetInLine)
+                val offsetInLine = String(bytes, Charsets.UTF_8).length
+                TextLine.Match(offsetInLine, offsetInLine + it.textLength)
+            }
+            val textLine = TextLine(line, lineMatches)
             lines.add(textLine)
             textOffset += line.toByteArray(Charsets.UTF_8).size.inc()
         }
@@ -102,10 +112,10 @@ class TextViewerService(
         val cmd = Shell[template].format(params.query, path)
         Shell.exec(cmd, useSu) {
             val lineByteOffset = it.split(':')
-            val lineIndex = lineByteOffset[0].toInt()
+            val lineIndex = lineByteOffset[0].toInt().dec()
             val byteOffset = lineByteOffset[1].toLong()
             val text = lineByteOffset[2]
-            val match = Match(byteOffset, text)
+            val match = Match(byteOffset, text.length)
             var list = matches[lineIndex]
             if (list == null) {
                 list = ArrayList()

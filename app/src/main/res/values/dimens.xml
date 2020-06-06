@@ -36,4 +36,5 @@
 	<dimen name="bottom_sheet_title_margin">52dp</dimen>
 	<dimen name="bottom_sheet_title_size">20sp</dimen>
     <dimen name="bottom_bar_elevation">8dp</dimen>
+    <dimen name="background_span_corner_radius">4dp</dimen>
 </resources>
