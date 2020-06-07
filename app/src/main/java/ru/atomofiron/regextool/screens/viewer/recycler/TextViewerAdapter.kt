@@ -10,9 +10,16 @@ import ru.atomofiron.regextool.model.textviewer.TextLine
 
 class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
     lateinit var textViewerListener: TextViewerListener
+    private var matches = ArrayList<List<TextLine.Match>?>()
 
     init {
         setHasStableIds(true)
+    }
+
+    fun setMatches(items: List<List<TextLine.Match>?>) {
+        matches.clear()
+        matches.addAll(items)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): TextViewerHolder {
@@ -24,7 +31,7 @@ class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun onBindViewHolder(holder: TextViewerHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
+        holder.onBind(items[position], matches[position])
         textViewerListener.onLineVisible(position)
     }
 

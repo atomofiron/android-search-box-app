@@ -5,6 +5,7 @@ import android.text.Spannable
 import android.text.TextWatcher
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import app.atomofiron.common.util.findColorByAttr
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
@@ -15,7 +16,7 @@ class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextW
     private val editText: EditText
     private val span = RoundedBackgroundSpan(
             context.findColorByAttr(R.attr.colorAccent),
-            context.findColorByAttr(R.attr.colorNegative),
+            ContextCompat.getColor(context, R.color.white),
             context.resources.getDimension(R.dimen.background_span_corner_radius)
     )
 

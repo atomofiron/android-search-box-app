@@ -1,8 +1,7 @@
 package ru.atomofiron.regextool.model.textviewer
 
-class TextLine(
-        val text: String,
-        val matches: List<Match>? = null
+open class TextLine(
+        val text: String
 ) {
     class Match(
             val start: Int,

@@ -7,6 +7,7 @@ import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.TextLine
+import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
 import java.util.*
@@ -25,7 +26,7 @@ class TextViewerService(
             val textLength: Int
     )
     private val matches = HashMap<Int, MutableList<Match>>()
-    private val lines = ArrayList<TextLine>()
+    private val lines = ArrayList<TextLineMatch>()
     private val useSu: Boolean get() = preferenceStore.useSu.value
     private var lock = false
     private val mutex = Mutex()
@@ -83,7 +84,7 @@ class TextViewerService(
                 val offsetInLine = String(bytes, Charsets.UTF_8).length
                 TextLine.Match(offsetInLine, offsetInLine + it.textLength)
             }
-            val textLine = TextLine(line, lineMatches)
+            val textLine = TextLineMatch(line, lineMatches)
             lines.add(textLine)
             textOffset += line.toByteArray(Charsets.UTF_8).size.inc()
         }

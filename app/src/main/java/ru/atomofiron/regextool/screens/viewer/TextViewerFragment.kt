@@ -67,6 +67,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         super.onSubscribeData(owner)
 
         viewModel.textLines.observe(owner, Observer(viewerAdapter::setItems))
+        viewModel.matches.observe(owner, Observer(viewerAdapter::setMatches))
         viewModel.loading.observe(owner, Observer(::setLoading))
     }
 

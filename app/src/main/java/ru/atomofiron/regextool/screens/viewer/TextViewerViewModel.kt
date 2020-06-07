@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.viewer
 
+import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import ru.atomofiron.regextool.di.DaggerInjector
@@ -19,5 +20,7 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     }
 
     val textLines = LateinitLiveData<List<TextLine>>()
+    val matches = LateinitLiveData<List<List<TextLine.Match>?>>()
+    val matchesCursor = MutableLiveData<Int>()
     val loading = LateinitLiveData<Boolean>()
 }
