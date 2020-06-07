@@ -40,14 +40,7 @@
                     android:id="@+id/text_viewer_bv"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/text_viewer_iv_status"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_search_status"
-                    android:tint="@color/ic_search_status"
-                    android:visibility="gone"
+                    android:visibility="invisible"
                     />
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/text_viewer_tv_counter"

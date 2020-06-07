@@ -7,6 +7,7 @@ import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.TextLine
+import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 
 class TextViewerPresenter(
@@ -15,29 +16,51 @@ class TextViewerPresenter(
         private val interactor: TextViewerInteractor,
         textViewerChannel: TextViewerChannel
 ) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router), TextViewerAdapter.TextViewerListener {
-    private var globalMatches: Map<Int, List<TextLine.Match>?> = HashMap()
-    private var localMatches: Map<Int, List<TextLine.Match>?>? = null
+    private var globalMatchesMap: Map<Int, List<TextLineMatch>> = HashMap()
+    private var localMatchesMap: Map<Int, List<TextLineMatch>>? = null
+
+    private var globalMatchesCount: Int? = null
+    private var localMatchesCount: Int? = null
 
     init {
         textViewerChannel.textFromFile.addObserver(onClearedCallback) {
             viewModel.textLines.postValue(it)
         }
         textViewerChannel.globalMatches.addObserver(onClearedCallback) {
-            globalMatches = it
-            viewModel.matches.value = it
+            viewModel.globalMatches = it
         }
         textViewerChannel.localMatches.addObserver(onClearedCallback) {
-            localMatches = it
-            updateMatches()
+            viewModel.localMatches = it
+        }
+        textViewerChannel.globalMatchesMap.addObserver(onClearedCallback) {
+            globalMatchesMap = it
+            updateMatchesMap()
+        }
+        textViewerChannel.localMatchesMap.addObserver(onClearedCallback) {
+            localMatchesMap = it
+            updateMatchesMap()
+        }
+        textViewerChannel.globalMatchesCount.addObserver(onClearedCallback) {
+            globalMatchesCount = it
+            updateMatchesCounter()
+        }
+        textViewerChannel.localMatchesCount.addObserver(onClearedCallback) {
+            localMatchesCount = it
+            updateMatchesCounter()
         }
         textViewerChannel.textFromFileLoading.addObserver(onClearedCallback) {
             viewModel.loading.postValue(it)
         }
     }
 
-    private fun updateMatches() = when (localMatches) {
-        null -> viewModel.matches.postValue(globalMatches)
-        else -> viewModel.matches.postValue(localMatches)
+    private fun updateMatchesMap() = when (localMatchesMap) {
+        null -> viewModel.matchesMap.postValue(globalMatchesMap)
+        else -> viewModel.matchesMap.postValue(localMatchesMap)
+    }
+
+    private fun updateMatchesCounter() = when (localMatchesCount) {
+        null -> viewModel.matchesCounter.postValue(globalMatchesCount?.toLong())
+        else -> viewModel.matchesCounter.postValue(localMatchesCount?.toLong())
     }
 
     override fun onCreate(context: Context, intent: Intent) {

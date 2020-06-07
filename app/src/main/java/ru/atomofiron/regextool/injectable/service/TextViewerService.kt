@@ -6,7 +6,9 @@ import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
+import ru.atomofiron.regextool.model.textviewer.LineIndexMatches
 import ru.atomofiron.regextool.model.textviewer.TextLine
+import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
 import java.util.*
@@ -25,7 +27,8 @@ class TextViewerService(
             val textLength: Int
     )
     private val matches = HashMap<Int, MutableList<Match>>()
-    private val textLineMatches = HashMap<Int, List<TextLine.Match>>()
+    private val textLineMatches = ArrayList<LineIndexMatches>()
+    private val textLineMatchesMap = HashMap<Int, List<TextLineMatch>>()
     private val lines = ArrayList<TextLine>()
     private val useSu: Boolean get() = preferenceStore.useSu.value
     private var lock = false
@@ -38,7 +41,9 @@ class TextViewerService(
 
     init {
         textViewerChannel.textFromFile.setAndNotify(lines)
-        textViewerChannel.localMatches.setAndNotify(textLineMatches)
+        textViewerChannel.globalMatches.setAndNotify(textLineMatches)
+        textViewerChannel.globalMatchesMap.setAndNotify(textLineMatchesMap)
+        textViewerChannel.globalMatchesCount.setAndNotify(null)
     }
 
     suspend fun loadFile(path: String, params: FinderQueryParams?) {
@@ -46,7 +51,11 @@ class TextViewerService(
         fileSize = getFileSize()
         when (params) {
             null -> onLineVisible(0)
-            else -> searchInFile(params)
+            else -> {
+                val matchesCount = searchInFile(params)
+                textViewerChannel.globalMatchesCount.setAndNotify(matchesCount)
+                onLineVisible(0)
+            }
         }
     }
 
@@ -61,6 +70,8 @@ class TextViewerService(
 
             textViewerChannel.textFromFileLoading.setAndNotify(true)
             loadNext()
+            textViewerChannel.globalMatches.justNotify()
+            textViewerChannel.textFromFile.setAndNotify(ArrayList(lines))
             textViewerChannel.textFromFileLoading.setAndNotify(false)
 
             lock = false
@@ -83,15 +94,16 @@ class TextViewerService(
                 val byteOffsetInLine = (it.byteOffset - textOffset).toInt()
                 val bytes = Arrays.copyOf(line.toByteArray(Charsets.UTF_8), byteOffsetInLine)
                 val offsetInLine = String(bytes, Charsets.UTF_8).length
-                TextLine.Match(offsetInLine, offsetInLine + it.textLength)
+                TextLineMatch(offsetInLine, offsetInLine + it.textLength)
             }?.let {
-                textLineMatches[index] = it
+                val lineMatches = LineIndexMatches(index, it)
+                textLineMatches.add(lineMatches)
+                textLineMatchesMap[index] = it
             }
             val textLine = TextLine(line)
             lines.add(textLine)
             textOffset += line.toByteArray(Charsets.UTF_8).size.inc()
         }
-        textViewerChannel.textFromFile.setAndNotify(ArrayList(lines))
 
         isEndReached = lines.size - offset < Const.TEXT_FILE_PAGINATION_STEP
         isEndReached = isEndReached || textOffset >= fileSize
@@ -106,13 +118,14 @@ class TextViewerService(
         }
     }
 
-    private suspend fun searchInFile(params: FinderQueryParams) {
+    private fun searchInFile(params: FinderQueryParams): Int {
         val template = when {
             params.useRegex && params.ignoreCase -> Shell.GREP_IE
             params.useRegex -> Shell.GREP_E
             params.ignoreCase -> Shell.GREP_I
             else -> Shell.GREP
         }
+        var count = 0
         val cmd = Shell[template].format(params.query, path)
         Shell.exec(cmd, useSu) {
             val lineByteOffset = it.split(':')
@@ -126,7 +139,8 @@ class TextViewerService(
                 matches[lineIndex] = list
             }
             list.add(match)
+            count++
         }
-        onLineVisible(0)
+        return count
     }
 }

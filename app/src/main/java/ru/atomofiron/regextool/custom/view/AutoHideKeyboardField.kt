@@ -29,6 +29,7 @@ open class AutoHideKeyboardField : AppCompatEditText {
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
         if ((keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_BACK) && hasFocus()) {
             clearFocus()
+            inputMethodManager!!.hideSoftInputFromWindow(windowToken, 0)
             // перехватываем событие, чтобы оно не обработалось при уже закрытой клавиатуре
             return true
         }

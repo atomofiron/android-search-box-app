@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.viewer
 
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -40,6 +41,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
     override val layoutId: Int = R.layout.fragment_text_viewer
 
     private val rvTextViewer = Knife<RecyclerView>(this, R.id.text_viewer_rv)
+    private val tvCounter = Knife<TextView>(this, R.id.text_viewer_tv_counter)
     private val bvLoading = Knife<BallsView>(this, R.id.text_viewer_bv)
     private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.text_viewer_bmb)
 
@@ -62,6 +64,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         rvTextViewer {
             layoutManager = LinearLayoutManager(context)
             adapter = viewerAdapter
+            itemAnimator = null
         }
         bottomMenuBar {
             setOnMenuItemClickListener { id ->
@@ -79,21 +82,39 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
 
         viewModel.loading.observe(owner, Observer(::setLoading))
         viewModel.textLines.observe(owner, Observer(viewerAdapter::setItems))
-        viewModel.matches.observe(owner, Observer(viewerAdapter::setMatches))
+        viewModel.matchesMap.observe(owner, Observer(viewerAdapter::setMatches))
         viewModel.matchesCursor.observe(owner, Observer(::onMatchCursorChanged))
+        viewModel.matchesCounter.observe(owner, Observer(::onMatchCounterChanged))
     }
 
     private fun setLoading(visible: Boolean) {
         bvLoading {
-            setVisible(visible)
+            setVisible(visible, invisibleMode = View.INVISIBLE)
+        }
+        onMatchCounterChanged(viewModel.matchesCounter.value)
+    }
+
+    private fun onMatchCounterChanged(counter: Long?) {
+        var index: Int? = null
+        var count: Int? = null
+        tvCounter {
+            text = when (counter) {
+                null -> null
+                else -> {
+                    index = counter.shr(32).toInt()
+                    count = counter.toInt()
+                    "$index / $count"
+                }
+            }
+        }
+        bottomMenuBar {
+            val loading = viewModel.loading.value
+            menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index!! > 1
+            menu.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
         }
     }
 
     private fun onMatchCursorChanged(cursor: Long?) {
         viewerAdapter.setCursor(cursor)
-        bottomMenuBar {
-            menu.findItem(R.id.menu_previous).isEnabled = cursor != null
-            menu.findItem(R.id.menu_next).isEnabled = cursor != null
-        }
     }
 }
