@@ -10,16 +10,32 @@ import ru.atomofiron.regextool.model.textviewer.TextLine
 
 class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
     lateinit var textViewerListener: TextViewerListener
-    private var matches = ArrayList<List<TextLine.Match>?>()
+    private lateinit var matches: Map<Int, List<TextLine.Match>?>
+
+    private var cursor: Long? = null
+    private val lineIndex: Int? = cursor?.shr(32)?.toInt()
+    private val matchIndex: Int? get() = cursor?.toInt()
 
     init {
         setHasStableIds(true)
     }
 
-    fun setMatches(items: List<List<TextLine.Match>?>) {
-        matches.clear()
-        matches.addAll(items)
+    fun setMatches(items: Map<Int, List<TextLine.Match>?>) {
+        matches = items
         notifyDataSetChanged()
+    }
+
+    fun setCursor(lineNumIndex: Long?) {
+        val lineIndexWas = lineIndex
+        cursor = lineNumIndex
+
+        if (lineIndexWas != null) {
+            notifyItemChanged(lineIndexWas)
+        }
+        val lineIndex = lineIndex
+        if (lineIndex != null) {
+            notifyItemChanged(lineIndex)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): TextViewerHolder {

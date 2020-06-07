@@ -2,10 +2,10 @@ package ru.atomofiron.regextool.injectable.channel
 
 import app.atomofiron.common.util.KObservable
 import ru.atomofiron.regextool.model.textviewer.TextLine
-import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 
 class TextViewerChannel {
-    val textFromFile = KObservable<List<TextLineMatch>>()
+    val textFromFile = KObservable<List<TextLine>>()
     val textFromFileLoading = KObservable<Boolean>()
-    val localMatches = KObservable<List<List<TextLine.Match>>>()
+    val globalMatches = KObservable<Map<Int, List<TextLine.Match>>>()
+    val localMatches = KObservable<Map<Int, List<TextLine.Match>>>()
 }

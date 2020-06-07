@@ -20,7 +20,26 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     }
 
     val textLines = LateinitLiveData<List<TextLine>>()
-    val matches = LateinitLiveData<List<List<TextLine.Match>?>>()
-    val matchesCursor = MutableLiveData<Int>()
+    val matches = LateinitLiveData<Map<Int, List<TextLine.Match>?>>()
+    val matchesCursor = MutableLiveData<Long>()
     val loading = LateinitLiveData<Boolean>()
+
+    fun changeCursor(increment: Boolean) {
+        var cursor = matchesCursor.value
+        val matches = matches.value
+        when (cursor) {
+            null -> {
+                val lineIndex = matches.keys.first().toLong()
+                cursor = lineIndex.shl(32)
+            }
+            else -> {
+                val lineIndex = cursor.shr(32).toInt()
+                val matchIndex = cursor.toInt()
+                val match = matches[lineIndex]!!
+                when {
+                    increment && matchIndex.inc() == match.size -> Unit
+                }
+            }
+        }
+    }
 }

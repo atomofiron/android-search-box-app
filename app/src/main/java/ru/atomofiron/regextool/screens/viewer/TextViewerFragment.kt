@@ -12,6 +12,7 @@ import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.setVisible
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
+import ru.atomofiron.regextool.custom.view.BottomMenuBar
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 import javax.inject.Inject
@@ -40,6 +41,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
 
     private val rvTextViewer = Knife<RecyclerView>(this, R.id.text_viewer_rv)
     private val bvLoading = Knife<BallsView>(this, R.id.text_viewer_bv)
+    private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.text_viewer_bmb)
 
     @Inject
     override lateinit var presenter: TextViewerPresenter
@@ -61,19 +63,37 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
             layoutManager = LinearLayoutManager(context)
             adapter = viewerAdapter
         }
+        bottomMenuBar {
+            setOnMenuItemClickListener { id ->
+                when (id) {
+                    R.id.menu_search -> presenter.onSearchClick()
+                    R.id.menu_previous -> presenter.onPreviousClick()
+                    R.id.menu_next -> presenter.onNextClick()
+                }
+            }
+        }
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
         super.onSubscribeData(owner)
 
+        viewModel.loading.observe(owner, Observer(::setLoading))
         viewModel.textLines.observe(owner, Observer(viewerAdapter::setItems))
         viewModel.matches.observe(owner, Observer(viewerAdapter::setMatches))
-        viewModel.loading.observe(owner, Observer(::setLoading))
+        viewModel.matchesCursor.observe(owner, Observer(::onMatchCursorChanged))
     }
 
     private fun setLoading(visible: Boolean) {
         bvLoading {
             setVisible(visible)
+        }
+    }
+
+    private fun onMatchCursorChanged(cursor: Long?) {
+        viewerAdapter.setCursor(cursor)
+        bottomMenuBar {
+            menu.findItem(R.id.menu_previous).isEnabled = cursor != null
+            menu.findItem(R.id.menu_next).isEnabled = cursor != null
         }
     }
 }

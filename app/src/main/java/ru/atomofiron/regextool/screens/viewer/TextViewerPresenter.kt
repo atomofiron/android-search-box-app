@@ -15,14 +15,16 @@ class TextViewerPresenter(
         private val interactor: TextViewerInteractor,
         textViewerChannel: TextViewerChannel
 ) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router), TextViewerAdapter.TextViewerListener {
-    private lateinit var globalMatches: List<List<TextLine.Match>?>
-    private var localMatches: List<List<TextLine.Match>?>? = null
+    private var globalMatches: Map<Int, List<TextLine.Match>?> = HashMap()
+    private var localMatches: Map<Int, List<TextLine.Match>?>? = null
 
     init {
         textViewerChannel.textFromFile.addObserver(onClearedCallback) {
             viewModel.textLines.postValue(it)
-            globalMatches = it.map { match -> match.matches }
-            viewModel.matches.postValue(globalMatches)
+        }
+        textViewerChannel.globalMatches.addObserver(onClearedCallback) {
+            globalMatches = it
+            viewModel.matches.value = it
         }
         textViewerChannel.localMatches.addObserver(onClearedCallback) {
             localMatches = it
@@ -44,9 +46,15 @@ class TextViewerPresenter(
         val useRegex = intent.getBooleanExtra(TextViewerFragment.KEY_USE_SU, false)
         val ignoreCase = intent.getBooleanExtra(TextViewerFragment.KEY_IGNORE_CASE, false)
         val params = query?.let { FinderQueryParams(it, useRegex, ignoreCase) }
-        // todo next
         interactor.loadFile(path, params)
     }
 
     override fun onLineVisible(index: Int) = interactor.onLineVisible(index)
+
+    fun onSearchClick() {
+    }
+
+    fun onPreviousClick() = viewModel.changeCursor(increment = false)
+
+    fun onNextClick() = viewModel.changeCursor(increment = true)
 }

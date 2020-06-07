@@ -7,7 +7,6 @@ import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.TextLine
-import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
 import java.util.*
@@ -26,7 +25,8 @@ class TextViewerService(
             val textLength: Int
     )
     private val matches = HashMap<Int, MutableList<Match>>()
-    private val lines = ArrayList<TextLineMatch>()
+    private val textLineMatches = HashMap<Int, List<TextLine.Match>>()
+    private val lines = ArrayList<TextLine>()
     private val useSu: Boolean get() = preferenceStore.useSu.value
     private var lock = false
     private val mutex = Mutex()
@@ -38,6 +38,7 @@ class TextViewerService(
 
     init {
         textViewerChannel.textFromFile.setAndNotify(lines)
+        textViewerChannel.localMatches.setAndNotify(textLineMatches)
     }
 
     suspend fun loadFile(path: String, params: FinderQueryParams?) {
@@ -78,13 +79,15 @@ class TextViewerService(
         Shell.exec(cmd, useSu) { line ->
             val index = lines.size
             val match = matches[index]
-            val lineMatches = match?.map {
+            match?.map {
                 val byteOffsetInLine = (it.byteOffset - textOffset).toInt()
                 val bytes = Arrays.copyOf(line.toByteArray(Charsets.UTF_8), byteOffsetInLine)
                 val offsetInLine = String(bytes, Charsets.UTF_8).length
                 TextLine.Match(offsetInLine, offsetInLine + it.textLength)
+            }?.let {
+                textLineMatches[index] = it
             }
-            val textLine = TextLineMatch(line, lineMatches)
+            val textLine = TextLine(line)
             lines.add(textLine)
             textOffset += line.toByteArray(Charsets.UTF_8).size.inc()
         }
