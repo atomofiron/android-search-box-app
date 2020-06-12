@@ -5,16 +5,25 @@ import android.content.Intent
 import app.atomofiron.common.arch.BasePresenter
 import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
+import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
+import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
+import ru.atomofiron.regextool.screens.viewer.presenter.SearchOutputDelegate
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 
 class TextViewerPresenter(
         viewModel: TextViewerViewModel,
         router: TextViewerRouter,
+        searchOutputDelegate: SearchOutputDelegate,
         private val interactor: TextViewerInteractor,
+        preferenceStore: PreferenceStore,
         textViewerChannel: TextViewerChannel
-) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router), TextViewerAdapter.TextViewerListener {
+) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router),
+        TextViewerAdapter.TextViewerListener,
+        FinderAdapterOutput by searchOutputDelegate
+{
     private var globalMatchesMap: Map<Int, List<TextLineMatch>> = HashMap()
     private var localMatchesMap: Map<Int, List<TextLineMatch>>? = null
 
@@ -50,6 +59,7 @@ class TextViewerPresenter(
         textViewerChannel.textFromFileLoading.addObserver(onClearedCallback) {
             viewModel.loading.postValue(it)
         }
+        viewModel.composition = preferenceStore.explorerItemComposition.entity
     }
 
     private fun updateMatchesMap() = when (localMatchesMap) {
@@ -68,13 +78,13 @@ class TextViewerPresenter(
         val useRegex = intent.getBooleanExtra(TextViewerFragment.KEY_USE_SU, false)
         val ignoreCase = intent.getBooleanExtra(TextViewerFragment.KEY_IGNORE_CASE, false)
         val params = query?.let { FinderQueryParams(it, useRegex, ignoreCase) }
-        interactor.loadFile(path, params)
+        val xFile = MutableXFile.byPath(path)
+        interactor.loadFile(xFile, params) {
+            viewModel.xFile = xFile
+        }
     }
 
     override fun onLineVisible(index: Int) = interactor.onLineVisible(index)
-
-    fun onSearchClick() {
-    }
 
     fun onPreviousClick() = viewModel.changeCursor(increment = false)
 

@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.finder.adapter.holder
 
+import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
@@ -67,6 +68,11 @@ class ConfigHolder(
         if (item.searchInContent && item.excludeDirs) {
             checkExcludeDirsWhenEnabled = true
             cbExcludeDirs.isChecked = false
+        }
+
+        if (item.isLocal) {
+            cpSearchInContent.visibility = View.GONE
+            cbExcludeDirs.visibility = View.GONE
         }
     }
 

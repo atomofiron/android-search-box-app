@@ -15,8 +15,10 @@ import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
 import ru.atomofiron.regextool.custom.view.BottomMenuBar
 import ru.atomofiron.regextool.custom.view.FixedBottomAppBar
+import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
+import ru.atomofiron.regextool.screens.viewer.sheet.SearchDelegate
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -26,6 +28,8 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         const val KEY_QUERY = "KEY_QUERY"
         const val KEY_USE_SU = "KEY_USE_SU"
         const val KEY_IGNORE_CASE = "KEY_IGNORE_CASE"
+
+        const val SCALE_ANIMATION_DURATION = 128L
 
         fun openTextFile(path: String, params: FinderQueryParams? = null): Fragment {
             val bundle = Bundle()
@@ -41,6 +45,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
     override val viewModelClass: KClass<TextViewerViewModel> = TextViewerViewModel::class
     override val layoutId: Int = R.layout.fragment_text_viewer
 
+    private val bottomSheetView = Knife<BottomSheetView>(this, R.id.text_viewer_bsv)
     private val rvTextViewer = Knife<RecyclerView>(this, R.id.text_viewer_rv)
     private val tvCounter = Knife<TextView>(this, R.id.text_viewer_tv_counter)
     private val bvLoading = Knife<BallsView>(this, R.id.text_viewer_bv)
@@ -52,12 +57,13 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
 
     private val viewerAdapter = TextViewerAdapter()
 
+    private lateinit var searchDelegate: SearchDelegate
+
     override fun inject() = viewModel.inject(this)
 
     override fun onCreate() {
-        super.onCreate()
-
         viewerAdapter.textViewerListener = presenter
+        searchDelegate = SearchDelegate(presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,12 +77,13 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         bottomMenuBar {
             setOnMenuItemClickListener { id ->
                 when (id) {
-                    R.id.menu_search -> presenter.onSearchClick()
+                    R.id.menu_search -> searchDelegate.show(viewModel.xFile, viewModel.composition)
                     R.id.menu_previous -> presenter.onPreviousClick()
                     R.id.menu_next -> presenter.onNextClick()
                 }
             }
         }
+        searchDelegate.bottomSheetView = bottomSheetView.view
     }
 
     override fun onStart() {
@@ -94,7 +101,10 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         viewModel.matchesMap.observe(owner, Observer(viewerAdapter::setMatches))
         viewModel.matchesCursor.observe(owner, Observer(::onMatchCursorChanged))
         viewModel.matchesCounter.observe(owner, Observer(::onMatchCounterChanged))
+        viewModel.serachItems.observe(owner, Observer(searchDelegate::setItems))
     }
+
+    override fun onBack(): Boolean = bottomSheetView.view.hide() || super.onBack()
 
     private fun setLoading(visible: Boolean) {
         bvLoading {

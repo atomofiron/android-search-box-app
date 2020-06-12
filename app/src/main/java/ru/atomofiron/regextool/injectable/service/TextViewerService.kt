@@ -5,6 +5,8 @@ import kotlinx.coroutines.sync.withLock
 import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
+import ru.atomofiron.regextool.model.explorer.MutableXFile
+import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.LineIndexMatches
 import ru.atomofiron.regextool.model.textviewer.TextLine
@@ -51,9 +53,12 @@ class TextViewerService(
         textViewerChannel.globalMatchesCount.setAndNotify(null)
     }
 
-    suspend fun loadFile(path: String, params: FinderQueryParams?) {
-        this.path = path
+    suspend fun loadFile(xFile: MutableXFile, params: FinderQueryParams?) {
+        path = xFile.completedPath
         fileSize = getFileSize()
+
+        xFile.updateCache(useSu)
+
         when (params) {
             null -> loadUpToLine(0)
             else -> {

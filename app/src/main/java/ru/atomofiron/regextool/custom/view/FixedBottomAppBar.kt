@@ -2,6 +2,8 @@ package ru.atomofiron.regextool.custom.view
 
 import android.content.Context
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout.AttachedBehavior
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.findColorByAttr
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.MaterialShapeDrawable.SHADOW_COMPAT_MODE_ALWAYS
 import com.google.android.material.shape.MaterialShapeUtils

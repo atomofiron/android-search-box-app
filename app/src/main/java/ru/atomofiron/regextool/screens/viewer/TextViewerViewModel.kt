@@ -4,9 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
 import ru.atomofiron.regextool.di.DaggerInjector
+import ru.atomofiron.regextool.model.explorer.XFile
+import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.model.textviewer.LineIndexMatches
 import ru.atomofiron.regextool.model.textviewer.TextLine
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
+import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
 
 class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragment>() {
     companion object {
@@ -32,6 +35,9 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     /** line index -> line match index */
     val matchesCursor = MutableLiveData<Long?>(null)
     val loading = LateinitLiveData(true)
+    val serachItems = LateinitLiveData<List<FinderStateItem>>()
+    lateinit var composition: ExplorerItemComposition
+    lateinit var xFile: XFile
 
     private var matchesIndex = -1
     var globalMatches: List<LineIndexMatches> = ArrayList()

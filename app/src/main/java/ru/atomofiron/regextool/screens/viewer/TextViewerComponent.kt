@@ -12,6 +12,8 @@ import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
 import ru.atomofiron.regextool.injectable.service.TextViewerService
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
+import ru.atomofiron.regextool.screens.viewer.presenter.SearchOutputDelegate
+import ru.atomofiron.regextool.screens.viewer.sheet.SearchDelegate
 import javax.inject.Scope
 
 @Scope
@@ -44,10 +46,21 @@ class TextViewerModule {
     fun presenter(
             viewModel: TextViewerViewModel,
             router: TextViewerRouter,
+            searchOutputDelegate: SearchOutputDelegate,
             textViewerInteractor: TextViewerInteractor,
+            preferenceStore: PreferenceStore,
             textViewerChannel: TextViewerChannel
     ): TextViewerPresenter {
-        return TextViewerPresenter(viewModel, router, textViewerInteractor, textViewerChannel)
+        return TextViewerPresenter(viewModel, router, searchOutputDelegate, textViewerInteractor, preferenceStore, textViewerChannel)
+    }
+
+    @Provides
+    @TextViewerScope
+    fun searchOutputDelegate(
+            viewModel: TextViewerViewModel,
+            preferenceStore: PreferenceStore
+    ): SearchOutputDelegate {
+        return SearchOutputDelegate(viewModel, preferenceStore)
     }
 
     @Provides

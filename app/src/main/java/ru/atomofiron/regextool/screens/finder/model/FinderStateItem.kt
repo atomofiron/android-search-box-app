@@ -23,7 +23,8 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
                           val useRegex: Boolean = false,
                           val searchInContent: Boolean = false,
                           val excludeDirs: Boolean = false,
-                          val replaceEnabled: Boolean = false)
+                          val replaceEnabled: Boolean = false,
+                          val isLocal: Boolean = false)
         : FinderStateItem(CONFIG_ID, R.layout.item_config)
 
     data class TestItem(val searchQuery: String = "",

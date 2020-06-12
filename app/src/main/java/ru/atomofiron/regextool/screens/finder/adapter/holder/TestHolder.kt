@@ -24,7 +24,7 @@ class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextW
         itemView.isFocusable = false
         itemView.isClickable = false
 
-        editText = itemView.findViewById(R.id.layout_et_test)
+        editText = itemView.findViewById(R.id.item_et_test)
         editText.addTextChangedListener(this)
     }
 
