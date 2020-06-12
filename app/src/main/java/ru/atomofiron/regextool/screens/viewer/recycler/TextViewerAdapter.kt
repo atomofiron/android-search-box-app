@@ -39,7 +39,9 @@ class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
         val cursorLineIndex = cursorLineIndex
         if (cursorLineIndex != null) {
             notifyItemChanged(cursorLineIndex)
-            recyclerView?.scrollToPosition(cursorLineIndex)
+            recyclerView?.post {
+                recyclerView?.scrollToPosition(cursorLineIndex)
+            }
         }
     }
 

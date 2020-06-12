@@ -14,6 +14,8 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.MaterialShapeDrawable.SHADOW_COMPAT_MODE_ALWAYS
 import com.google.android.material.shape.MaterialShapeUtils
 import ru.atomofiron.regextool.R
+import kotlin.math.max
+import kotlin.math.min
 
 class FixedBottomAppBar @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null
@@ -31,6 +33,10 @@ class FixedBottomAppBar @JvmOverloads constructor(
         val maxElevation = resources.getDimension(R.dimen.bottom_bar_elevation)
         scrollListener = ScrollListener(this, materialShapeDrawable, maxElevation)
         mBehavior = Behavior(context, scrollListener)
+    }
+
+    fun updateElevation() {
+        scrollListener.updateElevation(null)
     }
 
     override fun onAttachedToWindow() {
@@ -63,11 +69,11 @@ class FixedBottomAppBar @JvmOverloads constructor(
 
     override fun setTranslationY(translationY: Float) {
         super.setTranslationY(translationY)
-        scrollListener.updateElevation()
+        scrollListener.updateElevation(null)
     }
 
     class ScrollListener(
-            private val view: View,
+            private val target: View,
             private val materialShapeDrawable: MaterialShapeDrawable,
             private val maxElevation: Float
     ) : RecyclerView.OnScrollListener() {
@@ -84,13 +90,15 @@ class FixedBottomAppBar @JvmOverloads constructor(
             val child = recyclerView.getChildAt(if (reverseLayout) 0 else recyclerView.childCount.dec())
             position = recyclerView.getChildLayoutPosition(child)
             childBottom = child.bottom
-            updateElevation()
+            updateElevation(recyclerView)
         }
 
-        fun updateElevation() {
+        fun updateElevation(recyclerView: RecyclerView?) {
             val elevation = when {
-                !reverseLayout || position == 0 -> Math.min(maxElevation, Math.max(0f, childBottom - view.top - view.translationY))
-                else -> maxElevation
+                reverseLayout && position != 0 -> maxElevation
+                recyclerView == null -> maxElevation
+                !reverseLayout && position != recyclerView.adapter!!.itemCount.dec() -> maxElevation
+                else -> min(maxElevation, max(0f, childBottom - target.top - target.translationY))
             }
             materialShapeDrawable.elevation = elevation
         }

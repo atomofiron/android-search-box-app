@@ -14,6 +14,7 @@ import app.atomofiron.common.util.setVisible
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.BallsView
 import ru.atomofiron.regextool.custom.view.BottomMenuBar
+import ru.atomofiron.regextool.custom.view.FixedBottomAppBar
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 import javax.inject.Inject
@@ -44,6 +45,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
     private val tvCounter = Knife<TextView>(this, R.id.text_viewer_tv_counter)
     private val bvLoading = Knife<BallsView>(this, R.id.text_viewer_bv)
     private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.text_viewer_bmb)
+    private val bottomAppBar = Knife<FixedBottomAppBar>(this, R.id.text_viewer_fbab)
 
     @Inject
     override lateinit var presenter: TextViewerPresenter
@@ -74,6 +76,13 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
                     R.id.menu_next -> presenter.onNextClick()
                 }
             }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        bottomAppBar {
+            updateElevation()
         }
     }
 

@@ -14,6 +14,7 @@
         android:paddingBottom="@dimen/joystick_size"
         />
     <ru.atomofiron.regextool.custom.view.FixedBottomAppBar
+        android:id="@+id/text_viewer_fbab"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_tab_bar_height"
         android:layout_gravity="bottom"

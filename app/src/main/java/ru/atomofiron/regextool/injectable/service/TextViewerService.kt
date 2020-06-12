@@ -14,6 +14,7 @@ import ru.atomofiron.regextool.utils.Shell
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.max
 
 class TextViewerService(
         private val textViewerChannel: TextViewerChannel,
@@ -26,8 +27,12 @@ class TextViewerService(
             val byteOffset: Long,
             val textLength: Int
     )
-    private val matches = HashMap<Int, MutableList<Match>>()
+    private val matchesLineIndexes = ArrayList<Int>()
+    /** line index -> matches byteOffset-textLength */
+    private val matchesMap = HashMap<Int, MutableList<Match>>()
+    /** line index -> matches start-end */
     private val textLineMatches = ArrayList<LineIndexMatches>()
+    /** line index -> matches start-end */
     private val textLineMatchesMap = HashMap<Int, List<TextLineMatch>>()
     private val lines = ArrayList<TextLine>()
     private val useSu: Boolean get() = preferenceStore.useSu.value
@@ -50,16 +55,27 @@ class TextViewerService(
         this.path = path
         fileSize = getFileSize()
         when (params) {
-            null -> onLineVisible(0)
+            null -> loadUpToLine(0)
             else -> {
                 val matchesCount = searchInFile(params)
                 textViewerChannel.globalMatchesCount.setAndNotify(matchesCount)
-                onLineVisible(0)
+                loadUpToLine(0)
             }
         }
     }
 
-    suspend fun onLineVisible(index: Int) {
+    suspend fun onLineVisible(index: Int) = loadUpToLine(index)
+
+    suspend fun loadFileUpToLine(prevIndex: Int?) {
+        val indexOfNext = when (prevIndex) {
+            null -> 0
+            else -> matchesLineIndexes.indexOf(prevIndex).inc()
+        }
+        val nextLineIndex = matchesLineIndexes[indexOfNext]
+        loadUpToLine(nextLineIndex)
+    }
+
+    private suspend fun loadUpToLine(index: Int) {
         if (!isEndReached && index > lines.size - Const.TEXT_FILE_PAGINATION_STEP_OFFSET) {
             mutex.withLock(lock) {
                 if (lock) {
@@ -69,7 +85,8 @@ class TextViewerService(
             }
 
             textViewerChannel.textFromFileLoading.setAndNotify(true)
-            loadNext()
+            val step = index - lines.size + Const.TEXT_FILE_PAGINATION_STEP
+            loadNext(step)
             textViewerChannel.globalMatches.justNotify()
             textViewerChannel.textFromFile.setAndNotify(ArrayList(lines))
             textViewerChannel.textFromFileLoading.setAndNotify(false)
@@ -78,7 +95,7 @@ class TextViewerService(
         }
     }
 
-    private fun loadNext() {
+    private fun loadNext(step: Int) {
         val fileSize = getFileSize()
         if (this.fileSize != fileSize) {
             logE("File size was changed! $path")
@@ -86,13 +103,13 @@ class TextViewerService(
             return
         }
         val offset = lines.size
-        val cmd = Shell[Shell.HEAD_TAIL].format(path, offset + Const.TEXT_FILE_PAGINATION_STEP, Const.TEXT_FILE_PAGINATION_STEP)
+        val cmd = Shell[Shell.HEAD_TAIL].format(path, offset + step, step)
         Shell.exec(cmd, useSu) { line ->
             val index = lines.size
-            val match = matches[index]
+            val match = matchesMap[index]
             match?.map {
                 val byteOffsetInLine = (it.byteOffset - textOffset).toInt()
-                val bytes = Arrays.copyOf(line.toByteArray(Charsets.UTF_8), byteOffsetInLine)
+                val bytes = line.toByteArray(Charsets.UTF_8).copyOf(byteOffsetInLine)
                 val offsetInLine = String(bytes, Charsets.UTF_8).length
                 TextLineMatch(offsetInLine, offsetInLine + it.textLength)
             }?.let {
@@ -105,7 +122,7 @@ class TextViewerService(
             textOffset += line.toByteArray(Charsets.UTF_8).size.inc()
         }
 
-        isEndReached = lines.size - offset < Const.TEXT_FILE_PAGINATION_STEP
+        isEndReached = lines.size - offset < step
         isEndReached = isEndReached || textOffset >= fileSize
     }
 
@@ -133,10 +150,11 @@ class TextViewerService(
             val byteOffset = lineByteOffset[1].toLong()
             val text = lineByteOffset[2]
             val match = Match(byteOffset, text.length)
-            var list = matches[lineIndex]
+            var list = matchesMap[lineIndex]
             if (list == null) {
                 list = ArrayList()
-                matches[lineIndex] = list
+                matchesMap[lineIndex] = list
+                matchesLineIndexes.add(lineIndex)
             }
             list.add(match)
             count++

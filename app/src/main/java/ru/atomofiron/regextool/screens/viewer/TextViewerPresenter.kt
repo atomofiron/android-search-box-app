@@ -6,7 +6,6 @@ import app.atomofiron.common.arch.BasePresenter
 import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
-import ru.atomofiron.regextool.model.textviewer.TextLine
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 
@@ -79,5 +78,13 @@ class TextViewerPresenter(
 
     fun onPreviousClick() = viewModel.changeCursor(increment = false)
 
-    fun onNextClick() = viewModel.changeCursor(increment = true)
+    fun onNextClick() {
+        val success = viewModel.changeCursor(increment = true)
+        if (!success) {
+            interactor.loadFileUpToLine(viewModel.currentLineIndexCursor) {
+                viewModel.changeCursor(increment = true)
+            }
+            viewModel.loading.value = true
+        }
+    }
 }

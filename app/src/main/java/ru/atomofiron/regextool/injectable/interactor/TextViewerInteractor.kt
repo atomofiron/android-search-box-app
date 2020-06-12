@@ -20,4 +20,11 @@ class TextViewerInteractor(
             textViewerService.onLineVisible(index)
         }
     }
+
+    fun loadFileUpToLine(prevIndex: Int?, callback: () -> Unit) {
+        scope.launch {
+            textViewerService.loadFileUpToLine(prevIndex)
+            callback()
+        }
+    }
 }
