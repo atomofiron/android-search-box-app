@@ -40,6 +40,7 @@ class FinderPresenter(
         viewModel.setExcludeDirsValue(excludeDirs)
         viewModel.updateState()
         onSubscribeData()
+        viewModel.switchConfigItemVisibility()
     }
 
     override fun onSubscribeData() {

@@ -10,8 +10,9 @@ class ItemGravityDecorator : RecyclerView.ItemDecoration() {
         super.getItemOffsets(outRect, view, parent, state)
 
         val position = parent.getChildLayoutPosition(view)
-        if (position != 0) {
-            return
+        when {
+            position != 0 -> return
+            parent.height <= parent.width -> return
         }
         val offset = parent.height - parent.paddingTop - parent.paddingBottom
         outRect.top += offset / 3 * 2

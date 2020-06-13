@@ -3,7 +3,6 @@ package ru.atomofiron.regextool.screens.preferences.presenter
 import android.content.Context
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
-import ru.atomofiron.regextool.logD
 import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel
 import ru.atomofiron.regextool.screens.preferences.fragment.PreferenceUpdateOutput
 import ru.atomofiron.regextool.utils.Const

@@ -130,7 +130,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        explorerAdapter.notifyItemChanged(0)
+            explorerAdapter.notifyItemChanged(0)
     }
 
     private fun showPermissionRequiredWarning() {
