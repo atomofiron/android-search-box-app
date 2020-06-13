@@ -20,6 +20,11 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
     private lateinit var editText: TextField
     private lateinit var summary: View
     private var value = ""
+    private var filter: ((String) -> String?)? = null
+
+    fun setFilter(filter: (String) -> String?) {
+        this.filter = filter
+    }
 
     override fun onGetDefaultValue(array: TypedArray, index: Int): String? = array.getString(index)
 
@@ -31,7 +36,7 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
         super.onBindViewHolder(holder)
 
         if (editText.parent == null) {
-            summary = holder.itemView.findViewById<View>(android.R.id.summary)
+            summary = holder.itemView.findViewById(android.R.id.summary)
             editText.layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
                 addRule(RelativeLayout.BELOW, android.R.id.title)
             }
@@ -64,8 +69,9 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
     }
 
     private fun onSubmit(value: String) {
-        if (callChangeListener(value)) {
-            persistString(value)
+        val filtered = filter?.invoke(value) ?: value
+        if (callChangeListener(filtered)) {
+            persistString(filtered)
             this.value = value
         }
     }

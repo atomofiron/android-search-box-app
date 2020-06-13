@@ -118,14 +118,6 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
 
     private fun onStateChange(state: List<FinderStateItem>) = finderAdapter.setItems(state)
 
-    private fun onContentUpdate(event: FinderStateItemUpdate) {
-        when (event) {
-            is FinderStateItemUpdate.Changed -> finderAdapter.setItemAt(event.index, event.item)
-            is FinderStateItemUpdate.Inserted -> finderAdapter.insertItem(event.index, event.item)
-            is FinderStateItemUpdate.Removed -> finderAdapter.removeItem(event.index)
-        }
-    }
-
     private fun replaceQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)?.setText(value)
     }

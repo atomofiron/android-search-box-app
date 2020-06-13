@@ -5,6 +5,7 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreference
 import ru.atomofiron.regextool.R
+import ru.atomofiron.regextool.custom.preference.TextFieldPreference
 import ru.atomofiron.regextool.screens.preferences.PreferenceFragment
 import ru.atomofiron.regextool.screens.preferences.PreferenceViewModel
 import ru.atomofiron.regextool.utils.Const
@@ -67,8 +68,14 @@ class PreferenceFragmentDelegate(
             }
             Const.PREF_SPECIAL_CHARACTERS -> {
                 preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
-                if (newValue is String) {
-                    output.onPreferenceUpdate(key, newValue)
+                when (newValue) {
+                    is String -> output.onPreferenceUpdate(key, newValue)
+                    else -> {
+                        preference as TextFieldPreference
+                        preference.setFilter {
+                            it.replace(Regex("[ ]+"), Const.SPACE).trim()
+                        }
+                    }
                 }
                 DOES_NOT_MATTER
             }
