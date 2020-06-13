@@ -63,6 +63,11 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
         return LayoutInflater.from(inflater.context).inflate(layoutId, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        delegate.onViewCreated()
+    }
+
     override fun onStart() {
         super.onStart()
         delegate.onStart()

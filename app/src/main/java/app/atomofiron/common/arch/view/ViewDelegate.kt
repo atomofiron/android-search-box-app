@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BasePresenter
+import ru.atomofiron.regextool.logD
 import ru.atomofiron.regextool.logI
 
 class ViewDelegate<P : BasePresenter<*,*>> {
@@ -37,6 +38,10 @@ class ViewDelegate<P : BasePresenter<*,*>> {
         view.onSubscribeData(view.lifecycleOwner)
     }
 
+    fun onViewCreated() {
+        isFirstTry = true
+    }
+
     fun onStart() {
         if (isFirstTry && view.isVisible()) {
             updateSystemBars()
@@ -63,6 +68,7 @@ class ViewDelegate<P : BasePresenter<*,*>> {
     private fun updateSystemBars() {
         if (systemBarsColorId != IView.UNDEFINED) {
             setStatusBarColor(systemBarsColorId)
+            logD("systemBarsLights $systemBarsLights")
             fixSystemBars(systemBarsLights)
         }
     }

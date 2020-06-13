@@ -45,6 +45,11 @@ abstract class BasePreferenceFragment<M : BaseViewModel<*,*>, P : BasePresenter<
         delegate.onCreate(this)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        delegate.onViewCreated()
+    }
+
     override fun onStart() {
         super.onStart()
         delegate.onStart()
