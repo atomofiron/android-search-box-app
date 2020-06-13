@@ -43,7 +43,7 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     var globalMatches: List<LineIndexMatches> = ArrayList()
     var localMatches: List<LineIndexMatches>? = null
     /** line index -> line matches */
-    /*private*/ val matches: List<LineIndexMatches> get() = when (localMatches) {
+    private val matches: List<LineIndexMatches> get() = when (localMatches) {
         null -> globalMatches
         else -> localMatches!!
     }
