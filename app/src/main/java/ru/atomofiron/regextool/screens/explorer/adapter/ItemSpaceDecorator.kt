@@ -3,7 +3,7 @@ package ru.atomofiron.regextool.screens.explorer.adapter
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.Math.min
+import kotlin.math.min
 
 class ItemSpaceDecorator(private val divide: (Int) -> Divider) : RecyclerView.ItemDecoration() {
     companion object {

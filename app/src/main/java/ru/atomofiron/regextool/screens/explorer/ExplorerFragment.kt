@@ -17,6 +17,7 @@ import ru.atomofiron.regextool.custom.view.ExplorerHeaderView
 import ru.atomofiron.regextool.custom.view.VerticalDockView
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
 import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerAdapter
+import ru.atomofiron.regextool.screens.explorer.fragment.HeaderViewOutputDelegate
 import ru.atomofiron.regextool.screens.explorer.places.PlacesAdapter
 import ru.atomofiron.regextool.screens.explorer.sheet.BottomSheetMenuWithTitle
 import ru.atomofiron.regextool.screens.explorer.sheet.CreateDelegate
@@ -39,6 +40,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
 
+    private lateinit var headerViewOutputDelegate: HeaderViewOutputDelegate
+
     @Inject
     override lateinit var presenter: ExplorerPresenter
 
@@ -51,6 +54,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
         renameDelegate = RenameDelegate(presenter)
         createDelegate = CreateDelegate(presenter)
         bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_explorer, thisContext, presenter)
+
+        headerViewOutputDelegate = HeaderViewOutputDelegate(explorerAdapter, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,7 +87,10 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
         createDelegate.bottomSheetView = bottomSheetView.view
         bottomItemMenu.bottomSheetView = bottomSheetView.view
 
-        explorerAdapter.setHeaderView(headerView.view)
+        headerView {
+            explorerAdapter.setHeaderView(this)
+            setOnItemActionListener(headerViewOutputDelegate)
+        }
     }
 
     override fun onSubscribeData(owner: LifecycleOwner) {
@@ -122,7 +130,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
         bottomSheetView(default = false) { isSheetShown } -> false
         isHidden -> false
         keyCode == KeyEvent.KEYCODE_VOLUME_UP -> {
-            presenter.onVolumeUp()
+            presenter.onVolumeUp(explorerAdapter.isCurrentDirVisible())
             true
         }
         else -> false
@@ -130,7 +138,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-            explorerAdapter.notifyItemChanged(0)
+        explorerAdapter.notifyItemChanged(0)
     }
 
     private fun showPermissionRequiredWarning() {

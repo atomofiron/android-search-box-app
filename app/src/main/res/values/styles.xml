@@ -1,5 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 	<style name="AppTheme.White" parent="Theme.MaterialComponents.Light.NoActionBar">
+		<item name="android:windowEnableSplitTouch">false</item>
+		<item name="android:splitMotionEvents">false</item>
 		<item name="isDarkTheme">false</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
@@ -31,6 +33,8 @@
 		<item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Horizontal</item>
 	</style>
 	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
+		<item name="android:windowEnableSplitTouch">false</item>
+		<item name="android:splitMotionEvents">false</item>
 		<item name="isDarkTheme">true</item>
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>

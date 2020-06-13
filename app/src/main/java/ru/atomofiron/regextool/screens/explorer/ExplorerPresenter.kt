@@ -93,8 +93,8 @@ class ExplorerPresenter(
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 
-    fun onVolumeUp() {
-        viewModel.scrollToCurrentDir.invoke()
-        explorerInteractor.openParent()
+    fun onVolumeUp(isCurrentDirVisible: Boolean) = when {
+        isCurrentDirVisible -> explorerInteractor.openParent()
+        else -> viewModel.scrollToCurrentDir.invoke()
     }
 }

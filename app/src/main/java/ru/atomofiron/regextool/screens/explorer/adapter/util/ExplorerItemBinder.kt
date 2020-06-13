@@ -62,7 +62,9 @@ class ExplorerItemBinder(private val itemView: View) {
     }
 
     init {
-        if (cbBox.buttonTintList == null) cbBox.isUseMaterialThemeColors = true
+        if (cbBox.buttonTintList == null) {
+            cbBox.isUseMaterialThemeColors = true
+        }
 
         val stateEnabledChecked = intArrayOf(android.R.attr.state_enabled, android.R.attr.state_checked)
         val stateDisabledChecked = intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked)

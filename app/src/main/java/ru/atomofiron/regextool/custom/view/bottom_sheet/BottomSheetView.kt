@@ -235,11 +235,6 @@ open class BottomSheetView @JvmOverloads constructor(
         animator.start()
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return false//super.onTouchEvent(event)
-    }
-
-
     override fun onStartNestedScroll(child: View?, target: View?, nestedScrollAxes: Int): Boolean {
         allowNestedScrolling = true
         return true
@@ -278,9 +273,6 @@ open class BottomSheetView @JvmOverloads constructor(
 
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
         val default = false//super.onInterceptTouchEvent(event)
-        if (event.getPointerId(event.actionIndex) != FIRST) {
-            return default
-        }
         if (state == State.CLOSED) {
             return true
         }

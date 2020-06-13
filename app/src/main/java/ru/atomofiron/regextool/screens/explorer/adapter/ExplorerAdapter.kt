@@ -31,6 +31,16 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
 
+    private fun getFirstChild(): View? {
+        val recyclerView = recyclerView ?: return null
+        return recyclerView.getChildAt(0)!!
+    }
+
+    private fun getLastChild(): View? {
+        val recyclerView = recyclerView ?: return null
+        return recyclerView.getChildAt(recyclerView.childCount.dec())!!
+    }
+
     private val spaceDecorator = ItemSpaceDecorator { i ->
         val item = items[i]
         val nextPosition = i.inc()
@@ -69,6 +79,14 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         }
     }
 
+    fun isCurrentDirVisible(): Boolean {
+        val firstChild = getFirstChild() ?: return false
+        val recyclerView = recyclerView!!
+        val topItemPosition = recyclerView.getChildLayoutPosition(firstChild)
+        val bottomItemPosition = recyclerView.getChildLayoutPosition(getLastChild()!!)
+        return headerItemPosition in topItemPosition..bottomItemPosition
+    }
+
     fun setCurrentDir(dir: XFile?) {
         currentDir = dir
         headerItemPosition = items.indexOf(dir)
@@ -94,8 +112,26 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     fun scrollToCurrentDir() {
         val dir = currentDir ?: return
+        var lastChild = getLastChild() ?: return
+        val recyclerView = recyclerView!!
         val position = items.indexOf(dir)
-        recyclerView?.scrollToPosition(position)
+        val lastItemPosition = recyclerView.getChildLayoutPosition(lastChild)
+        when {
+            position > lastItemPosition -> {
+                recyclerView.scrollToPosition(position.dec())
+                recyclerView.post {
+                    lastChild = getLastChild()!!
+                    recyclerView.smoothScrollBy(0, lastChild.height * 3 / 2) // ItemSpaceDecorator
+                }
+            }
+            else -> {
+                recyclerView.scrollToPosition(position.inc())
+                recyclerView.post {
+                    val firstChild = getFirstChild()!!
+                    recyclerView.smoothScrollBy(0, -firstChild.height * 5 / 2) // ItemSpaceDecorator
+                }
+            }
+        }
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {

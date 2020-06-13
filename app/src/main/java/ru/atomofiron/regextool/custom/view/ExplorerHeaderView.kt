@@ -19,7 +19,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.item_explorer, this)
     }
 
-    private val binder = ExplorerItemBinder(this)
+    private val binder = ExplorerItemBinder(getChildAt(0))
     lateinit var composition: ExplorerItemComposition; private set
     private var item: XFile? = null
 
