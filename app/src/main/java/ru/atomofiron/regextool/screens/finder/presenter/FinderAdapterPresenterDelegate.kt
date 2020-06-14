@@ -12,39 +12,11 @@ class FinderAdapterPresenterDelegate(
         private val interactor: FinderInteractor
 ) : FinderAdapterOutput {
 
-    override fun onConfigChange(item: FinderStateItem.ConfigItem) {
-        val oldItem = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
-
-        val ignoreCaseChanged = oldItem.ignoreCase xor item.ignoreCase
-        val replaceEnabledChanged = oldItem.replaceEnabled xor item.replaceEnabled
-        val useRegexpChanged = oldItem.useRegex xor item.useRegex
-        val multilineSearchChanged = oldItem.excludeDirs xor item.excludeDirs
-
-        if (replaceEnabledChanged || useRegexpChanged) {
-            viewModel.updateUniqueItem(FinderStateItem.SearchAndReplaceItem::class) {
-                it.copy(replaceEnabled = item.replaceEnabled, useRegex = item.useRegex)
-            }
-        }
-
-        viewModel.updateUniqueItem(item)
-
-        if (ignoreCaseChanged || useRegexpChanged || multilineSearchChanged) {
-            viewModel.updateUniqueItem(FinderStateItem.TestItem::class) {
-                it.copy(useRegex = item.useRegex, ignoreCase = item.ignoreCase)
-            }
-        }
-    }
+    override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
 
     override fun onCharacterClick(value: String) = viewModel.insertInQuery.invoke(value)
 
-    override fun onSearchChange(value: String) {
-        viewModel.updateUniqueItem(FinderStateItem.TestItem::class) {
-            it.copy(searchQuery = value)
-        }
-        val item = viewModel.getUniqueItem(FinderStateItem.SearchAndReplaceItem::class)
-        item.query = value
-        // do not notify
-    }
+    override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
         router.showResult(item.finderTask.id)

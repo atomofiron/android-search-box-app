@@ -11,6 +11,9 @@
         android:id="@+id/sheet_viewer_search_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:tag="@string/bottom_sheet_main_view_tag"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:reverseLayout="true"
         />
 </LinearLayout>

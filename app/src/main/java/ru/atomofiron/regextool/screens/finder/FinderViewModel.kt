@@ -2,32 +2,20 @@ package ru.atomofiron.regextool.screens.finder
 
 import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderTaskChange
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
-import kotlin.reflect.KClass
+import ru.atomofiron.regextool.screens.finder.viewmodel.FinderItemsModel
+import ru.atomofiron.regextool.screens.finder.viewmodel.FinderItemsModelDelegate
 
-class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>() {
-    /* 1 search/replace
-     * characters
-     * config (optional)
-     * test field
-     * progressItems
-     * targetItems
-     */
-    val uniqueItems = ArrayList<FinderStateItem>()
-    val progressItems = ArrayList<FinderStateItem.ProgressItem>()
-    private val targetItems = ArrayList<FinderStateItem.TargetItem>()
-
+class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>(), FinderItemsModel by FinderItemsModelDelegate() {
     var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
         private set
     val targets = ArrayList<XFile>()
 
     val historyDrawerGravity = MutableLiveData<Int>()
-    val state = LateinitLiveData<List<FinderStateItem>>()
     val reloadHistory = SingleLiveEvent<Unit>()
     val insertInQuery = SingleLiveEvent<String>()
     val replaceQuery = SingleLiveEvent<String>()
@@ -45,14 +33,6 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>() {
         super.inject(view)
         component.inject(this)
         component.inject(view)
-    }
-
-    fun updateState() {
-        val items = ArrayList<FinderStateItem>()
-        items.addAll(uniqueItems)
-        items.addAll(progressItems)
-        items.addAll(targetItems)
-        state.value = items
     }
 
     fun updateTargets(currentDir: XFile?, checked: List<XFile>) {
@@ -108,27 +88,6 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>() {
                 this.configItem = null
             }
         }
-        updateState()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <I : FinderStateItem> getUniqueItem(kClass: KClass<I>): I {
-        return uniqueItems.find { it::class == kClass } as I
-    }
-
-    fun <I : FinderStateItem> updateUniqueItem(item: I) {
-        val index = uniqueItems.indexOfFirst { it::class == item::class }
-        uniqueItems.removeAt(index)
-        uniqueItems.add(index, item)
-        updateState()
-    }
-
-    fun <I : FinderStateItem> updateUniqueItem(kClass: KClass<I>, action: (I) -> I) {
-        val index = uniqueItems.indexOfFirst { it::class == kClass }
-        val removed = uniqueItems.removeAt(index)
-        @Suppress("UNCHECKED_CAST")
-        val item = action(removed as I)
-        uniqueItems.add(index, item)
         updateState()
     }
 }

@@ -41,7 +41,7 @@ open class BottomSheetView @JvmOverloads constructor(
     private val viewContainer: ViewGroup = findViewById(R.id.bottom_container)
     val anchorView: View get() = viewContainer
     lateinit var contentView: View private set
-    var contentViewId: Int = UNDEFINED; private set
+    private var contentViewId: Int = UNDEFINED; private set
 
     private var lastY = 0f
     private var speedSum = 0f
@@ -124,16 +124,19 @@ open class BottomSheetView @JvmOverloads constructor(
         contentViewId = UNDEFINED
         contentView = view
 
-        view.overScrollMode = View.OVER_SCROLL_NEVER
-        view.isNestedScrollingEnabled = false
-        (view as? ViewGroup)?.clipToPadding = false
+        val tag = context.getString(R.string.bottom_sheet_main_view_tag)
+        val mainView = view.findViewWithTag(tag) ?: view
+        mainView.overScrollMode = View.OVER_SCROLL_NEVER
+        mainView.isNestedScrollingEnabled = false
+        (mainView as? ViewGroup)?.clipToPadding = false
 
         var bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
         when {
-            view.paddingBottom < bottom -> bottom += view.paddingBottom
-            view.paddingBottom > bottom -> bottom = view.paddingBottom
+            mainView.paddingBottom < bottom -> bottom += mainView.paddingBottom
+            mainView.paddingBottom > bottom -> bottom = mainView.paddingBottom
         }
-        view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, bottom)
+        mainView.setPadding(mainView.paddingLeft, mainView.paddingTop, mainView.paddingRight, bottom)
+
         when {
             view.parent == null -> viewContainer.addView(view)
             view.parent === viewContainer -> Unit

@@ -23,8 +23,8 @@ class FinderPresenter(
 ) : BasePresenter<FinderViewModel, FinderRouter>(viewModel, router),
         FinderAdapterOutput by finderAdapterDelegate
 {
-    private val uniqueItems: ArrayList<FinderStateItem> get() = viewModel.uniqueItems
-    private val progressItems: ArrayList<FinderStateItem.ProgressItem> get() = viewModel.progressItems
+    private val uniqueItems: MutableList<FinderStateItem> get() = viewModel.uniqueItems
+    private val progressItems: MutableList<FinderStateItem.ProgressItem> get() = viewModel.progressItems
 
     init {
         uniqueItems.add(FinderStateItem.SearchAndReplaceItem())

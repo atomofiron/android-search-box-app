@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.viewer
 
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -28,8 +29,6 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         const val KEY_QUERY = "KEY_QUERY"
         const val KEY_USE_SU = "KEY_USE_SU"
         const val KEY_IGNORE_CASE = "KEY_IGNORE_CASE"
-
-        const val SCALE_ANIMATION_DURATION = 128L
 
         fun openTextFile(path: String, params: FinderQueryParams? = null): Fragment {
             val bundle = Bundle()
@@ -101,7 +100,8 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         viewModel.matchesMap.observe(owner, Observer(viewerAdapter::setMatches))
         viewModel.matchesCursor.observe(owner, Observer(::onMatchCursorChanged))
         viewModel.matchesCounter.observe(owner, Observer(::onMatchCounterChanged))
-        viewModel.serachItems.observe(owner, Observer(searchDelegate::setItems))
+        viewModel.searchItems.observe(owner, Observer(searchDelegate::setItems))
+        viewModel.insertInQuery.observeData(owner, ::insertInQuery)
     }
 
     override fun onBack(): Boolean = bottomSheetView.view.hide() || super.onBack()
@@ -135,5 +135,13 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
 
     private fun onMatchCursorChanged(cursor: Long?) {
         viewerAdapter.setCursor(cursor)
+    }
+
+    private fun insertInQuery(value: String) {
+        view?.findViewById<EditText>(R.id.item_find_rt_find)
+                ?.takeIf { it.isFocused }
+                ?.apply {
+                    text.replace(selectionStart, selectionEnd, value)
+                }
     }
 }

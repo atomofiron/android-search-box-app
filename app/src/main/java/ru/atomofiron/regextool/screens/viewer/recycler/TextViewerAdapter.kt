@@ -11,8 +11,8 @@ import ru.atomofiron.regextool.model.textviewer.TextLine
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 
 class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
-    lateinit var textViewerListener: TextViewerListener
-    private lateinit var matches: Map<Int, List<TextLineMatch>>
+    var textViewerListener: TextViewerListener? = null
+    private var matches: Map<Int, List<TextLineMatch>> = HashMap()
 
     private var cursor: Long? = null
     private val cursorLineIndex: Int? get() = cursor?.shr(32)?.toInt()
@@ -67,7 +67,7 @@ class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
             else -> null
         }
         holder.onBind(items[position], matches[position], indexFocus)
-        textViewerListener.onLineVisible(position)
+        textViewerListener?.onLineVisible(position)
     }
 
     interface TextViewerListener {

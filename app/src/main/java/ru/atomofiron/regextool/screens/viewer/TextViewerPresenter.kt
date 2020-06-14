@@ -10,19 +10,19 @@ import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
-import ru.atomofiron.regextool.screens.viewer.presenter.SearchOutputDelegate
+import ru.atomofiron.regextool.screens.viewer.presenter.SearchAdapterPresenterDelegate
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 
 class TextViewerPresenter(
         viewModel: TextViewerViewModel,
         router: TextViewerRouter,
-        searchOutputDelegate: SearchOutputDelegate,
+        searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
         private val interactor: TextViewerInteractor,
         preferenceStore: PreferenceStore,
         textViewerChannel: TextViewerChannel
 ) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router),
         TextViewerAdapter.TextViewerListener,
-        FinderAdapterOutput by searchOutputDelegate
+        FinderAdapterOutput by searchAdapterPresenterDelegate
 {
     private var globalMatchesMap: Map<Int, List<TextLineMatch>> = HashMap()
     private var localMatchesMap: Map<Int, List<TextLineMatch>>? = null

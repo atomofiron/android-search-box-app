@@ -18,7 +18,6 @@ import ru.atomofiron.regextool.custom.view.VerticalDockView
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapter
 import ru.atomofiron.regextool.screens.finder.history.adapter.HistoryAdapter
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
-import ru.atomofiron.regextool.screens.finder.model.FinderStateItemUpdate
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -102,7 +101,7 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
         viewModel.reloadHistory.observeEvent(owner, historyAdapter::reload)
         viewModel.history.observeData(owner, historyAdapter::add)
         viewModel.insertInQuery.observeData(owner, ::insertInQuery)
-        viewModel.state.observe(owner, Observer(::onStateChange))
+        viewModel.searchItems.observe(owner, Observer(::onStateChange))
         viewModel.replaceQuery.observeData(owner, ::replaceQuery)
         viewModel.snackbar.observeData(owner, ::showSnackbar)
     }
