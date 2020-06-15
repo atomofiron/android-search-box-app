@@ -43,6 +43,7 @@ class TextViewerModule {
     @Provides
     @TextViewerScope
     fun presenter(
+            scope: CoroutineScope,
             viewModel: TextViewerViewModel,
             router: TextViewerRouter,
             searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
@@ -50,16 +51,17 @@ class TextViewerModule {
             preferenceStore: PreferenceStore,
             textViewerChannel: TextViewerChannel
     ): TextViewerPresenter {
-        return TextViewerPresenter(viewModel, router, searchAdapterPresenterDelegate, textViewerInteractor, preferenceStore, textViewerChannel)
+        return TextViewerPresenter(scope, viewModel, router, searchAdapterPresenterDelegate, textViewerInteractor, preferenceStore, textViewerChannel)
     }
 
     @Provides
     @TextViewerScope
     fun searchOutputDelegate(
             viewModel: TextViewerViewModel,
+            interactor: TextViewerInteractor,
             preferenceStore: PreferenceStore
     ): SearchAdapterPresenterDelegate {
-        return SearchAdapterPresenterDelegate(viewModel, preferenceStore)
+        return SearchAdapterPresenterDelegate(viewModel, interactor, preferenceStore)
     }
 
     @Provides

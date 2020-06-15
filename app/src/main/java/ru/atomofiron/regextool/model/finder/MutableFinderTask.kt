@@ -3,10 +3,10 @@ package ru.atomofiron.regextool.model.finder
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MutableFinderTask(
+class MutableFinderTask private constructor(
         override val uuid: UUID,
-        override val id: Long = nextId,
-        override val results: ArrayList<FinderResult> = ArrayList(),
+        override val id: Long,
+        override val results: MutableList<FinderResult> = ArrayList(),
         override var count: Int = 0,
         override var inProgress: Boolean = true,
         override var isDone: Boolean = false,
@@ -19,6 +19,8 @@ class MutableFinderTask(
                 return field
             }
     }
+
+    constructor(uuid: UUID) : this(uuid, nextId)
 
     override fun copyTask(): FinderTask = MutableFinderTask(uuid, id, ArrayList(results), count, inProgress, isDone, error)
 

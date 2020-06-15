@@ -3,6 +3,8 @@ package ru.atomofiron.regextool.screens.viewer
 import android.content.Context
 import android.content.Intent
 import app.atomofiron.common.arch.BasePresenter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
@@ -14,6 +16,7 @@ import ru.atomofiron.regextool.screens.viewer.presenter.SearchAdapterPresenterDe
 import ru.atomofiron.regextool.screens.viewer.recycler.TextViewerAdapter
 
 class TextViewerPresenter(
+        private val scope: CoroutineScope,
         viewModel: TextViewerViewModel,
         router: TextViewerRouter,
         searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
@@ -24,52 +27,41 @@ class TextViewerPresenter(
         TextViewerAdapter.TextViewerListener,
         FinderAdapterOutput by searchAdapterPresenterDelegate
 {
-    private var globalMatchesMap: Map<Int, List<TextLineMatch>> = HashMap()
-    private var localMatchesMap: Map<Int, List<TextLineMatch>>? = null
-
-    private var globalMatchesCount: Int? = null
-    private var localMatchesCount: Int? = null
+    private var lineIndexMatchesMap: Map<Int, List<TextLineMatch>> = HashMap()
+    private var matchesCount: Int? = null
 
     init {
         textViewerChannel.textFromFile.addObserver(onClearedCallback) {
-            viewModel.textLines.postValue(it)
+            scope.launch {
+                viewModel.textLines.value = it
+            }
         }
-        textViewerChannel.globalMatches.addObserver(onClearedCallback) {
-            viewModel.globalMatches = it
+        textViewerChannel.lineIndexMatches.addObserver(onClearedCallback) {
+            viewModel.lineIndexMatches = it
         }
-        textViewerChannel.localMatches.addObserver(onClearedCallback) {
-            viewModel.localMatches = it
+        textViewerChannel.lineIndexMatchesMap.addObserver(onClearedCallback) {
+            scope.launch {
+                lineIndexMatchesMap = it
+                viewModel.matchesMap.value = it
+            }
         }
-        textViewerChannel.globalMatchesMap.addObserver(onClearedCallback) {
-            globalMatchesMap = it
-            updateMatchesMap()
-        }
-        textViewerChannel.localMatchesMap.addObserver(onClearedCallback) {
-            localMatchesMap = it
-            updateMatchesMap()
-        }
-        textViewerChannel.globalMatchesCount.addObserver(onClearedCallback) {
-            globalMatchesCount = it
-            updateMatchesCounter()
-        }
-        textViewerChannel.localMatchesCount.addObserver(onClearedCallback) {
-            localMatchesCount = it
-            updateMatchesCounter()
+        textViewerChannel.matchesCount.addObserver(onClearedCallback) {
+            scope.launch {
+                matchesCount = it
+                viewModel.matchesCounter.value = matchesCount!!.toLong()
+            }
         }
         textViewerChannel.textFromFileLoading.addObserver(onClearedCallback) {
-            viewModel.loading.postValue(it)
+            scope.launch {
+                viewModel.loading.value = it
+            }
+        }
+        textViewerChannel.localTasks.addObserver(onClearedCallback) {
+            scope.launch {
+                viewModel.setTasks(it)
+            }
         }
         viewModel.composition = preferenceStore.explorerItemComposition.entity
-    }
-
-    private fun updateMatchesMap() = when (localMatchesMap) {
-        null -> viewModel.matchesMap.postValue(globalMatchesMap)
-        else -> viewModel.matchesMap.postValue(localMatchesMap)
-    }
-
-    private fun updateMatchesCounter() = when (localMatchesCount) {
-        null -> viewModel.matchesCounter.postValue(globalMatchesCount?.toLong())
-        else -> viewModel.matchesCounter.postValue(localMatchesCount?.toLong())
     }
 
     override fun onCreate(context: Context, intent: Intent) {
@@ -92,7 +84,9 @@ class TextViewerPresenter(
         val success = viewModel.changeCursor(increment = true)
         if (!success) {
             interactor.loadFileUpToLine(viewModel.currentLineIndexCursor) {
-                viewModel.changeCursor(increment = true)
+                scope.launch {
+                    viewModel.changeCursor(increment = true)
+                }
             }
             viewModel.loading.value = true
         }

@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.screens.viewer.presenter
 
+import ru.atomofiron.regextool.injectable.interactor.TextViewerInteractor
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.finder.adapter.FinderAdapterOutput
 import ru.atomofiron.regextool.screens.finder.model.FinderStateItem
@@ -7,6 +8,7 @@ import ru.atomofiron.regextool.screens.viewer.TextViewerViewModel
 
 class SearchAdapterPresenterDelegate(
         private val viewModel: TextViewerViewModel,
+        private val interactor: TextViewerInteractor,
         preferenceStore: PreferenceStore
 ) : FinderAdapterOutput {
 
@@ -26,7 +28,8 @@ class SearchAdapterPresenterDelegate(
     override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
 
     override fun onSearchClick(value: String) {
-        // todo next
+        val config = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
+        interactor.search(value, config.ignoreCase, config.useRegex)
     }
 
     override fun onReplaceClick(value: String) = Unit

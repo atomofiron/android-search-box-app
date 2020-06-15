@@ -6,17 +6,12 @@ import ru.atomofiron.regextool.injectable.channel.TextViewerChannel
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.model.explorer.MutableXFile
-import ru.atomofiron.regextool.model.explorer.XFile
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
 import ru.atomofiron.regextool.model.textviewer.LineIndexMatches
 import ru.atomofiron.regextool.model.textviewer.TextLine
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.math.max
 
 class TextViewerService(
         private val textViewerChannel: TextViewerChannel,
@@ -48,9 +43,9 @@ class TextViewerService(
 
     init {
         textViewerChannel.textFromFile.setAndNotify(lines)
-        textViewerChannel.globalMatches.setAndNotify(textLineMatches)
-        textViewerChannel.globalMatchesMap.setAndNotify(textLineMatchesMap)
-        textViewerChannel.globalMatchesCount.setAndNotify(null)
+        textViewerChannel.lineIndexMatches.setAndNotify(textLineMatches)
+        textViewerChannel.lineIndexMatchesMap.setAndNotify(textLineMatchesMap)
+        textViewerChannel.matchesCount.setAndNotify(null)
     }
 
     suspend fun loadFile(xFile: MutableXFile, params: FinderQueryParams?) {
@@ -63,7 +58,7 @@ class TextViewerService(
             null -> loadUpToLine(0)
             else -> {
                 val matchesCount = searchInFile(params)
-                textViewerChannel.globalMatchesCount.setAndNotify(matchesCount)
+                textViewerChannel.matchesCount.setAndNotify(matchesCount)
                 loadUpToLine(0)
             }
         }
@@ -80,6 +75,10 @@ class TextViewerService(
         loadUpToLine(nextLineIndex)
     }
 
+    suspend fun search(query: String, ignoreCase: Boolean, useRegex: Boolean) {
+
+    }
+
     private suspend fun loadUpToLine(index: Int) {
         if (!isEndReached && index > lines.size - Const.TEXT_FILE_PAGINATION_STEP_OFFSET) {
             mutex.withLock(lock) {
@@ -92,7 +91,7 @@ class TextViewerService(
             textViewerChannel.textFromFileLoading.setAndNotify(true)
             val step = index - lines.size + Const.TEXT_FILE_PAGINATION_STEP
             loadNext(step)
-            textViewerChannel.globalMatches.justNotify()
+            textViewerChannel.lineIndexMatches.justNotify()
             textViewerChannel.textFromFile.setAndNotify(ArrayList(lines))
             textViewerChannel.textFromFileLoading.setAndNotify(false)
 

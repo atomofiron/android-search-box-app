@@ -58,7 +58,7 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>(), Finder
                 progressItems.add(item)
             }
             is FinderTaskChange.Update -> {
-                val items = progressItems.map { FinderStateItem.ProgressItem(it.finderTask) }
+                val items = change.tasks.map { FinderStateItem.ProgressItem(it) }
                 progressItems.clear()
                 progressItems.addAll(items)
             }

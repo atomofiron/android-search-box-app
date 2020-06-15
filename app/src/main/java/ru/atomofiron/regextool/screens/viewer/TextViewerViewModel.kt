@@ -6,6 +6,7 @@ import app.atomofiron.common.util.LateinitLiveData
 import app.atomofiron.common.util.SingleLiveEvent
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.model.explorer.XFile
+import ru.atomofiron.regextool.model.finder.FinderTask
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition
 import ru.atomofiron.regextool.model.textviewer.LineIndexMatches
 import ru.atomofiron.regextool.model.textviewer.TextLine
@@ -45,20 +46,15 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     lateinit var xFile: XFile
 
     private var matchesIndex = -1
-    var globalMatches: List<LineIndexMatches> = ArrayList()
-    var localMatches: List<LineIndexMatches>? = null
     /** line index -> line matches */
-    private val matches: List<LineIndexMatches> get() = when (localMatches) {
-        null -> globalMatches
-        else -> localMatches!!
-    }
+    var lineIndexMatches: List<LineIndexMatches>? = null
 
     val currentLineIndexCursor: Int? get() = matchesCursor.value?.shr(32)?.toInt()
 
     /** @return true если есть на что переключаться, иначе нужно догрузить файл. */
     fun changeCursor(increment: Boolean): Boolean {
         val cursor = matchesCursor.value
-        val matches = matches
+        val matches = lineIndexMatches!!
         when (cursor) {
             null -> {
                 if (matches.isEmpty()) {
@@ -102,5 +98,12 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         val count = counter.toInt().toLong()
         matchesCounter.value = index + count
         return true
+    }
+
+    fun setTasks(tasks: List<FinderTask>) {
+        val items = tasks.map { FinderStateItem.ProgressItem(it) }
+        progressItems.clear()
+        progressItems.addAll(items)
+        updateState()
     }
 }
