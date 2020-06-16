@@ -49,6 +49,7 @@ class TextViewerPresenter(
             scope.launch {
                 matchesCount = it
                 viewModel.matchesCounter.value = matchesCount?.toLong()
+                viewModel.matchesCursor.value = null
             }
         }
         textViewerChannel.textFromFileLoading.addObserver(onClearedCallback) {

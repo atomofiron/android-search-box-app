@@ -6,6 +6,8 @@ import kotlinx.coroutines.launch
 import ru.atomofiron.regextool.injectable.service.TextViewerService
 import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
+import ru.atomofiron.regextool.model.finder.FinderTask
+import ru.atomofiron.regextool.model.finder.MutableFinderTask
 
 class TextViewerInteractor(
         private val scope: CoroutineScope,
@@ -39,4 +41,12 @@ class TextViewerInteractor(
             textViewerService.secondarySearch(params)
         }
     }
+
+    fun showTask(task: FinderTask) {
+        scope.launch(context) {
+            textViewerService.showTask(task as MutableFinderTask)
+        }
+    }
+
+    fun removeTask(task: FinderTask) = textViewerService.removeTask(task as MutableFinderTask)
 }

@@ -79,7 +79,10 @@ class FinderWorker(
     private lateinit var textFormats: Array<String>
     private var maxDepth = UNDEFINED
 
-    private val task = MutableFinderTask(id)
+    private val task: MutableFinderTask by lazy(LazyThreadSafetyMode.NONE) {
+        val params = FinderQueryParams(query, useRegex, ignoreCase)
+        MutableFinderTask(id, params)
+    }
     private val connection = ServiceConnectionImpl()
     private var process: Process? = null
 
@@ -126,8 +129,7 @@ class FinderWorker(
         val count = line.substring(index.inc()).toInt()
         if (count > 0) {
             val path = line.substring(0, index)
-            val params = FinderQueryParams(query, useRegex, ignoreCase)
-            addToResults(path, count, params)
+            addToResults(path, count)
         }
         task.count++
     }
@@ -155,9 +157,9 @@ class FinderWorker(
         task.count++
     }
 
-    private fun addToResults(path: String, count: Int = 0, finderQueryParams: FinderQueryParams? = null) {
+    private fun addToResults(path: String, count: Int = 0) {
         val xFile = MutableXFile.byPath(path)
-        val result = FinderResult(xFile, count, finderQueryParams)
+        val result = FinderResult(xFile, count)
         task.results.add(result)
     }
 

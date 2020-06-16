@@ -38,6 +38,7 @@ class TextViewerService(
     private var lock = false
     private val mutex = Mutex()
     private var primaryParams: FinderQueryParams? = null
+    private var currentTask: MutableFinderTask? = null
 
     private lateinit var path: String
     private lateinit var xFile: MutableXFile
@@ -45,34 +46,53 @@ class TextViewerService(
     private var isEndReached = false
     private var fileSize = UNKNOWN
 
+    suspend fun showTask(task: MutableFinderTask) {
+        if (task == currentTask) {
+            return
+        }
+        loadFile(task)
+    }
+
+    fun removeTask(task: MutableFinderTask) {
+        if (task == currentTask) {
+            textViewerChannel.lineIndexMatches.setAndNotify(ArrayList())
+            textViewerChannel.lineIndexMatchesMap.setAndNotify(HashMap())
+            textViewerChannel.matchesCount.setAndNotify(null)
+        }
+        tasks.remove(task)
+        textViewerChannel.tasks.setAndNotify(tasks)
+    }
+
     suspend fun primarySearch(xFile: MutableXFile, params: FinderQueryParams?) {
         this.xFile = xFile
         path = xFile.completedPath
         primaryParams = params
         when {
             params != null -> {
-                val task = addTask(isPrimary = true)
-                loadFile(params, task)
+                val task = addTask(isPrimary = true, params = params)
+                loadFile(task)
             }
             else -> loadFile(params)
         }
     }
 
     suspend fun secondarySearch(params: FinderQueryParams) {
-        val task = addTask(isPrimary = false)
-        loadFile(params, task)
+        val task = addTask(isPrimary = false, params = params)
+        loadFile(task)
     }
 
-    private fun addTask(isPrimary: Boolean): MutableFinderTask {
-        val task = MutableFinderTask.secondary(isRemovable = !isPrimary)
+    private fun addTask(isPrimary: Boolean, params: FinderQueryParams): MutableFinderTask {
+        val task = MutableFinderTask.secondary(isRemovable = !isPrimary, params = params)
         tasks.add(task)
         textViewerChannel.tasks.setAndNotify(tasks)
         return task
     }
 
-    private suspend fun loadFileWithPrimaryParams() = loadFile(primaryParams)
+    private suspend fun loadFileWithPrimaryParams() = loadFile(tasks.first())
 
-    private suspend fun loadFile(params: FinderQueryParams?, task: MutableFinderTask? = null) {
+    private suspend fun loadFile(task: MutableFinderTask? = null) {
+        textOffset = 0
+        isEndReached = false
         lines = ArrayList()
         matchesMap = HashMap()
         textLineMatches = ArrayList()
@@ -86,14 +106,16 @@ class TextViewerService(
 
         fileSize = getFileSize()
         xFile.updateCache(useSu)
+        currentTask = task
 
-        when (params) {
+        when (task?.params) {
             null -> loadUpToLine(0)
             else -> {
-                val matchesCount = searchInFile(params)
+                val matchesCount = searchInFile(task.params)
                 textViewerChannel.matchesCount.setAndNotify(matchesCount)
 
-                task!!.count = matchesCount
+                task.count = matchesCount
+                task.isDone = true
                 textViewerChannel.tasks.setAndNotify(tasks)
 
                 loadUpToLine(0)

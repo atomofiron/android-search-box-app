@@ -102,6 +102,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         viewModel.matchesCounter.observe(owner, Observer(::onMatchCounterChanged))
         viewModel.searchItems.observe(owner, Observer(searchDelegate::setItems))
         viewModel.insertInQuery.observeData(owner, ::insertInQuery)
+        viewModel.closeBottomSheet.observeEvent(owner, ::closeBottomSheet)
     }
 
     override fun onBack(): Boolean = bottomSheetView.view.hide() || super.onBack()
@@ -143,5 +144,11 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
                 ?.apply {
                     text.replace(selectionStart, selectionEnd, value)
                 }
+    }
+
+    private fun closeBottomSheet() {
+        bottomSheetView {
+            hide()
+        }
     }
 }

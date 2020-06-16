@@ -21,7 +21,8 @@ class ResultItemActionDelegate(
         item as FinderResult
         val textFormats = preferenceStore.textFormats.entity
         if (item.isFile && Util.isTextFile(item.completedPath, textFormats)) {
-            router.openFile(item.completedPath, item.finderQueryParams)
+            val params = viewModel.task.value.params
+            router.openFile(item.completedPath, params)
         } else {
             // todo open dir
         }

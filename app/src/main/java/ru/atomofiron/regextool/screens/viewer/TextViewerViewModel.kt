@@ -33,6 +33,7 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     }
 
     val insertInQuery = SingleLiveEvent<String>()
+    val closeBottomSheet = SingleLiveEvent<Unit>()
 
     val textLines = LateinitLiveData<List<TextLine>>()
     /** line index -> line matches */

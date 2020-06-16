@@ -6,6 +6,7 @@ import kotlin.collections.ArrayList
 class MutableFinderTask private constructor(
         override val uuid: UUID,
         override val id: Long,
+        override val params: FinderQueryParams,
         override val results: MutableList<FinderResult> = ArrayList(),
         override var count: Int = 0,
         override var inProgress: Boolean = true,
@@ -18,15 +19,18 @@ class MutableFinderTask private constructor(
         private var lastId = 0L
         private fun nextId(): Long = lastId++
 
-        fun secondary(isRemovable: Boolean): MutableFinderTask {
-            return MutableFinderTask(UUID.randomUUID(), nextId(), inProgress = false, isDone = true, isSecondary = true, isRemovable = isRemovable)
+        fun secondary(isRemovable: Boolean, params: FinderQueryParams): MutableFinderTask {
+            return MutableFinderTask(
+                    UUID.randomUUID(), nextId(), params,
+                    inProgress = false, isDone = true, isSecondary = true, isRemovable = isRemovable
+            )
         }
     }
 
-    constructor(uuid: UUID) : this(uuid, nextId())
+    constructor(uuid: UUID, params: FinderQueryParams) : this(uuid, nextId(), params)
 
     override fun copyTask(): FinderTask {
-        return MutableFinderTask(uuid, id, ArrayList(results), count, inProgress, isDone, isSecondary, isRemovable, error)
+        return MutableFinderTask(uuid, id, params, ArrayList(results), count, inProgress, isDone, isSecondary, isRemovable, error)
     }
 
     override fun areContentsTheSame(other: FinderTask): Boolean {

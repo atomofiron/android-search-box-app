@@ -64,7 +64,7 @@ class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : C
             else -> R.string.remove
         }
         btnAction.setText(idAction)
-        btnAction.setVisibility(task.inProgress || task.isRemovable)
+        btnAction.setVisibility(task.isDone && task.isRemovable)
     }
 
     interface OnActionListener {

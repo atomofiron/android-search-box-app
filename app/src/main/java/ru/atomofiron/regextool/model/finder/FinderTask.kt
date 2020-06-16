@@ -5,6 +5,7 @@ import java.util.*
 interface FinderTask {
     val id: Long
     val uuid: UUID
+    val params: FinderQueryParams
     val results: List<FinderResult>
     val count: Int
     val inProgress: Boolean

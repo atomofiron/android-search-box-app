@@ -6,8 +6,7 @@ import ru.atomofiron.regextool.utils.Const
 
 class FinderResult(
         item: MutableXFile,
-        val count: Int = 0,
-        val finderQueryParams: FinderQueryParams? = null
+        val count: Int = 0
 ) : XFile {
 
     private val xFile = item
