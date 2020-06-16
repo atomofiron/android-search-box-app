@@ -163,7 +163,7 @@ class TextViewerService(
         }
         val offset = lines.size
         val cmd = Shell[Shell.HEAD_TAIL].format(path, offset + step, step)
-        Shell.exec(cmd, useSu) { line ->
+        val output = Shell.exec(cmd, useSu) { line ->
             val index = lines.size
             val match = matchesMap[index]
             match?.map {
@@ -180,6 +180,9 @@ class TextViewerService(
             lines.add(textLine)
             textOffset += line.toByteArray(Charsets.UTF_8).size.inc()
         }
+        if (!output.success) {
+            logE("loadNext !success, error: ${output.error}")
+        }
 
         isEndReached = lines.size - offset < step
         isEndReached = isEndReached || textOffset >= fileSize
@@ -190,7 +193,10 @@ class TextViewerService(
         val output = Shell.exec(lsLong, useSu)
         return when {
             output.success -> output.output.split(Const.SPACE)[2].toLong()
-            else -> UNKNOWN
+            else -> {
+                logE("getFileSize !success, error: ${output.error}")
+                UNKNOWN
+            }
         }
     }
 
@@ -203,7 +209,7 @@ class TextViewerService(
         }
         var count = 0
         val cmd = Shell[template].format(params.query, path)
-        Shell.exec(cmd, useSu) {
+        val output = Shell.exec(cmd, useSu) {
             val lineByteOffset = it.split(':')
             val lineIndex = lineByteOffset[0].toInt().dec()
             val byteOffset = lineByteOffset[1].toLong()
@@ -217,6 +223,9 @@ class TextViewerService(
             }
             list.add(match)
             count++
+        }
+        if (!output.success) {
+            logE("searchInFile !success, error: ${output.error}")
         }
         return count
     }

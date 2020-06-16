@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool
 
 import android.util.Log
+import com.yandex.metrica.YandexMetrica
 
 private var timestamp: Long = 0
 private var nanotimestamp: Long = 0
@@ -11,6 +12,9 @@ private const val delay = false
 fun Any.sleep(t: Long) = if (delay) Thread.sleep(t) else Unit
 
 fun Any.logE(s: String) {
+    if (!BuildConfig.DEBUG) {
+        YandexMetrica.reportError(s, null)
+    }
     Log.e("regextool", "[ERROR] [${this.javaClass.simpleName}] $s")
 }
 
