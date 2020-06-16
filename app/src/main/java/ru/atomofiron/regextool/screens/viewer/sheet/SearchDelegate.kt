@@ -38,6 +38,7 @@ class SearchDelegate(private val output: FinderAdapterOutput) : BottomSheetDeleg
         holder.disableCheckBox()
 
         recyclerView.adapter = finderAdapter
+        recyclerView.itemAnimator = null
     }
 
     override fun onViewShown() {

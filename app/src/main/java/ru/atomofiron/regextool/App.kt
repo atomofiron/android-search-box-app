@@ -2,6 +2,7 @@ package ru.atomofiron.regextool
 
 import android.app.Application
 import android.content.Context
+import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
@@ -10,7 +11,7 @@ import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.work.NotificationWorker
 import javax.inject.Inject
 
-class App : Application() {
+class App : Application(), Configuration.Provider {
     companion object {
         lateinit var appContext: Context
     }
@@ -23,7 +24,7 @@ class App : Application() {
 
         appContext = applicationContext
 
-        DaggerInjector.init(this)
+        DaggerInjector.init(applicationContext)
         DaggerInjector.appComponent.inject(this)
         workManager.cancelUniqueWork(NotificationWorker.NAME)
 
@@ -37,4 +38,6 @@ class App : Application() {
             YandexMetrica.activate(applicationContext, config);
         }
     }
+
+    override fun getWorkManagerConfiguration(): Configuration = Configuration.Builder().build()
 }

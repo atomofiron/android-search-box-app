@@ -30,11 +30,14 @@ class SearchAdapterPresenterDelegate(
     override fun onSearchClick(value: String) {
         val config = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
         interactor.search(value, config.ignoreCase, config.useRegex)
+        viewModel.closeBottomSheet.invoke()
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
-        viewModel.closeBottomSheet.invoke()
-        interactor.showTask(item.finderTask)
+        if (item.finderTask.count > 0) {
+            viewModel.closeBottomSheet.invoke()
+            interactor.showTask(item.finderTask)
+        }
     }
 
     override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {

@@ -2,6 +2,7 @@ package ru.atomofiron.regextool.screens.finder.adapter.holder
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -25,6 +26,7 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
             listener.onSearchClick(etFind.text.toString())
         }
         etFind.addTextChangedListener(TextChangeListener())
+        etFind.setOnEditorActionListener(::onEditorAction)
     }
 
     override fun onBind(item: FinderStateItem, position: Int) {
@@ -36,6 +38,17 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
             etFind.setSelection(item.query.length)
         }
         updateWarning(etFind.text.toString())
+    }
+
+    private fun onEditorAction(view: View, actionId: Int, event: KeyEvent): Boolean {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            val query = etFind.text.toString()
+            when {
+                query.isEmpty() -> return true
+                else -> listener.onSearchClick(query)
+            }
+        }
+        return false
     }
 
     private fun updateWarning(query: String) {
