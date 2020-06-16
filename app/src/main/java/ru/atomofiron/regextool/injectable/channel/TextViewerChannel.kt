@@ -12,5 +12,5 @@ class TextViewerChannel {
     val lineIndexMatches = KObservable<List<LineIndexMatches>>()
     val lineIndexMatchesMap = KObservable<Map<Int, List<TextLineMatch>>>()
     val matchesCount = KObservable<Int?>()
-    val localTasks = KObservable<List<FinderTask>>()
+    val tasks = KObservable<List<FinderTask>>()
 }

@@ -10,19 +10,24 @@ class MutableFinderTask private constructor(
         override var count: Int = 0,
         override var inProgress: Boolean = true,
         override var isDone: Boolean = false,
+        override var isSecondary: Boolean = false,
+        override var isRemovable: Boolean = true,
         override var error: String? = null
 ) : FinderTask {
     companion object {
-        private var nextId = 0L
-            get() {
-                field++
-                return field
-            }
+        private var lastId = 0L
+        private fun nextId(): Long = lastId++
+
+        fun secondary(isRemovable: Boolean): MutableFinderTask {
+            return MutableFinderTask(UUID.randomUUID(), nextId(), inProgress = false, isDone = true, isSecondary = true, isRemovable = isRemovable)
+        }
     }
 
-    constructor(uuid: UUID) : this(uuid, nextId)
+    constructor(uuid: UUID) : this(uuid, nextId())
 
-    override fun copyTask(): FinderTask = MutableFinderTask(uuid, id, ArrayList(results), count, inProgress, isDone, error)
+    override fun copyTask(): FinderTask {
+        return MutableFinderTask(uuid, id, ArrayList(results), count, inProgress, isDone, isSecondary, isRemovable, error)
+    }
 
     override fun areContentsTheSame(other: FinderTask): Boolean {
         return other.uuid == uuid &&

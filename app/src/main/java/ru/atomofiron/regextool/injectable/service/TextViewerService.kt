@@ -7,6 +7,7 @@ import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.logE
 import ru.atomofiron.regextool.model.explorer.MutableXFile
 import ru.atomofiron.regextool.model.finder.FinderQueryParams
+import ru.atomofiron.regextool.model.finder.MutableFinderTask
 import ru.atomofiron.regextool.model.textviewer.LineIndexMatches
 import ru.atomofiron.regextool.model.textviewer.TextLine
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
@@ -24,34 +25,66 @@ class TextViewerService(
             val byteOffset: Long,
             val textLength: Int
     )
-    private val matchesLineIndexes = ArrayList<Int>()
+    private lateinit var matchesLineIndexes: MutableList<Int>
     /** line index -> matches byteOffset-textLength */
-    private val matchesMap = HashMap<Int, MutableList<Match>>()
+    private lateinit var matchesMap: MutableMap<Int, MutableList<Match>>
     /** line index -> matches start-end */
-    private val textLineMatches = ArrayList<LineIndexMatches>()
+    private lateinit var textLineMatches: MutableList<LineIndexMatches>
     /** line index -> matches start-end */
-    private val textLineMatchesMap = HashMap<Int, List<TextLineMatch>>()
-    private val lines = ArrayList<TextLine>()
+    private lateinit var textLineMatchesMap: MutableMap<Int, List<TextLineMatch>>
+    private lateinit var lines: MutableList<TextLine>
+    private val tasks: MutableList<MutableFinderTask> = ArrayList()
     private val useSu: Boolean get() = preferenceStore.useSu.value
     private var lock = false
     private val mutex = Mutex()
+    private var primaryParams: FinderQueryParams? = null
 
     private lateinit var path: String
+    private lateinit var xFile: MutableXFile
     private var textOffset = 0L
     private var isEndReached = false
     private var fileSize = UNKNOWN
 
-    init {
+    suspend fun primarySearch(xFile: MutableXFile, params: FinderQueryParams?) {
+        this.xFile = xFile
+        path = xFile.completedPath
+        primaryParams = params
+        when {
+            params != null -> {
+                val task = addTask(isPrimary = true)
+                loadFile(params, task)
+            }
+            else -> loadFile(params)
+        }
+    }
+
+    suspend fun secondarySearch(params: FinderQueryParams) {
+        val task = addTask(isPrimary = false)
+        loadFile(params, task)
+    }
+
+    private fun addTask(isPrimary: Boolean): MutableFinderTask {
+        val task = MutableFinderTask.secondary(isRemovable = !isPrimary)
+        tasks.add(task)
+        textViewerChannel.tasks.setAndNotify(tasks)
+        return task
+    }
+
+    private suspend fun loadFileWithPrimaryParams() = loadFile(primaryParams)
+
+    private suspend fun loadFile(params: FinderQueryParams?, task: MutableFinderTask? = null) {
+        lines = ArrayList()
+        matchesMap = HashMap()
+        textLineMatches = ArrayList()
+        textLineMatchesMap = HashMap()
+        matchesLineIndexes = ArrayList()
+
         textViewerChannel.textFromFile.setAndNotify(lines)
         textViewerChannel.lineIndexMatches.setAndNotify(textLineMatches)
         textViewerChannel.lineIndexMatchesMap.setAndNotify(textLineMatchesMap)
         textViewerChannel.matchesCount.setAndNotify(null)
-    }
 
-    suspend fun loadFile(xFile: MutableXFile, params: FinderQueryParams?) {
-        path = xFile.completedPath
         fileSize = getFileSize()
-
         xFile.updateCache(useSu)
 
         when (params) {
@@ -59,6 +92,10 @@ class TextViewerService(
             else -> {
                 val matchesCount = searchInFile(params)
                 textViewerChannel.matchesCount.setAndNotify(matchesCount)
+
+                task!!.count = matchesCount
+                textViewerChannel.tasks.setAndNotify(tasks)
+
                 loadUpToLine(0)
             }
         }
@@ -73,10 +110,6 @@ class TextViewerService(
         }
         val nextLineIndex = matchesLineIndexes[indexOfNext]
         loadUpToLine(nextLineIndex)
-    }
-
-    suspend fun search(query: String, ignoreCase: Boolean, useRegex: Boolean) {
-
     }
 
     private suspend fun loadUpToLine(index: Int) {

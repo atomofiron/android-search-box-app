@@ -48,7 +48,7 @@ class TextViewerPresenter(
         textViewerChannel.matchesCount.addObserver(onClearedCallback) {
             scope.launch {
                 matchesCount = it
-                viewModel.matchesCounter.value = matchesCount!!.toLong()
+                viewModel.matchesCounter.value = matchesCount?.toLong()
             }
         }
         textViewerChannel.textFromFileLoading.addObserver(onClearedCallback) {
@@ -56,7 +56,7 @@ class TextViewerPresenter(
                 viewModel.loading.value = it
             }
         }
-        textViewerChannel.localTasks.addObserver(onClearedCallback) {
+        textViewerChannel.tasks.addObserver(onClearedCallback) {
             scope.launch {
                 viewModel.setTasks(it)
             }

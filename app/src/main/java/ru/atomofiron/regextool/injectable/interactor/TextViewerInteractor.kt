@@ -15,7 +15,7 @@ class TextViewerInteractor(
 
     fun loadFile(xFile: MutableXFile, params: FinderQueryParams?, callback: () -> Unit) {
         scope.launch(context) {
-            textViewerService.loadFile(xFile, params)
+            textViewerService.primarySearch(xFile, params)
             callback()
         }
     }
@@ -35,7 +35,8 @@ class TextViewerInteractor(
 
     fun search(query: String, ignoreCase: Boolean, useRegex: Boolean) {
         scope.launch(context) {
-            textViewerService.search(query, ignoreCase, useRegex)
+            val params = FinderQueryParams(query, useRegex, ignoreCase)
+            textViewerService.secondarySearch(params)
         }
     }
 }

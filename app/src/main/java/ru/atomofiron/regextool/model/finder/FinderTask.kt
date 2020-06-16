@@ -8,6 +8,8 @@ interface FinderTask {
     val results: List<FinderResult>
     val count: Int
     val inProgress: Boolean
+    val isSecondary: Boolean
+    val isRemovable: Boolean
     val isDone: Boolean
     val error: String?
 

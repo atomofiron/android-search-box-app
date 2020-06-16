@@ -35,7 +35,10 @@ class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : C
     override fun onBind(item: FinderStateItem, position: Int) {
         item as FinderStateItem.ProgressItem
         val task = item.finderTask
-        val text = "${task.results.size}/${task.count}"
+        val text = when {
+            task.isSecondary -> task.count.toString()
+            else -> "${task.results.size}/${task.count}"
+        }
         tvStatus.text = text
         btnAction.isActivated = !task.inProgress
         btnAction.isEnabled = true
@@ -61,6 +64,7 @@ class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : C
             else -> R.string.remove
         }
         btnAction.setText(idAction)
+        btnAction.setVisibility(task.inProgress || task.isRemovable)
     }
 
     interface OnActionListener {
