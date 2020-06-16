@@ -25,6 +25,7 @@ import ru.atomofiron.regextool.screens.root.RootActivity
 import ru.atomofiron.regextool.utils.ChannelUtil
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
+import ru.atomofiron.regextool.utils.escapeQuotes
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -115,7 +116,7 @@ class FinderWorker(
                 else -> throw Exception()
             }
             val nameArgs = textFormats.joinToString(" -o ") { "-name '*.$it'" }
-            val command = template.format(item.completedPath, maxDepth, nameArgs, query)
+            val command = template.format(item.completedPath, maxDepth, nameArgs, query.escapeQuotes())
             val output = Shell.exec(command, useSu, processObserver, forContentLineListener)
             if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
@@ -140,7 +141,7 @@ class FinderWorker(
                 excludeDirs -> Shell[Shell.FIND_F]
                 else -> Shell[Shell.FIND_FD]
             }
-            val command = template.format(item, maxDepth)
+            val command = template.format(item.completedPath, maxDepth)
             val output = Shell.exec(command, useSu, processObserver, forNameLineListener)
             if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)

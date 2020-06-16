@@ -13,6 +13,7 @@ import ru.atomofiron.regextool.model.textviewer.TextLine
 import ru.atomofiron.regextool.model.textviewer.TextLineMatch
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
+import ru.atomofiron.regextool.utils.escapeQuotes
 
 class TextViewerService(
         private val textViewerChannel: TextViewerChannel,
@@ -208,7 +209,7 @@ class TextViewerService(
             else -> Shell.GREP
         }
         var count = 0
-        val cmd = Shell[template].format(params.query, path)
+        val cmd = Shell[template].format(params.query.escapeQuotes(), path)
         val output = Shell.exec(cmd, useSu) {
             val lineByteOffset = it.split(':')
             val lineIndex = lineByteOffset[0].toInt().dec()

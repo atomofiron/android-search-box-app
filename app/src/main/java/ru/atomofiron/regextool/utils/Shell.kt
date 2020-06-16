@@ -24,26 +24,26 @@ object Shell {
     const val LS_LAHLD = "{toybox} ls -lAhLd \"%s\""
 
     // grep: No 'E' with 'F'
-    const val FIND_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -E \"%s\""
-    const val FIND_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -E \"%s\""
-    const val FIND_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -e \"%s\""
-    const val FIND_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -e \"%s\""
+    const val FIND_GREP = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -E \"%s\""
+    const val FIND_GREP_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -E \"%s\""
+    const val FIND_GREP_F = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -e \"%s\""
+    const val FIND_GREP_IF = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -e \"%s\""
 
-    const val FIND_EXEC_GREP = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_I = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_F = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_IF = "{toybox} find %s -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_F = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IF = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
 
-    const val FIND_FD = "{toybox} find %s -maxdepth %d \\( -type f -o -type d \\)"
-    const val FIND_F = "{toybox} find %s -maxdepth %d -type f"
+    const val FIND_FD = "{toybox} find \"%s\" -maxdepth %d \\( -type f -o -type d \\)"
+    const val FIND_F = "{toybox} find \"%s\" -maxdepth %d -type f"
 
-    const val HEAD_TAIL = "{toybox} head %s -n %d | {toybox} tail -n %d"
-    const val LS_LOG = "{toybox} ls -log %s"
+    const val HEAD_TAIL = "{toybox} head \"%s\" -n %d | {toybox} tail -n %d"
+    const val LS_LOG = "{toybox} ls -log \"%s\""
 
-    const val GREP = "{toybox} grep -bons -e \"%s\" %s"
-    const val GREP_I = "{toybox} grep -bons -ie \"%s\" %s"
-    const val GREP_E = "{toybox} grep -bons -E \"%s\" %s"
-    const val GREP_IE = "{toybox} grep -bons -iE \"%s\" %s"
+    const val GREP = "{toybox} grep -bons -e \"%s\" \"%s\""
+    const val GREP_I = "{toybox} grep -bons -ie \"%s\" \"%s\""
+    const val GREP_E = "{toybox} grep -bons -E \"%s\" \"%s\""
+    const val GREP_IE = "{toybox} grep -bons -iE \"%s\" \"%s\""
 
     // %s grep -c -s -F -i -e "%s" "%s"
 

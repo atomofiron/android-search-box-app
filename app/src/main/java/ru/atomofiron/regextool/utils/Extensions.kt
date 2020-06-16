@@ -8,3 +8,5 @@ fun View.setVisibility(visible: Boolean, invisibleMode: Int = View.GONE) {
         this.visibility = visibility
     }
 }
+
+fun String.escapeQuotes(): String = this.replace(Const.QUOTE, "\\" + Const.QUOTE)
