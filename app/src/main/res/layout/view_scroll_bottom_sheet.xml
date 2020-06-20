@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#33ff0000"
+        />
+    <FrameLayout
+        android:id="@+id/bottom_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/bottom_sheet_corners"
+        android:paddingTop="@dimen/common_margin"
+        app:layout_behavior="ru.atomofiron.regextool.screens.root.BottomSheetBehavior"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="#330000ff"
+            />
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
