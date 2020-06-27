@@ -8,6 +8,8 @@ import androidx.core.view.ViewCompat.NestedScrollType
 import androidx.core.view.ViewCompat.ScrollAxis
 import androidx.core.widget.NestedScrollView
 import ru.atomofiron.regextool.logD
+import kotlin.math.max
+import kotlin.math.min
 
 class SheetScrollView @JvmOverloads constructor(
         context: Context,
@@ -15,14 +17,20 @@ class SheetScrollView @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : NestedScrollView(context, attrs, defStyleAttr) {
 
-    private val child: View? get() = getChildAt(0)
+    private val child: View get() = getChildAt(0)
+    private val canScrollUp: Int get() = child.bottom - bottom - scrollY
 
-    private var listener: OnScrollListener? = null
+    private var listener: OnScrollStopListener? = null
     private var scrollAlreadyStopped = true
+    private var childIsFling = false
 
     init {
         overScrollMode = View.OVER_SCROLL_NEVER
         isNestedScrollingEnabled = false
+    }
+
+    fun setListener(listener: OnScrollStopListener) {
+        this.listener = listener
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -67,16 +75,17 @@ class SheetScrollView @JvmOverloads constructor(
         super.onNestedPreScroll(target, dx, dy, consumed)
     }
 
-    override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean {
-        logD("onNestedFling_p ${target.javaClass.simpleName}")
-        // true if this parent consumed or otherwise reacted to the fling
-        return super.onNestedFling(target, velocityX, velocityY, consumed)
-    }
-
     override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
         logD("onNestedPreFling_p ${target.javaClass.simpleName}")
         // true if this parent consumed the fling ahead of the target view
-        return super.onNestedPreFling(target, velocityX, velocityY)
+        return canScrollUp > 0 || super.onNestedPreFling(target, velocityX, velocityY)
+    }
+
+    override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean {
+        logD("onNestedFling_p ${target.javaClass.simpleName}")
+        // true if this parent consumed or otherwise reacted to the fling
+        childIsFling = true
+        return super.onNestedFling(target, velocityX, velocityY, consumed)
     }
 
     override fun getNestedScrollAxes(): Int = ViewCompat.SCROLL_AXIS_VERTICAL
@@ -92,22 +101,29 @@ class SheetScrollView @JvmOverloads constructor(
 
     override fun onNestedScrollAccepted(child: View, target: View, @ScrollAxis axes: Int, @NestedScrollType type: Int) {
         logD("onNestedScrollAccepted_p2 child ${child.javaClass.simpleName} target ${target.javaClass.simpleName}")
-        super.onNestedScrollAccepted(child, target, axes, type)
+        //super.onNestedScrollAccepted(child, target, axes, type)
     }
 
     override fun onStopNestedScroll(target: View, @NestedScrollType type: Int) {
         logD("onStopNestedScroll_p2 ${target.javaClass.simpleName}")
-        super.onStopNestedScroll(target, type)
+        //super.onStopNestedScroll(target, type)
+        if (!scrollAlreadyStopped) {
+            scrollAlreadyStopped = true
+            listener?.onStopScroll()
+        }
     }
 
     override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, @NestedScrollType type: Int) {
         logD("onNestedScroll_p2 ${target.javaClass.simpleName}")
-        super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
+        //super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
     }
 
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, @NestedScrollType type: Int) {
-        logD("onNestedPreScroll_p2 ${target.javaClass.simpleName}")
-        super.onNestedPreScroll(target, dx, dy, consumed, type)
+        logD("onNestedPreScroll_p2 bottom $bottom child.bottom ${child.bottom} consumed ${consumed[1]} dy $dy ${target.javaClass.simpleName}")
+        //super.onNestedPreScroll(target, dx, dy, consumed, type)
+        val consume = min(canScrollUp, max(0, dy))
+        consumed[1] = consume
+        scrollBy(0, consume)
     }
 
     // NestedScrollingParent3
@@ -115,6 +131,7 @@ class SheetScrollView @JvmOverloads constructor(
     override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, @NestedScrollType type: Int, consumed: IntArray) {
         logD("onNestedScroll_p3 ${target.javaClass.simpleName}")
         super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
+        scrollAlreadyStopped = false
     }
 
     // NestedScrollingChild
@@ -147,12 +164,12 @@ class SheetScrollView @JvmOverloads constructor(
 
     override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean {
         logD("dispatchNestedFling_c")
-        return true
+        return super.dispatchNestedFling(velocityX, velocityY, consumed)
     }
 
     override fun dispatchNestedPreFling(velocityX: Float, velocityY: Float): Boolean {
         logD("dispatchNestedPreFling_c")
-        return true
+        return super.dispatchNestedPreFling(velocityX, velocityY)
     }
 
     // NestedScrollingChild2
@@ -161,7 +178,6 @@ class SheetScrollView @JvmOverloads constructor(
         val accept = super.startNestedScroll(axes, type)
         logD("startNestedScroll_c2 $accept")
         scrollAlreadyStopped = false
-        listener?.onStartScroll()
         return accept
     }
 
@@ -195,12 +211,9 @@ class SheetScrollView @JvmOverloads constructor(
     override fun dispatchNestedScroll(dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, offsetInWindow: IntArray?, type: Int, consumed: IntArray) {
         logD("dispatchNestedScroll_c3")
         super.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type, consumed)
-        listener?.onScroll(dyConsumed)
     }
 
-    interface OnScrollListener {
-        fun onStartScroll()
+    interface OnScrollStopListener {
         fun onStopScroll()
-        fun onScroll(dy: Int)
     }
 }

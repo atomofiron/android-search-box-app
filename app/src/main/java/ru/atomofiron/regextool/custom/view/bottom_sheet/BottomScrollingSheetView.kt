@@ -1,35 +1,22 @@
 package ru.atomofiron.regextool.custom.view.bottom_sheet
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.Interpolator
 import android.widget.FrameLayout
-import androidx.core.view.NestedScrollingParent3
-import androidx.core.view.ViewCompat
-import androidx.core.view.ViewCompat.NestedScrollType
-import androidx.core.view.ViewCompat.ScrollAxis
 import androidx.core.widget.NestedScrollView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.moveChildrenFrom
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.logD
-import kotlin.math.max
 import kotlin.math.min
 
 class BottomScrollingSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), SheetScrollView.OnScrollListener {
+) : FrameLayout(context, attrs, defStyleAttr), SheetScrollView.OnScrollStopListener {
 
     companion object {
         private const val SECOND = 1000L
@@ -71,8 +58,10 @@ class BottomScrollingSheetView @JvmOverloads constructor(
     private var notifyWhenOpened = false
 
     private val menuHeight: Int get() = viewContainer.measuredHeight
-    private val scrollOpened: Int get() = -menuHeight
+    private val scrollOpened: Int get() = menuHeight
     private val scrollClosed: Int = 0
+
+    private var dy: Int = 0
 
     init {
         val widthPixels = resources.displayMetrics.widthPixels
@@ -80,15 +69,23 @@ class BottomScrollingSheetView @JvmOverloads constructor(
         val sizePixels = min(widthPixels, heightPixels)
         val maxWidth = resources.getDimensionPixelOffset(R.dimen.bottom_sheet_view_max_width)
         viewContainer.layoutParams.width = min(sizePixels, maxWidth)
-    }
 
-    override fun onStartScroll() {
+        viewScroll.setListener(this)
+        viewScroll.setOnScrollChangeListener { v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
+            this.dy = scrollY - oldScrollY
+            logD("setOnScrollChangeListener $dy")
+            if (state != State.SCROLL) {
+                setState(State.SCROLL)
+            }
+        }
     }
 
     override fun onStopScroll() {
-    }
-
-    override fun onScroll(dy: Int) {
+        logD("onStopScroll $dy")
+        when {
+            dy > 0 -> setState(State.OPEN)
+            else -> setState(State.CLOSE)
+        }
     }
 
     private fun clearContainer() {
@@ -147,6 +144,7 @@ class BottomScrollingSheetView @JvmOverloads constructor(
     }
 
     private fun setState(state: State) {
+        logD("setState ${this.state} -> $state")
         keepOverlayVisible = false
         val fromState = this.state
         this.state = state
@@ -219,6 +217,7 @@ class BottomScrollingSheetView @JvmOverloads constructor(
     }
 
     private fun startAnimator() {
+        logD("startAnimator")
         // todo
         when (state) {
             State.CLOSE -> viewScroll.smoothScrollTo(0, scrollClosed)
