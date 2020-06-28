@@ -1,38 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?colorBackground">
     <View
         android:id="@+id/bottom_sheet_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#33333333"
         />
-    <ru.atomofiron.regextool.custom.view.bottom_sheet.SheetScrollView
-        android:id="@+id/bottom_scrolling"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom|center_horizontal"
-        >
         <FrameLayout
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bottom_sheet_corners"
             android:paddingTop="@dimen/corner_radius"
             android:layout_gravity="center_horizontal"
+            app:layout_behavior="ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetViewBehavior"
+            app:view_behavior_halfExpandedRatio="0.3"
             >
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="match_parent"
                 >
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="_'\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_"
+                android:text="_'\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_\n_"
                 />
             </androidx.core.widget.NestedScrollView>
         </FrameLayout>
-    </ru.atomofiron.regextool.custom.view.bottom_sheet.SheetScrollView>
-    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
