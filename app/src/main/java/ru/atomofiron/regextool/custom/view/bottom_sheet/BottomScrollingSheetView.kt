@@ -5,8 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.core.widget.NestedScrollView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import app.atomofiron.common.util.moveChildrenFrom
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.logD
@@ -16,7 +15,7 @@ class BottomScrollingSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), SheetScrollView.OnScrollStopListener {
+) : CoordinatorLayout(context, attrs, defStyleAttr), SheetScrollView.OnScrollStopListener {
 
     companion object {
         private const val SECOND = 1000L
@@ -34,7 +33,7 @@ class BottomScrollingSheetView @JvmOverloads constructor(
     var onClosedToOpenedListener: () -> Unit = { }
 
     private val overlay: View = findViewById(R.id.bottom_sheet_overlay)
-    private val viewScroll: SheetScrollView = findViewById(R.id.bottom_scrolling)
+    private val viewScroll: SheetScrollView = SheetScrollView(context)
     private val viewContainer: ViewGroup = findViewById(R.id.bottom_container)
     lateinit var contentView: View private set
     private var contentViewId: Int = UNDEFINED; private set
@@ -69,15 +68,6 @@ class BottomScrollingSheetView @JvmOverloads constructor(
         val sizePixels = min(widthPixels, heightPixels)
         val maxWidth = resources.getDimensionPixelOffset(R.dimen.bottom_sheet_view_max_width)
         viewContainer.layoutParams.width = min(sizePixels, maxWidth)
-
-        viewScroll.setListener(this)
-        viewScroll.setOnScrollChangeListener { v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
-            this.dy = scrollY - oldScrollY
-            logD("setOnScrollChangeListener $dy")
-            if (state != State.SCROLL) {
-                setState(State.SCROLL)
-            }
-        }
     }
 
     override fun onStopScroll() {

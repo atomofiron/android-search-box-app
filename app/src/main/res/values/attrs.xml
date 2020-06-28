@@ -28,4 +28,15 @@
     <declare-styleable name="BallsView">
         <attr name="oneBall" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="BottomSheetViewBehavior">
+        <attr name="android:elevation" />
+        <attr name="view_backgroundTint" format="color" />
+        <attr name="view_behavior_peekHeight" format="dimension" />
+        <attr name="view_behavior_fitToContents" format="boolean" />
+        <attr name="view_behavior_hideable" format="boolean" />
+        <attr name="view_behavior_skipCollapsed" format="boolean" />
+        <attr name="view_behavior_halfExpandedRatio" format="float" />
+        <attr name="view_behavior_expandedOffset" format="integer" />
+    </declare-styleable>
 </resources>
