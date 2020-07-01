@@ -22,14 +22,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="unspecified"
             android:theme="@style/AppTheme.Dark">
-        </activity>
-        <activity
-            android:name=".screens.root.TestActivity"
-            android:configChanges="orientation|screenLayout|screenSize|keyboard|navigation"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AppTheme.White">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

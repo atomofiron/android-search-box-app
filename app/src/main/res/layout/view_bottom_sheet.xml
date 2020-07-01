@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    >
     <View
         android:id="@+id/bottom_sheet_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorOverlay"
-        android:focusable="true"
-        android:clickable="true"
-        android:alpha="0.0"
-        tools:alpha="1.0"
+        android:alpha="0"
+        tools:alpha="1"
         />
     <LinearLayout
         android:id="@+id/bottom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical"
-        android:layout_gravity="bottom|center_horizontal"
         android:background="@drawable/bottom_sheet_corners"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_hideable="true"
+        app:behavior_skipCollapsed="true"
         >
         <ImageView
             android:layout_width="36dp"
@@ -30,4 +33,4 @@
             android:layout_gravity="center_horizontal"
             />
     </LinearLayout>
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
