@@ -16,6 +16,8 @@ android {
         targetSdkVersion 28
         versionCode 13
         versionName "2.0"
+
+        resValue "string", "version_name", "v" + versionName + " ($versionCode)"
     }
     signingConfigs {
         beta {

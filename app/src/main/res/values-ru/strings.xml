@@ -50,6 +50,9 @@
     <string name="exclude_dirs_summary">Из результатов поиска</string>
     <string name="pref_use_su">Использовать root</string>
     <string name="preferences">Настройки</string>
+    <string name="pref_about">О Приложении</string>
+    <string name="look_github">Перейти к репозиторию</string>
+    <string name="faq_4pda">FAQ / Обсудить</string>
     <string name="app">Приложение</string>
     <string name="test_field">Тестовое поле</string>
     <string name="waiting_for_results">Ожидание результатов…</string>

@@ -49,6 +49,13 @@ class PreferenceFragmentDelegate(
 
     private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
         return when (val key = preference.key) {
+            Const.PREF_ABOUT -> {
+                preference.setOnPreferenceClickListener {
+                    fragment.onAboutClick()
+                    true
+                }
+                DOES_NOT_MATTER
+            }
             Const.PREF_STORAGE_PATH -> {
                 if (newValue is String && newValue.isBlank()) {
                     return false

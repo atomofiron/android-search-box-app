@@ -51,6 +51,9 @@
     <string name="exclude_dirs_summary">From search results</string>
     <string name="pref_use_su">Use super user</string>
     <string name="preferences">Preferences</string>
+    <string name="pref_about">About the App</string>
+    <string name="look_github">Look the Github repository</string>
+    <string name="faq_4pda">FAQ / Discuss</string>
     <string name="app">Application</string>
     <string name="test_field">Test text field</string>
     <string name="waiting_for_results">Waiting for the results…</string>

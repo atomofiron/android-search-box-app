@@ -7,6 +7,7 @@ object Const {
     const val QUOTE = "\""
     const val SDCARD = "/sdcard/"
     const val ANDROID_DIR = "/Android/"
+    const val PREF_ABOUT = "pref_about"
     const val PREF_STORAGE_PATH = "pref_storage_path"
     const val PREF_OPENED_DIR_PATH = "pref_opened_dir_path"
     const val PREF_DOCK_GRAVITY = "pref_drawer_gravity"
