@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher_round"
+        />
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="20sp"
+        android:textColor="?colorSecondary"
+        />
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/version_name"
+        android:textColor="?colorSecondary"
+        android:layout_marginBottom="@dimen/common_margin"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_ib_github"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_margin_half"
+        android:background="@drawable/bg_stroked_ripple"
+        android:ellipsize="end"
+        android:lines="1"
+        android:padding="@dimen/padding_middle"
+        android:drawablePadding="@dimen/padding_middle"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:textColor="?colorSecondary"
+        android:drawableStart="@drawable/ic_github"
+        android:text="@string/look_github"
+        />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_ib_developer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_margin_half"
+        android:background="@drawable/bg_stroked_ripple"
+        android:ellipsize="end"
+        android:lines="1"
+        android:padding="@dimen/padding_middle"
+        android:drawablePadding="@dimen/padding_middle"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:textColor="?colorSecondary"
+        android:drawableStart="@drawable/ic_forpda"
+        android:text="@string/faq_4pda"
+        />
+
+</LinearLayout>

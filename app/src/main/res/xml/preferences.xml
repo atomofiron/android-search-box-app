@@ -3,6 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <Preference
+        app:title="@string/pref_about"
+        app:key="pref_about"
+        />
     <PreferenceCategory
         app:title="@string/preferences">
         <ru.atomofiron.regextool.custom.preference.TextFieldPreference

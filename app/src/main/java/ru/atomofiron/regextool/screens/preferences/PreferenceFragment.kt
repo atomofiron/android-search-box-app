@@ -28,6 +28,7 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
     private lateinit var explorerItemDelegate: ExplorerItemFragmentDelegate
     private lateinit var joystickDelegate: JoystickFragmentDelegate
     private lateinit var toyboxDelegate: ToyboxFragmentDelegate
+    private lateinit var aboutDelegate: AboutFragmentDelegate
     private lateinit var preferenceDelegate: PreferenceFragmentDelegate
 
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.preference_bsv)
@@ -42,6 +43,7 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         explorerItemDelegate = ExplorerItemFragmentDelegate(viewModel.explorerItemComposition, presenter)
         joystickDelegate = JoystickFragmentDelegate(viewModel.joystickComposition, presenter)
         toyboxDelegate = ToyboxFragmentDelegate(viewModel.toyboxVariant, presenter)
+        aboutDelegate = AboutFragmentDelegate()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -63,6 +65,7 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         explorerItemDelegate.bottomSheetView = bottomSheetView.view
         joystickDelegate.bottomSheetView = bottomSheetView.view
         toyboxDelegate.bottomSheetView = bottomSheetView.view
+        aboutDelegate.bottomSheetView = bottomSheetView.view
     }
 
     override fun onCreateRecyclerView(inflater: LayoutInflater?, parent: ViewGroup?, savedInstanceState: Bundle?): RecyclerView {
@@ -80,6 +83,8 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
     }
 
     override fun onBack(): Boolean = bottomSheetView(default = false) { hide() } || super.onBack()
+
+    fun onAboutClick() = aboutDelegate.show()
 
     fun onExportImportClick() = exportImportDelegate.show()
 
