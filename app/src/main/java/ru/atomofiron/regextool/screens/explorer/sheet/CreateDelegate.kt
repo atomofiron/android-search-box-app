@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioGroup
+import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.showKeyboard
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.model.explorer.XFile
@@ -28,6 +29,8 @@ class CreateDelegate(private val output: ExplorerPresenter) : BottomSheetDelegat
     }
 
     override fun onViewShown() = etName.showKeyboard()
+
+    override fun onViewHidden() = etName.hideKeyboard()
 
     fun show(dir: XFile) {
         this.dir = dir

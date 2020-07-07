@@ -41,7 +41,7 @@ class BottomSheetView @JvmOverloads constructor(
         else -> false
     }
 
-    var onExpandedListener: () -> Unit = { }
+    var stateListener: (shown: Boolean) -> Unit = { }
     private var keepOverlayVisible = false
     private val bottomSheetCallback = BottomSheetCallback()
 
@@ -149,9 +149,12 @@ class BottomSheetView @JvmOverloads constructor(
             }
             viewContainer.setBackgroundResource(resource)
 
-            if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                keepOverlayVisible = false
-                onExpandedListener.invoke()
+            when (newState) {
+                BottomSheetBehavior.STATE_EXPANDED -> {
+                    keepOverlayVisible = false
+                    stateListener.invoke(true)
+                }
+                BottomSheetBehavior.STATE_HIDDEN -> stateListener.invoke(false)
             }
         }
     }

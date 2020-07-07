@@ -5,6 +5,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.showKeyboard
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
@@ -46,6 +47,8 @@ class RenameDelegate(private val output: ExplorerPresenter)
             etName.setSelection(dotIndex)
         }
     }
+
+    override fun onViewHidden() = etName.hideKeyboard()
 
     override fun onClick(view: View) {
         hide()
