@@ -47,8 +47,8 @@ open class BottomSheetMenu(
 
     private inner class Listener : BottomSheetMenuListener {
         override fun onMenuItemSelected(id: Int) {
-            menuItemClickListener.onMenuItemSelected(id)
             hide()
+            menuItemClickListener.onMenuItemSelected(id)
         }
     }
 }

@@ -21,6 +21,7 @@ class BottomSheetView @JvmOverloads constructor(
     companion object {
         private const val CONTENT_VIEW_INDEX = 1
         private const val UNDEFINED = -1
+        private const val SLIDE_HIDDEN = -1f
     }
 
     init {
@@ -89,16 +90,13 @@ class BottomSheetView @JvmOverloads constructor(
 
         val tag = context.getString(R.string.bottom_sheet_main_view_tag)
         val mainView = view.findViewWithTag(tag) ?: view
-        mainView.overScrollMode = View.OVER_SCROLL_NEVER
-        mainView.isNestedScrollingEnabled = false
-        (mainView as? ViewGroup)?.clipToPadding = false
 
-        var bottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
-        when {
-            mainView.paddingBottom < bottom -> bottom += mainView.paddingBottom
-            mainView.paddingBottom > bottom -> bottom = mainView.paddingBottom
+        var paddingBottom = resources.getDimensionPixelSize(R.dimen.bottom_tab_bar_height)
+        paddingBottom = when (paddingBottom > mainView.paddingBottom) {
+            true -> mainView.paddingBottom + paddingBottom
+            false -> mainView.paddingBottom
         }
-        mainView.setPadding(mainView.paddingLeft, mainView.paddingTop, mainView.paddingRight, bottom)
+        mainView.setPadding(mainView.paddingLeft, mainView.paddingTop, mainView.paddingRight, paddingBottom)
 
         when {
             view.parent == null -> viewContainer.addView(view)
@@ -107,8 +105,11 @@ class BottomSheetView @JvmOverloads constructor(
         }
     }
 
+    fun ifShownKeepOverlayVisible() {
+        keepOverlayVisible = isSheetShown
+    }
+
     fun show() {
-        keepOverlayVisible = behavior.state == BottomSheetBehavior.STATE_SETTLING
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
@@ -120,33 +121,39 @@ class BottomSheetView @JvmOverloads constructor(
     }
 
     private inner class BottomSheetCallback : BottomSheetBehavior.BottomSheetCallback() {
-        private var wasHidden = true
+        private var lastSlideOffsetEdge = SLIDE_HIDDEN
         private val colorBackground = overlay.context.findResIdByAttr(R.attr.colorBackground)
 
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
-            val value = when {
+            // slideOffset.isNaN() -> state expanded
+
                 keepOverlayVisible -> 1f
                 slideOffset.isNaN() -> 1f
                 else -> 1 + slideOffset
             }
             overlay.alpha = value
+
+            val isEdgeOffset = slideOffset == SLIDE_HIDDEN || slideOffset.isNaN()
+            if (isEdgeOffset) {
+                when {
+                    lastSlideOffsetEdge == slideOffset -> Unit
+                    slideOffset == SLIDE_HIDDEN -> Unit
+                    slideOffset.isNaN() -> onClosedToOpenedListener.invoke()
+                }
+                // todo hide keyboard
+                lastSlideOffsetEdge = slideOffset
+            }
         }
 
         override fun onStateChanged(bottomSheet: View, newState: Int) {
-            val isHidden = newState == BottomSheetBehavior.STATE_HIDDEN
-            wasHidden = wasHidden || isHidden
-
-            if (wasHidden && newState == BottomSheetBehavior.STATE_EXPANDED) {
-                wasHidden = false
-                onClosedToOpenedListener.invoke()
-            }
-
-            if (overlay.isClickable == isHidden) {
-                if (!isHidden) {
+            val isStateHidden = newState == BottomSheetBehavior.STATE_HIDDEN
+            if (overlay.isClickable == isStateHidden) {
+                if (!isStateHidden) {
+                    // todo check needed for each time
                     overlay.setOnClickListener(::onOverlayClick)
                 }
-                overlay.isClickable = !isHidden
-                overlay.isFocusable = !isHidden
+                overlay.isClickable = !isStateHidden
+                overlay.isFocusable = !isStateHidden
             }
 
             val resource = when {
