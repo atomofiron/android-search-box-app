@@ -21,7 +21,6 @@ class BottomSheetView @JvmOverloads constructor(
     companion object {
         private const val CONTENT_VIEW_INDEX = 1
         private const val UNDEFINED = -1
-        private const val SLIDE_HIDDEN = -1f
     }
 
     init {
@@ -42,8 +41,9 @@ class BottomSheetView @JvmOverloads constructor(
         else -> false
     }
 
-    var onClosedToOpenedListener: () -> Unit = { }
+    var onExpandedListener: () -> Unit = { }
     private var keepOverlayVisible = false
+    private val bottomSheetCallback = BottomSheetCallback()
 
     init {
         val widthPixels = resources.displayMetrics.widthPixels
@@ -52,7 +52,10 @@ class BottomSheetView @JvmOverloads constructor(
         val maxWidth = resources.getDimensionPixelOffset(R.dimen.bottom_sheet_view_max_width)
         viewContainer.layoutParams.width = min(sizePixels, maxWidth)
 
-        behavior.addBottomSheetCallback(BottomSheetCallback())
+        behavior.addBottomSheetCallback(bottomSheetCallback)
+        overlay.setOnClickListener(::onOverlayClick)
+        overlay.isClickable = false
+        overlay.isFocusable = false
         hide()
     }
 
@@ -115,43 +118,26 @@ class BottomSheetView @JvmOverloads constructor(
 
     /** @return sheet was opened */
     fun hide(): Boolean {
-        val sheetWasShown = isSheetShown
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        return sheetWasShown
+        return isSheetShown
     }
 
     private inner class BottomSheetCallback : BottomSheetBehavior.BottomSheetCallback() {
-        private var lastSlideOffsetEdge = SLIDE_HIDDEN
         private val colorBackground = overlay.context.findResIdByAttr(R.attr.colorBackground)
 
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
-            // slideOffset.isNaN() -> state expanded
-
+            val isExpanded = slideOffset.isNaN()
+            val value = when {
                 keepOverlayVisible -> 1f
-                slideOffset.isNaN() -> 1f
+                isExpanded -> 1f
                 else -> 1 + slideOffset
             }
             overlay.alpha = value
-
-            val isEdgeOffset = slideOffset == SLIDE_HIDDEN || slideOffset.isNaN()
-            if (isEdgeOffset) {
-                when {
-                    lastSlideOffsetEdge == slideOffset -> Unit
-                    slideOffset == SLIDE_HIDDEN -> Unit
-                    slideOffset.isNaN() -> onClosedToOpenedListener.invoke()
-                }
-                // todo hide keyboard
-                lastSlideOffsetEdge = slideOffset
-            }
         }
 
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             val isStateHidden = newState == BottomSheetBehavior.STATE_HIDDEN
             if (overlay.isClickable == isStateHidden) {
-                if (!isStateHidden) {
-                    // todo check needed for each time
-                    overlay.setOnClickListener(::onOverlayClick)
-                }
                 overlay.isClickable = !isStateHidden
                 overlay.isFocusable = !isStateHidden
             }
@@ -162,6 +148,11 @@ class BottomSheetView @JvmOverloads constructor(
                 else -> colorBackground
             }
             viewContainer.setBackgroundResource(resource)
+
+            if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                keepOverlayVisible = false
+                onExpandedListener.invoke()
+            }
         }
     }
 }

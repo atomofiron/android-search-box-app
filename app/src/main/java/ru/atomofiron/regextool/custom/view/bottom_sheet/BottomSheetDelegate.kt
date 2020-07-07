@@ -14,6 +14,7 @@ abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
         }
 
     private var onShownCalled = false
+    private val onExpandedListener = ::onSheetShown
 
     protected open fun show() {
         onShownCalled = false
@@ -24,7 +25,7 @@ abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
         }
 
         onViewReady()
-        bottomSheetView.onClosedToOpenedListener = ::onSheetShown
+        bottomSheetView.onExpandedListener = onExpandedListener
         bottomSheetView.ifShownKeepOverlayVisible()
         bottomSheetView.post { bottomSheetView.show() }
     }
@@ -36,9 +37,9 @@ abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
     protected open fun onViewShown() = Unit
 
     private fun onSheetShown() {
-        // todo remove flag
-        require(!onShownCalled) { }
-        onShownCalled = true
-        onViewShown()
+        if (!onShownCalled) {
+            onShownCalled = true
+            onViewShown()
+        }
     }
 }
