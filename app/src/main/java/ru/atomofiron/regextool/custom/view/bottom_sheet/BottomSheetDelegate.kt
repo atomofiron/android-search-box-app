@@ -25,6 +25,7 @@ abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
 
         onViewReady()
         bottomSheetView.onClosedToOpenedListener = ::onSheetShown
+        bottomSheetView.ifShownKeepOverlayVisible()
         bottomSheetView.post { bottomSheetView.show() }
     }
 
@@ -35,9 +36,9 @@ abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
     protected open fun onViewShown() = Unit
 
     private fun onSheetShown() {
-        if (!onShownCalled) {
-            onShownCalled = true
-            onViewShown()
-        }
+        // todo remove flag
+        require(!onShownCalled) { }
+        onShownCalled = true
+        onViewShown()
     }
 }
