@@ -4,6 +4,7 @@ object Const {
     const val ROOT = "/"
     const val SLASH = "/"
     const val SPACE = " "
+    const val EMPTY = ""
     const val QUOTE = "\""
     const val SDCARD = "/sdcard/"
     const val ANDROID_DIR = "/Android/"
@@ -38,6 +39,7 @@ object Const {
     const val VALUE_TOYBOX_ARM_64 = "toybox_arm_64"
     const val VALUE_TOYBOX_X86_64 = "toybox_x86_64"
     const val VALUE_TOYBOX_CUSTOM = "toybox_custom"
+    const val VALUE_TOYBOX_IMPORTED = "toybox_imported"
 
     const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "foreground_channel_id"
     const val RESULT_NOTIFICATION_CHANNEL_ID = "result_channel_id"
@@ -52,6 +54,7 @@ object Const {
     const val TOYBOX_32 = "/toybox32"
     const val TOYBOX_64 = "/toybox64"
     const val TOYBOX_86_64 = "/toybox86_64"
+    const val TOYBOX_IMPORTED = "/toybox_imported"
 
     const val TEXT_FILE_PAGINATION_STEP = 128
     const val TEXT_FILE_PAGINATION_STEP_OFFSET = 16

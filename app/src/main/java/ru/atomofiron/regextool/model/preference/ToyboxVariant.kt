@@ -27,6 +27,7 @@ class ToyboxVariant(context: Context, val variant: String, val customPath: Strin
             Const.VALUE_TOYBOX_ARM_32 -> context.filesDir.absolutePath + Const.TOYBOX_32
             Const.VALUE_TOYBOX_ARM_64 -> context.filesDir.absolutePath + Const.TOYBOX_64
             Const.VALUE_TOYBOX_X86_64 -> context.filesDir.absolutePath + Const.TOYBOX_86_64
+            Const.VALUE_TOYBOX_IMPORTED -> context.filesDir.absolutePath + Const.TOYBOX_IMPORTED
             else -> throw Exception("Unknown variant $variant")
         }
     }

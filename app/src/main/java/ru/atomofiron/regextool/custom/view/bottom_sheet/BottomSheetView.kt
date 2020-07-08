@@ -17,7 +17,6 @@ class BottomSheetView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : CoordinatorLayout(context, attrs, defStyleAttr) {
-
     companion object {
         private const val CONTENT_VIEW_INDEX = 1
         private const val UNDEFINED = -1
@@ -32,7 +31,7 @@ class BottomSheetView @JvmOverloads constructor(
     val anchorView: View get() = viewContainer
     private val behavior = (viewContainer.layoutParams as LayoutParams).behavior as BottomSheetBehavior<View>
     lateinit var contentView: View private set
-    private var contentViewId: Int = UNDEFINED; private set
+    private var contentViewId: Int = UNDEFINED
 
     val isSheetShown: Boolean get() = when (behavior.state) {
         BottomSheetBehavior.STATE_EXPANDED -> true
@@ -122,6 +121,11 @@ class BottomSheetView @JvmOverloads constructor(
         return isSheetShown
     }
 
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        super.onLayout(changed, l, t, r, b)
+        bottomSheetCallback.updateBackGround(behavior.state)
+    }
+
     private inner class BottomSheetCallback : BottomSheetBehavior.BottomSheetCallback() {
         private val colorBackground = overlay.context.findResIdByAttr(R.attr.colorBackground)
 
@@ -142,12 +146,7 @@ class BottomSheetView @JvmOverloads constructor(
                 overlay.isFocusable = !isStateHidden
             }
 
-            val resource = when {
-                bottomSheet.top != 0 -> R.drawable.bottom_sheet_corners
-                newState != BottomSheetBehavior.STATE_EXPANDED -> R.drawable.bottom_sheet_corners
-                else -> colorBackground
-            }
-            viewContainer.setBackgroundResource(resource)
+            updateBackGround(newState)
 
             when (newState) {
                 BottomSheetBehavior.STATE_EXPANDED -> {
@@ -156,6 +155,15 @@ class BottomSheetView @JvmOverloads constructor(
                 }
                 BottomSheetBehavior.STATE_HIDDEN -> stateListener.invoke(false)
             }
+        }
+
+        fun updateBackGround(state: Int) {
+            val resource = when {
+                viewContainer.top != 0 -> R.drawable.bottom_sheet_corners
+                state != BottomSheetBehavior.STATE_EXPANDED -> R.drawable.bottom_sheet_corners
+                else -> colorBackground
+            }
+            viewContainer.setBackgroundResource(resource)
         }
     }
 }

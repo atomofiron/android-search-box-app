@@ -4,12 +4,14 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.RadioButton
 import app.atomofiron.common.util.RadioGroupImpl
+import app.atomofiron.common.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import ru.atomofiron.regextool.R
 import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 import ru.atomofiron.regextool.model.preference.ToyboxVariant
 import ru.atomofiron.regextool.utils.Const
 import ru.atomofiron.regextool.utils.Shell
+import java.io.File
 
 class ToyboxFragmentDelegate(
         toyboxVariant: ToyboxVariant,
@@ -40,18 +42,38 @@ class ToyboxFragmentDelegate(
             R.id.preference_rb_toybox_64 -> Const.VALUE_TOYBOX_ARM_64
             else -> Const.VALUE_TOYBOX_CUSTOM
         }
-        customPath = etPath.text.toString()
-        output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, customPath))
-        test()
+        var cpOutput: Shell.Output? = null
+        var importedPath: String? = null
+        if (variant == Const.VALUE_TOYBOX_CUSTOM) {
+            customPath = etPath.text.toString()
+            importedPath = ToyboxVariant.getToyboxPath(etPath.context, Const.VALUE_TOYBOX_IMPORTED)
+
+            if (!File(customPath).canExecute()) {
+                val cp = Shell[Shell.CP_F, Const.EMPTY].format(customPath, importedPath)
+                cpOutput = Shell.exec(cp, su = false)
+                File(importedPath).setExecutable(true, true)
+                customPath = importedPath
+            }
+        }
+        when {
+            cpOutput == null && test() ->
+                output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, customPath))
+            cpOutput?.success == true && test() ->
+                output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, importedPath!!))
+            cpOutput?.success == false ->
+                snackbar.setText(cpOutput.error).show()
+        }
     }
 
-    private fun test() {
-        val output = Shell.exec(Shell[Shell.VERSION], su = false)
+    private fun test(): Boolean {
+        val version = Shell[Shell.VERSION, customPath]
+        val output = Shell.exec(version, su = false)
+        val works = output.error.isBlank()
         when {
-            !output.error.isBlank() -> snackbar.setText(output.error)
-            else -> snackbar.setText(output.output.trim())
+            works -> snackbar.setText(output.output.trim()).show()
+            else -> snackbar.setText(output.error).show()
         }
-        snackbar.show()
+        return works
     }
 
     public override fun show() = super.show()
@@ -84,4 +106,6 @@ class ToyboxFragmentDelegate(
                 .make(bottomSheetView, "", 1000)
                 .setAnchorView(bottomSheetView.anchorView)
     }
+
+    override fun onViewHidden() = etPath.hideKeyboard()
 }
