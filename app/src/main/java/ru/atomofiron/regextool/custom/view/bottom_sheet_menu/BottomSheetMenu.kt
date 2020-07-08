@@ -10,7 +10,7 @@ import ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetDelegate
 
 open class BottomSheetMenu(
         layoutContent: Int = UNDEFINED,
-        private val context: Context,
+        context: Context,
         private val menuId: Int,
         private val menuItemClickListener: BottomSheetMenuListener
 ) : BottomSheetDelegate(layoutContent) {

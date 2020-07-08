@@ -12,7 +12,7 @@ import ru.atomofiron.regextool.screens.explorer.adapter.ExplorerHolder
 
 class BottomSheetMenuWithTitle(
         menuId: Int,
-        private val context: Context,
+        context: Context,
         menuItemClickListener: BottomSheetMenuListener
 ) : BottomSheetMenu(R.layout.sheet_explorer_options, context, menuId, menuItemClickListener) {
     private val tvTitle: TextView get() = bottomSheetView.contentView.findViewById(R.id.explorer_menu_tv_title)
