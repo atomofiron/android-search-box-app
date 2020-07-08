@@ -179,8 +179,18 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         holder.bindComposition(composition)
         itemActionListener.onItemVisible(holder.item)
         if (position == headerItemPosition) {
-            headerView.setComposition(composition)
             headerView.onBind(items[position])
+        }
+    }
+
+    override fun setItem(item: XFile) {
+        super.setItem(item)
+        if (headerItemPosition == UNDEFINED) {
+            return
+        }
+        val headerItem = items[headerItemPosition]
+        if (item == headerItem) {
+            headerView.onBind(item)
         }
     }
 

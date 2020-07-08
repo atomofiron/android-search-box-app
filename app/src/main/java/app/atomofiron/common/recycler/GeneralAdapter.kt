@@ -43,7 +43,7 @@ abstract class GeneralAdapter<H : GeneralHolder<D>, D : Any> : RecyclerView.Adap
         }
     }
 
-    fun setItem(item: D) {
+    open fun setItem(item: D) {
         val index = items.indexOf(item)
         if (index != UNKNOWN) {
             items[index] = item
