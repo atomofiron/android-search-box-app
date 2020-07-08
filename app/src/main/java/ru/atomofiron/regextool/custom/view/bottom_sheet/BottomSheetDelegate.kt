@@ -1,5 +1,6 @@
 package ru.atomofiron.regextool.custom.view.bottom_sheet
 
+import android.content.Context
 import android.view.View
 
 abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
@@ -7,6 +8,7 @@ abstract class BottomSheetDelegate(private val layoutContent: Int = UNDEFINED) {
         const val UNDEFINED = -1
     }
     lateinit var bottomSheetView: BottomSheetView
+    protected val context: Context get() = bottomSheetView.context
     protected open var contentView: View? = null
         set(value) {
             require(layoutContent == UNDEFINED) { Exception() }
