@@ -39,6 +39,7 @@ object Shell {
 
     const val HEAD_TAIL = "{toybox} head \"%s\" -n %d | {toybox} tail -n %d"
     const val LS_LOG = "{toybox} ls -log \"%s\""
+    const val CP_F = "{toybox} cp -f %s %s"
 
     const val GREP = "{toybox} grep -bons -e \"%s\" \"%s\""
     const val GREP_I = "{toybox} grep -bons -ie \"%s\" \"%s\""
@@ -50,7 +51,7 @@ object Shell {
     // FASTEST toybox find %s -name "*.%s" -type f | xargs grep "%s" -c
     // find . -maxdepth 2 -exec grep -H -c -s "k[e]" {} \;
 
-    operator fun get(template: String): String = template.replace(TOYBOX, toyboxPath)
+    operator fun get(template: String, toyboxPath: String = Shell.toyboxPath): String = template.replace(TOYBOX, toyboxPath)
 
     fun checkSu(): Output {
         var success: Boolean
