@@ -145,6 +145,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         for (i in viewPool!!.indices) {
             viewPool!![i] = inflateNewView(inflater, recyclerView)
         }
+        separationDecorator.onAttachedToRecyclerView(recyclerView.context)
 
         recyclerView.addItemDecoration(backgroundDecorator)
         recyclerView.addItemDecoration(spaceDecorator)
