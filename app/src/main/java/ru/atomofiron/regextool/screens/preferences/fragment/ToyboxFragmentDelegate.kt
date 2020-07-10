@@ -103,7 +103,7 @@ class ToyboxFragmentDelegate(
         }
 
         snackbar = Snackbar
-                .make(bottomSheetView, "", 1000)
+                .make(bottomSheetView, "", Snackbar.LENGTH_LONG)
                 .setAnchorView(bottomSheetView.anchorView)
     }
 

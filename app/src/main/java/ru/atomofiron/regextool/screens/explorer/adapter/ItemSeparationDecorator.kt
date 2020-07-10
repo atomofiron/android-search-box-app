@@ -22,7 +22,7 @@ class ItemSeparationDecorator(private val separationType: (position: Int) -> Sep
     private var separationSize = 0
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        initShadow(parent.context)
+        initShadow(parent.context, forced = false)
 
         parent.getSortedChildren().forEach {
             val child = it.value
@@ -52,8 +52,10 @@ class ItemSeparationDecorator(private val separationType: (position: Int) -> Sep
         downSeparation.draw(canvas)
     }
 
-    private fun initShadow(context: Context) {
-        if (::upSeparation.isInitialized) {
+    fun onAttachedToRecyclerView(context: Context) = initShadow(context, forced = true)
+
+    private fun initShadow(context: Context, forced: Boolean) {
+        if (!forced && ::upSeparation.isInitialized) {
             return
         }
 
