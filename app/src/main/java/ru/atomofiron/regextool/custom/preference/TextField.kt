@@ -7,7 +7,6 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import ru.atomofiron.regextool.custom.view.AutoHideKeyboardField
 
 open class TextField @JvmOverloads constructor(
@@ -19,6 +18,7 @@ open class TextField @JvmOverloads constructor(
     private var submittedValue: CharSequence = ""
 
     init {
+        hideKeyboardOnDetached = false
         addTextChangedListener(this)
         imeOptions = EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or EditorInfo.IME_ACTION_DONE
         inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -59,7 +59,7 @@ open class TextField @JvmOverloads constructor(
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect)
         if (!focused) {
-            setText(submittedValue, TextView.BufferType.NORMAL)
+            setText(submittedValue, BufferType.NORMAL)
         }
     }
 
