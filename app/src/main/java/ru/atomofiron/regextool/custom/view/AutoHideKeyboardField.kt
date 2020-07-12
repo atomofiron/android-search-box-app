@@ -12,7 +12,8 @@ import ru.atomofiron.regextool.R
 open class AutoHideKeyboardField : AppCompatEditText {
     private var inputMethodManager: InputMethodManager? = null
 
-    var hideKeyboardOnFocusLost: Boolean = true
+    protected var hideKeyboardOnFocusLost: Boolean = true
+    protected var hideKeyboardOnDetached: Boolean = true
 
     @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
 
@@ -42,16 +43,18 @@ open class AutoHideKeyboardField : AppCompatEditText {
         when {
             !hideKeyboardOnFocusLost -> Unit
             keyboard == Configuration.KEYBOARD_QWERTY -> Unit
-            focused -> {
+            !focused -> inputMethodManager!!.hideSoftInputFromWindow(windowToken, 0)
+            else -> {
                 inputMethodManager!!.showSoftInput(this, 0)
                 setSelection(length())
             }
-            else -> inputMethodManager!!.hideSoftInputFromWindow(windowToken, 0)
         }
     }
 
     override fun onDetachedFromWindow() {
-        inputMethodManager!!.hideSoftInputFromWindow(windowToken, 0)
         super.onDetachedFromWindow()
+        if (hideKeyboardOnDetached) {
+            inputMethodManager!!.hideSoftInputFromWindow(windowToken, 0)
+        }
     }
 }
