@@ -40,7 +40,7 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
         updateWarning(etFind.text.toString())
     }
 
-    private fun onEditorAction(view: View, actionId: Int, event: KeyEvent): Boolean {
+    private fun onEditorAction(view: View, actionId: Int, /* indeed nullable */ event: KeyEvent?): Boolean {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
             val query = etFind.text.toString()
             when {
