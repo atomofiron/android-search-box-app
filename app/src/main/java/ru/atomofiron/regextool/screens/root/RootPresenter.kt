@@ -10,7 +10,6 @@ import ru.atomofiron.regextool.utils.Shell
 class RootPresenter(
         viewModel: RootViewModel,
         router: RootRouter,
-        private val rootChannel: RootChannel,
         preferenceStore: PreferenceStore
 ) : BasePresenter<RootViewModel, RootRouter>(viewModel, router),
         SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput
