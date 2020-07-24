@@ -227,6 +227,7 @@ abstract class PrivateExplorerServiceLogic(
             isNotEmptyOpenedDir && !item.isChecked -> {
                 checkChildren(item)
                 checked.remove(item)
+                explorerStore.notifyUpdate(item)
             }
             isNotEmptyOpenedDir && item.isChecked -> when {
                 uncheckAllChildren(item) -> {
@@ -236,6 +237,7 @@ abstract class PrivateExplorerServiceLogic(
                 else -> {
                     uncheckParent(item)
                     checked.add(item)
+                    explorerStore.notifyUpdate(item)
                 }
             }
             item.isChecked -> {
