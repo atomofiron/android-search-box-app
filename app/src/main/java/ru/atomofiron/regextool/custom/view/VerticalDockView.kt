@@ -13,7 +13,11 @@ import app.atomofiron.common.util.DrawerStateListenerImpl
 import com.google.android.material.navigation.NavigationView
 import ru.atomofiron.regextool.R
 
-class VerticalDockView : NavigationView {
+class VerticalDockView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = com.google.android.material.R.attr.navigationViewStyle
+) : NavigationView(context, attrs, defStyleAttr) {
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_drawer_navigation, this, true)
@@ -30,13 +34,11 @@ class VerticalDockView : NavigationView {
     private val drawerStateListener = DrawerStateListenerImpl()
     var onGravityChangeListener: ((gravity: Int) -> Unit)? = null
 
-    @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    init {
         ibDockSide.setOnClickListener {
             val gravity = if (gravity == Gravity.START) Gravity.END else Gravity.START
             onGravityChangeListener?.invoke(gravity)
         }
-
         val tvTitle = findViewById<TextView>(R.id.drawer_tv_title)
         val styled = context.obtainStyledAttributes(attrs, R.styleable.VerticalDockView, defStyleAttr, 0)
         tvTitle.text = styled.getString(R.styleable.VerticalDockView_title)
