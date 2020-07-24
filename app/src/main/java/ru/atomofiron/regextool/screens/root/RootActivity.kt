@@ -1,6 +1,7 @@
 package ru.atomofiron.regextool.screens.root
 
 import android.view.KeyEvent
+import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -32,8 +33,9 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
 
     private lateinit var explorerFragment: ExplorerFragment
 
+    private val sbExitSnackbarContextView: View get() = findViewById(R.id.finder_bom) ?: joystick.view
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
-        Snackbar.make(joystick.view, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
+        Snackbar.make(sbExitSnackbarContextView, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
                 .setAnchorView(joystick.view)
                 .setActionTextColor(this@RootActivity.findColorByAttr(R.attr.colorAccent))
                 .setAction(R.string.exit) { presenter.onExitClick() }

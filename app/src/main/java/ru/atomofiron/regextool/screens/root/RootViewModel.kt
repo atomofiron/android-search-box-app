@@ -1,6 +1,5 @@
 package ru.atomofiron.regextool.screens.root
 
-import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.LateinitLiveData
