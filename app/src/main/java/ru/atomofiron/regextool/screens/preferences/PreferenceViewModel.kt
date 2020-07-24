@@ -2,6 +2,8 @@ package ru.atomofiron.regextool.screens.preferences
 
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.SingleLiveEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import ru.atomofiron.regextool.di.DaggerInjector
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.model.preference.ExplorerItemComposition

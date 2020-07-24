@@ -4,11 +4,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
 import ru.atomofiron.regextool.logI
 
 class SingleLiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
-    private var parameterizedListener: ((T) -> Unit)? = null
+    private var dataListener: ((T) -> Unit)? = null
     var data: T? = null
         private set
 
@@ -20,13 +23,20 @@ class SingleLiveEvent<T> : LifecycleEventObserver {
     operator fun invoke(any: T) {
         data = any
         if (isStarted) {
-            parameterizedListener?.invoke(any)
+            dataListener?.invoke(any)
         }
     }
 
     private var state: State = State.DESTROYED
     // LiveData тоже отслеживает состояние STARTED
     private val isStarted: Boolean get() = state.isAtLeast(State.STARTED)
+
+    suspend fun collect(channel: BroadcastChannel<T>) = channel.asFlow().collect {
+        when (it) {
+            is Unit -> invoke()
+            else -> invoke(it)
+        }
+    }
 
     fun observeEvent(source: LifecycleOwner, listener: () -> Unit) {
         check()
@@ -38,7 +48,7 @@ class SingleLiveEvent<T> : LifecycleEventObserver {
         check()
         source.lifecycle.addObserver(this)
         logI("observeData source: ${source.javaClass.simpleName}")
-        this.parameterizedListener = listener
+        this.dataListener = listener
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -48,12 +58,12 @@ class SingleLiveEvent<T> : LifecycleEventObserver {
             logI("Destroyed. source: ${source.javaClass.simpleName}")
             source.lifecycle.removeObserver(this)
             listener = null
-            parameterizedListener = null
+            dataListener = null
         }
     }
 
     private fun check() {
-        val notObserved = listener == null && parameterizedListener == null
+        val notObserved = listener == null && dataListener == null
         require(notObserved) { IllegalStateException("Already") }
     }
 }

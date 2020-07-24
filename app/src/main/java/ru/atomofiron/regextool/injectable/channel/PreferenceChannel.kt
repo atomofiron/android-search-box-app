@@ -1,7 +1,8 @@
 package ru.atomofiron.regextool.injectable.channel
 
-import app.atomofiron.common.util.KObservable
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
 
 class PreferenceChannel {
-    val historyImportedEvent = KObservable(Unit, single = true)
+    val historyImportedEvent = BroadcastChannel<Unit>(Channel.BUFFERED)
 }

@@ -14,8 +14,11 @@ abstract class BaseViewModel<D, V : Any> : ViewModel() {
     protected val viewProperty = MutableWeakProperty<V>()
     val context: Context get() = App.appContext//getApplication<App>().applicationContext
 
+    // будет заменён корутинами
     val onClearedCallback = KObservable.RemoveObserverCallback()
     val alerts = SingleLiveEvent<String>()
+
+    lateinit var onClearedListener: () -> Unit
 
     open fun inject(view: V) {
         logI("inject")
@@ -24,7 +27,7 @@ abstract class BaseViewModel<D, V : Any> : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        logI("onCleared")
         onClearedCallback.invoke()
+        onClearedListener.invoke()
     }
 }

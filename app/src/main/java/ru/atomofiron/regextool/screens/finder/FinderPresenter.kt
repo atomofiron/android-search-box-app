@@ -50,7 +50,13 @@ class FinderPresenter(
         preferenceStore.specialCharacters.addObserver(onClearedCallback) { chs ->
             viewModel.updateUniqueItem(FinderStateItem.SpecialCharactersItem(chs))
         }
-        preferenceChannel.historyImportedEvent.addObserver(onClearedCallback, viewModel.reloadHistory::invoke)
+        scope.launch {
+            viewModel.apply {
+                preferenceChannel.apply {
+                    reloadHistory.collect(historyImportedEvent)
+                }
+            }
+        }
 
         explorerStore.current.addObserver(onClearedCallback) {
             val checked = explorerStore.storeChecked.value

@@ -5,7 +5,6 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import ru.atomofiron.regextool.injectable.channel.RootChannel
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import javax.inject.Scope
 

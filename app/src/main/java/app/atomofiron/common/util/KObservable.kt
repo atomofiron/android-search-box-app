@@ -2,6 +2,7 @@ package app.atomofiron.common.util
 
 import java.util.*
 
+// будет заменён корутинами
 open class KObservable<T : Any?>(private val single: Boolean = false) {
     private var changed = false
     private val callbacks = Vector<RemoveObserverCallback>()
