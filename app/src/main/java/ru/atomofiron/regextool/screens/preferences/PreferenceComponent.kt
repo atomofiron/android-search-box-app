@@ -6,6 +6,9 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import ru.atomofiron.regextool.injectable.channel.PreferenceChannel
 import ru.atomofiron.regextool.injectable.service.PreferenceService
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
@@ -55,7 +58,10 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun exportImportPresenterDelegate(
-            context: Context, viewModel: PreferenceViewModel, preferenceService: PreferenceService, preferenceChannel: PreferenceChannel
+            context: Context,
+            viewModel: PreferenceViewModel,
+            preferenceService: PreferenceService,
+            preferenceChannel: PreferenceChannel
     ): ExportImportPresenterDelegate {
         return ExportImportPresenterDelegate(context, viewModel, preferenceService, preferenceChannel)
     }
@@ -63,10 +69,20 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun presenter(
-            viewModel: PreferenceViewModel, router: PreferenceRouter, joystickDelegate: JoystickPresenterDelegate,
-            exportImportDelegate: ExportImportPresenterDelegate, preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate
+            scope: CoroutineScope,
+            viewModel: PreferenceViewModel,
+            router: PreferenceRouter,
+            joystickDelegate: JoystickPresenterDelegate,
+            exportImportDelegate: ExportImportPresenterDelegate,
+            preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate
     ): PreferencePresenter {
-        return PreferencePresenter(viewModel, router, joystickDelegate, exportImportDelegate, preferenceUpdateDelegate)
+        return PreferencePresenter(scope, viewModel, router, joystickDelegate, exportImportDelegate, preferenceUpdateDelegate)
+    }
+
+    @Provides
+    @PreferenceScope
+    fun scope(): CoroutineScope {
+        return CoroutineScope(Job() + Dispatchers.Main.immediate)
     }
 
     @Provides

@@ -1,7 +1,6 @@
 package ru.atomofiron.regextool.screens.root
 
 import app.atomofiron.common.arch.BasePresenter
-import ru.atomofiron.regextool.injectable.channel.RootChannel
 import ru.atomofiron.regextool.injectable.store.PreferenceStore
 import ru.atomofiron.regextool.screens.root.fragment.SnackbarCallbackFragmentDelegate
 import ru.atomofiron.regextool.screens.root.util.tasks.XTask

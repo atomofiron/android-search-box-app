@@ -35,7 +35,7 @@ class ExportImportPresenterDelegate(
         val output = preferenceService.importHistory()
         showOutput(output, R.string.successful)
         if (output.success) {
-            preferenceChannel.historyImportedEvent.justNotify()
+            preferenceChannel.historyImportedEvent.offer(Unit)
         }
     }
 

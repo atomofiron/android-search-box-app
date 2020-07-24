@@ -20,8 +20,7 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
 
     init {
         logI("init")
-
-        viewModel.onClearedCallback.addOneTimeObserver(::onCleared)
+        viewModel.onClearedListener = ::onCleared
     }
 
     open fun onCreate(context: Context, intent: Intent) = Unit
