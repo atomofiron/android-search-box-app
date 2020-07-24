@@ -74,20 +74,22 @@ ext {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.preference:preference:$preference"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     implementation "androidx.core:core-ktx:$androidx"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
     implementation "androidx.fragment:fragment-ktx:$fragment"
     implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
-    implementation "com.google.android.material:material:$material"
-    implementation "com.google.android:flexbox:$flexbox"
     implementation "androidx.work:work-runtime-ktx:$work"
 
     implementation "androidx.room:room-runtime:$room"
     kapt "androidx.room:room-compiler:$room"
+
+    implementation "com.google.android.material:material:$material"
+    implementation "com.google.android:flexbox:$flexbox"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
 
     implementation "com.google.dagger:dagger:$dagger"
     kapt "com.google.dagger:dagger-compiler:$dagger"
