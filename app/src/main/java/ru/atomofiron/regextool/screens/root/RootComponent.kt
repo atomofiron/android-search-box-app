@@ -36,8 +36,8 @@ class RootModule {
 
     @Provides
     @RootScope
-    fun presenter(viewModel: RootViewModel, router: RootRouter, rootChannel: RootChannel, preferenceStore: PreferenceStore): RootPresenter {
-        return RootPresenter(viewModel, router, rootChannel, preferenceStore)
+    fun presenter(viewModel: RootViewModel, router: RootRouter, preferenceStore: PreferenceStore): RootPresenter {
+        return RootPresenter(viewModel, router, preferenceStore)
     }
 
     @Provides
@@ -46,6 +46,5 @@ class RootModule {
 }
 
 interface RootDependencies {
-    fun rootChannel(): RootChannel
     fun preferenceStore(): PreferenceStore
 }
