@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply from: 'appmetrica.gradle'
 
 android {
     def fileProviderName = ".FileProvider"
@@ -39,12 +40,12 @@ android {
             applicationIdSuffix ".beta"
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
             buildConfigField "String", "AUTHORITY", "\"${appId + applicationIdSuffix + fileProviderName}\""
-            buildConfigField "String", "YANDEX_API_KEY", "\"null\""
+            buildConfigField "String", "YANDEX_API_KEY", "\"$yandexApiKey\""
         }
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
-            buildConfigField "String", "YANDEX_API_KEY", "\"null\""
+            buildConfigField "String", "YANDEX_API_KEY", "\"$yandexApiKey\""
         }
     }
     lintOptions {
