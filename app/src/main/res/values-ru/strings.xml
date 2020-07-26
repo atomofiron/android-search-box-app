@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Search Box App</string>
     <string name="tips">Подсказки</string>
 
     <string name="case_sens">Учитывать регистр</string>

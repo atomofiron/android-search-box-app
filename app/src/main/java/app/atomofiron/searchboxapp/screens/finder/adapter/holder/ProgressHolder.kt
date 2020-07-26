@@ -36,7 +36,7 @@ class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : C
         item as FinderStateItem.ProgressItem
         val task = item.finderTask
         val text = when {
-            task.isSecondary -> task.count.toString()
+            task.isLocal -> task.count.toString()
             else -> "${task.results.size}/${task.count}"
         }
         tvStatus.text = text
