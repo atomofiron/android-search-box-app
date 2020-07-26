@@ -83,7 +83,7 @@ class TextViewerService(
     }
 
     private fun addTask(isPrimary: Boolean, params: FinderQueryParams): MutableFinderTask {
-        val task = MutableFinderTask.secondary(isRemovable = !isPrimary, params = params)
+        val task = MutableFinderTask.local(isRemovable = !isPrimary, params = params)
         tasks.add(task)
         textViewerChannel.tasks.setAndNotify(tasks)
         return task

@@ -11,7 +11,7 @@ class MutableFinderTask private constructor(
         override var count: Int = 0,
         override var inProgress: Boolean = true,
         override var isDone: Boolean = false,
-        override var isSecondary: Boolean = false,
+        override var isLocal: Boolean = false,
         override var isRemovable: Boolean = true,
         override var error: String? = null
 ) : FinderTask {
@@ -19,10 +19,10 @@ class MutableFinderTask private constructor(
         private var lastId = 0L
         private fun nextId(): Long = lastId++
 
-        fun secondary(isRemovable: Boolean, params: FinderQueryParams): MutableFinderTask {
+        fun local(isRemovable: Boolean, params: FinderQueryParams): MutableFinderTask {
             return MutableFinderTask(
                     UUID.randomUUID(), nextId(), params,
-                    inProgress = false, isDone = true, isSecondary = true, isRemovable = isRemovable
+                    inProgress = false, isDone = true, isLocal = true, isRemovable = isRemovable
             )
         }
     }
@@ -30,7 +30,7 @@ class MutableFinderTask private constructor(
     constructor(uuid: UUID, params: FinderQueryParams) : this(uuid, nextId(), params)
 
     override fun copyTask(): FinderTask {
-        return MutableFinderTask(uuid, id, params, ArrayList(results), count, inProgress, isDone, isSecondary, isRemovable, error)
+        return MutableFinderTask(uuid, id, params, ArrayList(results), count, inProgress, isDone, isLocal, isRemovable, error)
     }
 
     override fun areContentsTheSame(other: FinderTask): Boolean {

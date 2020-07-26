@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Search Box App</string>
     <string name="tips">Tips</string>
     <string name="bottom_sheet_main_view_tag" translatable="false">bottom_sheet_main_view</string>
 
