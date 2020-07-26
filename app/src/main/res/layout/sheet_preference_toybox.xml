@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/preference_tv_path_to_toybox"
         app:layout_constraintEnd_toStartOf="@+id/preference_et_path_to_toybox"
         />
-    <ru.atomofiron.regextool.custom.view.AutoHideKeyboardField
+    <app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
         android:id="@+id/preference_et_path_to_toybox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

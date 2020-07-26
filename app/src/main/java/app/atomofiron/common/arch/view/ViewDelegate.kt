@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BasePresenter
-import ru.atomofiron.regextool.logI
+import app.atomofiron.searchboxapp.logI
 
 class ViewDelegate<P : BasePresenter<*,*>> {
     private val systemBarsColorId: Int get() = view.systemBarsColorId

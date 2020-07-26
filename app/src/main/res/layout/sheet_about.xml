@@ -42,6 +42,7 @@
         android:textColor="?colorSecondary"
         android:drawableStart="@drawable/ic_github"
         android:text="@string/look_github"
+        android:paddingEnd="@dimen/padding_large"
         />
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/about_tv_forpda"
@@ -60,6 +61,7 @@
         android:textColor="?colorSecondary"
         android:drawableStart="@drawable/ic_forpda"
         android:text="@string/faq_4pda"
+        android:paddingEnd="@dimen/padding_large"
         />
 
 </LinearLayout>

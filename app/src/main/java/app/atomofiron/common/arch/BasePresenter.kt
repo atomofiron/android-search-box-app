@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.permission.PermissionResultListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
-import ru.atomofiron.regextool.logI
+import app.atomofiron.searchboxapp.logI
 
 abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         protected val viewModel: M,

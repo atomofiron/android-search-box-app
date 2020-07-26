@@ -7,7 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelStore
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.findBooleanByAttr
-import ru.atomofiron.regextool.R
+import app.atomofiron.searchboxapp.R
 
 interface IView<P : BasePresenter<*,*>> : LifecycleOwner {
     companion object {

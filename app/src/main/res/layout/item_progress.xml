@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/common_margin_half">
 
-    <ru.atomofiron.regextool.custom.view.BallsView
+    <app.atomofiron.searchboxapp.custom.view.BallsView
         android:id="@+id/item_explorer_ps"
         android:layout_width="@dimen/common_size"
         android:layout_height="@dimen/common_size"

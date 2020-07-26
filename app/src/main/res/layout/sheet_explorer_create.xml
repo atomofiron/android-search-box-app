@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <ru.atomofiron.regextool.custom.view.AutoHideKeyboardField
+    <app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
         android:id="@+id/explorer_create_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

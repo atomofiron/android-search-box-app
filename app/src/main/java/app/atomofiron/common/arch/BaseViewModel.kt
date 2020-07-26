@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import app.atomofiron.common.util.KObservable
 import app.atomofiron.common.util.SingleLiveEvent
 import app.atomofiron.common.util.property.MutableWeakProperty
-import ru.atomofiron.regextool.App
-import ru.atomofiron.regextool.logI
+import app.atomofiron.searchboxapp.App
+import app.atomofiron.searchboxapp.logI
 
 abstract class BaseViewModel<D, V : Any> : ViewModel() {
     protected abstract val component: D

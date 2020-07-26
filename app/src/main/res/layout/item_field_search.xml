@@ -10,7 +10,7 @@
     app:cardBackgroundColor="?attr/colorCardBackground"
     app:cardElevation="2dp"
     >
-    <ru.atomofiron.regextool.custom.view.RegexInputField
+    <app.atomofiron.searchboxapp.custom.view.RegexInputField
         android:id="@+id/item_find_rt_find"
         android:layout_width="match_parent"
         android:layout_height="@dimen/common_size"

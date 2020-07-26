@@ -7,7 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
-import ru.atomofiron.regextool.logI
+import app.atomofiron.searchboxapp.logI
 
 class SingleLiveEvent<T> : LifecycleEventObserver {
     private var listener: (() -> Unit)? = null
