@@ -10,7 +10,7 @@ import android.provider.Settings
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
-import ru.atomofiron.regextool.BuildConfig
+import app.atomofiron.searchboxapp.BuildConfig
 
 @TargetApi(Build.VERSION_CODES.M)
 open class Permissions private constructor(

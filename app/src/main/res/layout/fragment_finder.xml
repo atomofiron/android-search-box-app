@@ -21,21 +21,21 @@
 			android:paddingBottom="@dimen/joystick_size"
 			/>
 
-		<ru.atomofiron.regextool.custom.view.FixedBottomAppBar
+		<app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/bottom_tab_bar_height"
 			android:layout_gravity="bottom"
 			>
-			<ru.atomofiron.regextool.custom.view.BottomMenuBar
+			<app.atomofiron.searchboxapp.custom.view.BottomMenuBar
 				android:id="@+id/finder_bom"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				app:menu="@menu/nav_finder"
 				/>
-		</ru.atomofiron.regextool.custom.view.FixedBottomAppBar>
+		</app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
-	<ru.atomofiron.regextool.custom.view.VerticalDockView
+	<app.atomofiron.searchboxapp.custom.view.VerticalDockView
 		android:id="@+id/finder_dv"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"

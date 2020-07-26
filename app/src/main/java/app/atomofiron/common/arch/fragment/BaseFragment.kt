@@ -17,8 +17,8 @@ import app.atomofiron.common.arch.view.IView
 import app.atomofiron.common.arch.view.ViewDelegate
 import app.atomofiron.common.util.findBooleanByAttr
 import com.google.android.material.snackbar.Snackbar
-import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.logI
+import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.logI
 import kotlin.reflect.KClass
 
 abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fragment(), IView<P>, Backable {

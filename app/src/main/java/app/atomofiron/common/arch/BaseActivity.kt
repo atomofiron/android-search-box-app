@@ -1,7 +1,6 @@
 package app.atomofiron.common.arch
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -11,9 +10,9 @@ import androidx.preference.PreferenceManager
 import app.atomofiron.common.arch.view.IView
 import app.atomofiron.common.arch.view.ViewDelegate
 import app.atomofiron.common.util.findColorByAttr
-import ru.atomofiron.regextool.R
-import ru.atomofiron.regextool.model.preference.AppTheme
-import ru.atomofiron.regextool.utils.Const
+import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.model.preference.AppTheme
+import app.atomofiron.searchboxapp.utils.Const
 import kotlin.reflect.KClass
 
 abstract class BaseActivity<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : AppCompatActivity(), IView<P> {

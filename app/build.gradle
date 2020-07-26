@@ -5,17 +5,17 @@ apply plugin: 'kotlin-kapt'
 
 android {
     def fileProviderName = ".FileProvider"
-    def appId = "ru.atomofiron.regextool"
+    def appId = "app.atomofiron.searchboxapp"
 
     compileSdkVersion 29
 
     defaultConfig {
-        applicationId "ru.atomofiron.regextool"
+        applicationId appId
         minSdkVersion 21
         //noinspection OldTargetApi
         targetSdkVersion 28
-        versionCode 13
-        versionName "2.0"
+        versionCode 1
+        versionName "1.0"
 
         resValue "string", "version_name", "v$versionName ($versionCode)"
     }
@@ -39,12 +39,12 @@ android {
             applicationIdSuffix ".beta"
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
             buildConfigField "String", "AUTHORITY", "\"${appId + applicationIdSuffix + fileProviderName}\""
-            buildConfigField "String", "YANDEX_API_KEY", "\"7793f606-fa41-4252-8604-2853747b41df\""
+            buildConfigField "String", "YANDEX_API_KEY", "\"null\""
         }
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
-            buildConfigField "String", "YANDEX_API_KEY", "\"7793f606-fa41-4252-8604-2853747b41df\""
+            buildConfigField "String", "YANDEX_API_KEY", "\"null\""
         }
     }
     lintOptions {

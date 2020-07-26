@@ -13,13 +13,13 @@
         android:maxWidth="@dimen/card_max_width"
         android:paddingBottom="@dimen/joystick_size"
         />
-    <ru.atomofiron.regextool.custom.view.FixedBottomAppBar
+    <app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
         android:id="@+id/text_viewer_fbab"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_tab_bar_height"
         android:layout_gravity="bottom"
         >
-        <ru.atomofiron.regextool.custom.view.BottomMenuBar
+        <app.atomofiron.searchboxapp.custom.view.BottomMenuBar
             android:id="@+id/text_viewer_bmb"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -37,7 +37,7 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 >
-                <ru.atomofiron.regextool.custom.view.BallsView
+                <app.atomofiron.searchboxapp.custom.view.BallsView
                     android:id="@+id/text_viewer_bv"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
@@ -57,8 +57,8 @@
                 android:layout_weight="4"
                 />
         </LinearLayout>
-    </ru.atomofiron.regextool.custom.view.FixedBottomAppBar>
-    <ru.atomofiron.regextool.custom.view.bottom_sheet.BottomSheetView
+    </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
+    <app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
         android:id="@+id/text_viewer_bsv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

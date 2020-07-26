@@ -14,7 +14,7 @@
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
 		/>
-	<ru.atomofiron.regextool.custom.view.Joystick
+	<app.atomofiron.searchboxapp.custom.view.Joystick
 		android:id="@+id/root_iv_joystick"
 		android:layout_width="@dimen/joystick_size"
 		android:layout_height="@dimen/joystick_size"

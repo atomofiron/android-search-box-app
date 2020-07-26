@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentTransaction
 import app.atomofiron.common.util.OneTimeBackStackListener
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.common.util.setOneTimeBackStackListener
-import ru.atomofiron.regextool.logI
+import app.atomofiron.searchboxapp.logI
 
 abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
     private val fragmentProperty: WeakProperty<Fragment> = when (viewProperty.value) {

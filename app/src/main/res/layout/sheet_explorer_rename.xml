@@ -8,7 +8,7 @@
         android:id="@+id/explorer_rename_item"
         layout="@layout/item_explorer"
         />
-    <ru.atomofiron.regextool.custom.view.AutoHideKeyboardField
+    <app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
         android:id="@+id/explorer_rename_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
