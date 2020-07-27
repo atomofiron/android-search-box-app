@@ -49,7 +49,7 @@
             />
     </PreferenceCategory>
     <PreferenceCategory
-        app:title="@string/app">
+        app:title="@string/user_interface">
         <ListPreference
             app:title="@string/pref_theme"
             app:key="pref_app_theme"
@@ -63,13 +63,6 @@
             app:entryValues="@array/orientation_val"
             />
         <Preference
-            app:title="@string/pref_export_import"
-            app:key="pref_export_import"
-            />
-    </PreferenceCategory>
-    <PreferenceCategory
-        app:title="@string/user_interface">
-        <Preference
             app:title="@string/pref_explorer_item"
             app:key="pref_explorer_item"
             />
@@ -81,6 +74,10 @@
     <PreferenceCategory
         android:key="pref_category_system"
         app:title="@string/pref_category_system">
+        <Preference
+            app:title="@string/pref_export_import"
+            app:key="pref_export_import"
+            />
         <Preference
             app:title="@string/pref_toybox"
             app:key="pref_toybox"
