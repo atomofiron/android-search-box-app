@@ -30,12 +30,12 @@ class App : Application(), Configuration.Provider {
 
         AppWatcher.config = AppWatcher.config.copy(enabled = false)
 
-        if (!BuildConfig.DEBUG) {
+        if (BuildConfig.YANDEX_API_KEY != null) {
             val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YANDEX_API_KEY)
                     .withLocationTracking(false)
                     .withCrashReporting(true)
                     .build()
-            YandexMetrica.activate(applicationContext, config);
+            YandexMetrica.activate(applicationContext, config)
         }
     }
 

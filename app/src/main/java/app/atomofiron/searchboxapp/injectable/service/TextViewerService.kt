@@ -89,8 +89,6 @@ class TextViewerService(
         return task
     }
 
-    private suspend fun loadFileWithPrimaryParams() = loadFile(tasks.first())
-
     private suspend fun loadFile(task: MutableFinderTask? = null) {
         textOffset = 0
         isEndReached = false
