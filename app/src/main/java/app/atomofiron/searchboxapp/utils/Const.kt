@@ -27,6 +27,8 @@ object Const {
     const val PREF_TOYBOX = "pref_toybox"
     const val PREF_LEAK_CANARY = "pref_leak_canary"
 
+    const val PREF_CATEGORY_DEBUG = "pref_category_debug"
+
     const val DEFAULT_TEXT_FORMATS = "txt java xml html htm smali log js css json kt md mkd markdown cm ad adoc"
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
     const val DEFAULT_MAX_SIZE = 10485760L
