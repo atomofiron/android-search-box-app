@@ -2,13 +2,13 @@ package app.atomofiron.searchboxapp.screens.preferences
 
 import app.atomofiron.common.arch.BasePresenter
 import kotlinx.coroutines.CoroutineScope
-import leakcanary.AppWatcher
 import app.atomofiron.searchboxapp.screens.preferences.fragment.ExportImportFragmentDelegate
 import app.atomofiron.searchboxapp.screens.preferences.fragment.JoystickFragmentDelegate
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceUpdateOutput
 import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.JoystickPresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceUpdatePresenterDelegate
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 
 class PreferencePresenter(
         val scope: CoroutineScope,
@@ -42,7 +42,7 @@ class PreferencePresenter(
     }*/
 
     fun onLeakCanaryClick(isChecked: Boolean) {
-        AppWatcher.config = AppWatcher.config.copy(enabled = isChecked)
+        AppWatcherProxy.setEnabled(isChecked)
         /*GlobalScope.launch {
             logD("offer $c")
             RootChannel.channel.offer(c++)

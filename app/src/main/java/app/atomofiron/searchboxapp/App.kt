@@ -6,8 +6,8 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
-import leakcanary.AppWatcher
 import app.atomofiron.searchboxapp.di.DaggerInjector
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.work.NotificationWorker
 import javax.inject.Inject
 
@@ -28,7 +28,7 @@ class App : Application(), Configuration.Provider {
         DaggerInjector.appComponent.inject(this)
         workManager.cancelUniqueWork(NotificationWorker.NAME)
 
-        AppWatcher.config = AppWatcher.config.copy(enabled = false)
+        AppWatcherProxy.setEnabled(false)
 
         if (BuildConfig.YANDEX_API_KEY != null) {
             val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YANDEX_API_KEY)
