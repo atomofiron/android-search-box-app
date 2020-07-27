@@ -34,7 +34,7 @@ android {
             applicationIdSuffix ".debug"
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
             buildConfigField "String", "AUTHORITY", "\"${appId + applicationIdSuffix + fileProviderName}\""
-            buildConfigField "String", "YANDEX_API_KEY", "\"null\""
+            buildConfigField "String", "YANDEX_API_KEY", "null"
         }
         beta {
             resValue "string", "app_name", "Search Box B"
