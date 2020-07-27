@@ -3,9 +3,9 @@ package app.atomofiron.searchboxapp.injectable.store
 import android.content.Context
 import android.content.SharedPreferences
 import android.view.Gravity
-import leakcanary.AppWatcher
 import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
 import app.atomofiron.searchboxapp.model.preference.*
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Tool
 
@@ -22,7 +22,7 @@ class PreferenceStore(context: Context, sp: SharedPreferences) {
             Const.PREF_MAX_SIZE -> maxFileSizeForSearch.value
 
             Const.PREF_USE_SU -> useSu.value
-            Const.PREF_LEAK_CANARY -> AppWatcher.config.enabled
+            Const.PREF_LEAK_CANARY -> AppWatcherProxy.isEnabled()
             else -> throw Exception("Key = $key.")
         }
     }
