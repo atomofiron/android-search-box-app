@@ -4,6 +4,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreference
+import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.preference.TextFieldPreference
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceFragment
@@ -33,10 +34,14 @@ class PreferenceFragmentDelegate(
                 is PreferenceScreen -> onUpdateScreen(preference)
                 is PreferenceCategory -> {
                     val preferenceCategory = preference
-                    for (j in 0 until preferenceCategory.preferenceCount) {
-                        preference = preferenceCategory.getPreference(j)
-                        preference.onPreferenceChangeListener = this
-                        onUpdatePreference(preference, null)
+                    if (!BuildConfig.DEBUG && preferenceCategory.key == Const.PREF_CATEGORY_DEBUG) {
+                        preferenceCategory.isVisible = false
+                    } else {
+                        for (j in 0 until preferenceCategory.preferenceCount) {
+                            preference = preferenceCategory.getPreference(j)
+                            preference.onPreferenceChangeListener = this
+                            onUpdatePreference(preference, null)
+                        }
                     }
                 }
                 is Preference -> {
