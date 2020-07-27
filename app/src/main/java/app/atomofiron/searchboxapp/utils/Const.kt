@@ -51,7 +51,7 @@ object Const {
     const val DATE_PATTERN = "YYYY-MM-DD_HH-mm-ss"
     const val MIME_TYPE_TEXT = "text/plain"
     const val GITHUB_URL = "https://github.com/Atomofiron/android-search-box-app"
-    const val FORPDA_URL = "https://4pda.ru/forum/todo" // todo (required)
+    const val FORPDA_URL = "https://4pda.ru/forum/index.php?showtopic=1000070&view=findpost&p=98557921"
 
     const val TOYBOX_32 = "/toybox32"
     const val TOYBOX_64 = "/toybox64"
