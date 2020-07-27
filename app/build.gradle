@@ -14,8 +14,8 @@ android {
         applicationId appId
         minSdkVersion 21
         //noinspection OldTargetApi
-        targetSdkVersion 28
-        versionCode 1
+        targetSdkVersion 29
+        versionCode 2
         versionName "1.0"
 
         resValue "string", "version_name", "v$versionName ($versionCode)"

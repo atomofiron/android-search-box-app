@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.preferences.fragment
 
+import android.os.Build
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
@@ -155,9 +156,13 @@ class PreferenceFragmentDelegate(
                 DOES_NOT_MATTER
             }
             Const.PREF_TOYBOX -> {
-                preference.setOnPreferenceClickListener {
-                    fragment.onToyboxClick()
-                    true
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    preference.isVisible = false
+                } else {
+                    preference.setOnPreferenceClickListener {
+                        fragment.onToyboxClick()
+                        true
+                    }
                 }
                 DOES_NOT_MATTER
             }
