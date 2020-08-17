@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.utils
 
+import app.atomofiron.searchboxapp.logD
 import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.logI
 import java.io.InputStream
@@ -24,10 +25,16 @@ object Shell {
     const val LS_LAHLD = "{toybox} ls -lAhLd \"%s\""
 
     // grep: No 'E' with 'F'
-    const val FIND_GREP = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -E \"%s\""
-    const val FIND_GREP_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -E \"%s\""
-    const val FIND_GREP_F = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -e \"%s\""
-    const val FIND_GREP_IF = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -e \"%s\""
+    const val FIND_GREP_CS = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -e \"%s\""
+    const val FIND_GREP_CS_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -e \"%s\""
+    const val FIND_GREP_CS_E = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -E \"%s\""
+    const val FIND_GREP_CS_IE = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) | xargs {toybox} grep -c -s -i -E \"%s\""
+
+    // -H is necessary
+    const val GREP_CS = "{toybox} grep -H -c -s -e \"%s\" \"%s\""
+    const val GREP_CS_I = "{toybox} grep -H -c -s -i -e \"%s\" \"%s\""
+    const val GREP_CS_E = "{toybox} grep -H -c -s -E \"%s\" \"%s\""
+    const val GREP_CS_IE = "{toybox} grep -H -c -s -i -E \"%s\" \"%s\""
 
     const val FIND_EXEC_GREP = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
     const val FIND_EXEC_GREP_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
@@ -41,10 +48,10 @@ object Shell {
     const val LS_LOG = "{toybox} ls -log \"%s\""
     const val CP_F = "{toybox} cp -f %s %s"
 
-    const val GREP = "{toybox} grep -bons -e \"%s\" \"%s\""
-    const val GREP_I = "{toybox} grep -bons -ie \"%s\" \"%s\""
-    const val GREP_E = "{toybox} grep -bons -E \"%s\" \"%s\""
-    const val GREP_IE = "{toybox} grep -bons -iE \"%s\" \"%s\""
+    const val GREP_BONS = "{toybox} grep -bons -e \"%s\" \"%s\""
+    const val GREP_BONS_I = "{toybox} grep -bons -ie \"%s\" \"%s\""
+    const val GREP_BONS_E = "{toybox} grep -bons -E \"%s\" \"%s\""
+    const val GREP_BONS_IE = "{toybox} grep -bons -iE \"%s\" \"%s\""
 
     // %s grep -c -s -F -i -e "%s" "%s"
 
@@ -120,7 +127,7 @@ object Shell {
             logI("waitFor ${System.currentTimeMillis() - tik} $command")
         } catch (e: Exception) {
             logE(e.toString())
-            output = e.toString()
+            error = e.toString()
             success = false
         } finally {
             try {

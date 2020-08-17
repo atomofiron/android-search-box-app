@@ -27,14 +27,14 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
     companion object {
         const val KEY_PATH = "KEY_PATH"
         const val KEY_QUERY = "KEY_QUERY"
-        const val KEY_USE_SU = "KEY_USE_SU"
+        const val KEY_USE_REGEX = "KEY_USE_REGEX"
         const val KEY_IGNORE_CASE = "KEY_IGNORE_CASE"
 
         fun openTextFile(path: String, params: FinderQueryParams? = null): Fragment {
             val bundle = Bundle()
             bundle.putString(KEY_PATH, path)
             bundle.putString(KEY_QUERY, params?.query)
-            bundle.putBoolean(KEY_USE_SU, params?.useRegex ?: false)
+            bundle.putBoolean(KEY_USE_REGEX, params?.useRegex ?: false)
             bundle.putBoolean(KEY_IGNORE_CASE, params?.ignoreCase ?: false)
             val fragment = TextViewerFragment()
             fragment.arguments = bundle

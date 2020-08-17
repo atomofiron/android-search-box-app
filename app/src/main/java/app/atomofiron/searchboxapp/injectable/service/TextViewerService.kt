@@ -201,10 +201,10 @@ class TextViewerService(
 
     private fun searchInFile(params: FinderQueryParams): Int {
         val template = when {
-            params.useRegex && params.ignoreCase -> Shell.GREP_IE
-            params.useRegex -> Shell.GREP_E
-            params.ignoreCase -> Shell.GREP_I
-            else -> Shell.GREP
+            params.useRegex && params.ignoreCase -> Shell.GREP_BONS_IE
+            params.useRegex -> Shell.GREP_BONS_E
+            params.ignoreCase -> Shell.GREP_BONS_I
+            else -> Shell.GREP_BONS
         }
         var count = 0
         val cmd = Shell[template].format(params.query.escapeQuotes(), path)

@@ -68,7 +68,7 @@ class TextViewerPresenter(
     override fun onCreate(context: Context, intent: Intent) {
         val path = intent.getStringExtra(TextViewerFragment.KEY_PATH)!!
         val query = intent.getStringExtra(TextViewerFragment.KEY_QUERY)
-        val useRegex = intent.getBooleanExtra(TextViewerFragment.KEY_USE_SU, false)
+        val useRegex = intent.getBooleanExtra(TextViewerFragment.KEY_USE_REGEX, false)
         val ignoreCase = intent.getBooleanExtra(TextViewerFragment.KEY_IGNORE_CASE, false)
         val params = query?.let { FinderQueryParams(it, useRegex, ignoreCase) }
         val xFile = MutableXFile.byPath(path)
