@@ -32,6 +32,7 @@ class BottomSheetView @JvmOverloads constructor(
     private val behavior = (viewContainer.layoutParams as LayoutParams).behavior as BottomSheetBehavior<View>
     lateinit var contentView: View private set
     private var contentViewId: Int = UNDEFINED
+    private var behaviorTargetState = BottomSheetBehavior.STATE_HIDDEN
 
     val isSheetShown: Boolean get() = when (behavior.state) {
         BottomSheetBehavior.STATE_EXPANDED -> true
@@ -112,18 +113,25 @@ class BottomSheetView @JvmOverloads constructor(
     }
 
     fun show() {
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        behaviorTargetState = BottomSheetBehavior.STATE_EXPANDED
+        behavior.state = behaviorTargetState
     }
 
     /** @return sheet was opened */
     fun hide(): Boolean {
-        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        behaviorTargetState = BottomSheetBehavior.STATE_HIDDEN
+        behavior.state = behaviorTargetState
         return isSheetShown
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         super.onLayout(changed, l, t, r, b)
         bottomSheetCallback.updateBackGround(behavior.state)
+
+        val isSettling = behavior.state == BottomSheetBehavior.STATE_SETTLING
+        if (isSettling && changed) {
+            behavior.state = behaviorTargetState
+        }
     }
 
     private inner class BottomSheetCallback : BottomSheetBehavior.BottomSheetCallback() {
