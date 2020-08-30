@@ -3,7 +3,7 @@ package app.atomofiron.searchboxapp.screens.root
 import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -28,7 +28,7 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
     @Inject
     override lateinit var presenter: RootPresenter
 
-    private val root = Knife<ConstraintLayout>(this, R.id.root_cl_root)
+    private val root = Knife<CoordinatorLayout>(this, R.id.root_cl_root)
     private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
 
     private lateinit var explorerFragment: ExplorerFragment
