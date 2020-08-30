@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder.model
 
+import androidx.annotation.StringRes
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.finder.FinderTask
@@ -38,6 +39,9 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     class TargetItem(val target: XFile)
         : FinderStateItem(target.hashCode().toLong(), R.layout.item_finder_target)
 
+    class TipItem(@StringRes val titleId: Int)
+        : FinderStateItem(titleId.hashCode().toLong(), R.layout.item_finder_tip)
+
     override fun equals(other: Any?): Boolean = when (other) {
         !is FinderStateItem -> false
         is SpecialCharactersItem -> when (this) {
@@ -54,5 +58,6 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         is TestItem -> stableId.toInt()
         is ProgressItem -> finderTask.hashCode()
         is TargetItem -> stableId.toInt()
+        is TipItem -> stableId.toInt()
     }
 }

@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
 import app.atomofiron.common.util.LateinitLiveData
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlin.reflect.KClass
 
@@ -16,6 +17,10 @@ class FinderItemsModelDelegate : FinderItemsModel {
         items.addAll(uniqueItems)
         items.addAll(progressItems)
         items.addAll(targetItems)
+        when (targetItems.isEmpty()) {
+            true -> items.add(FinderStateItem.TipItem(R.string.tip))
+            else -> items.add(FinderStateItem.TipItem(R.string.search_here))
+        }
         searchItems.value = items
     }
 

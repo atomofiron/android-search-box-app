@@ -109,6 +109,8 @@
     <string name="update_available">Update is available</string>
     <string name="get_update">Update</string>
     <string name="channel_name_updates">Updates</string>
+    <string name="tip">In Explorer specify where to search</string>
+    <string name="search_here">Search here:</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>
         <item quantity="one">%d directory</item>
