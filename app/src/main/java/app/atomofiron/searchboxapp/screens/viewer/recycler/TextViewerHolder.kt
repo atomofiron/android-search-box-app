@@ -56,7 +56,7 @@ class TextViewerHolder(private val textView: TextView) : GeneralHolder<TextLine>
                         index == indexFocus -> spanPartFocus
                         else -> spanPart
                     }
-                    spannable.setSpan(span, match.start, match.end.dec(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(span, match.start, match.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
                 textView.text = spannable
             }
