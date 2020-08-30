@@ -43,10 +43,13 @@ object Const {
     const val VALUE_TOYBOX_CUSTOM = "toybox_custom"
     const val VALUE_TOYBOX_IMPORTED = "toybox_imported"
 
+    const val NOTIFICATION_CHANNEL_UPDATE_ID = "channel_update"
     const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "foreground_channel_id"
     const val RESULT_NOTIFICATION_CHANNEL_ID = "result_channel_id"
     const val FOREGROUND_NOTIFICATION_ID = 101
     const val FOREGROUND_INTENT_REQUEST_CODE = 102
+    const val REQUEST_CODE_MARKET_UPDATE = 7453
+    const val NOTIFICATION_ID_UPDATE = 9485
 
     const val DATE_PATTERN = "YYYY-MM-DD_HH-mm-ss"
     const val MIME_TYPE_TEXT = "text/plain"
@@ -60,4 +63,7 @@ object Const {
 
     const val TEXT_FILE_PAGINATION_STEP = 128
     const val TEXT_FILE_PAGINATION_STEP_OFFSET = 16
+
+    const val ERROR_UPDATE_AVAILABILITY = "Update is unavailable."
+    const val ERROR_CHECK_UPDATE = "Failed to check updates."
 }
