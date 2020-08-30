@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.utils
+package app.atomofiron.searchboxapp.custom.view.style
 
 import android.graphics.Canvas
 import android.graphics.Paint

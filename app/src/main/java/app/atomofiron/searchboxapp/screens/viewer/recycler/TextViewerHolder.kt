@@ -7,37 +7,56 @@ import androidx.core.content.ContextCompat
 import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.view.style.EntireLineSpan
 import app.atomofiron.searchboxapp.model.textviewer.TextLine
 import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
-import app.atomofiron.searchboxapp.utils.RoundedBackgroundSpan
+import app.atomofiron.searchboxapp.custom.view.style.RoundedBackgroundSpan
 
 class TextViewerHolder(private val textView: TextView) : GeneralHolder<TextLine>(textView) {
-    private val span: RoundedBackgroundSpan get() = RoundedBackgroundSpan(
+    private val spanPart: RoundedBackgroundSpan
+        get() = RoundedBackgroundSpan(
             context.findColorByAttr(R.attr.colorAccent),
             ContextCompat.getColor(context, R.color.white),
             context.resources.getDimension(R.dimen.background_span_corner_radius)
     )
 
-    private val spanFocus: RoundedBackgroundSpan get() = RoundedBackgroundSpan(
+    private val spanPartFocus: RoundedBackgroundSpan
+        get() = RoundedBackgroundSpan(
             ContextCompat.getColor(context, R.color.colorPrimaryRed),
             ContextCompat.getColor(context, R.color.white),
             context.resources.getDimension(R.dimen.background_span_corner_radius)
     )
 
+    private val spanLine: EntireLineSpan
+        get() = EntireLineSpan(
+            context.findColorByAttr(R.attr.colorAccent),
+            ContextCompat.getColor(context, R.color.white),
+            context.resources.getDimension(R.dimen.background_span_corner_radius)
+    )
+
+    private val spanLineFocus: EntireLineSpan
+        get() = EntireLineSpan(
+            ContextCompat.getColor(context, R.color.colorPrimaryRed),
+            ContextCompat.getColor(context, R.color.white),
+            context.resources.getDimension(R.dimen.background_span_corner_radius)
+    )
 
     override fun onBind(item: TextLine, position: Int) = Unit
 
     fun onBind(item: TextLine, matches: List<TextLineMatch>?, indexFocus: Int?) {
-        when (matches) {
-            null -> textView.text = item.text
+        when {
+            matches == null || matches.isEmpty() -> textView.text = item.text
             else -> {
                 val spannable = SpannableString(item.text)
                 matches.forEachIndexed { index, match ->
-                    val span = when (index) {
-                        indexFocus -> spanFocus
-                        else -> span
+                    val forTheEntireLine = match.start == 0 && match.end == item.text.length
+                    val span: Any = when {
+                        forTheEntireLine && index == indexFocus -> spanLineFocus
+                        forTheEntireLine -> spanLine
+                        index == indexFocus -> spanPartFocus
+                        else -> spanPart
                     }
-                    spannable.setSpan(span, match.start, match.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(span, match.start, match.end.dec(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
                 textView.text = spannable
             }

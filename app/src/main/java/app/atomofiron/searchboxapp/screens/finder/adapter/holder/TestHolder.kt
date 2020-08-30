@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import app.atomofiron.searchboxapp.utils.RoundedBackgroundSpan
+import app.atomofiron.searchboxapp.custom.view.style.RoundedBackgroundSpan
 import java.util.regex.Pattern
 
 class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextWatcher {
