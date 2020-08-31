@@ -17,4 +17,5 @@
 	<color name="spanGreen">#7f007f00</color>
 
 	<color name="ic_launcher_background">#ff009922</color>
+    <color name="white">#ffffffff</color>
 </resources>

@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <Preference
+        app:title="@string/get_update"
+        app:summary="@string/update_available"
+        app:key="pref_update"
+        app:icon="@drawable/ic_new"
+        />
     <PreferenceCategory
         app:title="@string/preferences">
         <EditTextPreference

@@ -1,6 +1,8 @@
 package ru.atomofiron.regextool.Fragments;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.SwitchPreferenceCompat;
@@ -21,8 +23,10 @@ import ru.atomofiron.regextool.I;
 import ru.atomofiron.regextool.R;
 import ru.atomofiron.regextool.Utils.Cmd;
 
-public class PrefsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+public class PrefsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 	public static final ArrayList<String> changedPrefs = new ArrayList<>();
+	private Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=app.atomofiron.searchboxapp"));
+	private Intent forpdaIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://4pda.ru/forum/index.php?showtopic=1000070"));
 
 	private SharedPreferences sp;
 
@@ -62,6 +66,14 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 					pref = prefCategory.getPreference(j);
 					pref.setOnPreferenceChangeListener(this);
 					update(pref, null);
+				}
+			} else if (I.PREF_UPDATE.equals(pref.getKey())) {
+				boolean canOpenMarket = marketIntent.resolveActivity(getContext().getPackageManager()) != null;
+				boolean canOpenBrowser = forpdaIntent.resolveActivity(getContext().getPackageManager()) != null;
+				if (!canOpenMarket && !canOpenBrowser) {
+					pref.setVisible(false);
+				} else {
+					pref.setOnPreferenceClickListener(this);
 				}
 			}
 		}
@@ -131,4 +143,16 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
 		return true;
 	}
 
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+		if (I.PREF_UPDATE.equals(preference.getKey())) {
+			boolean canOpenMarket = marketIntent.resolveActivity(getContext().getPackageManager()) != null;
+			if (canOpenMarket) {
+				startActivity(marketIntent);
+			} else {
+				startActivity(forpdaIntent);
+			}
+		}
+		return false;
+	}
 }

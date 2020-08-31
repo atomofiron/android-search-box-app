@@ -13,6 +13,7 @@ public class I {
 
     public static final String PREF_LAST_VERSION = "PREF_LAST_VERSION";
     public static final String PREF_FIRST_START = "PREF_FIRST_START";
+    public static final String PREF_UPDATE = "pref_update";
     public static final String PREF_STORAGE_PATH = "pref_storage_path";
     public static final String PREF_SPECIAL_CHARACTERS = "pref_special_characters";
     public static final String PREF_EXTRA_FORMATS = "pref_extra_formats";
