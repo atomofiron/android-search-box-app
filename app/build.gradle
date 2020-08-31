@@ -7,15 +7,15 @@ android {
         applicationId "ru.atomofiron.regextool"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 12
-        versionName "1.5.1"
+        versionCode 13
+        versionName "1.5.2"
     }
     buildTypes {
         /*debug {
             applicationIdSuffix ".debug"
         }*/
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
