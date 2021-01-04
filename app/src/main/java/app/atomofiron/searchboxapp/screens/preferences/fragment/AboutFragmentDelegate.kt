@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.widget.TextView
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetDelegate
 import app.atomofiron.searchboxapp.utils.Const
@@ -25,6 +26,9 @@ class AboutFragmentDelegate : BottomSheetDelegate(R.layout.sheet_about), View.On
         var componentName = githubIntent.resolveActivity(context.packageManager)
         tvGithub.isEnabled = componentName != null
         tvGithub.alpha = if (componentName == null) ALPHA_DISABLED else ALPHA_ENABLED
+        val tint = context.findColorByAttr(R.attr.colorPositive)
+        tvGithub.compoundDrawablesRelative[0].setTint(tint)
+        tvForpda.compoundDrawablesRelative[0].setTint(tint)
 
         componentName = forpdaIntent.resolveActivity(context.packageManager)
         tvForpda.isEnabled = componentName != null
