@@ -1,6 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
-import app.atomofiron.common.util.LateinitLiveData
+import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlin.reflect.KClass
@@ -10,7 +10,7 @@ class FinderItemsModelDelegate : FinderItemsModel {
     override val progressItems = ArrayList<FinderStateItem.ProgressItem>()
     override val targetItems = ArrayList<FinderStateItem.TargetItem>()
 
-    override val searchItems = LateinitLiveData<List<FinderStateItem>>()
+    override val searchItems = LiveDataFlow<List<FinderStateItem>>()
 
     override fun updateState() {
         val items = ArrayList<FinderStateItem>()

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
+import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
@@ -84,6 +85,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
             setOnMenuItemClickListener(::onBottomMenuItemClick)
         }
         bottomItemMenu.bottomSheetView = bottomSheetView.view
+        onViewCollect()
     }
 
     override fun onDestroyView() {
@@ -102,14 +104,13 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
         }
     }
 
-    override fun onSubscribeData(owner: LifecycleOwner) {
-        super.onSubscribeData(owner)
-        viewModel.composition.observe(this, Observer(::onCompositionChange))
-        viewModel.task.observe(this, Observer(::onTaskChange))
-        viewModel.enableOptions.observe(this, Observer(::enableOptions))
-        viewModel.showOptions.observeData(this, ::showOptions)
-        viewModel.notifyTaskHasChanged.observeEvent(this, resultAdapter::notifyDataSetChanged)
-        viewModel.notifyItemChanged.observeData(this, resultAdapter::setItem) // todo works poor
+    private fun onViewCollect() = viewModel.apply {
+        viewCollect(composition, ::onCompositionChange)
+        viewCollect(task, ::onTaskChange)
+        viewCollect(enableOptions, ::enableOptions)
+        viewCollect(showOptions, ::showOptions)
+        viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
+        viewCollect(notifyItemChanged, resultAdapter::setItem) // todo works poor
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

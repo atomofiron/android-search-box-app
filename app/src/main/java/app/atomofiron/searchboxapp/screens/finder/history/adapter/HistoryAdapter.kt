@@ -77,7 +77,7 @@ class HistoryAdapter(
         return false
     }
 
-    fun reload() {
+    fun reload(unit: Unit = Unit) {
         items = ArrayList(dao.all)
         notifyDataSetChanged()
     }

@@ -16,6 +16,7 @@ import app.atomofiron.common.arch.view.Backable
 import app.atomofiron.common.arch.view.IView
 import app.atomofiron.common.arch.view.ViewDelegate
 import app.atomofiron.common.util.findBooleanByAttr
+import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.logI
@@ -50,7 +51,6 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
         // onAttachChildFragment()
         viewModel = ViewModelProvider(this).get(viewModelClass.java)
         delegate.onCreate(this)
-        viewModel.alerts.observeData(this, ::onAlert)
     }
 
     protected open fun onAlert(message: String) {
@@ -66,6 +66,7 @@ abstract class BaseFragment<M : BaseViewModel<*,*>, P : BasePresenter<*,*>> : Fr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         delegate.onViewCreated()
+        viewCollect(viewModel.alerts, ::onAlert)
     }
 
     override fun onStart() {

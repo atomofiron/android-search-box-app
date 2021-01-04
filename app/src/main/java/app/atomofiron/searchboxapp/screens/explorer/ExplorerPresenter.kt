@@ -37,7 +37,9 @@ class ExplorerPresenter(
     init {
         preferenceStore.dockGravity.addObserver(onClearedCallback, ::onDockGravityChanged)
         preferenceStore.storagePath.addObserver(onClearedCallback, ::onStoragePathChanged)
-        preferenceStore.explorerItemComposition.addObserver(onClearedCallback, viewModel.itemComposition::setValue)
+        preferenceStore.explorerItemComposition.addObserver(onClearedCallback) {
+            viewModel.itemComposition.value = it
+        }
 
         val items = ArrayList<XPlace>()
         items.add(XPlace.InternalStorage(context.getString(R.string.internal_storage), visible = true))
@@ -54,7 +56,7 @@ class ExplorerPresenter(
         explorerStore.store.addObserver(onClearedCallback, viewModel::onChanged)
         explorerStore.updates.addObserver(onClearedCallback, viewModel::onChanged)
         explorerStore.current.addObserver(onClearedCallback, viewModel::onChanged)
-        explorerStore.alerts.addObserver(onClearedCallback, viewModel.alerts::invoke)
+        explorerStore.alerts.addObserver(onClearedCallback, viewModel.alerts::emit)
     }
 
     private fun onDockGravityChanged(gravity: Int) {
@@ -78,7 +80,7 @@ class ExplorerPresenter(
             files[0].isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }
-        viewModel.showOptions.invoke(ExplorerItemOptions(ids, files, viewModel.itemComposition.value))
+        viewModel.showOptions.value = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
@@ -95,6 +97,6 @@ class ExplorerPresenter(
 
     fun onVolumeUp(isCurrentDirVisible: Boolean) = when {
         isCurrentDirVisible -> explorerInteractor.openParent()
-        else -> viewModel.scrollToCurrentDir.invoke()
+        else -> viewModel.scrollToCurrentDir.emit()
     }
 }

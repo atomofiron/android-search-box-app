@@ -38,7 +38,7 @@ class ExplorerItemActionListenerDelegate(
             else -> viewModel.oneFileOptions
         }
         val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
-        viewModel.showOptions.invoke(options)
+        viewModel.showOptions.value = options
     }
 
     override fun onItemClick(item: XFile) {
@@ -50,7 +50,7 @@ class ExplorerItemActionListenerDelegate(
                         readStorageGranted = true
                         onItemClick(item)
                     }
-                    .forbidden { viewModel.permissionRequiredWarning.invoke() }
+                    .forbidden { viewModel.permissionRequiredWarning.emit() }
             item.isDirectory -> explorerInteractor.openDir(item)
             else -> {
                 val textFormats = preferenceStore.textFormats.entity

@@ -1,8 +1,7 @@
 package app.atomofiron.searchboxapp.screens.finder
 
-import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.SingleLiveEvent
+import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
@@ -15,12 +14,12 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>(), Finder
         private set
     val targets = ArrayList<XFile>()
 
-    val historyDrawerGravity = MutableLiveData<Int>()
-    val reloadHistory = SingleLiveEvent<Unit>()
-    val insertInQuery = SingleLiveEvent<String>()
-    val replaceQuery = SingleLiveEvent<String>()
-    val snackbar = SingleLiveEvent<String>()
-    val history = SingleLiveEvent<String>()
+    val historyDrawerGravity = LiveDataFlow<Int>()
+    val reloadHistory = LiveDataFlow(Unit, single = true)
+    val insertInQuery = LiveDataFlow<String>(single = true)
+    val replaceQuery = LiveDataFlow<String>(single = true)
+    val snackbar = LiveDataFlow<String>(single = true)
+    val history = LiveDataFlow<String>(single = true)
 
     override val component = DaggerFinderComponent
             .builder()

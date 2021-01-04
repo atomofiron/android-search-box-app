@@ -78,7 +78,7 @@ class ResultPresenter(
         }
         resultChannel.notifyItemChanged.addObserver(onClearedCallback) {
             scope.launch {
-                viewModel.notifyItemChanged.invoke(it)
+                viewModel.notifyItemChanged.value = it
             }
         }
     }
@@ -91,7 +91,7 @@ class ResultPresenter(
             else -> viewModel.manyFilesOptions
         }
         val options = ExplorerItemOptions(ids, viewModel.checked, viewModel.composition.value)
-        viewModel.showOptions.invoke(options)
+        viewModel.showOptions.value = options
     }
 
     fun onExportClick() {
@@ -108,7 +108,7 @@ class ResultPresenter(
         val title = "search_$date.md.txt";
 
         if (!router.shareFile(title, data.toString())) {
-            viewModel.alerts.invoke(resources.getString(R.string.no_activity))
+            viewModel.alerts.value = resources.getString(R.string.no_activity)
         }
     }
 

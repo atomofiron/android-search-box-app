@@ -58,28 +58,28 @@ android {
 }
 
 ext {
-    androidx = "1.3.1"
+    androidx = "1.3.2"
     fragment = "1.2.5"
-    material = "1.2.0"
+    material = "1.2.1"
     appcompat = "1.2.0"
-    coroutines = "1.3.9"
+    coroutines = "1.4.0"
     lifecycle = "2.2.0"
     retrofit = "2.6.0"
-    constraint = "2.0.1"
+    constraint = "2.0.4"
     preference = "1.1.1"
     flexbox = "2.0.1"
-    room = "2.2.5"
+    room = "2.2.6"
     dagger = "2.27"
     leakcanary = "2.2"
     metrica = "3.13.1"
     work = "2.4.0"
-    play_core = "1.8.0"
+    play_core = "1.9.0"
     play_core_ktx = "1.8.1"
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.preference:preference:$preference"
+    implementation "androidx.preference:preference-ktx:$preference"
     implementation "androidx.core:core-ktx:$androidx"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
@@ -96,6 +96,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
 
     implementation "com.google.dagger:dagger:$dagger"
     kapt "com.google.dagger:dagger-compiler:$dagger"

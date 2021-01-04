@@ -3,7 +3,7 @@ package app.atomofiron.common.arch
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import app.atomofiron.common.util.KObservable
-import app.atomofiron.common.util.SingleLiveEvent
+import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.common.util.property.MutableWeakProperty
 import app.atomofiron.searchboxapp.App
 import app.atomofiron.searchboxapp.logI
@@ -16,7 +16,7 @@ abstract class BaseViewModel<D, V : Any> : ViewModel() {
 
     // будет заменён корутинами
     val onClearedCallback = KObservable.RemoveObserverCallback()
-    val alerts = SingleLiveEvent<String>()
+    val alerts = LiveDataFlow<String>(single = true)
 
     lateinit var onClearedListener: () -> Unit
 

@@ -1,9 +1,7 @@
 package app.atomofiron.searchboxapp.screens.root
 
-import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.LateinitLiveData
-import app.atomofiron.common.util.SingleLiveEvent
+import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
@@ -12,11 +10,11 @@ import app.atomofiron.searchboxapp.screens.root.util.tasks.XTask
 
 class RootViewModel : BaseViewModel<RootComponent, RootActivity>() {
 
-    val showExitSnackbar = SingleLiveEvent<Unit>()
-    val setTheme = SingleLiveEvent<AppTheme>()
-    val setOrientation = SingleLiveEvent<AppOrientation>()
-    val setJoystick = LateinitLiveData<JoystickComposition>()
-    val tasks = MutableLiveData<List<XTask>>()
+    val showExitSnackbar = LiveDataFlow(Unit, single = true)
+    val setTheme = LiveDataFlow<AppTheme>(single = true)
+    val setOrientation = LiveDataFlow<AppOrientation>(single = true)
+    val setJoystick = LiveDataFlow<JoystickComposition>()
+    val tasks = LiveDataFlow<List<XTask>>()
 
     override val component = DaggerRootComponent
             .builder()

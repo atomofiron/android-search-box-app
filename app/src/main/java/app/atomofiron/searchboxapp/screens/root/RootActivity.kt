@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import app.atomofiron.common.arch.BaseActivity
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.findColorByAttr
+import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.common.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
@@ -49,11 +50,12 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
 
         joystick.view.setOnClickListener { onEscClick() }
 
-        viewModel.showExitSnackbar.observeEvent(this) {
+        viewModel.showExitSnackbar.collect(lifecycle) {
             sbExit.show()
         }
 
-        setOrientation(viewModel.setOrientation.data!!)
+        setOrientation(viewModel.setOrientation.value)
+        onCollect()
     }
 
     override fun onAttachFragment(fragment: Fragment) {
@@ -83,10 +85,12 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
         }
     }
 
-    override fun onSubscribeData(owner: LifecycleOwner) {
-        viewModel.setTheme.observeData(owner, ::setTheme)
-        viewModel.setOrientation.observeData(owner, ::setOrientation)
-        viewModel.setJoystick.observe(owner, Observer { joystick { setComposition(it) } })
+    private fun onCollect() = viewModel.apply {
+        setTheme.collect(lifecycle, ::setTheme)
+        setOrientation.collect(lifecycle, ::setOrientation)
+        setJoystick.collect(lifecycle) {
+            joystick { setComposition(it) }
+        }
     }
 
     override fun onBackPressed() = presenter.onBackButtonClick()

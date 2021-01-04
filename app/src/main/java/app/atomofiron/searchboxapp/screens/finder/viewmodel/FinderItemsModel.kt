@@ -1,6 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
-import app.atomofiron.common.util.LateinitLiveData
+import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlin.reflect.KClass
 
@@ -16,7 +16,7 @@ interface FinderItemsModel {
     val progressItems: MutableList<FinderStateItem.ProgressItem>
     val targetItems: MutableList<FinderStateItem.TargetItem>
 
-    val searchItems: LateinitLiveData<List<FinderStateItem>>
+    val searchItems: LiveDataFlow<List<FinderStateItem>>
 
     fun updateState()
     fun updateSearchQuery(value: String)

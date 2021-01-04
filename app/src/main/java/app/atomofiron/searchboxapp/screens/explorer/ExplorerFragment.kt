@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
+import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
@@ -91,25 +92,26 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
             explorerAdapter.setHeaderView(this)
             setOnItemActionListener(headerViewOutputDelegate)
         }
+        onViewCollect()
     }
 
-    override fun onSubscribeData(owner: LifecycleOwner) {
-        viewModel.items.observe(owner, Observer(explorerAdapter::setItems))
-        viewModel.itemComposition.observe(owner, Observer(explorerAdapter::setComposition))
-        viewModel.current.observe(owner, Observer(explorerAdapter::setCurrentDir))
-        viewModel.notifyUpdate.observeData(owner, explorerAdapter::setItem)
-        viewModel.notifyRemove.observeData(owner, explorerAdapter::removeItem)
-        viewModel.notifyInsert.observeData(owner) { explorerAdapter.insertItem(it.first, it.second) }
-        viewModel.notifyUpdateRange.observeData(owner, explorerAdapter::notifyItems)
-        viewModel.notifyRemoveRange.observeData(owner, explorerAdapter::removeItems)
-        viewModel.notifyInsertRange.observeData(owner) { explorerAdapter.insertItems(it.first, it.second) }
-        viewModel.permissionRequiredWarning.observeEvent(owner, ::showPermissionRequiredWarning)
-        viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
-        viewModel.places.observe(owner, Observer(placesAdapter::setItems))
-        viewModel.showOptions.observeData(owner, bottomItemMenu::show)
-        viewModel.showRename.observeData(owner, renameDelegate::show)
-        viewModel.showCreate.observeData(owner, createDelegate::show)
-        viewModel.scrollToCurrentDir.observeEvent(owner, explorerAdapter::scrollToCurrentDir)
+    private fun onViewCollect() = viewModel.apply {
+        viewCollect(items, explorerAdapter::setItems)
+        viewCollect(itemComposition, explorerAdapter::setComposition)
+        viewCollect(current, explorerAdapter::setCurrentDir)
+        viewCollect(notifyUpdate, explorerAdapter::setItem)
+        viewCollect(notifyRemove, explorerAdapter::removeItem)
+        viewCollect(notifyInsert) { explorerAdapter.insertItem(it.first, it.second) }
+        viewCollect(notifyUpdateRange, explorerAdapter::notifyItems)
+        viewCollect(notifyRemoveRange, explorerAdapter::removeItems)
+        viewCollect(notifyInsertRange) { explorerAdapter.insertItems(it.first, it.second) }
+        viewCollect(permissionRequiredWarning, ::showPermissionRequiredWarning)
+        viewCollect(historyDrawerGravity) { dockView { gravity = it } }
+        viewCollect(places, placesAdapter::setItems)
+        viewCollect(showOptions, bottomItemMenu::show)
+        viewCollect(showRename, renameDelegate::show)
+        viewCollect(showCreate, createDelegate::show)
+        viewCollect(scrollToCurrentDir, explorerAdapter::scrollToCurrentDir)
     }
 
     override fun onBack(): Boolean {
@@ -141,7 +143,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
         explorerAdapter.notifyItemChanged(0)
     }
 
-    private fun showPermissionRequiredWarning() {
+    private fun showPermissionRequiredWarning(unit: Unit) {
         Snackbar.make(thisView, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
                 .setAnchorView(anchorView)
                 .setAction(R.string.allow) { presenter.onAllowStorageClick() }

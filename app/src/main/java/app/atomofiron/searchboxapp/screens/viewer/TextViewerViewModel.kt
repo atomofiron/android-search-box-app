@@ -1,9 +1,7 @@
 package app.atomofiron.searchboxapp.screens.viewer
 
-import androidx.lifecycle.MutableLiveData
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.LateinitLiveData
-import app.atomofiron.common.util.SingleLiveEvent
+import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.finder.FinderTask
@@ -32,17 +30,17 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         component.inject(view)
     }
 
-    val insertInQuery = SingleLiveEvent<String>()
-    val closeBottomSheet = SingleLiveEvent<Unit>()
+    val insertInQuery = LiveDataFlow<String>(single = true)
+    val closeBottomSheet = LiveDataFlow(Unit, single = true)
 
-    val textLines = LateinitLiveData<List<TextLine>>()
+    val textLines = LiveDataFlow<List<TextLine>>()
     /** line index -> line matches */
-    val matchesMap = LateinitLiveData<Map<Int, List<TextLineMatch>>>()
+    val matchesMap = LiveDataFlow<Map<Int, List<TextLineMatch>>>()
     /** match counter -> matches quantity */
-    val matchesCounter = MutableLiveData<Long?>(null)
+    val matchesCounter = LiveDataFlow<Long?>(null)
     /** line index -> line match index */
-    val matchesCursor = MutableLiveData<Long?>(null)
-    val loading = LateinitLiveData(true)
+    val matchesCursor = LiveDataFlow<Long?>(null)
+    val loading = LiveDataFlow(value = true)
     lateinit var composition: ExplorerItemComposition
     lateinit var xFile: XFile
 

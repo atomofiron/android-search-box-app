@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
+import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.common.util.setVisible
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
@@ -83,6 +84,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
             }
         }
         searchDelegate.bottomSheetView = bottomSheetView.view
+        onViewCollect()
     }
 
     override fun onStart() {
@@ -92,17 +94,15 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
         }
     }
 
-    override fun onSubscribeData(owner: LifecycleOwner) {
-        super.onSubscribeData(owner)
-
-        viewModel.loading.observe(owner, Observer(::setLoading))
-        viewModel.textLines.observe(owner, Observer(viewerAdapter::setItems))
-        viewModel.matchesMap.observe(owner, Observer(viewerAdapter::setMatches))
-        viewModel.matchesCursor.observe(owner, Observer(::onMatchCursorChanged))
-        viewModel.matchesCounter.observe(owner, Observer(::onMatchCounterChanged))
-        viewModel.searchItems.observe(owner, Observer(searchDelegate::setItems))
-        viewModel.insertInQuery.observeData(owner, ::insertInQuery)
-        viewModel.closeBottomSheet.observeEvent(owner, ::closeBottomSheet)
+    private fun onViewCollect() = viewModel.apply {
+        viewCollect(loading, ::setLoading)
+        viewCollect(textLines, viewerAdapter::setItems)
+        viewCollect(matchesMap, viewerAdapter::setMatches)
+        viewCollect(matchesCursor, ::onMatchCursorChanged)
+        viewCollect(matchesCounter, ::onMatchCounterChanged)
+        viewCollect(searchItems, searchDelegate::setItems)
+        viewCollect(insertInQuery, ::insertInQuery)
+        viewCollect(closeBottomSheet, this@TextViewerFragment::closeBottomSheet)
     }
 
     override fun onBack(): Boolean = bottomSheetView.view.hide() || super.onBack()
@@ -146,7 +146,7 @@ class TextViewerFragment : BaseFragment<TextViewerViewModel, TextViewerPresenter
                 }
     }
 
-    private fun closeBottomSheet() {
+    private fun closeBottomSheet(unit: Unit = Unit) {
         bottomSheetView {
             hide()
         }

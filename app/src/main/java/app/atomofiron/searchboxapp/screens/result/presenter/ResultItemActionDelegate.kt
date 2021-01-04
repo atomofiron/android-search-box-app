@@ -34,7 +34,7 @@ class ResultItemActionDelegate(
         } else {
             ExplorerItemOptions(viewModel.oneFileOptions, listOf(item), viewModel.composition.value)
         }
-        viewModel.showOptions.invoke(options)
+        viewModel.showOptions.value = options
     }
 
     override fun onItemCheck(item: XFile, isChecked: Boolean) {

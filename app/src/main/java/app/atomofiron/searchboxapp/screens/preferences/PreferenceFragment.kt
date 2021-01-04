@@ -10,6 +10,7 @@ import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.fragment.BasePreferenceFragment
 import app.atomofiron.common.util.Knife
+import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
@@ -66,6 +67,8 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         joystickDelegate.bottomSheetView = bottomSheetView.view
         toyboxDelegate.bottomSheetView = bottomSheetView.view
         aboutDelegate.bottomSheetView = bottomSheetView.view
+
+        onViewCollect()
     }
 
     override fun onCreateRecyclerView(inflater: LayoutInflater?, parent: ViewGroup?, savedInstanceState: Bundle?): RecyclerView {
@@ -76,10 +79,10 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         return recyclerView
     }
 
-    override fun onSubscribeData(owner: LifecycleOwner) {
-        viewModel.alert.observeData(owner, ::showAlert)
-        viewModel.alertOutputSuccess.observeData(owner, ::showOutputSuccess)
-        viewModel.alertOutputError.observeData(owner, ::showOutputError)
+    private fun onViewCollect() = viewModel.apply {
+        viewCollect(alert, ::showAlert)
+        viewCollect(alertOutputSuccess, ::showOutputSuccess)
+        viewCollect(alertOutputError, ::showOutputError)
     }
 
     override fun onBack(): Boolean = bottomSheetView(default = false) { hide() } || super.onBack()

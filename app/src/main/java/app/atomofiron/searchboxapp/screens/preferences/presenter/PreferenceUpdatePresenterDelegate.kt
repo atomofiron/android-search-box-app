@@ -63,10 +63,10 @@ class PreferenceUpdatePresenterDelegate(
                 val output = Shell.checkSu()
                 when {
                     output.success -> Unit
-                    output.error.isNotBlank() -> viewModel.alert.invoke(output.error)
+                    output.error.isNotBlank() -> viewModel.alert.value = output.error
                     else -> {
                         val message = context.getString(R.string.not_allowed)
-                        viewModel.alert.invoke(message)
+                        viewModel.alert.value = message
                     }
                 }
                 output.success

@@ -15,18 +15,18 @@ class BottomSheetMenuListenerDelegate(
 
     override fun onMenuItemSelected(id: Int) {
         when (id) {
-            R.id.menu_create -> viewModel.showOptions.data?.items?.get(0)?.let(viewModel.showCreate::invoke)
+            R.id.menu_create -> viewModel.showOptions.value.items[0].let { viewModel.showCreate.value = it }
             R.id.menu_rename -> {
-                val item = viewModel.showOptions.data?.items?.get(0)
+                val item = viewModel.showOptions.value.items[0]
                 item ?: return
                 val dirFiles = explorerStore.items
                         .find { it.root == item.root && it.completedPath == item.completedParentPath }
                         ?.children?.map { it.name }
                 dirFiles ?: return
                 val data = RenameDelegate.RenameData(viewModel.itemComposition.value, item, dirFiles)
-                viewModel.showRename.invoke(data)
+                viewModel.showRename.value = data
             }
-            R.id.menu_remove -> viewModel.showOptions.data?.items?.let(explorerInteractor::deleteItems)
+            R.id.menu_remove -> viewModel.showOptions.value.items.let(explorerInteractor::deleteItems)
         }
     }
 }

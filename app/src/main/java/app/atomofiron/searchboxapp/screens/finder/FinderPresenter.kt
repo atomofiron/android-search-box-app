@@ -53,7 +53,7 @@ class FinderPresenter(
         scope.launch {
             viewModel.apply {
                 preferenceChannel.apply {
-                    reloadHistory.collect(historyImportedEvent)
+                    reloadHistory.collect(historyImportedEvent::emit)
                 }
             }
         }
@@ -87,5 +87,5 @@ class FinderPresenter(
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onHistoryItemClick(node: String) = viewModel.replaceQuery.invoke(node)
+    fun onHistoryItemClick(node: String) = viewModel.replaceQuery.emit(node)
 }

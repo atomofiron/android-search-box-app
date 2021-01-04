@@ -110,7 +110,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         notifyItemRangeChanged(0, items.size)
     }
 
-    fun scrollToCurrentDir() {
+    fun scrollToCurrentDir(unit: Unit = Unit) {
         val dir = currentDir ?: return
         var lastChild = getLastChild() ?: return
         val recyclerView = recyclerView!!

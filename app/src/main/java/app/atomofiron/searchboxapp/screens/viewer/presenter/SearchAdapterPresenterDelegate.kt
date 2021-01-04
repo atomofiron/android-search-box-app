@@ -23,19 +23,19 @@ class SearchAdapterPresenterDelegate(
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.insertInQuery.invoke(value)
+    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emit(value)
 
     override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
 
     override fun onSearchClick(value: String) {
         val config = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
         interactor.search(value, config.ignoreCase, config.useRegex)
-        viewModel.closeBottomSheet.invoke()
+        viewModel.closeBottomSheet.emit()
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
         if (item.finderTask.count > 0) {
-            viewModel.closeBottomSheet.invoke()
+            viewModel.closeBottomSheet.emit()
             interactor.showTask(item.finderTask)
         }
     }

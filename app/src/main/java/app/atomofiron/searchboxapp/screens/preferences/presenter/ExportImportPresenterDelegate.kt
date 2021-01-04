@@ -36,14 +36,14 @@ class ExportImportPresenterDelegate(
         val output = preferenceService.importHistory()
         showOutput(output, R.string.successful)
         if (output.success) {
-            preferenceChannel.historyImportedEvent.offer(Unit)
+            preferenceChannel.historyImportedEvent.emit()
         }
     }
 
     private fun showOutput(output: Shell.Output, successMessage: Int) {
         when {
-            output.success -> viewModel.alertOutputSuccess.invoke(successMessage)
-            else -> viewModel.alertOutputError.invoke(output)
+            output.success -> viewModel.alertOutputSuccess.value = successMessage
+            else -> viewModel.alertOutputError.value = output
         }
     }
 }

@@ -5,12 +5,11 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.fragment.BaseFragment
 import app.atomofiron.common.util.Knife
+import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
@@ -73,6 +72,8 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
             recyclerView.adapter = historyAdapter
             onGravityChangeListener = presenter::onDockGravityChange
         }
+
+        onViewCollect()
     }
 
     override fun onDestroyView() {
@@ -96,14 +97,14 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
         }
     }
 
-    override fun onSubscribeData(owner: LifecycleOwner) {
-        viewModel.historyDrawerGravity.observe(owner, Observer { dockView { gravity = it } })
-        viewModel.reloadHistory.observeEvent(owner, historyAdapter::reload)
-        viewModel.history.observeData(owner, historyAdapter::add)
-        viewModel.insertInQuery.observeData(owner, ::insertInQuery)
-        viewModel.searchItems.observe(owner, Observer(::onStateChange))
-        viewModel.replaceQuery.observeData(owner, ::replaceQuery)
-        viewModel.snackbar.observeData(owner, ::showSnackbar)
+    private fun onViewCollect() = viewModel.apply {
+        viewCollect(historyDrawerGravity) { dockView { gravity = it } }
+        viewCollect(reloadHistory, historyAdapter::reload)
+        viewCollect(history, historyAdapter::add)
+        viewCollect(insertInQuery, ::insertInQuery)
+        viewCollect(searchItems, ::onStateChange)
+        viewCollect(replaceQuery, ::replaceQuery)
+        viewCollect(snackbar, ::showSnackbar)
     }
 
     override fun onBack(): Boolean {

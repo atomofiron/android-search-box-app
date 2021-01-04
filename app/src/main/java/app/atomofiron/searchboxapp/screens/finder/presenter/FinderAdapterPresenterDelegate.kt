@@ -14,7 +14,7 @@ class FinderAdapterPresenterDelegate(
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.insertInQuery.invoke(value)
+    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emit(value)
 
     override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
 
@@ -37,7 +37,7 @@ class FinderAdapterPresenterDelegate(
         if (viewModel.targets.isEmpty()) {
             return
         }
-        viewModel.history.invoke(value)
+        viewModel.history.value = value
         val config = viewModel.configItem ?: viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
         interactor.search(value, viewModel.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
     }

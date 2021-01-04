@@ -1,8 +1,7 @@
 package app.atomofiron.searchboxapp.screens.result
 
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.LateinitLiveData
-import app.atomofiron.common.util.SingleLiveEvent
+import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.logI
@@ -19,12 +18,12 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
     val oneFileOptions = listOf(R.id.menu_copy_path, R.id.menu_remove)
     val manyFilesOptions = listOf(R.id.menu_remove)
 
-    val task = LateinitLiveData<FinderTask>()
-    val composition = LateinitLiveData<ExplorerItemComposition>()
-    val enableOptions = LateinitLiveData(false)
-    val showOptions = SingleLiveEvent<ExplorerItemOptions>()
-    val notifyTaskHasChanged = SingleLiveEvent<Unit>()
-    val notifyItemChanged = SingleLiveEvent<FinderResultItem.Item>()
+    val task = LiveDataFlow<FinderTask>()
+    val composition = LiveDataFlow<ExplorerItemComposition>()
+    val enableOptions = LiveDataFlow(value = false)
+    val showOptions = LiveDataFlow<ExplorerItemOptions>(single = true)
+    val notifyTaskHasChanged = LiveDataFlow(Unit, single = true)
+    val notifyItemChanged = LiveDataFlow<FinderResultItem.Item>(single = true)
 
     override val component = DaggerResultComponent
             .builder()
@@ -41,7 +40,7 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
 
     fun updateState(update: FinderTaskChange? = null) {
         when (update) {
-            null -> notifyTaskHasChanged.invoke()
+            null -> notifyTaskHasChanged.emit()
             is FinderTaskChange.Update -> {
                 val task = task.value
                 val newTask = update.tasks.find { it.id == task.id }

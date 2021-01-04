@@ -19,11 +19,11 @@ class RootPresenter(
         router.showMainIfEmpty()
 
         preferenceStore.appTheme.addObserver(onClearedCallback) {
-            viewModel.setTheme.invoke(it)
+            viewModel.setTheme.value = it
             router.reattachFragments()
         }
         preferenceStore.appOrientation.addObserver(onClearedCallback) {
-            viewModel.setOrientation.invoke(it)
+            viewModel.setOrientation.value = it
         }
         preferenceStore.joystickComposition.addObserver(onClearedCallback) {
             viewModel.setJoystick.value = it
@@ -34,20 +34,16 @@ class RootPresenter(
         viewModel.tasks.value = Array(16) { XTask() }.toList()
     }
 
-    fun onJoystickClick() {
-        when {
-            router.onBack() -> Unit
-            else -> viewModel.showExitSnackbar()
-        }
+    fun onJoystickClick() = when {
+        router.onBack() -> Unit
+        else -> viewModel.showExitSnackbar.emit()
     }
 
     fun onExitClick() = router.closeApp()
 
-    fun onBackButtonClick() {
-        when {
-            router.onBack() -> Unit
-            isExitSnackbarShown -> router.closeApp()
-            else -> viewModel.showExitSnackbar()
-        }
+    fun onBackButtonClick() = when {
+        router.onBack() -> Unit
+        isExitSnackbarShown -> router.closeApp()
+        else -> viewModel.showExitSnackbar.emit()
     }
 }
