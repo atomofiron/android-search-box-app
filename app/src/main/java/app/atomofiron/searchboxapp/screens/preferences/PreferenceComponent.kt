@@ -6,9 +6,6 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -69,20 +66,13 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun presenter(
-            scope: CoroutineScope,
             viewModel: PreferenceViewModel,
             router: PreferenceRouter,
             joystickDelegate: JoystickPresenterDelegate,
             exportImportDelegate: ExportImportPresenterDelegate,
             preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate
     ): PreferencePresenter {
-        return PreferencePresenter(scope, viewModel, router, joystickDelegate, exportImportDelegate, preferenceUpdateDelegate)
-    }
-
-    @Provides
-    @PreferenceScope
-    fun scope(): CoroutineScope {
-        return CoroutineScope(Job() + Dispatchers.Main.immediate)
+        return PreferencePresenter(viewModel, router, joystickDelegate, exportImportDelegate, preferenceUpdateDelegate)
     }
 
     @Provides

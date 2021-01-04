@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.viewer
 
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -21,6 +22,7 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     override val component = DaggerTextViewerComponent.builder()
             .bind(this)
             .bind(viewProperty)
+            .bind(viewModelScope)
             .dependencies(DaggerInjector.appComponent)
             .build()
 

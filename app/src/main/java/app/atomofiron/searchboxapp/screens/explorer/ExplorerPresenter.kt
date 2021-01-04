@@ -35,9 +35,9 @@ class ExplorerPresenter(
         BottomSheetMenuListener by menuListener {
 
     init {
-        preferenceStore.dockGravity.addObserver(onClearedCallback, ::onDockGravityChanged)
-        preferenceStore.storagePath.addObserver(onClearedCallback, ::onStoragePathChanged)
-        preferenceStore.explorerItemComposition.addObserver(onClearedCallback) {
+        preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
+        preferenceStore.storagePath.collect(scope, ::onStoragePathChanged)
+        preferenceStore.explorerItemComposition.collect(scope) {
             viewModel.itemComposition.value = it
         }
 
@@ -53,10 +53,10 @@ class ExplorerPresenter(
     }
 
     override fun onSubscribeData() {
-        explorerStore.store.addObserver(onClearedCallback, viewModel::onChanged)
-        explorerStore.updates.addObserver(onClearedCallback, viewModel::onChanged)
-        explorerStore.current.addObserver(onClearedCallback, viewModel::onChanged)
-        explorerStore.alerts.addObserver(onClearedCallback, viewModel.alerts::emit)
+        explorerStore.store.collect(scope, viewModel::onChanged)
+        explorerStore.updates.collect(scope, viewModel::onChanged)
+        explorerStore.current.collect(scope, viewModel::onChanged)
+        explorerStore.alerts.collect(scope, viewModel.alerts::emit)
     }
 
     private fun onDockGravityChanged(gravity: Int) {

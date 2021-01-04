@@ -1,8 +1,8 @@
 package app.atomofiron.searchboxapp.injectable.channel
 
-import app.atomofiron.common.util.KObservable
+import app.atomofiron.common.util.flow.DataFlow
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 
 class ResultChannel {
-    val notifyItemChanged = KObservable<FinderResultItem.Item>(single = true)
+    val notifyItemChanged = DataFlow<FinderResultItem.Item>(single = true)
 }

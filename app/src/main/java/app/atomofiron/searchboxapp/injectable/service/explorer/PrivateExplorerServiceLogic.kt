@@ -567,7 +567,7 @@ abstract class PrivateExplorerServiceLogic(
         val newItem = pair.second
         if (error != null) {
             logI("rename error != null $item\n$error")
-            explorerStore.alerts.setAndNotify(error)
+            explorerStore.alerts.value = error
         }
         if (newItem != null) {
             val parent = findParentDir(item)
@@ -610,7 +610,7 @@ abstract class PrivateExplorerServiceLogic(
         when {
             error != null -> {
                 logI("create error != null $dir\n$error")
-                explorerStore.alerts.setAndNotify(error)
+                explorerStore.alerts.value = error
                 when {
                     dir.isOpened -> updateCurrentDir(currentOpenedDir!!)
                     dir.isDirectory -> updateClosedDir(dir)

@@ -3,9 +3,9 @@ package app.atomofiron.common.arch
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.util.permission.PermissionResultListener
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import app.atomofiron.searchboxapp.logI
 
 abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
@@ -15,12 +15,10 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
         private val permissionResultListener: PermissionResultListener? = null
 ) : PermissionResultListener {
     protected val context: Context get() = viewModel.context
-
-    protected val onClearedCallback = viewModel.onClearedCallback
+    protected val scope = viewModel.viewModelScope
 
     init {
         logI("init")
-        viewModel.onClearedListener = ::onCleared
     }
 
     open fun onCreate(context: Context, intent: Intent) = Unit
@@ -28,11 +26,6 @@ abstract class BasePresenter<M : BaseViewModel<*,*>, R : BaseRouter>(
     open fun onSubscribeData() = Unit
 
     open fun onVisibleChanged(visible: Boolean) = Unit
-
-    protected open fun onCleared() {
-        logI("onCleared")
-        coroutineScope?.cancel("${this.javaClass.simpleName}.onCleared()")
-    }
 
     fun onAttachChildFragment(childFragment: Fragment) = router.onAttachChildFragment(childFragment)
 

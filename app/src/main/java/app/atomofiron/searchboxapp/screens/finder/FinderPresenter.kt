@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder
 
 import app.atomofiron.common.arch.BasePresenter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -14,7 +13,6 @@ import app.atomofiron.searchboxapp.screens.finder.presenter.FinderAdapterPresent
 class FinderPresenter(
         viewModel: FinderViewModel,
         router: FinderRouter,
-        private val scope: CoroutineScope,
         private val finderAdapterDelegate: FinderAdapterPresenterDelegate,
         private val explorerStore: ExplorerStore,
         private val preferenceStore: PreferenceStore,
@@ -44,10 +42,10 @@ class FinderPresenter(
     }
 
     override fun onSubscribeData() {
-        preferenceStore.dockGravity.addObserver(onClearedCallback) { gravity ->
+        preferenceStore.dockGravity.collect(scope) { gravity ->
             viewModel.historyDrawerGravity.value = gravity
         }
-        preferenceStore.specialCharacters.addObserver(onClearedCallback) { chs ->
+        preferenceStore.specialCharacters.collect(scope) { chs ->
             viewModel.updateUniqueItem(FinderStateItem.SpecialCharactersItem(chs))
         }
         scope.launch {
@@ -58,7 +56,7 @@ class FinderPresenter(
             }
         }
 
-        explorerStore.current.addObserver(onClearedCallback) {
+        explorerStore.current.collect(scope) {
             val checked = explorerStore.storeChecked.value
             if (checked.isEmpty()) {
                 scope.launch {
@@ -66,13 +64,13 @@ class FinderPresenter(
                 }
             }
         }
-        explorerStore.storeChecked.addObserver(onClearedCallback) {
+        explorerStore.storeChecked.collect(scope) {
             val currentDir = explorerStore.current.value
             scope.launch {
                 viewModel.updateTargets(currentDir, it)
             }
         }
-        finderStore.notifications.addObserver(onClearedCallback) {
+        finderStore.notifications.collect(scope) {
             scope.launch {
                 viewModel.onFinderTaskUpdate(it)
             }

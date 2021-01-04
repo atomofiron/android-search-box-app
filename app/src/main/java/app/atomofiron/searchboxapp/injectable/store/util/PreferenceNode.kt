@@ -1,7 +1,9 @@
 package app.atomofiron.searchboxapp.injectable.store.util
 
 import android.content.SharedPreferences
-import app.atomofiron.common.util.KObservable
+import app.atomofiron.common.util.flow.DataFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class PreferenceNode<E, V> private constructor(
         private val sp: SharedPreferences,
@@ -57,16 +59,16 @@ class PreferenceNode<E, V> private constructor(
     private val toValue: ((E) -> V) = getValue ?: { it as V }
     private val fromValue: ((V) -> E) = fromValue ?: { it as E }
 
-    private val observable = KObservable(pullEntity())
+    private val flow = DataFlow(pullEntity())
 
-    val value: V get() = toValue(observable.value)
-    val entity: E get() = observable.value
+    val value: V get() = toValue(flow.value)
+    val entity: E get() = flow.value
 
     init {
         val default = default as? String
         if (type == Type.STRING && default != null && sp.getString(key, null) == null) {
             sp.edit().putString(key, default).apply()
-            observable.setAndNotify(fromValue(default as V))
+            flow.value = fromValue(default as V)
         }
         // registerOnSharedPreferenceChangeListener() does not work :(
     }
@@ -93,15 +95,17 @@ class PreferenceNode<E, V> private constructor(
             Type.STRING -> sp.edit().putString(key, value as String?).apply()
             Type.SET -> sp.edit().putStringSet(key, value as Set<String>?).apply()
         }
-        observable.setAndNotify(fromValue(value))
+        flow.value = fromValue(value)
     }
 
-    fun notify(value: E) = observable.setAndNotify(value)
+    fun notify(value: E) = flow.emit(value)
 
-    fun notifyByOriginal(value: V) = observable.setAndNotify(fromValue(value))
+    fun notifyByOriginal(value: V) = flow.emit(fromValue(value))
 
-    fun addObserver(removeCallback: KObservable.RemoveObserverCallback, observer: (E) -> Unit) {
-        observable.addObserver(removeCallback, observer)
+    fun collect(scope: CoroutineScope, collector: suspend (E) -> Unit) {
+        scope.launch {
+            flow.collect(collector)
+        }
     }
 
     private enum class Type {

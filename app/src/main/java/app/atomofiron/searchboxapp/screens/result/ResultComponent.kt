@@ -6,8 +6,6 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.service.ResultService
@@ -32,6 +30,8 @@ interface ResultComponent {
         fun bind(viewModel: ResultViewModel): Builder
         @BindsInstance
         fun bind(activity: WeakProperty<ResultFragment>): Builder
+        @BindsInstance
+        fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: ResultDependencies): Builder
         fun build(): ResultComponent
     }
@@ -47,7 +47,6 @@ class ResultModule {
     @ResultScope
     fun presenter(
             viewModel: ResultViewModel,
-            scope: CoroutineScope,
             resultStore: ResultStore,
             finderStore: FinderStore,
             preferenceStore: PreferenceStore,
@@ -57,7 +56,7 @@ class ResultModule {
             itemActionDelegate: ResultItemActionDelegate,
             menuListenerDelegate: BottomSheetMenuListenerDelegate
     ): ResultPresenter {
-        return ResultPresenter(viewModel, scope, resultStore, finderStore, preferenceStore, interactor, router, resultChannel, itemActionDelegate, menuListenerDelegate)
+        return ResultPresenter(viewModel, resultStore, finderStore, preferenceStore, interactor, router, resultChannel, itemActionDelegate, menuListenerDelegate)
     }
 
     @Provides
@@ -75,12 +74,6 @@ class ResultModule {
     @ResultScope
     fun menuListenerDelegate(viewModel: ResultViewModel, interactor: ResultInteractor): BottomSheetMenuListenerDelegate {
         return BottomSheetMenuListenerDelegate(viewModel, interactor)
-    }
-
-    @Provides
-    @ResultScope
-    fun scope(): CoroutineScope {
-        return CoroutineScope(Job() + Dispatchers.Main.immediate)
     }
 
     @Provides

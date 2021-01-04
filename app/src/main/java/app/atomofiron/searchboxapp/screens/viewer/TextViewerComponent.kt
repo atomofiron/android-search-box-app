@@ -6,8 +6,6 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
@@ -29,6 +27,8 @@ interface TextViewerComponent {
         fun bind(viewModel: TextViewerViewModel): Builder
         @BindsInstance
         fun bind(activity: WeakProperty<TextViewerFragment>): Builder
+        @BindsInstance
+        fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: TextViewerDependencies): Builder
         fun build(): TextViewerComponent
     }
@@ -43,7 +43,6 @@ class TextViewerModule {
     @Provides
     @TextViewerScope
     fun presenter(
-            scope: CoroutineScope,
             viewModel: TextViewerViewModel,
             router: TextViewerRouter,
             searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
@@ -51,7 +50,7 @@ class TextViewerModule {
             preferenceStore: PreferenceStore,
             textViewerChannel: TextViewerChannel
     ): TextViewerPresenter {
-        return TextViewerPresenter(scope, viewModel, router, searchAdapterPresenterDelegate, textViewerInteractor, preferenceStore, textViewerChannel)
+        return TextViewerPresenter(viewModel, router, searchAdapterPresenterDelegate, textViewerInteractor, preferenceStore, textViewerChannel)
     }
 
     @Provides
@@ -85,12 +84,6 @@ class TextViewerModule {
     @Provides
     @TextViewerScope
     fun router(activity: WeakProperty<TextViewerFragment>): TextViewerRouter = TextViewerRouter(activity)
-
-    @Provides
-    @TextViewerScope
-    fun scope(): CoroutineScope {
-        return CoroutineScope(Job() + Dispatchers.Main.immediate)
-    }
 }
 
 interface TextViewerDependencies {

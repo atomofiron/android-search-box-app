@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.os.ConfigurationCompat
 import app.atomofiron.common.arch.BasePresenter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenuListener
@@ -25,7 +24,6 @@ import java.util.*
 
 class ResultPresenter(
         viewModel: ResultViewModel,
-        private val scope: CoroutineScope,
         private val resultStore: ResultStore,
         private val finderStore: FinderStore,
         private val preferenceStore: PreferenceStore,
@@ -60,23 +58,22 @@ class ResultPresenter(
     }
 
     override fun onSubscribeData() {
-        super.onSubscribeData()
-        finderStore.notifications.addObserver(onClearedCallback) { update ->
+        finderStore.notifications.collect(scope) { update ->
             if (taskId != UNDEFINED) {
                 scope.launch {
                     viewModel.updateState(update)
                 }
             }
         }
-        preferenceStore.explorerItemComposition.addObserver(onClearedCallback) {
+        preferenceStore.explorerItemComposition.collect(scope) {
             viewModel.composition.value = it
         }
-        resultStore.itemsShellBeDeleted.addObserver(onClearedCallback) {
+        resultStore.itemsShellBeDeleted.collect(scope) {
             scope.launch {
                 viewModel.updateState()
             }
         }
-        resultChannel.notifyItemChanged.addObserver(onClearedCallback) {
+        resultChannel.notifyItemChanged.collect(scope) {
             scope.launch {
                 viewModel.notifyItemChanged.value = it
             }

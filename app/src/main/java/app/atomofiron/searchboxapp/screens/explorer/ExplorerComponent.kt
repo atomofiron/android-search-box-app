@@ -9,8 +9,6 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -34,6 +32,8 @@ interface ExplorerComponent {
         fun bind(viewModel: ExplorerViewModel): Builder
         @BindsInstance
         fun bind(fragment: WeakProperty<ExplorerFragment>): Builder
+        @BindsInstance
+        fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: ExplorerDependencies): Builder
         fun build(): ExplorerComponent
     }
@@ -87,12 +87,6 @@ class ExplorerModule {
     @ExplorerScope
     fun interactor(scope: CoroutineScope, explorerService: ExplorerService): ExplorerInteractor {
         return ExplorerInteractor(scope, explorerService)
-    }
-
-    @Provides
-    @ExplorerScope
-    fun scope(): CoroutineScope {
-        return CoroutineScope(Job() + Dispatchers.Main.immediate)
     }
 
     @Provides

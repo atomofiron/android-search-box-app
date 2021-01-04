@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.screens.viewer
 import android.content.Context
 import android.content.Intent
 import app.atomofiron.common.arch.BasePresenter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
@@ -16,7 +15,6 @@ import app.atomofiron.searchboxapp.screens.viewer.presenter.SearchAdapterPresent
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 
 class TextViewerPresenter(
-        private val scope: CoroutineScope,
         viewModel: TextViewerViewModel,
         router: TextViewerRouter,
         searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
@@ -31,33 +29,33 @@ class TextViewerPresenter(
     private var matchesCount: Int? = null
 
     init {
-        textViewerChannel.textFromFile.addObserver(onClearedCallback) {
+        textViewerChannel.textFromFile.collect(scope) {
             scope.launch {
                 viewModel.textLines.value = it
             }
         }
-        textViewerChannel.lineIndexMatches.addObserver(onClearedCallback) {
+        textViewerChannel.lineIndexMatches.collect(scope) {
             viewModel.lineIndexMatches = it
         }
-        textViewerChannel.lineIndexMatchesMap.addObserver(onClearedCallback) {
+        textViewerChannel.lineIndexMatchesMap.collect(scope) {
             scope.launch {
                 lineIndexMatchesMap = it
                 viewModel.matchesMap.value = it
             }
         }
-        textViewerChannel.matchesCount.addObserver(onClearedCallback) {
+        textViewerChannel.matchesCount.collect(scope) {
             scope.launch {
                 matchesCount = it
                 viewModel.matchesCounter.value = matchesCount?.toLong()
                 viewModel.matchesCursor.value = null
             }
         }
-        textViewerChannel.textFromFileLoading.addObserver(onClearedCallback) {
+        textViewerChannel.textFromFileLoading.collect(scope) {
             scope.launch {
                 viewModel.loading.value = it
             }
         }
-        textViewerChannel.tasks.addObserver(onClearedCallback) {
+        textViewerChannel.tasks.collect(scope) {
             scope.launch {
                 viewModel.setTasks(it)
             }

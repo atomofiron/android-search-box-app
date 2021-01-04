@@ -36,7 +36,7 @@ class ResultService(
         items.forEach {
             it.willBeDeleted()
         }
-        resultStore.itemsShellBeDeleted.justNotify()
+        resultStore.itemsShellBeDeleted.emit()
         val useSu = preferenceStore.useSu.value
         items.forEach {
             when (val error = it.delete(useSu)) {
@@ -50,7 +50,7 @@ class ResultService(
         val useSu = preferenceStore.useSu.value
         if (!item.item.isCached) {
             item.item.updateCache(useSu)
-            resultChannel.notifyItemChanged.setAndNotify(item)
+            resultChannel.notifyItemChanged.value = item
         }
     }
 }

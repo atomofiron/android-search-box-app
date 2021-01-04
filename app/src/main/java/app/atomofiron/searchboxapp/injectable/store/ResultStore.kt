@@ -1,7 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.store
 
-import app.atomofiron.common.util.KObservable
+import app.atomofiron.common.util.flow.DataFlow
 
 class ResultStore {
-    val itemsShellBeDeleted = KObservable(Unit, single = true)
+    val itemsShellBeDeleted = DataFlow(Unit, single = true)
 }

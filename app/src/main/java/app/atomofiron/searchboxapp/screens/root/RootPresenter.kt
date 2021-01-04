@@ -18,17 +18,17 @@ class RootPresenter(
     init {
         router.showMainIfEmpty()
 
-        preferenceStore.appTheme.addObserver(onClearedCallback) {
+        preferenceStore.appTheme.collect(scope) {
             viewModel.setTheme.value = it
             router.reattachFragments()
         }
-        preferenceStore.appOrientation.addObserver(onClearedCallback) {
+        preferenceStore.appOrientation.collect(scope) {
             viewModel.setOrientation.value = it
         }
-        preferenceStore.joystickComposition.addObserver(onClearedCallback) {
+        preferenceStore.joystickComposition.collect(scope) {
             viewModel.setJoystick.value = it
         }
-        preferenceStore.toyboxVariant.addObserver(onClearedCallback) {
+        preferenceStore.toyboxVariant.collect(scope) {
             Shell.toyboxPath = it.toyboxPath
         }
         viewModel.tasks.value = Array(16) { XTask() }.toList()

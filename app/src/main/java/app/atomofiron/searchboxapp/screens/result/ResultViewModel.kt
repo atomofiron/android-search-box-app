@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.result
 
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.searchboxapp.R
@@ -29,6 +30,7 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
             .builder()
             .bind(this)
             .bind(viewProperty)
+            .bind(viewModelScope)
             .dependencies(DaggerInjector.appComponent)
             .build()
 

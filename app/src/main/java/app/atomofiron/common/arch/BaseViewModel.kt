@@ -2,7 +2,6 @@ package app.atomofiron.common.arch
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import app.atomofiron.common.util.KObservable
 import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.common.util.property.MutableWeakProperty
 import app.atomofiron.searchboxapp.App
@@ -14,11 +13,7 @@ abstract class BaseViewModel<D, V : Any> : ViewModel() {
     protected val viewProperty = MutableWeakProperty<V>()
     val context: Context get() = App.appContext//getApplication<App>().applicationContext
 
-    // будет заменён корутинами
-    val onClearedCallback = KObservable.RemoveObserverCallback()
     val alerts = LiveDataFlow<String>(single = true)
-
-    lateinit var onClearedListener: () -> Unit
 
     open fun inject(view: V) {
         logI("inject")
@@ -27,7 +22,6 @@ abstract class BaseViewModel<D, V : Any> : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        onClearedCallback.invoke()
-        onClearedListener.invoke()
+        logI("onCleared")
     }
 }

@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
 import app.atomofiron.common.arch.BasePresenter
-import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.screens.preferences.fragment.ExportImportFragmentDelegate
 import app.atomofiron.searchboxapp.screens.preferences.fragment.JoystickFragmentDelegate
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceUpdateOutput
@@ -11,7 +10,6 @@ import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceUpdat
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 
 class PreferencePresenter(
-        val scope: CoroutineScope,
         viewModel: PreferenceViewModel,
         router: PreferenceRouter,
         joystickDelegate: JoystickPresenterDelegate,

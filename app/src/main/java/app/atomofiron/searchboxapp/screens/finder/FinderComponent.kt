@@ -5,9 +5,6 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.interactor.FinderInteractor
@@ -46,14 +43,13 @@ class FinderModule {
     fun presenter(
             viewModel: FinderViewModel,
             router: FinderRouter,
-            scope: CoroutineScope,
             finderAdapterDelegate: FinderAdapterPresenterDelegate,
             finderStore: FinderStore,
             explorerStore: ExplorerStore,
             preferenceStore: PreferenceStore,
             preferenceChannel: PreferenceChannel
     ): FinderPresenter {
-        return FinderPresenter(viewModel, router, scope, finderAdapterDelegate, explorerStore,
+        return FinderPresenter(viewModel, router, finderAdapterDelegate, explorerStore,
                 preferenceStore, finderStore, preferenceChannel)
     }
 
@@ -61,12 +57,6 @@ class FinderModule {
     @FinderScope
     fun finderAdapterOutput(viewModel: FinderViewModel, router: FinderRouter, interactor: FinderInteractor): FinderAdapterPresenterDelegate {
         return FinderAdapterPresenterDelegate(viewModel, router, interactor)
-    }
-
-    @Provides
-    @FinderScope
-    fun scope(): CoroutineScope {
-        return CoroutineScope(Job() + Dispatchers.Main.immediate)
     }
 
     @Provides

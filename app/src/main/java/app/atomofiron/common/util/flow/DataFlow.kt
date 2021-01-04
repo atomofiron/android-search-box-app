@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 open class DataFlow<T : Any?>(
-    protected val single: Boolean
+    protected val single: Boolean = false
 ) {
     constructor(value: T, single: Boolean = false) : this(single) {
         this.value = value

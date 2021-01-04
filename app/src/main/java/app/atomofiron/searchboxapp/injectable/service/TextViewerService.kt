@@ -56,12 +56,12 @@ class TextViewerService(
 
     fun removeTask(task: MutableFinderTask) {
         if (task == currentTask) {
-            textViewerChannel.lineIndexMatches.setAndNotify(ArrayList())
-            textViewerChannel.lineIndexMatchesMap.setAndNotify(HashMap())
-            textViewerChannel.matchesCount.setAndNotify(null)
+            textViewerChannel.lineIndexMatches.value = ArrayList()
+            textViewerChannel.lineIndexMatchesMap.value = HashMap()
+            textViewerChannel.matchesCount.value = null
         }
         tasks.remove(task)
-        textViewerChannel.tasks.setAndNotify(tasks)
+        textViewerChannel.tasks.value = tasks
     }
 
     suspend fun primarySearch(xFile: MutableXFile, params: FinderQueryParams?) {
@@ -85,7 +85,7 @@ class TextViewerService(
     private fun addTask(isPrimary: Boolean, params: FinderQueryParams): MutableFinderTask {
         val task = MutableFinderTask.local(isRemovable = !isPrimary, params = params)
         tasks.add(task)
-        textViewerChannel.tasks.setAndNotify(tasks)
+        textViewerChannel.tasks.value = tasks
         return task
     }
 
@@ -98,10 +98,10 @@ class TextViewerService(
         textLineMatchesMap = HashMap()
         matchesLineIndexes = ArrayList()
 
-        textViewerChannel.textFromFile.setAndNotify(lines)
-        textViewerChannel.lineIndexMatches.setAndNotify(textLineMatches)
-        textViewerChannel.lineIndexMatchesMap.setAndNotify(textLineMatchesMap)
-        textViewerChannel.matchesCount.setAndNotify(null)
+        textViewerChannel.textFromFile.value = lines
+        textViewerChannel.lineIndexMatches.value = textLineMatches
+        textViewerChannel.lineIndexMatchesMap.value = textLineMatchesMap
+        textViewerChannel.matchesCount.value = null
 
         fileSize = getFileSize()
         xFile.updateCache(useSu)
@@ -111,11 +111,11 @@ class TextViewerService(
             null -> loadUpToLine(0)
             else -> {
                 val matchesCount = searchInFile(task.params)
-                textViewerChannel.matchesCount.setAndNotify(matchesCount)
+                textViewerChannel.matchesCount.value = matchesCount
 
                 task.count = matchesCount
                 task.isDone = true
-                textViewerChannel.tasks.setAndNotify(tasks)
+                textViewerChannel.tasks.value = tasks
 
                 loadUpToLine(0)
             }
@@ -142,12 +142,12 @@ class TextViewerService(
                 lock = true
             }
 
-            textViewerChannel.textFromFileLoading.setAndNotify(true)
+            textViewerChannel.textFromFileLoading.value = true
             val step = index - lines.size + Const.TEXT_FILE_PAGINATION_STEP
             loadNext(step)
-            textViewerChannel.lineIndexMatches.justNotify()
-            textViewerChannel.textFromFile.setAndNotify(ArrayList(lines))
-            textViewerChannel.textFromFileLoading.setAndNotify(false)
+            textViewerChannel.lineIndexMatches.emit()
+            textViewerChannel.textFromFile.value = ArrayList(lines)
+            textViewerChannel.textFromFileLoading.value = false
 
             lock = false
         }

@@ -1,9 +1,8 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import android.content.Intent
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.LiveDataFlow
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -13,12 +12,8 @@ import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate.RenameData
-import javax.inject.Inject
 
 class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment>() {
-
-    @Inject
-    lateinit var scope: CoroutineScope
 
     val rootOptions = listOf(R.id.menu_create)
     val directoryOptions = listOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
@@ -45,6 +40,7 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment>() {
     override val component = DaggerExplorerComponent
             .builder()
             .bind(viewProperty)
+            .bind(viewModelScope)
             .bind(this)
             .dependencies(DaggerInjector.appComponent)
             .build()
@@ -56,13 +52,13 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment>() {
     }
 
     fun onChanged(items: List<XFile>) {
-        scope.launch {
+        viewModelScope.launch {
             this@ExplorerViewModel.items.value = items
         }
     }
 
     fun onChanged(change: Change) {
-        scope.launch {
+        viewModelScope.launch {
             when (change) {
                 is Change.Update -> notifyUpdate.value = change.item
                 is Change.Remove -> notifyRemove.value = change.item
@@ -75,7 +71,7 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment>() {
     }
 
     fun onChanged(item: XFile?) {
-        scope.launch {
+        viewModelScope.launch {
             current.value = item
         }
     }
