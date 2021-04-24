@@ -1,2 +1,2 @@
-# android-search-box-app
+# Search Box App
 [Google Play](https://play.google.com/store/apps/details?id=app.atomofiron.searchboxapp)
