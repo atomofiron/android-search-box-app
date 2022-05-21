@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.injectable.store.util
 import android.content.SharedPreferences
 import app.atomofiron.common.util.flow.DataFlow
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 
 class PreferenceNode<E, V> private constructor(
@@ -102,7 +103,7 @@ class PreferenceNode<E, V> private constructor(
 
     fun notifyByOriginal(value: V) = flow.emit(fromValue(value))
 
-    fun collect(scope: CoroutineScope, collector: suspend (E) -> Unit) {
+    fun collect(scope: CoroutineScope, collector: FlowCollector<E>) {
         scope.launch {
             flow.collect(collector)
         }

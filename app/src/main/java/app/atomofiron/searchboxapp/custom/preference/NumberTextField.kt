@@ -15,7 +15,7 @@ class NumberTextField @JvmOverloads constructor(
     companion object {
         private const val ZERO = "0"
     }
-    private var onSubmitListener: ((Int) -> Unit)? = null
+    private var submitListener: OnSubmitListener? = null
 
     init {
         filters = arrayOf<InputFilter>(LengthFilter(9))
@@ -24,12 +24,12 @@ class NumberTextField @JvmOverloads constructor(
         hint = "_____"
     }
 
-    fun setOnSubmitListener(listener: ((Int) -> Unit)?) {
-        onSubmitListener = listener
+    fun setOnSubmitListener(listener: OnSubmitListener?) {
+        submitListener = listener
     }
 
     override fun onSubmit(value: String) {
-        onSubmitListener?.invoke(value.toInt())
+        submitListener?.onSubmit(value.toInt())
     }
 
     override fun afterTextChanged(editable: Editable) {
@@ -46,5 +46,9 @@ class NumberTextField @JvmOverloads constructor(
                 setSelection(1)
             }
         }
+    }
+
+    fun interface OnSubmitListener {
+        fun onSubmit(value: Int)
     }
 }

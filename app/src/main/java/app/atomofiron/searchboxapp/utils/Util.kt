@@ -9,7 +9,7 @@ import java.util.*
 
 object Util {
     @JvmStatic
-    fun log9(message: String?) {
+    fun poop(message: String) {
         Log.e("atomofiron", message)
     }
 

@@ -12,17 +12,19 @@ class EntireLineSpan(
 ) : LineBackgroundSpan {
     private val rect = RectF()
 
-    override fun drawBackground(convas: Canvas,
-                                paint: Paint,
-                                left: Int,
-                                right: Int,
-                                top: Int,
-                                baseline: Int,
-                                bottom: Int,
-                                text: CharSequence?,
-                                start: Int,
-                                end: Int,
-                                lnum: Int) {
+    override fun drawBackground(
+        convas: Canvas,
+        paint: Paint,
+        left: Int,
+        right: Int,
+        top: Int,
+        baseline: Int,
+        bottom: Int,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        lnum: Int,
+    ) {
         text ?: return
 
         val width = paint.measureText(text, start, end)

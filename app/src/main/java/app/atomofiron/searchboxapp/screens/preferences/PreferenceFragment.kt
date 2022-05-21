@@ -71,7 +71,7 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
         onViewCollect()
     }
 
-    override fun onCreateRecyclerView(inflater: LayoutInflater?, parent: ViewGroup?, savedInstanceState: Bundle?): RecyclerView {
+    override fun onCreateRecyclerView(inflater: LayoutInflater, parent: ViewGroup, savedInstanceState: Bundle?): RecyclerView {
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         recyclerView.clipToPadding = false
         val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)

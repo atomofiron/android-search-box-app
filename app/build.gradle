@@ -8,13 +8,16 @@ android {
     def fileProviderName = ".FileProvider"
     def appId = "app.atomofiron.searchboxapp"
 
-    compileSdkVersion 29
+    compileSdkVersion 32
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     defaultConfig {
         applicationId appId
         minSdkVersion 21
-        //noinspection OldTargetApi
-        targetSdkVersion 29
+        targetSdkVersion 32
         versionCode 4
         versionName "1.0.1"
 
@@ -58,22 +61,23 @@ android {
 }
 
 ext {
-    androidx = "1.3.2"
-    fragment = "1.2.5"
-    material = "1.2.1"
-    appcompat = "1.2.0"
-    coroutines = "1.4.0"
-    lifecycle = "2.2.0"
+    androidx = "1.7.0"
+    fragment = "1.4.1"
+    material = "1.6.0"
+    appcompat = "1.4.1"
+    coroutines = "1.6.1"
+    lifecycle_ext = "2.2.0"
+    lifecycle_ktx = "2.4.1"
     retrofit = "2.6.0"
-    constraint = "2.0.4"
-    preference = "1.1.1"
+    constraint = "2.1.4"
+    preference = "1.2.0"
     flexbox = "2.0.1"
-    room = "2.2.6"
-    dagger = "2.27"
+    room = "2.4.2"
+    dagger = "2.39.1"
     leakcanary = "2.2"
     metrica = "3.13.1"
-    work = "2.4.0"
-    play_core = "1.9.0"
+    work = "2.7.1"
+    play_core = "1.10.3"
     play_core_ktx = "1.8.1"
 }
 
@@ -81,8 +85,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.preference:preference-ktx:$preference"
     implementation "androidx.core:core-ktx:$androidx"
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_ext"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_ktx"
     implementation "androidx.fragment:fragment-ktx:$fragment"
     implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$constraint"

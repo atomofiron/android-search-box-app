@@ -33,11 +33,13 @@ open class DataFlow<T : Any?>(
         this.value = value
     }
 
-    suspend fun collect(action: suspend (value: T) -> Unit) = flow.collect(action)
+    suspend fun collect(collector: FlowCollector<T>) {
+        flow.collect(collector)
+    }
 
-    fun collect(scope: CoroutineScope, action: suspend (value: T) -> Unit) {
+    fun collect(scope: CoroutineScope, collector: FlowCollector<T>) {
         scope.launch {
-            collect(action)
+            collect(collector)
         }
     }
 }

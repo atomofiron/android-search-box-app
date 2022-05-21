@@ -13,7 +13,7 @@ open class TextField @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null
 ) : AutoHideKeyboardField(context, attrs), TextWatcher {
-    private var onSubmitListener: ((String) -> Unit)? = null
+    private var onSubmitListener: OnSubmitListener? = null
 
     private var submittedValue: CharSequence = ""
 
@@ -33,12 +33,12 @@ open class TextField @JvmOverloads constructor(
         submittedValue = text ?: ""
     }
 
-    open fun setOnSubmitListener(listener: ((String) -> Unit)?) {
+    open fun setOnSubmitListener(listener: OnSubmitListener?) {
         onSubmitListener = listener
     }
 
     open fun onSubmit(value: String) {
-        onSubmitListener?.invoke(value)
+        onSubmitListener?.onSubmit(value)
     }
 
     override fun isSuggestionsEnabled(): Boolean = false
@@ -66,5 +66,9 @@ open class TextField @JvmOverloads constructor(
     override fun performClick(): Boolean {
         requestFocus()
         return super.performClick()
+    }
+
+    fun interface OnSubmitListener {
+        fun onSubmit(value: String)
     }
 }
