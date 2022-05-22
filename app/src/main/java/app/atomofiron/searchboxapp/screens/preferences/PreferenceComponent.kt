@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
 import android.content.Context
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
 import dagger.BindsInstance
 import dagger.Component
@@ -27,13 +28,12 @@ interface PreferenceComponent {
         @BindsInstance
         fun bind(viewModel: PreferenceViewModel): Builder
         @BindsInstance
-        fun bind(fragment: WeakProperty<PreferenceFragment>): Builder
+        fun bind(fragment: WeakProperty<Fragment>): Builder
         fun dependencies(dependencies: PreferenceDependencies): Builder
         fun build(): PreferenceComponent
     }
 
     fun inject(target: PreferenceViewModel)
-    fun inject(target: PreferenceFragment)
 }
 
 @Module
@@ -83,7 +83,7 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun router(fragment: WeakProperty<PreferenceFragment>): PreferenceRouter = PreferenceRouter(fragment)
+    fun router(fragment: WeakProperty<Fragment>): PreferenceRouter = PreferenceRouter(fragment)
 }
 
 interface PreferenceDependencies {

@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.screens.finder.history.dao.HistoryDatabase
 import app.atomofiron.searchboxapp.screens.finder.history.dao.ItemHistory
 
 class HistoryAdapter(
-        private val onItemClickListener: OnItemClickListener
+    private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<HistoryHolder>(), HistoryHolder.OnItemActionListener {
     companion object {
         private const val DB_NAME = "history"

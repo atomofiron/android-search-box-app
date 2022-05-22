@@ -1,8 +1,11 @@
 package app.atomofiron.searchboxapp.screens.viewer
 
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.LiveDataFlow
+import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.value
+import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.finder.FinderTask
@@ -13,36 +16,44 @@ import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModel
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModelDelegate
+import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
+import javax.inject.Inject
 
-class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragment>(),
+class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragment, TextViewerPresenter>(),
         FinderItemsModel by FinderItemsModelDelegate() {
     companion object {
         const val UNDEFINED = -1
     }
-    override val component = DaggerTextViewerComponent.builder()
-            .bind(this)
-            .bind(viewProperty)
-            .bind(viewModelScope)
-            .dependencies(DaggerInjector.appComponent)
-            .build()
+
+    @Inject
+    override lateinit var presenter: TextViewerPresenter
+    private lateinit var params: TextViewerParams
 
     override fun inject(view: TextViewerFragment) {
+        params = TextViewerParams.params(view.requireArguments())
         super.inject(view)
         component.inject(this)
-        component.inject(view)
     }
 
-    val insertInQuery = LiveDataFlow<String>(single = true)
-    val closeBottomSheet = LiveDataFlow(Unit, single = true)
+    override fun createComponent(fragmentProperty: WeakProperty<Fragment>) = DaggerTextViewerComponent
+        .builder()
+        .bind(this)
+        .bind(fragmentProperty)
+        .bind(viewModelScope)
+        .dependencies(DaggerInjector.appComponent)
+        .build()
 
-    val textLines = LiveDataFlow<List<TextLine>>()
+    val insertInQuery = sharedFlow<String>(single = true)
+    val closeBottomSheet = sharedFlow(Unit, single = true)
+
+    val textLines = sharedFlow<List<TextLine>>()
     /** line index -> line matches */
-    val matchesMap = LiveDataFlow<Map<Int, List<TextLineMatch>>>()
+    val matchesMap = sharedFlow<Map<Int, List<TextLineMatch>>>()
     /** match counter -> matches quantity */
-    val matchesCounter = LiveDataFlow<Long?>(null)
+    val matchesCounter = sharedFlow<Long?>(null)
     /** line index -> line match index */
-    val matchesCursor = LiveDataFlow<Long?>(null)
-    val loading = LiveDataFlow(value = true)
+    val matchesCursor = sharedFlow<Long?>(null)
+    val loading = sharedFlow(value = true)
     lateinit var composition: ExplorerItemComposition
     lateinit var xFile: XFile
 

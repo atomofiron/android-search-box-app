@@ -5,26 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.LifecycleOwner
+import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.arch.fragment.BasePreferenceFragment
+import app.atomofiron.common.arch.BaseFragment
+import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
 import app.atomofiron.searchboxapp.utils.Shell
-import javax.inject.Inject
-import kotlin.reflect.KClass
 
-class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, PreferencePresenter>() {
-    override val viewModelClass: KClass<PreferenceViewModel> = PreferenceViewModel::class
-
-    @Inject
-    override lateinit var presenter: PreferencePresenter
-
+class PreferenceFragment : PreferenceFragmentCompat(),
+    BaseFragment<PreferenceFragment, PreferenceViewModel, PreferencePresenter> by BaseFragmentImpl()
+{
     private lateinit var exportImportDelegate: ExportImportFragmentDelegate
     private lateinit var explorerItemDelegate: ExplorerItemFragmentDelegate
     private lateinit var joystickDelegate: JoystickFragmentDelegate
@@ -34,11 +31,11 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
 
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.preference_bsv)
 
-    override fun inject() = viewModel.inject(this)
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        initViewModel(this, PreferenceViewModel::class, savedInstanceState)
 
-    override fun onCreate() {
         preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter)
-        addPreferencesFromResource(R.xml.preferences)
+        setPreferencesFromResource(R.xml.preferences, rootKey)
 
         exportImportDelegate = ExportImportFragmentDelegate(presenter)
         explorerItemDelegate = ExplorerItemFragmentDelegate(viewModel.explorerItemComposition, presenter)
@@ -80,9 +77,9 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
     }
 
     private fun onViewCollect() = viewModel.apply {
-        viewCollect(alert, ::showAlert)
-        viewCollect(alertOutputSuccess, ::showOutputSuccess)
-        viewCollect(alertOutputError, ::showOutputError)
+        viewCollect(alert, collector = ::showAlert)
+        viewCollect(alertOutputSuccess, collector = ::showOutputSuccess)
+        viewCollect(alertOutputError, collector = ::showOutputError)
     }
 
     override fun onBack(): Boolean = bottomSheetView(default = false) { hide() } || super.onBack()
@@ -100,22 +97,25 @@ class PreferenceFragment : BasePreferenceFragment<PreferenceViewModel, Preferenc
     fun onLeakCanaryClick(isChecked: Boolean) = presenter.onLeakCanaryClick(isChecked)
 
     private fun showAlert(message: String) {
+        val view = view ?: return
         Snackbar
-                .make(thisView, message, Snackbar.LENGTH_SHORT)
+                .make(view, message, Snackbar.LENGTH_SHORT)
                 .setAnchorView(anchorView)
                 .show()
     }
 
     private fun showOutputSuccess(message: Int) {
+        val view = view ?: return
         val duration = when (message) {
             R.string.successful_with_restart -> Snackbar.LENGTH_LONG
             else -> Snackbar.LENGTH_SHORT
         }
-        Snackbar.make(thisView, message, duration).setAnchorView(anchorView).show()
+        Snackbar.make(view, message, duration).setAnchorView(anchorView).show()
     }
 
     private fun showOutputError(output: Shell.Output) {
-        Snackbar.make(thisView, R.string.error, Snackbar.LENGTH_SHORT)
+        val view = view ?: return
+        Snackbar.make(view, R.string.error, Snackbar.LENGTH_SHORT)
                 .apply {
                     if (output.error.isNotEmpty()) {
                         setAction(R.string.more) {

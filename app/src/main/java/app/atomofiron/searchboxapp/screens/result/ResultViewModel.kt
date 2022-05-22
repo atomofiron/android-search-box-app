@@ -1,8 +1,12 @@
 package app.atomofiron.searchboxapp.screens.result
 
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.LiveDataFlow
+import app.atomofiron.common.util.flow.invoke
+import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.value
+import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.logI
@@ -12,37 +16,45 @@ import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
+import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
+import javax.inject.Inject
 
-class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment>() {
+class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPresenter>() {
     val checked = ArrayList<XFile>()
 
     val oneFileOptions = listOf(R.id.menu_copy_path, R.id.menu_remove)
     val manyFilesOptions = listOf(R.id.menu_remove)
 
-    val task = LiveDataFlow<FinderTask>()
-    val composition = LiveDataFlow<ExplorerItemComposition>()
-    val enableOptions = LiveDataFlow(value = false)
-    val showOptions = LiveDataFlow<ExplorerItemOptions>(single = true)
-    val notifyTaskHasChanged = LiveDataFlow(Unit, single = true)
-    val notifyItemChanged = LiveDataFlow<FinderResultItem.Item>(single = true)
+    val task = sharedFlow<FinderTask>()
+    val composition = sharedFlow<ExplorerItemComposition>()
+    val enableOptions = sharedFlow(value = false)
+    val showOptions = sharedFlow<ExplorerItemOptions>(single = true)
+    val notifyTaskHasChanged = sharedFlow(Unit, single = true)
+    val notifyItemChanged = sharedFlow<FinderResultItem.Item>(single = true)
+    val alerts = sharedFlow<String>(single = true)
 
-    override val component = DaggerResultComponent
-            .builder()
-            .bind(this)
-            .bind(viewProperty)
-            .bind(viewModelScope)
-            .dependencies(DaggerInjector.appComponent)
-            .build()
+    @Inject
+    override lateinit var presenter: ResultPresenter
+    private lateinit var params: ResultPresenterParams
 
     override fun inject(view: ResultFragment) {
+        params = ResultPresenterParams.params(view.requireArguments())
         super.inject(view)
         component.inject(this)
-        component.inject(view)
     }
+
+    override fun createComponent(fragmentProperty: WeakProperty<Fragment>) = DaggerResultComponent
+        .builder()
+        .bind(this)
+        .bind(fragmentProperty)
+        .bind(viewModelScope)
+        .bind(params)
+        .dependencies(DaggerInjector.appComponent)
+        .build()
 
     fun updateState(update: FinderTaskChange? = null) {
         when (update) {
-            null -> notifyTaskHasChanged.emit()
+            null -> notifyTaskHasChanged.invoke()
             is FinderTaskChange.Update -> {
                 val task = task.value
                 val newTask = update.tasks.find { it.id == task.id }

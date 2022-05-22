@@ -1,14 +1,15 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.arch.fragment.BaseFragment
+import app.atomofiron.common.arch.BaseFragment
+import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
@@ -23,11 +24,10 @@ import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.explorer.sheet.BottomSheetMenuWithTitle
 import app.atomofiron.searchboxapp.screens.explorer.sheet.CreateDelegate
 import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate
-import javax.inject.Inject
 
-class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
-    override val viewModelClass = ExplorerViewModel::class
-    override val layoutId: Int = R.layout.fragment_explorer
+class ExplorerFragment : Fragment(R.layout.fragment_explorer),
+    BaseFragment<ExplorerFragment, ExplorerViewModel, ExplorerPresenter> by BaseFragmentImpl()
+{
 
     private val recyclerView = Knife<RecyclerView>(this, R.id.explorer_rv)
     private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.explorer_bom)
@@ -43,18 +43,16 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
 
     private lateinit var headerViewOutputDelegate: HeaderViewOutputDelegate
 
-    @Inject
-    override lateinit var presenter: ExplorerPresenter
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        initViewModel(this, ExplorerViewModel::class, savedInstanceState)
 
-    override fun inject() = viewModel.inject(this)
-
-    override fun onCreate() {
         explorerAdapter.itemActionListener = presenter
         placesAdapter.itemActionListener = presenter
 
         renameDelegate = RenameDelegate(presenter)
         createDelegate = CreateDelegate(presenter)
-        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_explorer, thisContext, presenter)
+        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_explorer, requireContext(), presenter)
 
         headerViewOutputDelegate = HeaderViewOutputDelegate(explorerAdapter, presenter)
     }
@@ -96,22 +94,22 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     }
 
     private fun onViewCollect() = viewModel.apply {
-        viewCollect(items, explorerAdapter::setItems)
-        viewCollect(itemComposition, explorerAdapter::setComposition)
-        viewCollect(current, explorerAdapter::setCurrentDir)
-        viewCollect(notifyUpdate, explorerAdapter::setItem)
-        viewCollect(notifyRemove, explorerAdapter::removeItem)
+        viewCollect(items, collector = explorerAdapter::setItems)
+        viewCollect(itemComposition, collector = explorerAdapter::setComposition)
+        viewCollect(current, collector = explorerAdapter::setCurrentDir)
+        viewCollect(notifyUpdate, collector = explorerAdapter::setItem)
+        viewCollect(notifyRemove, collector = explorerAdapter::removeItem)
         viewCollect(notifyInsert) { explorerAdapter.insertItem(it.first, it.second) }
-        viewCollect(notifyUpdateRange, explorerAdapter::notifyItems)
-        viewCollect(notifyRemoveRange, explorerAdapter::removeItems)
+        viewCollect(notifyUpdateRange, collector = explorerAdapter::notifyItems)
+        viewCollect(notifyRemoveRange, collector = explorerAdapter::removeItems)
         viewCollect(notifyInsertRange) { explorerAdapter.insertItems(it.first, it.second) }
-        viewCollect(permissionRequiredWarning, ::showPermissionRequiredWarning)
+        viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(historyDrawerGravity) { dockView { gravity = it } }
-        viewCollect(places, placesAdapter::setItems)
-        viewCollect(showOptions, bottomItemMenu::show)
-        viewCollect(showRename, renameDelegate::show)
-        viewCollect(showCreate, createDelegate::show)
-        viewCollect(scrollToCurrentDir, explorerAdapter::scrollToCurrentDir)
+        viewCollect(places, collector = placesAdapter::setItems)
+        viewCollect(showOptions, collector = bottomItemMenu::show)
+        viewCollect(showRename, collector = renameDelegate::show)
+        viewCollect(showCreate, collector = createDelegate::show)
+        viewCollect(scrollToCurrentDir, collector = explorerAdapter::scrollToCurrentDir)
     }
 
     override fun onBack(): Boolean {
@@ -144,8 +142,9 @@ class ExplorerFragment : BaseFragment<ExplorerViewModel, ExplorerPresenter>() {
     }
 
     private fun showPermissionRequiredWarning(unit: Unit) {
-        Snackbar.make(thisView, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
-                .setAnchorView(anchorView)
+        val view = view ?: return
+        Snackbar.make(view, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
+                .setAnchorView(view)
                 .setAction(R.string.allow) { presenter.onAllowStorageClick() }
                 .show()
     }

@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.viewer
 
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
 import dagger.BindsInstance
 import dagger.Component
@@ -11,6 +12,7 @@ import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.viewer.presenter.SearchAdapterPresenterDelegate
+import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import javax.inject.Scope
 
 @Scope
@@ -24,9 +26,11 @@ interface TextViewerComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
+        fun bind(params: TextViewerParams): Builder
+        @BindsInstance
         fun bind(viewModel: TextViewerViewModel): Builder
         @BindsInstance
-        fun bind(activity: WeakProperty<TextViewerFragment>): Builder
+        fun bind(activity: WeakProperty<Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: TextViewerDependencies): Builder
@@ -34,7 +38,6 @@ interface TextViewerComponent {
     }
 
     fun inject(target: TextViewerViewModel)
-    fun inject(target: TextViewerFragment)
 }
 
 @Module
@@ -43,22 +46,31 @@ class TextViewerModule {
     @Provides
     @TextViewerScope
     fun presenter(
-            viewModel: TextViewerViewModel,
-            router: TextViewerRouter,
-            searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
-            textViewerInteractor: TextViewerInteractor,
-            preferenceStore: PreferenceStore,
-            textViewerChannel: TextViewerChannel
+        params: TextViewerParams,
+        viewModel: TextViewerViewModel,
+        router: TextViewerRouter,
+        searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
+        textViewerInteractor: TextViewerInteractor,
+        preferenceStore: PreferenceStore,
+        textViewerChannel: TextViewerChannel
     ): TextViewerPresenter {
-        return TextViewerPresenter(viewModel, router, searchAdapterPresenterDelegate, textViewerInteractor, preferenceStore, textViewerChannel)
+        return TextViewerPresenter(
+            params,
+            viewModel,
+            router,
+            searchAdapterPresenterDelegate,
+            textViewerInteractor,
+            preferenceStore,
+            textViewerChannel,
+        )
     }
 
     @Provides
     @TextViewerScope
     fun searchOutputDelegate(
-            viewModel: TextViewerViewModel,
-            interactor: TextViewerInteractor,
-            preferenceStore: PreferenceStore
+        viewModel: TextViewerViewModel,
+        interactor: TextViewerInteractor,
+        preferenceStore: PreferenceStore
     ): SearchAdapterPresenterDelegate {
         return SearchAdapterPresenterDelegate(viewModel, interactor, preferenceStore)
     }
@@ -66,15 +78,15 @@ class TextViewerModule {
     @Provides
     @TextViewerScope
     fun textViewerService(
-            textViewerChannel: TextViewerChannel,
-            preferenceStore: PreferenceStore
+        textViewerChannel: TextViewerChannel,
+        preferenceStore: PreferenceStore
     ): TextViewerService = TextViewerService(textViewerChannel, preferenceStore)
 
     @Provides
     @TextViewerScope
     fun textViewerInteractor(
-            scope: CoroutineScope,
-            textViewerService: TextViewerService
+        scope: CoroutineScope,
+        textViewerService: TextViewerService
     ): TextViewerInteractor = TextViewerInteractor(scope, textViewerService)
 
     @Provides
@@ -83,7 +95,7 @@ class TextViewerModule {
 
     @Provides
     @TextViewerScope
-    fun router(activity: WeakProperty<TextViewerFragment>): TextViewerRouter = TextViewerRouter(activity)
+    fun router(fragment: WeakProperty<Fragment>): TextViewerRouter = TextViewerRouter(fragment)
 }
 
 interface TextViewerDependencies {

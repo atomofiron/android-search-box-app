@@ -1,11 +1,12 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 
 class PlacesActionListenerDelegate(
-        private val viewModel: ExplorerViewModel
+    private val viewModel: ExplorerViewModel
 ) : PlacesAdapter.ItemActionListener {
 
     override fun onItemClick(item: XPlace) {

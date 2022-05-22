@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.store
 
-import app.atomofiron.common.util.flow.DataFlow
+import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.model.explorer.Change
 import app.atomofiron.searchboxapp.model.explorer.MutableXFile
 import app.atomofiron.searchboxapp.model.explorer.XFile
@@ -8,13 +9,13 @@ import app.atomofiron.searchboxapp.logI
 
 class ExplorerStore {
     val items: MutableList<MutableXFile> = ArrayList()
-    val store = DataFlow<List<XFile>>(items)
-    val updates = DataFlow<Change>(Change.Nothing, single = true)
-    val current = DataFlow<XFile?>(null)
-    val alerts = DataFlow<String>(single = true)
+    val store = sharedFlow<List<XFile>>(items)
+    val updates = sharedFlow<Change>(Change.Nothing, single = true)
+    val current = sharedFlow<XFile?>(null)
+    val alerts = sharedFlow<String>(single = true)
 
     val checked: MutableList<MutableXFile> = ArrayList()
-    val storeChecked = DataFlow<List<XFile>>(ArrayList())
+    val storeChecked = sharedFlow<List<XFile>>(ArrayList())
 
     fun notifyCurrent(item: XFile?) {
         logI("notifyCurrent $item")

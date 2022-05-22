@@ -4,8 +4,8 @@ import androidx.recyclerview.widget.DiffUtil
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
 class FinderDiffUtilCallback(
-        private val old: List<FinderStateItem>,
-        private val new: List<FinderStateItem>
+    private val old: List<FinderStateItem>,
+    private val new: List<FinderStateItem>
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = old.size

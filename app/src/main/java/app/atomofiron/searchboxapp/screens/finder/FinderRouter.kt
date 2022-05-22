@@ -1,19 +1,23 @@
 package app.atomofiron.searchboxapp.screens.finder
 
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
-import app.atomofiron.searchboxapp.screens.preferences.PreferenceFragment
-import app.atomofiron.searchboxapp.screens.result.ResultFragment
+import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 
-class FinderRouter(fragment: WeakProperty<FinderFragment>) : BaseRouter(fragment) {
+class FinderRouter(fragment: WeakProperty<Fragment>) : BaseRouter(fragment) {
+
+    override val currentDestinationId: Int? = null
+
     fun showExplorer() {
-        switchScreen(addToBackStack = false) {
+        switchScreen {
             it is ExplorerFragment
         }
     }
 
-    fun showSettings() = startScreen(PreferenceFragment())
+    fun showSettings() = navigate(R.id.preferenceFragment)
 
-    fun showResult(taskId: Long) = startScreen(ResultFragment.create(taskId))
+    fun showResult(taskId: Long) = navigate(R.id.resultFragment, ResultPresenterParams.arguments(taskId))
 }

@@ -1,38 +1,43 @@
 package app.atomofiron.searchboxapp.screens.finder
 
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.LiveDataFlow
+import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModel
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModelDelegate
+import javax.inject.Inject
 
-class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment>(), FinderItemsModel by FinderItemsModelDelegate() {
+class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPresenter>(), FinderItemsModel by FinderItemsModelDelegate() {
     var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
         private set
     val targets = ArrayList<XFile>()
 
-    val historyDrawerGravity = LiveDataFlow<Int>()
-    val reloadHistory = LiveDataFlow(Unit, single = true)
-    val insertInQuery = LiveDataFlow<String>(single = true)
-    val replaceQuery = LiveDataFlow<String>(single = true)
-    val snackbar = LiveDataFlow<String>(single = true)
-    val history = LiveDataFlow<String>(single = true)
+    val historyDrawerGravity = sharedFlow<Int>()
+    val reloadHistory = sharedFlow(Unit, single = true)
+    val insertInQuery = sharedFlow<String>(single = true)
+    val replaceQuery = sharedFlow<String>(single = true)
+    val snackbar = sharedFlow<String>(single = true)
+    val history = sharedFlow<String>(single = true)
 
-    override val component = DaggerFinderComponent
-            .builder()
-            .bind(this)
-            .bind(viewProperty)
-            .dependencies(DaggerInjector.appComponent)
-            .build()
+    @Inject
+    override lateinit var presenter: FinderPresenter
 
     override fun inject(view: FinderFragment) {
         super.inject(view)
         component.inject(this)
-        component.inject(view)
     }
+
+    override fun createComponent(fragmentProperty: WeakProperty<Fragment>) = DaggerFinderComponent
+        .builder()
+        .bind(this)
+        .bind(fragmentProperty)
+        .dependencies(DaggerInjector.appComponent)
+        .build()
 
     fun updateTargets(currentDir: XFile?, checked: List<XFile>) {
         targetItems.clear()

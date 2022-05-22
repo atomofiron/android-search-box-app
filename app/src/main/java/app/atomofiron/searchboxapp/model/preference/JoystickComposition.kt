@@ -3,11 +3,11 @@ package app.atomofiron.searchboxapp.model.preference
 import android.graphics.Color
 
 data class JoystickComposition(
-        val invForDark: Boolean,
-        val invGlowing: Boolean,
-        val red: Int,
-        val green: Int,
-        val blue: Int
+    val invForDark: Boolean,
+    val invGlowing: Boolean,
+    val red: Int,
+    val green: Int,
+    val blue: Int
 ) {
     companion object {
         private const val INV_FOR_DARK_MASK  = 0x01000000

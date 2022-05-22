@@ -14,9 +14,9 @@ import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Util
 
 class PreferenceFragmentDelegate(
-        private val fragment: PreferenceFragment,
-        private val viewModel: PreferenceViewModel,
-        private val output: PreferenceUpdateOutput
+    private val fragment: PreferenceFragment,
+    private val viewModel: PreferenceViewModel,
+    private val output: PreferenceUpdateOutput
 ) : Preference.OnPreferenceChangeListener {
     companion object {
         private const val DOES_NOT_MATTER = true

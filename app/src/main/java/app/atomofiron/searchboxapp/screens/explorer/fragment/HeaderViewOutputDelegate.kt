@@ -5,8 +5,8 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 
 class HeaderViewOutputDelegate(
-        private val explorerAdapter: ExplorerAdapter,
-        private val output: ExplorerItemActionListener
+    private val explorerAdapter: ExplorerAdapter,
+    private val output: ExplorerItemActionListener
 ) : ExplorerItemActionListener {
     override fun onItemVisible(item: XFile) = Unit // unreachable
 

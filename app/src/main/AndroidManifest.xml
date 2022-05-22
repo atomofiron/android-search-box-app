@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".App"
+        android:name=".android.App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -21,6 +21,7 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="unspecified"
+            android:exported="true"
             android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,10 +32,6 @@
         <activity
             android:name=".utils.FilterActivity"
             android:label="Filter"
-            />
-        <activity
-            android:name=".utils.recyclerViewPreview.PreviewActivity"
-            android:label="RecyclerView"
             />
 
         <service

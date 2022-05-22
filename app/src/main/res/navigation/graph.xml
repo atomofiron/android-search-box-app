@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/graph"
+    app:startDestination="@id/rootActivity">
+
+    <dialog
+        android:id="@+id/curtainFragment"
+        android:name="app.atomofiron.searchboxapp.screens.curtain.CurtainFragment"
+        android:label="CurtainFragment" />
+    <fragment
+        android:id="@+id/explorerFragment"
+        android:name="app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment"
+        android:label="ExplorerFragment" />
+    <activity
+        android:id="@+id/rootActivity"
+        android:name="app.atomofiron.searchboxapp.screens.root.RootActivity"
+        android:label="RootActivity" />
+    <fragment
+        android:id="@+id/finderFragment"
+        android:name="app.atomofiron.searchboxapp.screens.finder.FinderFragment"
+        android:label="FinderFragment" />
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="app.atomofiron.searchboxapp.screens.result.ResultFragment"
+        android:label="ResultFragment" />
+    <fragment
+        android:id="@+id/preferenceFragment"
+        android:name="app.atomofiron.searchboxapp.screens.preferences.PreferenceFragment"
+        android:label="PreferenceFragment" />
+    <fragment
+        android:id="@+id/textViewerFragment"
+        android:name="app.atomofiron.searchboxapp.screens.viewer.TextViewerFragment"
+        android:label="TextViewerFragment" />
+</navigation>

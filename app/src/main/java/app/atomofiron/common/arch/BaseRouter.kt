@@ -2,149 +2,102 @@ package app.atomofiron.common.arch
 
 import android.content.Context
 import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
-import app.atomofiron.common.util.OneTimeBackStackListener
+import androidx.navigation.*
 import app.atomofiron.common.util.property.WeakProperty
-import app.atomofiron.common.util.setOneTimeBackStackListener
-import app.atomofiron.searchboxapp.logI
+import app.atomofiron.searchboxapp.R
 
-abstract class BaseRouter(viewProperty: WeakProperty<out Any>) {
-    private val fragmentProperty: WeakProperty<Fragment> = when (viewProperty.value) {
-        is Fragment ->
-            @Suppress("UNCHECKED_CAST")
-            viewProperty as WeakProperty<Fragment>
-        else -> WeakProperty()
-    }
-    private val activityProperty: WeakProperty<AppCompatActivity> = when (viewProperty.value) {
-        is AppCompatActivity ->
-            @Suppress("UNCHECKED_CAST")
-            viewProperty as WeakProperty<AppCompatActivity>
-        else -> object : WeakProperty<AppCompatActivity>() {
-            override val value: AppCompatActivity?
-                get() = fragmentProperty.value?.requireActivity() as AppCompatActivity?
-        }
-    }
+abstract class BaseRouter(
+    fragmentProperty: WeakProperty<Fragment>,
+    private val activityProperty: WeakProperty<FragmentActivity> = WeakProperty(null),
+) {
+    companion object {
+        const val RECIPIENT = "RECIPIENT"
 
-    protected val fragment: Fragment? by fragmentProperty
-    protected val activity: AppCompatActivity? by activityProperty
+        val navOptions: NavOptions = NavOptions.Builder()
+            .setEnterAnim(R.anim.fragment_enter_scale)
+            .setExitAnim(R.anim.fragment_nothing)
+            .setPopEnterAnim(R.anim.fragment_nothing)
+            .setPopExitAnim(R.anim.fragment_exit_scale)
+            .setLaunchSingleTop(true)
+            .build()
 
-    protected val isDestroyed: Boolean get() = fragment == null && activity == null
-    protected var isBlocked = false
+        val navExitOptions: NavOptions
+            get() = NavOptions.Builder()
+                .setPopEnterAnim(R.anim.fragment_nothing)
+                .setPopExitAnim(R.anim.fragment_exit_scale)
+                .setLaunchSingleTop(true)
+                .build()
 
-    protected val arguments: Bundle
-        get() {
-            var arguments = fragment?.arguments
-            arguments = arguments ?: activity?.intent?.extras
-            return arguments!!
-        }
-
-    protected open var fragmentContainerId: Int = 0
-        get() {
-            if (field == 0) {
-                field = (fragment!!.requireView().parent as View).id
-            }
-            return field
-        }
-
-    protected fun <R> context(action: Context.() -> R): R = activity!!.action()
-    protected fun <R> fragment(action: Fragment.() -> R): R = fragment!!.action()
-    protected fun <R> activity(action: AppCompatActivity.() -> R): R = activity!!.action()
-    protected fun <R> manager(action: FragmentManager.() -> R): R {
-        return activity!!.supportFragmentManager.action()
+        val curtainOptions: NavOptions get() = NavOptions.Builder().setLaunchSingleTop(true).build()
     }
 
-    open fun onAttachChildFragment(childFragment: Fragment) = Unit
+    protected abstract val currentDestinationId: Int?
 
-    protected fun startScreen(fragment: Fragment, addToBackStack: Boolean = true, runOnCommit: (() -> Unit)? = null) {
-        if (isDestroyed || isBlocked) {
-            return
+    constructor(activityProperty: WeakProperty<FragmentActivity>) : this(WeakProperty(), activityProperty)
+
+    protected open val isCurrentDestination: Boolean
+        get() = navigation {
+            currentDestination?.id == currentDestinationId || currentDestination?.id == R.id.curtainFragment
+        } == true
+
+    val isWrongDestination: Boolean get() = !isCurrentDestination
+
+    val fragment: Fragment? by fragmentProperty
+
+    val activity: FragmentActivity? get() = fragment?.activity ?: activityProperty.value
+
+    fun <R> fragment(action: Fragment.() -> R): R? = fragment?.run(action)
+
+    fun <R> activity(action: FragmentActivity.() -> R): R? = activity?.run(action)
+
+    fun <R> context(action: Context.() -> R): R? = (fragment?.context ?: activity)?.run(action)
+
+    fun <T> navigation(action: NavController.() -> T): T? {
+        return activity?.run {
+            Navigation.findNavController(this, R.id.nav_host_fragment).run(action)
         }
-        manager {
-            val validFragment = filterAddedFragments(this, fragment)
-            validFragment ?: return@manager
-            isBlocked = true
-            val current = fragments.find { !it.isHidden }
-            beginTransaction().apply {
-                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                if (current != null) {
-                    hide(current)
-                }
-                add(fragmentContainerId, validFragment, validFragment.javaClass.simpleName)
-                if (addToBackStack) {
-                    addToBackStack(null)
-                    OneTimeBackStackListener(this@manager) {
-                        isBlocked = false
-                        runOnCommit?.invoke()
-                    }
-                } else {
-                    runOnCommit {
-                        isBlocked = false
-                        runOnCommit?.invoke()
-                    }
-                }
-                commit()
+    }
+
+    fun navigateBack() {
+        navigation {
+            navigateUp()
+        }
+    }
+
+    fun navigate(actionId: Int, args: Bundle? = null, navOptions: NavOptions = Companion.navOptions) {
+        navigation {
+            if (isCurrentDestination) {
+                navigate(actionId, args, navOptions)
             }
         }
     }
 
-    private fun filterAddedFragments(manager: FragmentManager, fragment: Fragment): Fragment? {
-        val tag = fragment.javaClass.simpleName
-        return when (manager.fragments.find { added -> added.tag == tag } == null) {
-            true -> fragment
-            else -> {
-                logI("Fragment with tag = $tag is already added!")
-                null
-            }
-        }
+    fun <I, O> register(
+        contract: ActivityResultContract<I, O>,
+        callback: ActivityResultCallback<O>,
+    ): ActivityResultLauncher<I> = fragment {
+        registerForActivityResult(contract, callback)
+    }!!
+
+    fun shouldShowRequestPermissionRationale(permission: String) = activity {
+        ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
     }
 
-    protected fun switchScreen(addToBackStack: Boolean = true, predicate: (Fragment) -> Boolean) {
-        if (isDestroyed || isBlocked) {
-            return
-        }
-        manager {
-            val current = fragments.find { !it.isHidden }!!
-            if (predicate(current)) {
-                return@manager
-            }
-            isBlocked = true
-            beginTransaction()
-                    .hide(current)
-                    .show(fragments.find(predicate)!!)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .apply {
-                        if (addToBackStack) {
-                            addToBackStack(null)
-                            OneTimeBackStackListener(this@manager) {
-                                isBlocked = false
-                            }
-                        } else {
-                            runOnCommit {
-                                isBlocked = false
-                            }
-                        }
-                    }
-                    .commit()
-        }
-    }
-
-    fun popScreen() {
-        if (isDestroyed || isBlocked) {
-            return
-        }
-        manager {
-            if (backStackEntryCount == 0) {
-                return@manager
-            }
-            isBlocked = true
-            setOneTimeBackStackListener {
-                isBlocked = false
-            }
-            popBackStack()
+    protected fun switchScreen(predicate: (Fragment) -> Boolean) {
+        fragment {
+            val fragments = parentFragmentManager.fragments
+            parentFragmentManager.beginTransaction()
+                .hide(this)
+                .show(fragments.find(predicate)!!)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit()
         }
     }
 }

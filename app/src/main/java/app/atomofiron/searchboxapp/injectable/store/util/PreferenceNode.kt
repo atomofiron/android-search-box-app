@@ -1,18 +1,20 @@
 package app.atomofiron.searchboxapp.injectable.store.util
 
 import android.content.SharedPreferences
-import app.atomofiron.common.util.flow.DataFlow
+import app.atomofiron.common.util.flow.emitNow
+import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 
 class PreferenceNode<E, V> private constructor(
-        private val sp: SharedPreferences,
-        private val type: Type,
-        private val key: String,
-        private val default: V,
-        getValue: ((E) -> V)? = null,
-        fromValue: ((V) -> E)? = null
+    private val sp: SharedPreferences,
+    private val type: Type,
+    private val key: String,
+    private val default: V,
+    getValue: ((E) -> V)? = null,
+    fromValue: ((V) -> E)? = null
 ) {
     companion object {
         fun <E> forInt(sp: SharedPreferences,
@@ -60,7 +62,7 @@ class PreferenceNode<E, V> private constructor(
     private val toValue: ((E) -> V) = getValue ?: { it as V }
     private val fromValue: ((V) -> E) = fromValue ?: { it as E }
 
-    private val flow = DataFlow(pullEntity())
+    private val flow = sharedFlow(pullEntity())
 
     val value: V get() = toValue(flow.value)
     val entity: E get() = flow.value
@@ -99,9 +101,9 @@ class PreferenceNode<E, V> private constructor(
         flow.value = fromValue(value)
     }
 
-    fun notify(value: E) = flow.emit(value)
+    fun notify(value: E) = flow.emitNow(value)
 
-    fun notifyByOriginal(value: V) = flow.emit(fromValue(value))
+    fun notifyByOriginal(value: V) = flow.emitNow(fromValue(value))
 
     fun collect(scope: CoroutineScope, collector: FlowCollector<E>) {
         scope.launch {

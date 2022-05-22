@@ -1,22 +1,24 @@
 package app.atomofiron.searchboxapp.screens.root
 
-import app.atomofiron.common.arch.BasePresenter
+import androidx.lifecycle.viewModelScope
+import app.atomofiron.common.util.flow.emitLast
+import app.atomofiron.common.util.flow.invoke
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.root.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.root.util.tasks.XTask
 import app.atomofiron.searchboxapp.utils.Shell
 
 class RootPresenter(
-        viewModel: RootViewModel,
-        router: RootRouter,
-        preferenceStore: PreferenceStore
-) : BasePresenter<RootViewModel, RootRouter>(viewModel, router),
-        SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput
-{
+    private val viewModel: RootViewModel,
+    private val router: RootRouter,
+    preferenceStore: PreferenceStore
+) : SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput {
     override var isExitSnackbarShown: Boolean = false
+    private val scope = viewModel.viewModelScope
 
     init {
-        router.showMainIfEmpty()
+        router.showMainIfNeeded()
 
         preferenceStore.appTheme.collect(scope) {
             viewModel.setTheme.value = it
@@ -36,7 +38,7 @@ class RootPresenter(
 
     fun onJoystickClick() = when {
         router.onBack() -> Unit
-        else -> viewModel.showExitSnackbar.emit()
+        else -> viewModel.showExitSnackbar.invoke()
     }
 
     fun onExitClick() = router.closeApp()
@@ -44,6 +46,6 @@ class RootPresenter(
     fun onBackButtonClick() = when {
         router.onBack() -> Unit
         isExitSnackbarShown -> router.closeApp()
-        else -> viewModel.showExitSnackbar.emit()
+        else -> viewModel.showExitSnackbar.invoke()
     }
 }

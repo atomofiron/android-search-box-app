@@ -1,9 +1,9 @@
 package app.atomofiron.common.util.permission
 
 internal class CheckerImpl(
-        private val grabber: Callback,
-        private val granted: Permissions.Granted,
-        private val denied: Permissions.Denied
+    private val grabber: Callback,
+    private val granted: Permissions.Granted,
+    private val denied: Permissions.Denied
 ) : Permissions.Checker {
 
     @Throws(Grabber.AlreadyDefinedException::class)

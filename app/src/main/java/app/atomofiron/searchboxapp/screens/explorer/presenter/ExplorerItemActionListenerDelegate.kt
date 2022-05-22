@@ -1,6 +1,9 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
 import android.Manifest
+import androidx.fragment.app.Fragment
+import app.atomofiron.common.util.flow.invoke
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.permission.PermissionResultListener
 import app.atomofiron.common.util.permission.Permissions
 import app.atomofiron.common.util.property.WeakProperty
@@ -9,18 +12,17 @@ import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 
 class ExplorerItemActionListenerDelegate(
-        fragment: WeakProperty<ExplorerFragment>,
-        private val viewModel: ExplorerViewModel,
-        private val explorerStore: ExplorerStore,
-        private val preferenceStore: PreferenceStore,
-        private val router: ExplorerRouter,
-        private val explorerInteractor: ExplorerInteractor
+    fragment: WeakProperty<Fragment>,
+    private val viewModel: ExplorerViewModel,
+    private val explorerStore: ExplorerStore,
+    private val preferenceStore: PreferenceStore,
+    private val router: ExplorerRouter,
+    private val explorerInteractor: ExplorerInteractor
 ) : ExplorerItemActionListener, PermissionResultListener {
     private var readStorageGranted = false
     val permissions = Permissions(fragment)
@@ -50,7 +52,7 @@ class ExplorerItemActionListenerDelegate(
                         readStorageGranted = true
                         onItemClick(item)
                     }
-                    .forbidden { viewModel.permissionRequiredWarning.emit() }
+                    .forbidden { viewModel.permissionRequiredWarning.invoke() }
             item.isDirectory -> explorerInteractor.openDir(item)
             else -> {
                 val textFormats = preferenceStore.textFormats.entity

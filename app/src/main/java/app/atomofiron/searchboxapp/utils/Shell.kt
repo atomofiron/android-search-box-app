@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.utils
 
-import app.atomofiron.searchboxapp.logD
 import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.logI
 import java.io.InputStream

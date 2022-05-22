@@ -1,14 +1,14 @@
 package app.atomofiron.searchboxapp.model.preference
 
 data class ExplorerItemComposition(
-        val visibleAccess: Boolean,
-        val visibleOwner: Boolean,
-        val visibleGroup: Boolean,
-        val visibleDate: Boolean,
-        val visibleTime: Boolean,
-        val visibleSize: Boolean,
-        val visibleBox: Boolean,
-        val visibleBg: Boolean
+    val visibleAccess: Boolean,
+    val visibleOwner: Boolean,
+    val visibleGroup: Boolean,
+    val visibleDate: Boolean,
+    val visibleTime: Boolean,
+    val visibleSize: Boolean,
+    val visibleBox: Boolean,
+    val visibleBg: Boolean
 ) {
     companion object {
         private const val ACCESS = 0b00000001
@@ -22,14 +22,14 @@ data class ExplorerItemComposition(
     }
 
     constructor(flags: Int) : this(
-            flags and ACCESS == ACCESS,
-            flags and OWNER == OWNER,
-            flags and GROUP == GROUP,
-            flags and DATE == DATE,
-            flags and TIME == TIME,
-            flags and SIZE == SIZE,
-            flags and BOX == BOX,
-            flags and BG == BG
+        flags and ACCESS == ACCESS,
+        flags and OWNER == OWNER,
+        flags and GROUP == GROUP,
+        flags and DATE == DATE,
+        flags and TIME == TIME,
+        flags and SIZE == SIZE,
+        flags and BOX == BOX,
+        flags and BG == BG
     )
 
     val flags: Int get() {

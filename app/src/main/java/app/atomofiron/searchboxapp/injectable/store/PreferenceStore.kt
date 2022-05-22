@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.utils.Tool
 
 class PreferenceStore(context: Context, sp: SharedPreferences) {
 
-    fun getCurrentValue(key: String): Any? {
+    fun getCurrentValue(key: String): Any {
         return when (key) {
             Const.PREF_STORAGE_PATH -> storagePath.value
             Const.PREF_TEXT_FORMATS -> textFormats.value

@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder
 
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
 import dagger.BindsInstance
 import dagger.Component
@@ -27,13 +28,12 @@ interface FinderComponent {
         @BindsInstance
         fun bind(viewMode: FinderViewModel): Builder
         @BindsInstance
-        fun bind(fragment: WeakProperty<FinderFragment>): Builder
+        fun bind(fragment: WeakProperty<Fragment>): Builder
         fun dependencies(dependencies: FinderDependencies): Builder
         fun build(): FinderComponent
     }
 
     fun inject(target: FinderViewModel)
-    fun inject(target: FinderFragment)
 }
 
 @Module
@@ -61,9 +61,7 @@ class FinderModule {
 
     @Provides
     @FinderScope
-    fun router(fragment: WeakProperty<FinderFragment>): FinderRouter {
-        return FinderRouter(fragment)
-    }
+    fun router(fragment: WeakProperty<Fragment>) = FinderRouter(fragment)
 
     @Provides
     @FinderScope

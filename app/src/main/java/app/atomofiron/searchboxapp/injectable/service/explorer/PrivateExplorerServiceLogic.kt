@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.injectable.service.explorer
 
 import android.content.Context
 import android.content.res.AssetManager
+import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -18,10 +19,10 @@ import java.io.File
 import java.io.FileOutputStream
 
 abstract class PrivateExplorerServiceLogic(
-        context: Context,
-        private val assets: AssetManager,
-        protected val explorerStore: ExplorerStore,
-        protected val preferenceStore: PreferenceStore
+    context: Context,
+    private val assets: AssetManager,
+    protected val explorerStore: ExplorerStore,
+    protected val preferenceStore: PreferenceStore
 ) {
     companion object {
         private const val UNKNOWN = -1

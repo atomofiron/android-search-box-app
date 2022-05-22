@@ -7,9 +7,9 @@ import android.graphics.RectF
 import android.text.style.ReplacementSpan
 
 class RoundedBackgroundSpan(
-        private val backgroundColor: Int,
-        private val textColor: Int,
-        private val radius: Float
+    private val backgroundColor: Int,
+    private val textColor: Int,
+    private val radius: Float
 ) : ReplacementSpan() {
     override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: FontMetricsInt?): Int {
         return paint.measureText(text.subSequence(start, end).toString()).toInt()

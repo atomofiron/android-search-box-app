@@ -1,5 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.service
 
+import app.atomofiron.common.util.flow.emitLast
+import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
@@ -16,15 +18,15 @@ import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
 
 class TextViewerService(
-        private val textViewerChannel: TextViewerChannel,
-        private val preferenceStore: PreferenceStore
+    private val textViewerChannel: TextViewerChannel,
+    private val preferenceStore: PreferenceStore
 ) {
     companion object {
         private const val UNKNOWN = -1L
     }
     private class Match(
-            val byteOffset: Long,
-            val textLength: Int
+        val byteOffset: Long,
+        val textLength: Int
     )
     private lateinit var matchesLineIndexes: MutableList<Int>
     /** line index -> matches byteOffset-textLength */
@@ -145,7 +147,7 @@ class TextViewerService(
             textViewerChannel.textFromFileLoading.value = true
             val step = index - lines.size + Const.TEXT_FILE_PAGINATION_STEP
             loadNext(step)
-            textViewerChannel.lineIndexMatches.emit()
+            textViewerChannel.lineIndexMatches.emitLast()
             textViewerChannel.textFromFile.value = ArrayList(lines)
             textViewerChannel.textFromFileLoading.value = false
 

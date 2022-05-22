@@ -3,7 +3,11 @@ package app.atomofiron.searchboxapp.model.preference
 import android.content.Context
 import app.atomofiron.searchboxapp.utils.Const
 
-class ToyboxVariant(context: Context, val variant: String, val customPath: String) {
+class ToyboxVariant(
+    context: Context,
+    val variant: String,
+    val customPath: String,
+) {
     companion object {
         fun fromSet(context: Context, set: Set<String>): ToyboxVariant {
             require(set.size == 2) { IllegalArgumentException() }

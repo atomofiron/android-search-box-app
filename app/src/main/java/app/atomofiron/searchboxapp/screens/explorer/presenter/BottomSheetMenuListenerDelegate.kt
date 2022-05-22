@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
@@ -8,9 +9,9 @@ import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
 import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate
 
 class BottomSheetMenuListenerDelegate(
-        private val viewModel: ExplorerViewModel,
-        private val explorerStore: ExplorerStore,
-        private val explorerInteractor: ExplorerInteractor
+    private val viewModel: ExplorerViewModel,
+    private val explorerStore: ExplorerStore,
+    private val explorerInteractor: ExplorerInteractor
 ) : BottomSheetMenuListener {
 
     override fun onMenuItemSelected(id: Int) {

@@ -1,27 +1,33 @@
 package app.atomofiron.common.arch
 
-import android.content.Context
+import android.os.Bundle
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import app.atomofiron.common.util.flow.LiveDataFlow
 import app.atomofiron.common.util.property.MutableWeakProperty
-import app.atomofiron.searchboxapp.App
-import app.atomofiron.searchboxapp.logI
+import app.atomofiron.common.util.property.WeakProperty
 
-abstract class BaseViewModel<D, V : Any> : ViewModel() {
-    protected abstract val component: D
+abstract class BaseViewModel<D : Any, V : Fragment, P : BasePresenter<*,*>> : ViewModel() {
+    private val fragmentProperty = MutableWeakProperty<Fragment>()
 
-    protected val viewProperty = MutableWeakProperty<V>()
-    val context: Context get() = App.appContext//getApplication<App>().applicationContext
-
-    val alerts = LiveDataFlow<String>(single = true)
+    abstract val presenter: P
+    protected lateinit var component: D
+        private set
 
     open fun inject(view: V) {
-        logI("inject")
-        viewProperty.value = view
+        fragmentProperty.value = view
+        if (!::component.isInitialized) {
+            component = createComponent(fragmentProperty)
+        }
     }
+
+    abstract fun createComponent(fragmentProperty: WeakProperty<Fragment>): D
+
+    open fun onSaveState(state: Bundle) = Unit
+
+    open fun onRestoreState(state: Bundle) = Unit
 
     override fun onCleared() {
         super.onCleared()
-        logI("onCleared")
+        presenter.onCleared()
     }
 }

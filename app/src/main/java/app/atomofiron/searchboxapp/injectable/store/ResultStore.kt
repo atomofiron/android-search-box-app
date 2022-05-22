@@ -1,7 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.store
 
-import app.atomofiron.common.util.flow.DataFlow
+import app.atomofiron.common.util.flow.sharedFlow
 
 class ResultStore {
-    val itemsShellBeDeleted = DataFlow(Unit, single = true)
+    val itemsShellBeDeleted = sharedFlow(Unit, single = true)
 }

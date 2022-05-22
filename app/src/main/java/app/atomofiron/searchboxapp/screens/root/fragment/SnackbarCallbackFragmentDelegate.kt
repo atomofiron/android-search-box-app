@@ -4,7 +4,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 
 class SnackbarCallbackFragmentDelegate(
-        private val output: SnackbarCallbackOutput
+    private val output: SnackbarCallbackOutput
 ) : BaseTransientBottomBar.BaseCallback<Snackbar>() {
 
     override fun onShown(transientBottomBar: Snackbar?) = output.onShown()

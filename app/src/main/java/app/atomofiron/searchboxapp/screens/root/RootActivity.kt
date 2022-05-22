@@ -1,61 +1,77 @@
 package app.atomofiron.searchboxapp.screens.root
 
+import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
-import app.atomofiron.common.arch.BaseActivity
-import app.atomofiron.common.util.Knife
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import app.atomofiron.common.util.findColorByAttr
-import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.Joystick
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
+import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
 import app.atomofiron.searchboxapp.screens.root.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.root.util.SnackbarWrapper
+import app.atomofiron.searchboxapp.utils.Const
 import javax.inject.Inject
-import kotlin.reflect.KClass
 
-open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
+class RootActivity : AppCompatActivity() {
 
-    override val viewModelClass: KClass<RootViewModel> = RootViewModel::class
-
-    @Inject
-    override lateinit var presenter: RootPresenter
-
-    private val root = Knife<CoordinatorLayout>(this, R.id.root_cl_root)
-    private val joystick = Knife<Joystick>(this, R.id.root_iv_joystick)
+    private lateinit var root: FrameLayout
+    private lateinit var joystick: Joystick
 
     private lateinit var explorerFragment: ExplorerFragment
 
-    private val sbExitSnackbarContextView: View get() = findViewById(R.id.finder_bom) ?: joystick.view
+    private val sbExitSnackbarContextView: View get() = findViewById(R.id.finder_bom) ?: joystick
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(sbExitSnackbarContextView, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
-                .setAnchorView(joystick.view)
+                .setAnchorView(joystick)
                 .setActionTextColor(this@RootActivity.findColorByAttr(R.attr.colorAccent))
                 .setAction(R.string.exit) { presenter.onExitClick() }
                 .addCallback(SnackbarCallbackFragmentDelegate(presenter))
     }
 
-    override fun inject() = viewModel.inject(this)
+    private lateinit var viewModel: RootViewModel
+    @Inject
+    lateinit var presenter: RootPresenter
 
-    override fun onCreate() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(getAppTheme())
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root)
 
-        joystick.view.setOnClickListener { onEscClick() }
+        root = findViewById(R.id.root_cl_root)
+        joystick = findViewById(R.id.root_iv_joystick)
 
-        viewModel.showExitSnackbar.collect(lifecycle) {
+        viewModel = ViewModelProvider(this)[RootViewModel::class.java]
+        viewModel.inject(this)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        joystick.setOnClickListener { onEscClick() }
+
+        viewModel.showExitSnackbar.collect(lifecycleScope) {
             sbExit.show()
         }
 
         setOrientation(viewModel.setOrientation.value)
         onCollect()
+    }
+
+    private fun getAppTheme(): AppTheme {
+        val sp = PreferenceManager.getDefaultSharedPreferences(this)
+        val themeIndex = sp.getString(Const.PREF_APP_THEME, null) ?: AppTheme.WHITE.ordinal.toString()
+        return AppTheme.values()[themeIndex.toInt()]
     }
 
     override fun onAttachFragment(fragment: Fragment) {
@@ -77,26 +93,31 @@ open class RootActivity : BaseActivity<RootViewModel, RootPresenter>() {
 
     override fun setTheme(resId: Int) {
         super.setTheme(resId)
-        root {
-            setBackgroundColor(findColorByAttr(R.attr.colorBackground))
-        }
-        joystick {
-            setComposition()
-        }
+        if (::root.isInitialized) root.setBackgroundColor(findColorByAttr(R.attr.colorBackground))
+        if (::joystick.isInitialized) joystick.setComposition()
     }
 
     private fun onCollect() = viewModel.apply {
-        setTheme.collect(lifecycle, ::setTheme)
-        setOrientation.collect(lifecycle, ::setOrientation)
-        setJoystick.collect(lifecycle) {
-            joystick { setComposition(it) }
+        setTheme.collect(lifecycleScope, ::setTheme)
+        setOrientation.collect(lifecycleScope, ::setOrientation)
+        setJoystick.collect(lifecycleScope) {
+            joystick.setComposition(it)
         }
+    }
+
+    private fun setTheme(theme: AppTheme) {
+        when (theme) {
+            AppTheme.WHITE -> setTheme(R.style.AppTheme_White)
+            AppTheme.DARK -> setTheme(R.style.AppTheme_Dark)
+            AppTheme.BLACK -> setTheme(R.style.AppTheme_Black)
+        }
+        window.decorView.setBackgroundColor(findColorByAttr(R.attr.colorBackground))
     }
 
     override fun onBackPressed() = presenter.onBackButtonClick()
 
     private fun onEscClick() {
-        val viewWithFocus = root.view.findFocus() as? EditText
+        val viewWithFocus = root.findFocus() as? EditText
         val consumed = viewWithFocus?.hideKeyboard() != null
         if (!consumed) {
             presenter.onJoystickClick()

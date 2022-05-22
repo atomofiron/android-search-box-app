@@ -10,8 +10,8 @@ import app.atomofiron.searchboxapp.model.preference.JoystickComposition
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetDelegate
 
 class JoystickFragmentDelegate(
-        private var entity: JoystickComposition,
-        private val joystickPreferenceOutput: JoystickPreferenceOutput
+    private var entity: JoystickComposition,
+    private val joystickPreferenceOutput: JoystickPreferenceOutput
 ) : BottomSheetDelegate(R.layout.sheet_preference_joystick) {
 
     private val tvTitle: TextView get() = bottomSheetView.findViewById(R.id.preference_joystick_tv_title)

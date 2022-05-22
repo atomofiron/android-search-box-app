@@ -8,9 +8,9 @@ object DaggerInjector {
 
     fun init(context: Context) {
         appComponent = DaggerAppComponent
-                .builder()
-                .appContext(context)
-                .assetManager(context.assets)
-                .build()
+            .builder()
+            .appContext(context)
+            .assetManager(context.assets)
+            .build()
     }
 }

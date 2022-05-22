@@ -2,12 +2,9 @@ package app.atomofiron.searchboxapp.di.module
 
 import android.content.Context
 import android.content.SharedPreferences
+import app.atomofiron.searchboxapp.injectable.store.*
 import dagger.Module
 import dagger.Provides
-import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
-import app.atomofiron.searchboxapp.injectable.store.FinderStore
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.injectable.store.ResultStore
 import javax.inject.Singleton
 
 @Module
@@ -28,4 +25,8 @@ open class StoreModule {
     @Provides
     @Singleton
     open fun provideSettingsStore(context: Context, sp: SharedPreferences): PreferenceStore = PreferenceStore(context, sp)
+
+    @Provides
+    @Singleton
+    open fun provideAppStore(context: Context): AppStore = AppStore(context, context.resources)
 }

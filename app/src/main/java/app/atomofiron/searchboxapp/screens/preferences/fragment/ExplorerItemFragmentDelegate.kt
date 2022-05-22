@@ -15,8 +15,8 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 import app.atomofiron.searchboxapp.utils.Const
 
 class ExplorerItemFragmentDelegate(
-        private var composition: ExplorerItemComposition,
-        private val output: PreferenceUpdateOutput
+    private var composition: ExplorerItemComposition,
+    private val output: PreferenceUpdateOutput
 ) : BottomSheetDelegate(R.layout.sheet_preference_explorer_item) {
     private val dir = MutableXFile("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038",
             "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android")

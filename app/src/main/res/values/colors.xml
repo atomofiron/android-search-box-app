@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<color name="colorPrimary">@color/colorPrimaryDark</color>
+	<color name="colorPrimaryDark">#ff5BC0BE</color>
 	<color name="colorPrimaryLight">#ff1D7874</color>
+	<color name="colorPrimaryLite">@color/colorPrimaryDarkLite</color>
+	<color name="colorPrimaryDarkLite">#335BC0BE</color>
+	<color name="colorPrimaryLightLite">#331D7874</color>
+	<color name="colorSurface">@color/white</color>
+	<color name="colorOnSurface">@color/black</color>
+
+	<color name="colorBackgroundLight">#ffffffff</color>
+	<color name="colorBackgroundDark">#ff131313</color>
+	<color name="colorBackgroundDayNight">@color/colorBackgroundLight</color>
+	<color name="shadow_day_night">@color/shadow_light</color>
+
+	<color name="statusBarColor">@color/black</color>
+	<color name="navigationBarColor">@color/black</color>
+
+	<color name="cardBackgroundColorDark">#ff212121</color>
+	<color name="cardBackgroundColorLight">@color/white</color>
+	<color name="cardBackgroundColor">@color/cardBackgroundColorLight</color>
+
+	<color name="shadow_light">#22000000</color>
+	<color name="shadow_dark">#77000000</color>
+	<color name="latch">#55999999</color>
+
+    <!-- -->
+
 	<color name="colorAccentLight">#ff1D7874</color>
 	<color name="colorRippleLight">#7f4Dc8c4</color>
 
-	<color name="colorPrimaryDark">#ff5BC0BE</color>
 	<color name="colorAccentDark">#ff5BC0BE</color>
 	<color name="colorRippleDark">#7f5BC0BE</color>
 

@@ -49,8 +49,8 @@ class FixedBottomAppBar @JvmOverloads constructor(
     override fun getBehavior(): Behavior = mBehavior
 
     class Behavior(
-            context: Context,
-            private val onScrollListener: RecyclerView.OnScrollListener
+        context: Context,
+        private val onScrollListener: RecyclerView.OnScrollListener
     ) : FixedHideBottomViewOnScrollBehavior<FixedBottomAppBar>(context) {
         private var added = false
 
@@ -73,9 +73,9 @@ class FixedBottomAppBar @JvmOverloads constructor(
     }
 
     class ScrollListener(
-            private val target: View,
-            private val materialShapeDrawable: MaterialShapeDrawable,
-            private val maxElevation: Float
+        private val target: View,
+        private val materialShapeDrawable: MaterialShapeDrawable,
+        private val maxElevation: Float
     ) : RecyclerView.OnScrollListener() {
         private var childBottom: Int = 0
         private var reverseLayout: Boolean = false

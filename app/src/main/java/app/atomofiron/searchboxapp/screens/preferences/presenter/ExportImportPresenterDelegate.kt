@@ -1,6 +1,8 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter
 
 import android.content.Context
+import app.atomofiron.common.util.flow.invoke
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
@@ -10,10 +12,10 @@ import app.atomofiron.searchboxapp.screens.preferences.fragment.ExportImportFrag
 import app.atomofiron.searchboxapp.utils.Shell
 
 class ExportImportPresenterDelegate(
-        context: Context,
-        private val viewModel: PreferenceViewModel,
-        private val preferenceService: PreferenceService,
-        private val preferenceChannel: PreferenceChannel
+    context: Context,
+    private val viewModel: PreferenceViewModel,
+    private val preferenceService: PreferenceService,
+    private val preferenceChannel: PreferenceChannel
 ) : ExportImportFragmentDelegate.ExportImportOutput {
     override val externalPath = MutableXFile.completePathAsDir(context.getExternalFilesDir(null)!!.absolutePath)
 
@@ -36,7 +38,7 @@ class ExportImportPresenterDelegate(
         val output = preferenceService.importHistory()
         showOutput(output, R.string.successful)
         if (output.success) {
-            preferenceChannel.historyImportedEvent.emit()
+            preferenceChannel.historyImportedEvent.invoke()
         }
     }
 

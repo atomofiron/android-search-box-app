@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.custom.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.*
@@ -41,6 +42,7 @@ class BottomMenuBar @JvmOverloads constructor(
         completeMenu()
     }
 
+    @SuppressLint("RestrictedApi")
     private fun onMenuChanged() {
         for (index in 0 until menu.size()) {
             val item = menu.getItem(index)
@@ -64,6 +66,7 @@ class BottomMenuBar @JvmOverloads constructor(
         onMenuItemClickListener = listener
     }
 
+    @SuppressLint("RestrictedApi")
     private fun completeMenu() {
         val inflater = LayoutInflater.from(context)
 

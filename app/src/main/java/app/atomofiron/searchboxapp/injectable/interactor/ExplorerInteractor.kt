@@ -7,8 +7,8 @@ import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
 import app.atomofiron.searchboxapp.model.explorer.XFile
 
 class ExplorerInteractor(
-        private val scope: CoroutineScope,
-        private val service: ExplorerService
+    private val scope: CoroutineScope,
+    private val service: ExplorerService
 ) {
     private val context = Dispatchers.IO
 

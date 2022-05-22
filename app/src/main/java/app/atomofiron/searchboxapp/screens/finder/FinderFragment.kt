@@ -5,27 +5,26 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.arch.fragment.BaseFragment
+import app.atomofiron.common.arch.BaseFragment
+import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
 import app.atomofiron.searchboxapp.custom.view.VerticalDockView
+import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import javax.inject.Inject
-import kotlin.reflect.KClass
 
-class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
-    override val viewModelClass: KClass<FinderViewModel> = FinderViewModel::class
-    override val layoutId: Int = R.layout.fragment_finder
-
-    @Inject
-    override lateinit var presenter: FinderPresenter
+class FinderFragment : Fragment(R.layout.fragment_finder),
+    BaseFragment<FinderFragment, FinderViewModel, FinderPresenter> by BaseFragmentImpl()
+{
 
     private val rvContent = Knife<RecyclerView>(this, R.id.finder_rv)
     private val bottomOptionMenu = Knife<BottomMenuBar>(this, R.id.finder_bom)
@@ -40,9 +39,10 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
         }
     })
 
-    override fun inject() = viewModel.inject(this)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        initViewModel(this, FinderViewModel::class, savedInstanceState)
 
-    override fun onCreate() {
         finderAdapter.output = presenter
     }
 
@@ -91,7 +91,7 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
 
         if (hidden) {
             view?.let {
-                val inputMethodManager = thisContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
                 inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
             }
         }
@@ -99,12 +99,12 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
 
     private fun onViewCollect() = viewModel.apply {
         viewCollect(historyDrawerGravity) { dockView { gravity = it } }
-        viewCollect(reloadHistory, historyAdapter::reload)
-        viewCollect(history, historyAdapter::add)
-        viewCollect(insertInQuery, ::insertInQuery)
-        viewCollect(searchItems, ::onStateChange)
-        viewCollect(replaceQuery, ::replaceQuery)
-        viewCollect(snackbar, ::showSnackbar)
+        viewCollect(reloadHistory, collector = historyAdapter::reload)
+        viewCollect(history, collector = historyAdapter::add)
+        viewCollect(insertInQuery, collector = ::insertInQuery)
+        viewCollect(searchItems, collector = ::onStateChange)
+        viewCollect(replaceQuery, collector = ::replaceQuery)
+        viewCollect(snackbar, collector = ::showSnackbar)
     }
 
     override fun onBack(): Boolean {
@@ -123,7 +123,8 @@ class FinderFragment : BaseFragment<FinderViewModel, FinderPresenter>() {
     }
 
     private fun showSnackbar(value: String) {
-        Snackbar.make(thisView, value, Snackbar.LENGTH_SHORT)
+        val view = view ?: return
+        Snackbar.make(view, value, Snackbar.LENGTH_SHORT)
                 .setAnchorView(anchorView)
                 .show()
     }

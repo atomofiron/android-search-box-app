@@ -6,8 +6,8 @@ import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 
 class SnackbarWrapper(
-        private val context: Context,
-        private val factory: () -> Snackbar
+    private val context: Context,
+    private val factory: () -> Snackbar
 ) {
     private var snackbar: Snackbar? = null
     private var isDark = false

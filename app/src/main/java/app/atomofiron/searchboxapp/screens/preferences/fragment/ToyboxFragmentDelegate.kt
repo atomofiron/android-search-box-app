@@ -14,8 +14,8 @@ import app.atomofiron.searchboxapp.utils.Shell
 import java.io.File
 
 class ToyboxFragmentDelegate(
-        toyboxVariant: ToyboxVariant,
-        private val output: PreferenceUpdateOutput
+    toyboxVariant: ToyboxVariant,
+    private val output: PreferenceUpdateOutput
 ) : BottomSheetDelegate(R.layout.sheet_preference_toybox) {
 
     private val rbPath: RadioButton get() = bottomSheetView.findViewById(R.id.preference_rb_path_to_toybox)

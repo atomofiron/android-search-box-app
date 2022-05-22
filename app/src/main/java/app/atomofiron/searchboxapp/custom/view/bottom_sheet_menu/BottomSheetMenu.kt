@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetDelegate
 
 open class BottomSheetMenu(
-        layoutContent: Int = UNDEFINED,
-        context: Context,
-        private val menuId: Int,
-        private val menuItemClickListener: BottomSheetMenuListener
+    layoutContent: Int = UNDEFINED,
+    context: Context,
+    private val menuId: Int,
+    private val menuItemClickListener: BottomSheetMenuListener
 ) : BottomSheetDelegate(layoutContent) {
     protected open val recyclerView: RecyclerView = RecyclerView(context)
     @Suppress("SuspiciousVarProperty")

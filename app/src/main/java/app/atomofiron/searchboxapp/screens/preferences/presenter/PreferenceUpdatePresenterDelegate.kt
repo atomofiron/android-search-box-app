@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter
 
 import android.content.Context
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
@@ -9,9 +10,9 @@ import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
 
 class PreferenceUpdatePresenterDelegate(
-        private val context: Context,
-        private val viewModel: PreferenceViewModel,
-        private val preferenceStore: PreferenceStore
+    private val context: Context,
+    private val viewModel: PreferenceViewModel,
+    private val preferenceStore: PreferenceStore
 ) : PreferenceUpdateOutput {
 
     override fun onPreferenceUpdate(key: String, value: Int) {

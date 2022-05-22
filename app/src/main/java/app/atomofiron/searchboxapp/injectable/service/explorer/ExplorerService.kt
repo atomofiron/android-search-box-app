@@ -11,11 +11,11 @@ import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.utils.Const
 
 class ExplorerService(
-        context: Context,
-        assets: AssetManager,
-        private val preferences: SharedPreferences,
-        explorerStore: ExplorerStore,
-        preferenceStore: PreferenceStore
+    context: Context,
+    assets: AssetManager,
+    private val preferences: SharedPreferences,
+    explorerStore: ExplorerStore,
+    preferenceStore: PreferenceStore
 ) : PrivateExplorerServiceLogic(context, assets, explorerStore, preferenceStore) {
 
     fun persistState() {

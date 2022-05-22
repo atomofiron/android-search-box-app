@@ -8,9 +8,9 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
 class ConfigHolder(
-        parent: ViewGroup,
-        id: Int,
-        private val listener: OnActionListener
+    parent: ViewGroup,
+    id: Int,
+    private val listener: OnActionListener
 ) : CardViewHolder(parent, id) {
     private val cbCaseSense = itemView.findViewById<CheckBox>(R.id.config_cb_case_sense)
     private val cbUseRegexp = itemView.findViewById<CheckBox>(R.id.config_cb_use_regexp)

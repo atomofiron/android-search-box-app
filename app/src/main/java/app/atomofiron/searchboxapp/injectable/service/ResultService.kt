@@ -3,6 +3,8 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.work.WorkManager
+import app.atomofiron.common.util.flow.invoke
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -14,12 +16,12 @@ import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import java.util.*
 
 class ResultService(
-        private val workManager: WorkManager,
-        private val resultChannel: ResultChannel,
-        private val resultStore: ResultStore,
-        private val finderStore: FinderStore,
-        private val preferenceStore: PreferenceStore,
-        private val clipboardManager: ClipboardManager
+    private val workManager: WorkManager,
+    private val resultChannel: ResultChannel,
+    private val resultStore: ResultStore,
+    private val finderStore: FinderStore,
+    private val preferenceStore: PreferenceStore,
+    private val clipboardManager: ClipboardManager
 ) {
     fun stop(uuid: UUID) = workManager.cancelWorkById(uuid)
 
@@ -36,7 +38,7 @@ class ResultService(
         items.forEach {
             it.willBeDeleted()
         }
-        resultStore.itemsShellBeDeleted.emit()
+        resultStore.itemsShellBeDeleted.invoke()
         val useSu = preferenceStore.useSu.value
         items.forEach {
             when (val error = it.delete(useSu)) {

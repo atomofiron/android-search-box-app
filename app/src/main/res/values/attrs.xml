@@ -13,6 +13,10 @@
     <attr name="colorBone" format="color" />
     <attr name="colorOverlay" format="color" />
 
+    <attr name="colorPrimaryLite" format="color" />
+    <attr name="colorShadow" format="color" />
+    <attr name="cardViewStyle" format="color" />
+
     <declare-styleable name="BottomMenuBar">
         <attr name="menu" format="reference" />
     </declare-styleable>

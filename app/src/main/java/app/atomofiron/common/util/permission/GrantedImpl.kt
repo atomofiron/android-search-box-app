@@ -1,8 +1,8 @@
 package app.atomofiron.common.util.permission
 
 internal class GrantedImpl(
-        private val grabber: Callback?,
-        private val denied: Permissions.Denied
+    private val grabber: Callback?,
+    private val denied: Permissions.Denied
 ) : Permissions.Granted {
 
     @Throws(Grabber.AlreadyDefinedException::class)

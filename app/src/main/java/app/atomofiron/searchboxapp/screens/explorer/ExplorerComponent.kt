@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.explorer
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
 import dagger.BindsInstance
 import dagger.Component
@@ -11,6 +12,7 @@ import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.explorer.presenter.BottomSheetMenuListenerDelegate
@@ -31,7 +33,7 @@ interface ExplorerComponent {
         @BindsInstance
         fun bind(viewModel: ExplorerViewModel): Builder
         @BindsInstance
-        fun bind(fragment: WeakProperty<ExplorerFragment>): Builder
+        fun bind(fragment: WeakProperty<Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: ExplorerDependencies): Builder
@@ -39,19 +41,20 @@ interface ExplorerComponent {
     }
 
     fun inject(target: ExplorerViewModel)
-    fun inject(target: ExplorerFragment)
 }
 
 @Module
 class ExplorerModule {
     @Provides
     @ExplorerScope
-    fun itemListener(fragment: WeakProperty<ExplorerFragment>,
-                     viewModel: ExplorerViewModel,
-                     explorerStore: ExplorerStore,
-                     preferenceStore: PreferenceStore,
-                     router: ExplorerRouter,
-                     explorerInteractor: ExplorerInteractor): ExplorerItemActionListenerDelegate {
+    fun itemListener(
+        fragment: WeakProperty<Fragment>,
+        viewModel: ExplorerViewModel,
+        explorerStore: ExplorerStore,
+        preferenceStore: PreferenceStore,
+        router: ExplorerRouter,
+        explorerInteractor: ExplorerInteractor,
+    ): ExplorerItemActionListenerDelegate {
         return ExplorerItemActionListenerDelegate(fragment, viewModel, explorerStore, preferenceStore, router, explorerInteractor)
     }
 
@@ -63,24 +66,38 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun menuListener(viewModel: ExplorerViewModel,
-                     explorerStore: ExplorerStore,
-                     explorerInteractor: ExplorerInteractor): BottomSheetMenuListenerDelegate {
+    fun menuListener(
+        viewModel: ExplorerViewModel,
+        explorerStore: ExplorerStore,
+        explorerInteractor: ExplorerInteractor,
+    ): BottomSheetMenuListenerDelegate {
         return BottomSheetMenuListenerDelegate(viewModel, explorerStore, explorerInteractor)
     }
 
     @Provides
     @ExplorerScope
-    fun presenter(viewModel: ExplorerViewModel,
-                  router: ExplorerRouter,
-                  explorerStore: ExplorerStore,
-                  preferenceStore: PreferenceStore,
-                  explorerInteractor: ExplorerInteractor,
-                  itemListener: ExplorerItemActionListenerDelegate,
-                  placesListener: PlacesActionListenerDelegate,
-                  menuListener: BottomSheetMenuListenerDelegate): ExplorerPresenter {
-        return ExplorerPresenter(viewModel, router, explorerStore, preferenceStore,
-                explorerInteractor, itemListener, placesListener, menuListener)
+    fun presenter(
+        viewModel: ExplorerViewModel,
+        router: ExplorerRouter,
+        explorerStore: ExplorerStore,
+        preferenceStore: PreferenceStore,
+        appStore: AppStore,
+        explorerInteractor: ExplorerInteractor,
+        itemListener: ExplorerItemActionListenerDelegate,
+        placesListener: PlacesActionListenerDelegate,
+        menuListener: BottomSheetMenuListenerDelegate,
+    ): ExplorerPresenter {
+        return ExplorerPresenter(
+            viewModel,
+            router,
+            explorerStore,
+            preferenceStore,
+            appStore,
+            explorerInteractor,
+            itemListener,
+            placesListener,
+            menuListener,
+        )
     }
 
     @Provides
@@ -91,7 +108,7 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun router(fragment: WeakProperty<ExplorerFragment>): ExplorerRouter = ExplorerRouter(fragment)
+    fun router(fragment: WeakProperty<Fragment>): ExplorerRouter = ExplorerRouter(fragment)
 }
 
 interface ExplorerDependencies {
@@ -101,4 +118,5 @@ interface ExplorerDependencies {
     fun explorerService(): ExplorerService
     fun explorerStore(): ExplorerStore
     fun preferenceStore(): PreferenceStore
+    fun appStore(): AppStore
 }

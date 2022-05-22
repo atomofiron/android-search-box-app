@@ -1,9 +1,13 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
 import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.invoke
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.XFile
@@ -16,23 +20,25 @@ import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemAction
 import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
 
 class ExplorerPresenter(
-        viewModel: ExplorerViewModel,
-        router: ExplorerRouter,
-        private val explorerStore: ExplorerStore,
-        private val preferenceStore: PreferenceStore,
-        private val explorerInteractor: ExplorerInteractor,
-        itemListener: ExplorerItemActionListenerDelegate,
-        placesListener: PlacesActionListenerDelegate,
-        menuListener: BottomSheetMenuListenerDelegate
+    viewModel: ExplorerViewModel,
+    router: ExplorerRouter,
+    private val explorerStore: ExplorerStore,
+    private val preferenceStore: PreferenceStore,
+    appStore: AppStore,
+    private val explorerInteractor: ExplorerInteractor,
+    itemListener: ExplorerItemActionListenerDelegate,
+    placesListener: PlacesActionListenerDelegate,
+    menuListener: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ExplorerViewModel, ExplorerRouter>(
         viewModel,
         router,
-        coroutineScope = null,
-        permissionResultListener = itemListener.permissions
+        //permissionResultListener = itemListener.permissions
 ),
         ExplorerItemActionListener by itemListener,
         PlacesAdapter.ItemActionListener by placesListener,
         BottomSheetMenuListener by menuListener {
+
+    private val resources by appStore.resourcesProperty
 
     init {
         preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
@@ -42,8 +48,8 @@ class ExplorerPresenter(
         }
 
         val items = ArrayList<XPlace>()
-        items.add(XPlace.InternalStorage(context.getString(R.string.internal_storage), visible = true))
-        items.add(XPlace.ExternalStorage(context.getString(R.string.external_storage), visible = true))
+        items.add(XPlace.InternalStorage(resources.getString(R.string.internal_storage), visible = true))
+        items.add(XPlace.ExternalStorage(resources.getString(R.string.external_storage), visible = true))
         items.add(XPlace.AnotherPlace("Another Place 0"))
         items.add(XPlace.AnotherPlace("Another Place 1"))
         items.add(XPlace.AnotherPlace("Another Place 2"))
@@ -97,6 +103,6 @@ class ExplorerPresenter(
 
     fun onVolumeUp(isCurrentDirVisible: Boolean) = when {
         isCurrentDirVisible -> explorerInteractor.openParent()
-        else -> viewModel.scrollToCurrentDir.emit()
+        else -> viewModel.scrollToCurrentDir.invoke()
     }
 }

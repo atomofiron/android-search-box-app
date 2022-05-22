@@ -10,8 +10,8 @@ import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import java.util.*
 
 class ResultInteractor(
-        private val scope: CoroutineScope,
-        private val resultService: ResultService
+    private val scope: CoroutineScope,
+    private val resultService: ResultService
 ) {
     private val context = Dispatchers.IO
 

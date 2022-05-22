@@ -7,7 +7,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetDelegate
 
 class ExportImportFragmentDelegate(
-        private val output: ExportImportOutput
+    private val output: ExportImportOutput
 ) : BottomSheetDelegate(R.layout.sheet_preference_export_import) {
 
     private val tvPath: TextView get() = bottomSheetView.findViewById(R.id.lei_tv_path)

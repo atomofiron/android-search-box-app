@@ -9,9 +9,9 @@ import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
 class CharactersHolder(
-        parent: ViewGroup,
-        id: Int,
-        private val listener: OnActionListener
+    parent: ViewGroup,
+    id: Int,
+    private val listener: OnActionListener
 ) : GeneralHolder<FinderStateItem>(parent, id), View.OnClickListener {
     private var bindedItem: FinderStateItem.SpecialCharactersItem? = null
 

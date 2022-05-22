@@ -1,60 +1,63 @@
 package app.atomofiron.searchboxapp.screens.result
 
-import android.content.Context
-import android.content.Intent
 import androidx.core.os.ConfigurationCompat
 import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.injectable.store.ResultStore
 import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
-import app.atomofiron.searchboxapp.screens.result.ResultFragment.Companion.KEY_TASK_ID
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
 import app.atomofiron.searchboxapp.screens.result.presenter.BottomSheetMenuListenerDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultItemActionDelegate
+import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 import app.atomofiron.searchboxapp.utils.Const
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ResultPresenter(
-        viewModel: ResultViewModel,
-        private val resultStore: ResultStore,
-        private val finderStore: FinderStore,
-        private val preferenceStore: PreferenceStore,
-        private val interactor: ResultInteractor,
-        router: ResultRouter,
-        private val resultChannel: ResultChannel,
-        itemActionDelegate: ResultItemActionDelegate,
-        menuListenerDelegate: BottomSheetMenuListenerDelegate
+    params: ResultPresenterParams,
+    viewModel: ResultViewModel,
+    private val resultStore: ResultStore,
+    private val finderStore: FinderStore,
+    private val preferenceStore: PreferenceStore,
+    private val interactor: ResultInteractor,
+    router: ResultRouter,
+    private val resultChannel: ResultChannel,
+    appStore: AppStore,
+    itemActionDelegate: ResultItemActionDelegate,
+    menuListenerDelegate: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
         ResultItemActionListener by itemActionDelegate,
         BottomSheetMenuListener by menuListenerDelegate {
     companion object {
         private const val UNDEFINED = -1L
     }
-    private var taskId = UNDEFINED
+    private val taskId = params.taskId
+
+    private val resources by appStore.resourcesProperty
 
     init {
         onSubscribeData()
-    }
 
-    override fun onCreate(context: Context, intent: Intent) {
-        if (taskId == UNDEFINED) {
-            taskId = intent.getLongExtra(KEY_TASK_ID, UNDEFINED)
+        //if (taskId == UNDEFINED) {
             val task = finderStore.tasks.find { it.id == taskId }
+            // todo start task here
             if (task == null) {
                 logE("No task found!")
-                router.popScreen()
+                router.navigateBack()
             } else {
                 viewModel.task.value = task.copyTask()
             }
-        }
+        //}
     }
 
     override fun onSubscribeData() {
@@ -93,8 +96,6 @@ class ResultPresenter(
 
     fun onExportClick() {
         val task = viewModel.task.value
-        val context = viewModel.context
-        val resources = context.resources
 
         val data = StringBuilder()
         for (result in task.results) {

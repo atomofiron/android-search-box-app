@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
-class SearchDelegate(private val output: FinderAdapterOutput) : BottomSheetDelegate(R.layout.sheet_viewer_search) {
+class SearchDelegate(output: FinderAdapterOutput) : BottomSheetDelegate(R.layout.sheet_viewer_search) {
     private val itemView: View get() = bottomSheetView.contentView.findViewById(R.id.item_explorer)
     private val recyclerView: RecyclerView get() = bottomSheetView.contentView.findViewById(R.id.sheet_viewer_search_rv)
 

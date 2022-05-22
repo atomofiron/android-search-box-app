@@ -3,8 +3,8 @@ package app.atomofiron.searchboxapp.screens.result.adapter
 import androidx.recyclerview.widget.DiffUtil
 
 class ResultDiffUtilCallback(
-        private val old: List<FinderResultItem>,
-        private val new: List<FinderResultItem>
+    private val old: List<FinderResultItem>,
+    private val new: List<FinderResultItem>
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = old.size

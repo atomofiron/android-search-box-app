@@ -31,8 +31,8 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 
 class FinderWorker(
-        private val context: Context,
-        workerParams: WorkerParameters
+    private val context: Context,
+    workerParams: WorkerParameters
 ) : Worker(context, workerParams) {
     companion object {
         private const val UNDEFINED = -1

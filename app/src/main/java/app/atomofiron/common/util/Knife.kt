@@ -5,10 +5,10 @@ import android.view.View
 import androidx.fragment.app.Fragment
 
 class Knife<T : View> private constructor(
-        private val activity: Activity? = null,
-        private val fragment: Fragment? = null,
-        private val root: View? = null,
-        private val id: Int
+    private val activity: Activity? = null,
+    private val fragment: Fragment? = null,
+    private val root: View? = null,
+    private val id: Int
 ) {
     private var viewNullable: T? = null
         get() {

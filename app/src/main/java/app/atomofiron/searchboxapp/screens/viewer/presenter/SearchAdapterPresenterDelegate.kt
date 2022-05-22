@@ -1,5 +1,7 @@
 package app.atomofiron.searchboxapp.screens.viewer.presenter
 
+import app.atomofiron.common.util.flow.emitNow
+import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
@@ -7,9 +9,9 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewModel
 
 class SearchAdapterPresenterDelegate(
-        private val viewModel: TextViewerViewModel,
-        private val interactor: TextViewerInteractor,
-        preferenceStore: PreferenceStore
+    private val viewModel: TextViewerViewModel,
+    private val interactor: TextViewerInteractor,
+    preferenceStore: PreferenceStore
 ) : FinderAdapterOutput {
 
     init {
@@ -23,19 +25,19 @@ class SearchAdapterPresenterDelegate(
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emit(value)
+    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emitNow(value)
 
     override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
 
     override fun onSearchClick(value: String) {
         val config = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
         interactor.search(value, config.ignoreCase, config.useRegex)
-        viewModel.closeBottomSheet.emit()
+        viewModel.closeBottomSheet.invoke()
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
         if (item.finderTask.count > 0) {
-            viewModel.closeBottomSheet.emit()
+            viewModel.closeBottomSheet.invoke()
             interactor.showTask(item.finderTask)
         }
     }

@@ -1,20 +1,25 @@
 package app.atomofiron.searchboxapp.screens.result
 
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.screens.viewer.TextViewerFragment
+import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.utils.Const
 
-class ResultRouter(property: WeakProperty<ResultFragment>) : BaseRouter(property) {
+class ResultRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
+
+    override val currentDestinationId = R.id.resultFragment
+
     fun shareFile(title: String, data: String): Boolean {
         val intent = Intent(Intent.ACTION_SEND)
-                .setType(Const.MIME_TYPE_TEXT)
-                .putExtra(Intent.EXTRA_SUBJECT, title)
-                .putExtra(Intent.EXTRA_TITLE, title)
-                .putExtra(Intent.EXTRA_TITLE, title)
-                .putExtra(Intent.EXTRA_TEXT, data)
+            .setType(Const.MIME_TYPE_TEXT)
+            .putExtra(Intent.EXTRA_SUBJECT, title)
+            .putExtra(Intent.EXTRA_TITLE, title)
+            .putExtra(Intent.EXTRA_TITLE, title)
+            .putExtra(Intent.EXTRA_TEXT, data)
 
         val activity = activity!!
         val success = intent.resolveActivity(activity.packageManager) != null
@@ -25,5 +30,8 @@ class ResultRouter(property: WeakProperty<ResultFragment>) : BaseRouter(property
         return success
     }
 
-    fun openFile(path: String, params: FinderQueryParams?) = startScreen(TextViewerFragment.openTextFile(path, params))
+    fun openFile(path: String, params: FinderQueryParams?) {
+        val arguments = TextViewerParams.arguments(path, params)
+        navigate(R.id.textViewerFragment, arguments)
+    }
 }

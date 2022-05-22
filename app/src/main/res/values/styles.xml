@@ -1,4 +1,28 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
+	<style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorPrimary</item><!--3700B3-->
+		<item name="colorPrimaryLite">@color/colorPrimaryLite</item>
+		<item name="colorAccent">@color/colorPrimary</item><!--03DAC5-->
+		<item name="android:colorBackground">@color/colorBackgroundDayNight</item>
+		<item name="android:windowBackground">@color/windowBackgroundThemed</item>
+		<item name="cardBackgroundColor">@color/cardBackgroundColor</item>
+		<item name="android:clipToPadding">false</item>
+
+
+        <item name="colorShadow">@color/shadow_day_night</item>
+
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+        <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/isDayTheme</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/isDayTheme</item>
+
+        <item name="isDarkTheme">@bool/isNightTheme</item>
+
+        <item name="cardViewStyle">@style/CardViewStyle</item>
+	</style>
+
 	<style name="AppTheme.White" parent="Theme.MaterialComponents.Light.NoActionBar">
 		<item name="android:windowEnableSplitTouch">false</item>
 		<item name="android:splitMotionEvents">false</item>
@@ -6,11 +30,9 @@
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
 		<item name="android:windowBackground">@color/windowBackgroundThemed</item>
-		<item name="android:statusBarColor">@color/windowBackgroundWhite</item>
-		<item name="android:navigationBarColor">@color/windowBackgroundWhite</item>
-		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryLight</item>
-		<item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimaryLight</item>
-		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccentLight</item>
+		<item name="android:colorPrimary">@color/colorPrimaryLight</item>
+		<item name="android:colorPrimaryDark">@color/colorPrimaryLight</item>
+		<item name="android:colorAccent">@color/colorAccentLight</item>
 		<item name="android:colorControlHighlight">@color/colorAccentLight</item>
 		<item name="colorPrimary">@color/colorPrimaryLight</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryLight</item>
@@ -31,6 +53,13 @@
 		<item name="colorOverlay">@color/overlay_black</item>
 
 		<item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Horizontal</item>
+
+        <item name="colorShadow">@color/shadow_light</item>
+
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+        <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
 	</style>
 	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
 		<item name="android:windowEnableSplitTouch">false</item>
@@ -39,11 +68,9 @@
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
 		<item name="android:windowBackground">@color/windowBackgroundThemed</item>
-		<item name="android:statusBarColor">@color/windowBackgroundDark</item>
-		<item name="android:navigationBarColor">@color/windowBackgroundDark</item>
-		<item name="android:colorPrimary" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
-		<item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
-		<item name="android:colorAccent" tools:targetApi="lollipop">@color/colorAccentDark</item>
+		<item name="android:colorPrimary">@color/colorPrimaryDark</item>
+		<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="android:colorAccent">@color/colorAccentDark</item>
 		<item name="android:colorControlHighlight">@color/colorAccentDark</item>
 		<item name="colorPrimary">@color/colorPrimaryDark</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -64,6 +91,13 @@
 		<item name="colorOverlay">@color/overlay_colored</item>
 
 		<item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Horizontal</item>
+
+        <item name="colorShadow">@color/shadow_dark</item>
+
+        <item name="android:statusBarColor" tools:ignore="DuplicateDefinition">@color/statusBarColor</item>
+        <item name="android:navigationBarColor" tools:ignore="DuplicateDefinition">@color/navigationBarColor</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
 	</style>
 	<style name="AppTheme.Black" parent="@style/AppTheme.Dark">
 		<item name="android:windowBackground">@color/windowBackgroundBlack</item>
@@ -74,6 +108,13 @@
 		<item name="colorFieldBackground">@color/windowBackgroundDark</item>
 		<item name="colorCardBackground">@color/windowBackgroundDark</item>
 		<item name="colorFieldDivider">@color/windowBackgroundBlack</item>
+
+		<item name="colorShadow">@color/shadow_dark</item>
+
+		<item name="android:statusBarColor" tools:ignore="DuplicateDefinition">@color/statusBarColor</item>
+		<item name="android:navigationBarColor" tools:ignore="DuplicateDefinition">@color/navigationBarColor</item>
+		<item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+		<item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
@@ -84,4 +125,9 @@
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
 	</style>-->
+
+	<style name="CardViewStyle" parent="CardView">
+		<item name="cardBackgroundColor">?cardBackgroundColor</item>
+	</style>
+
 </resources>

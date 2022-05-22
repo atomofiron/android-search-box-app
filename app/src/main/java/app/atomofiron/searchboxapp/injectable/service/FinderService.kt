@@ -11,10 +11,10 @@ import app.atomofiron.searchboxapp.work.FinderWorker
 import java.util.*
 
 class FinderService(
-        private val workManager: WorkManager,
-        private val notificationManager: NotificationManager,
-        private val finderStore: FinderStore,
-        private val preferenceStore: PreferenceStore
+    private val workManager: WorkManager,
+    private val notificationManager: NotificationManager,
+    private val finderStore: FinderStore,
+    private val preferenceStore: PreferenceStore
 ) {
     fun search(query: String, where: List<XFile>, ignoreCase: Boolean, useRegex: Boolean, isMultiline: Boolean, forContent: Boolean) {
         val maxSize = preferenceStore.maxFileSizeForSearch.value

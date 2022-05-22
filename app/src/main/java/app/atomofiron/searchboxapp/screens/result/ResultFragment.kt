@@ -6,15 +6,16 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.arch.fragment.BaseFragment
+import app.atomofiron.common.arch.BaseFragment
+import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
@@ -25,9 +26,10 @@ import app.atomofiron.searchboxapp.screens.explorer.sheet.BottomSheetMenuWithTit
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
 import app.atomofiron.searchboxapp.utils.setVisibility
 import javax.inject.Inject
-import kotlin.reflect.KClass
 
-class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
+class ResultFragment : Fragment(R.layout.fragment_result),
+    BaseFragment<ResultFragment, ResultViewModel, ResultPresenter> by BaseFragmentImpl()
+{
     companion object {
         const val KEY_TASK_ID = "KEY_TASK_ID"
 
@@ -39,8 +41,6 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
             return fragment
         }
     }
-    override val viewModelClass: KClass<ResultViewModel> = ResultViewModel::class
-    override val layoutId: Int = R.layout.fragment_result
 
     private val mbmBar = Knife<BottomMenuBar>(this, R.id.result_bmb)
     private val bottomSheetView = Knife<BottomSheetView>(this, R.id.result_bsv)
@@ -51,26 +51,20 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
 
     private val resultAdapter = ResultAdapter()
     private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
-    private val errorSnackbar: Snackbar by lazy(LazyThreadSafetyMode.NONE) {
-        Snackbar.make(thisView, "", Snackbar.LENGTH_INDEFINITE)
-                .setAnchorView(anchorView)
-                .setAction(R.string.dismiss) {
-                    errorSnackbar.dismiss()
-                    presenter.onDropTaskErrorClick()
-                }
-    }
+    private val errorSnackbar = Snackbar.make(requireView(), "", Snackbar.LENGTH_INDEFINITE)
+        .setAnchorView(anchorView)
+        .setAction(R.string.dismiss) { presenter.onDropTaskErrorClick() }
     private var snackbarError: String? = null
 
     @Inject
     override lateinit var presenter: ResultPresenter
 
-    override fun inject() = viewModel.inject(this)
-
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        initViewModel(this, ResultViewModel::class, savedInstanceState)
 
         resultAdapter.itemActionListener = presenter
-        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_result, thisContext, presenter)
+        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_result, requireContext(), presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,7 +72,7 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
 
         rvResults {
             itemAnimator = null
-            layoutManager = LinearLayoutManager(thisContext)
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = resultAdapter
         }
         mbmBar {
@@ -105,12 +99,12 @@ class ResultFragment : BaseFragment<ResultViewModel, ResultPresenter>() {
     }
 
     private fun onViewCollect() = viewModel.apply {
-        viewCollect(composition, ::onCompositionChange)
-        viewCollect(task, ::onTaskChange)
-        viewCollect(enableOptions, ::enableOptions)
-        viewCollect(showOptions, ::showOptions)
+        viewCollect(composition, collector = ::onCompositionChange)
+        viewCollect(task, collector = ::onTaskChange)
+        viewCollect(enableOptions, collector = ::enableOptions)
+        viewCollect(showOptions, collector = ::showOptions)
         viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
-        viewCollect(notifyItemChanged, resultAdapter::setItem) // todo works poor
+        viewCollect(notifyItemChanged, collector = resultAdapter::setItem) // todo works poor
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

@@ -1,7 +1,10 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
+import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.LiveDataFlow
+import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.android.App
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
@@ -10,31 +13,33 @@ import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.Shell
 import javax.inject.Inject
 
-class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragment>() {
+class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragment, PreferencePresenter>() {
 
     @Inject
     lateinit var preferenceStore: PreferenceStore
 
-    val alert = LiveDataFlow<String>(single = true)
-    val alertOutputSuccess = LiveDataFlow<Int>(single = true)
-    val alertOutputError = LiveDataFlow<Shell.Output>(single = true)
-    val isExportImportAvailable: Boolean get() = context.getExternalFilesDir(null) != null
+    val alert = sharedFlow<String>(single = true)
+    val alertOutputSuccess = sharedFlow<Int>(single = true)
+    val alertOutputError = sharedFlow<Shell.Output>(single = true)
+    val isExportImportAvailable: Boolean get() = App.appContext.getExternalFilesDir(null) != null
     val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
     val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity
     val toyboxVariant: ToyboxVariant get() = preferenceStore.toyboxVariant.entity
 
-    override val component = DaggerPreferenceComponent
-            .builder()
-            .bind(this)
-            .bind(viewProperty)
-            .dependencies(DaggerInjector.appComponent)
-            .build()
+    @Inject
+    override lateinit var presenter: PreferencePresenter
 
     override fun inject(view: PreferenceFragment) {
         super.inject(view)
         component.inject(this)
-        component.inject(view)
     }
+
+    override fun createComponent(fragmentProperty: WeakProperty<Fragment>) = DaggerPreferenceComponent
+        .builder()
+        .bind(this)
+        .bind(fragmentProperty)
+        .dependencies(DaggerInjector.appComponent)
+        .build()
 
     fun getCurrentValue(key: String): Any? = preferenceStore.getCurrentValue(key)
 }

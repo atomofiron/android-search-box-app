@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.result.presenter
 
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.XFile
@@ -12,10 +13,10 @@ import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListen
 import app.atomofiron.searchboxapp.utils.Util
 
 class ResultItemActionDelegate(
-        private val viewModel: ResultViewModel,
-        private val router: ResultRouter,
-        private val interactor: ResultInteractor,
-        private val preferenceStore: PreferenceStore
+    private val viewModel: ResultViewModel,
+    private val router: ResultRouter,
+    private val interactor: ResultInteractor,
+    private val preferenceStore: PreferenceStore
 ) : ResultItemActionListener {
     override fun onItemClick(item: XFile) {
         item as FinderResult

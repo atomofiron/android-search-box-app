@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="isDayTheme">true</bool>
+    <bool name="isNightTheme">false</bool>
+
+    <bool name="windowLightNavigationBar">false</bool>
+</resources>

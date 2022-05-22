@@ -1,5 +1,7 @@
 package app.atomofiron.searchboxapp.screens.finder.presenter
 
+import app.atomofiron.common.util.flow.emitNow
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.interactor.FinderInteractor
 import app.atomofiron.searchboxapp.screens.finder.FinderRouter
 import app.atomofiron.searchboxapp.screens.finder.FinderViewModel
@@ -7,14 +9,14 @@ import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
 class FinderAdapterPresenterDelegate(
-        private val viewModel: FinderViewModel,
-        private val router: FinderRouter,
-        private val interactor: FinderInteractor
+    private val viewModel: FinderViewModel,
+    private val router: FinderRouter,
+    private val interactor: FinderInteractor
 ) : FinderAdapterOutput {
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emit(value)
+    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emitNow(value)
 
     override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
 

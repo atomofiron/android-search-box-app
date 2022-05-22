@@ -1,9 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.channel
 
-import app.atomofiron.common.util.flow.DataFlow
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
+import app.atomofiron.common.util.flow.sharedFlow
 
 class PreferenceChannel {
-    val historyImportedEvent = DataFlow(Unit, single = true)
+    val historyImportedEvent = sharedFlow(Unit, single = true)
 }

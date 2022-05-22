@@ -10,8 +10,8 @@ import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
 
 class TextViewerInteractor(
-        private val scope: CoroutineScope,
-        private val textViewerService: TextViewerService
+    private val scope: CoroutineScope,
+    private val textViewerService: TextViewerService
 ) {
     private val context = Dispatchers.IO
 

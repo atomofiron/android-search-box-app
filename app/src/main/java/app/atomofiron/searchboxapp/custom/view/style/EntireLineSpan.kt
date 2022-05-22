@@ -6,9 +6,9 @@ import android.graphics.RectF
 import android.text.style.LineBackgroundSpan
 
 class EntireLineSpan(
-        private val backgroundColor: Int,
-        private val textColor: Int,
-        private val cornerRadius: Float
+    private val backgroundColor: Int,
+    private val textColor: Int,
+    private val cornerRadius: Float
 ) : LineBackgroundSpan {
     private val rect = RectF()
 

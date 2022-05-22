@@ -46,4 +46,6 @@ class PreferencePresenter(
             RootChannel.channel.offer(c++)
         }*/
     }
+
+    override fun onSubscribeData() = Unit
 }

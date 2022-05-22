@@ -9,8 +9,8 @@ import app.atomofiron.searchboxapp.logI
 import javax.inject.Inject
 
 class NotificationWorker(
-        context: Context,
-        workerParams: WorkerParameters
+    context: Context,
+    workerParams: WorkerParameters
 ) : Worker(context, workerParams) {
     companion object {
         const val NAME = "NotificationWorker"

@@ -1,6 +1,9 @@
 package app.atomofiron.searchboxapp.screens.finder
 
 import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.emitNow
+import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -11,13 +14,13 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.presenter.FinderAdapterPresenterDelegate
 
 class FinderPresenter(
-        viewModel: FinderViewModel,
-        router: FinderRouter,
-        private val finderAdapterDelegate: FinderAdapterPresenterDelegate,
-        private val explorerStore: ExplorerStore,
-        private val preferenceStore: PreferenceStore,
-        private val finderStore: FinderStore,
-        private val preferenceChannel: PreferenceChannel
+    viewModel: FinderViewModel,
+    router: FinderRouter,
+    private val finderAdapterDelegate: FinderAdapterPresenterDelegate,
+    private val explorerStore: ExplorerStore,
+    private val preferenceStore: PreferenceStore,
+    private val finderStore: FinderStore,
+    private val preferenceChannel: PreferenceChannel
 ) : BasePresenter<FinderViewModel, FinderRouter>(viewModel, router),
         FinderAdapterOutput by finderAdapterDelegate
 {
@@ -85,5 +88,5 @@ class FinderPresenter(
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onHistoryItemClick(node: String) = viewModel.replaceQuery.emit(node)
+    fun onHistoryItemClick(node: String) = viewModel.replaceQuery.emitNow(node)
 }

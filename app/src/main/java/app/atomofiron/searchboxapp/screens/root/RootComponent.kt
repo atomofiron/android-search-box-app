@@ -1,11 +1,13 @@
 package app.atomofiron.searchboxapp.screens.root
 
+import androidx.fragment.app.FragmentActivity
 import app.atomofiron.common.util.property.WeakProperty
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Scope
 
 @Scope
@@ -21,7 +23,9 @@ interface RootComponent {
         @BindsInstance
         fun bind(viewModel: RootViewModel): Builder
         @BindsInstance
-        fun bind(activity: WeakProperty<RootActivity>): Builder
+        fun bind(scope: CoroutineScope): Builder
+        @BindsInstance
+        fun bind(viewModel: WeakProperty<FragmentActivity>): Builder
         fun dependencies(dependencies: RootDependencies): Builder
         fun build(): RootComponent
     }
@@ -41,7 +45,7 @@ class RootModule {
 
     @Provides
     @RootScope
-    fun router(activity: WeakProperty<RootActivity>): RootRouter = RootRouter(activity)
+    fun router(activity: WeakProperty<FragmentActivity>): RootRouter = RootRouter(activity)
 }
 
 interface RootDependencies {
