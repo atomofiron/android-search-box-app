@@ -16,6 +16,7 @@ import app.atomofiron.searchboxapp.screens.finder.FinderDependencies
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceDependencies
 import app.atomofiron.searchboxapp.screens.result.ResultDependencies
 import app.atomofiron.searchboxapp.screens.main.MainDependencies
+import app.atomofiron.searchboxapp.screens.root.RootDependencies
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerDependencies
 import app.atomofiron.searchboxapp.work.FinderWorker
 import app.atomofiron.searchboxapp.work.NotificationWorker
@@ -29,13 +30,14 @@ import javax.inject.Singleton
 ])
 @Singleton
 interface AppComponent :
-    TextViewerDependencies,
-    ResultDependencies,
-    FinderDependencies,
-    ExplorerDependencies,
-    PreferenceDependencies,
     MainDependencies,
-    CurtainDependencies
+    RootDependencies,
+    CurtainDependencies,
+    PreferenceDependencies,
+    ExplorerDependencies,
+    FinderDependencies,
+    ResultDependencies,
+    TextViewerDependencies
 {
 
     @Component.Builder

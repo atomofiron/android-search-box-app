@@ -13,7 +13,7 @@ import app.atomofiron.searchboxapp.utils.Util
 
 class ExplorerRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
 
-    override val currentDestinationId: Int? = null
+    override val currentDestinationId = R.id.rootFragment
 
     fun showFinder() {
         switchScreen {

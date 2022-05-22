@@ -9,7 +9,7 @@ import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParam
 
 class FinderRouter(fragment: WeakProperty<Fragment>) : BaseRouter(fragment) {
 
-    override val currentDestinationId: Int? = null
+    override val currentDestinationId = R.id.rootFragment
 
     fun showExplorer() {
         switchScreen {

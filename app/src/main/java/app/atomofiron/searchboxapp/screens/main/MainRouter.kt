@@ -6,14 +6,10 @@ import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.util.navigation.CustomNavHostFragment
 import app.atomofiron.common.util.property.WeakProperty
-import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.poop
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
-import app.atomofiron.searchboxapp.screens.finder.FinderFragment
 
 class MainRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(activityProperty) {
 
-    override val currentDestinationId: Int? = null
+    override val currentDestinationId = 0
     override val isCurrentDestination: Boolean = true
 
     private val fragments: List<Fragment>? get() = activity?.supportFragmentManager
@@ -23,20 +19,6 @@ class MainRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(
             it as CustomNavHostFragment
         }?.childFragmentManager
         ?.fragments
-
-    fun showMainIfNeeded() {
-        poop("")
-        activity {
-            val isEmpty = supportFragmentManager.fragments.size == 1 // CustomNavHostFragment
-            if (!isEmpty) return@activity
-            val explorerFragment = ExplorerFragment()
-            supportFragmentManager.beginTransaction()
-                .add(R.id.main_fl_main, explorerFragment)
-                .hide(explorerFragment)
-                .add(R.id.main_fl_main, FinderFragment())
-                .commit()
-        }
-    }
 
     fun reattachFragments() {
         /* todo manager {

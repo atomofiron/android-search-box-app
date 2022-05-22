@@ -17,7 +17,6 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
 import app.atomofiron.searchboxapp.custom.view.VerticalDockView
-import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem

@@ -2,9 +2,23 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/graph"
-    app:startDestination="@id/rootActivity">
+    app:startDestination="@id/rootFragment">
 
-    <dialog
+    <fragment
+        android:id="@+id/rootFragment"
+        android:name="app.atomofiron.searchboxapp.screens.root.RootFragment"
+        android:label="RootFragment" >
+        <action
+            android:id="@+id/action_rootFragment_to_preferenceFragment"
+            app:destination="@id/preferenceFragment" />
+        <action
+            android:id="@+id/action_rootFragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+        <action
+            android:id="@+id/action_rootFragment_to_textViewerFragment"
+            app:destination="@id/textViewerFragment" />
+    </fragment>
+    <fragment
         android:id="@+id/curtainFragment"
         android:name="app.atomofiron.searchboxapp.screens.curtain.CurtainFragment"
         android:label="CurtainFragment" />
@@ -12,10 +26,6 @@
         android:id="@+id/explorerFragment"
         android:name="app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment"
         android:label="ExplorerFragment" />
-    <activity
-        android:id="@+id/mainActivity"
-        android:name="app.atomofiron.searchboxapp.screens.main.MainActivity"
-        android:label="RootActivity" />
     <fragment
         android:id="@+id/finderFragment"
         android:name="app.atomofiron.searchboxapp.screens.finder.FinderFragment"

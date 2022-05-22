@@ -38,7 +38,7 @@ abstract class BaseRouter(
         val curtainOptions: NavOptions get() = NavOptions.Builder().setLaunchSingleTop(true).build()
     }
 
-    protected abstract val currentDestinationId: Int?
+    protected abstract val currentDestinationId: Int
 
     constructor(activityProperty: WeakProperty<FragmentActivity>) : this(WeakProperty(), activityProperty)
 

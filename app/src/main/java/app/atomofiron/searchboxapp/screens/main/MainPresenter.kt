@@ -17,8 +17,6 @@ class MainPresenter(
     private val scope = viewModel.viewModelScope
 
     init {
-        router.showMainIfNeeded()
-
         preferenceStore.appTheme.collect(scope) {
             viewModel.setTheme.value = it
             router.reattachFragments()

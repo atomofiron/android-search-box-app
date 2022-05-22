@@ -8,11 +8,6 @@
 	android:layout_gravity="center_horizontal"
 	android:background="?attr/colorBackground"
 	>
-	<FrameLayout
-		android:id="@+id/main_fl_main"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		/>
 	<androidx.fragment.app.FragmentContainerView
 		android:id="@+id/nav_host_fragment"
 		android:name="app.atomofiron.common.util.navigation.CustomNavHostFragment"
