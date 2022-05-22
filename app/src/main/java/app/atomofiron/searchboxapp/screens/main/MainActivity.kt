@@ -20,17 +20,16 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
+import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
 import app.atomofiron.searchboxapp.utils.Const
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
-    private lateinit var explorerFragment: ExplorerFragment
+    private val rooFragment: Fragment get() = binding.navHostFragment.getFragment()
 
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(binding.root, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
@@ -75,18 +74,11 @@ class MainActivity : AppCompatActivity() {
         return AppTheme.values()[themeIndex.toInt()]
     }
 
-    override fun onAttachFragment(fragment: Fragment) {
-        super.onAttachFragment(fragment)
-        if (fragment is ExplorerFragment) {
-            explorerFragment = fragment
-        }
-    }
-
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         when  {
             super.onKeyDown(keyCode, event) -> Unit
             keyCode == KeyEvent.KEYCODE_ESCAPE -> onEscClick()
-            explorerFragment.onKeyDown(keyCode) -> Unit
+            rooFragment.offerKeyCodeToChildren(keyCode) -> Unit
             else -> return false
         }
         return true

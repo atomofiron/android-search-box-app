@@ -20,9 +20,11 @@ import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.explorer.sheet.BottomSheetMenuWithTitle
 import app.atomofiron.searchboxapp.screens.explorer.sheet.CreateDelegate
 import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate
+import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 
 class ExplorerFragment : Fragment(R.layout.fragment_explorer),
-    BaseFragment<ExplorerFragment, ExplorerViewModel, ExplorerPresenter> by BaseFragmentImpl()
+    BaseFragment<ExplorerFragment, ExplorerViewModel, ExplorerPresenter> by BaseFragmentImpl(),
+    KeyCodeConsumer
 {
     private lateinit var binding: FragmentExplorerBinding
     private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
@@ -121,7 +123,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         return consumed || super.onBack()
     }
 
-    fun onKeyDown(keyCode: Int): Boolean = when {
+    override fun onKeyDown(keyCode: Int): Boolean = when {
         binding.bottomSheet.isSheetShown -> false
         isHidden -> false
         keyCode == KeyEvent.KEYCODE_VOLUME_UP -> {
