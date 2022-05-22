@@ -11,14 +11,14 @@
         android:layout_height="match_parent"
         >
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/explorer_rv"
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="@dimen/joystick_size"
             android:overScrollMode="never"
             />
         <app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
-            android:id="@+id/explorer_ehv"
+            android:id="@+id/explorer_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -30,20 +30,20 @@
             android:layout_gravity="bottom"
             >
             <app.atomofiron.searchboxapp.custom.view.BottomMenuBar
-                android:id="@+id/explorer_bom"
+                android:id="@+id/bottom_bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:menu="@menu/nav_explorer"
                 />
         </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
         <app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
-            android:id="@+id/explorer_bsv"
+            android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <app.atomofiron.searchboxapp.custom.view.VerticalDockView
-        android:id="@+id/explorer_dv"
+        android:id="@+id/vertical_dock"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="?attr/colorBackground"

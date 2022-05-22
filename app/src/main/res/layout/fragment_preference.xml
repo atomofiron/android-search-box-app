@@ -7,7 +7,7 @@
     android:background="?colorBackground"
     >
     <app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
-        android:id="@+id/preference_bsv"
+        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

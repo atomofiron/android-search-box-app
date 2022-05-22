@@ -7,16 +7,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
-import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
-import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
-import app.atomofiron.searchboxapp.custom.view.VerticalDockView
+import app.atomofiron.searchboxapp.databinding.FragmentFinderBinding
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
@@ -25,15 +22,12 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     BaseFragment<FinderFragment, FinderViewModel, FinderPresenter> by BaseFragmentImpl()
 {
 
-    private val rvContent = Knife<RecyclerView>(this, R.id.finder_rv)
-    private val bottomOptionMenu = Knife<BottomMenuBar>(this, R.id.finder_bom)
-    private val dockView = Knife<VerticalDockView>(this, R.id.finder_dv)
-
+    private lateinit var binding: FragmentFinderBinding
     private val finderAdapter = FinderAdapter()
 
     private val historyAdapter: HistoryAdapter = HistoryAdapter(object : HistoryAdapter.OnItemClickListener {
         override fun onItemClick(node: String) {
-            dockView { close() }
+            binding.verticalDock.close()
             presenter.onHistoryItemClick(node)
         }
     })
@@ -48,7 +42,9 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rvContent {
+        binding = FragmentFinderBinding.bind(view)
+
+        binding.recyclerView.run {
             val linearLayoutManager = LinearLayoutManager(context)
             linearLayoutManager.reverseLayout = true
             layoutManager = linearLayoutManager
@@ -56,33 +52,21 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             adapter = finderAdapter
         }
 
-        bottomOptionMenu {
-            setOnMenuItemClickListener { id ->
-                when (id) {
-                    R.id.menu_history -> dockView { open() }
-                    R.id.menu_explorer -> presenter.onExplorerOptionSelected()
-                    R.id.menu_options -> presenter.onConfigOptionSelected()
-                    R.id.menu_settings -> presenter.onSettingsOptionSelected()
-                }
+        binding.bottomBar.setOnMenuItemClickListener { id ->
+            when (id) {
+                R.id.menu_history -> binding.verticalDock.open()
+                R.id.menu_explorer -> presenter.onExplorerOptionSelected()
+                R.id.menu_options -> presenter.onConfigOptionSelected()
+                R.id.menu_settings -> presenter.onSettingsOptionSelected()
             }
         }
 
-        dockView {
-            recyclerView.adapter = historyAdapter
+        binding.verticalDock.run {
             onGravityChangeListener = presenter::onDockGravityChange
+            recyclerView.adapter = historyAdapter
         }
 
         onViewCollect()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        dockView {
-            recyclerView.adapter = null
-        }
-        rvContent {
-            adapter = null
-        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -97,7 +81,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     }
 
     private fun onViewCollect() = viewModel.apply {
-        viewCollect(historyDrawerGravity) { dockView { gravity = it } }
+        viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(reloadHistory, collector = historyAdapter::reload)
         viewCollect(history, collector = historyAdapter::add)
         viewCollect(insertInQuery, collector = ::insertInQuery)
@@ -107,11 +91,8 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     }
 
     override fun onBack(): Boolean {
-        val consumed = dockView(default = false) {
-            isOpened.apply {
-                close()
-            }
-        }
+        val consumed = binding.verticalDock.isOpened
+        binding.verticalDock.close()
         return consumed || super.onBack()
     }
 

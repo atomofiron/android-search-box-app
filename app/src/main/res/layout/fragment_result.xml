@@ -8,7 +8,7 @@
     android:background="?colorBackground"
     >
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/result_rv"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:maxWidth="@dimen/card_max_width"
@@ -21,7 +21,7 @@
         android:layout_gravity="bottom"
         >
         <app.atomofiron.searchboxapp.custom.view.BottomMenuBar
-            android:id="@+id/result_bmb"
+            android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:menu="@menu/nav_result"
@@ -39,12 +39,12 @@
                 android:gravity="center"
                 >
                 <app.atomofiron.searchboxapp.custom.view.BallsView
-                    android:id="@+id/result_bv"
+                    android:id="@+id/balls_view"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     />
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/result_iv_status"
+                    android:id="@+id/iv_status"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_search_status"
@@ -52,7 +52,7 @@
                     android:visibility="gone"
                     />
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/result_tv_counter"
+                    android:id="@+id/tv_counter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -67,7 +67,7 @@
         </LinearLayout>
     </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
     <app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
-        android:id="@+id/result_bsv"
+        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

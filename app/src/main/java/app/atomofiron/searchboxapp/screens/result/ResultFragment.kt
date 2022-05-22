@@ -4,21 +4,15 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
-import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
-import app.atomofiron.searchboxapp.custom.view.BallsView
-import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
-import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
+import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
@@ -42,12 +36,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         }
     }
 
-    private val mbmBar = Knife<BottomMenuBar>(this, R.id.result_bmb)
-    private val bottomSheetView = Knife<BottomSheetView>(this, R.id.result_bsv)
-    private val rvResults = Knife<RecyclerView>(this, R.id.result_rv)
-    private val bView = Knife<BallsView>(this, R.id.result_bv)
-    private val ivStatus = Knife<ImageView>(this, R.id.result_iv_status)
-    private val tvCounter = Knife<TextView>(this, R.id.result_tv_counter)
+    private lateinit var binding: FragmentResultBinding
 
     private val resultAdapter = ResultAdapter()
     private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
@@ -70,24 +59,16 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rvResults {
+        binding = FragmentResultBinding.bind(view)
+
+        binding.recyclerView.run {
             itemAnimator = null
             layoutManager = LinearLayoutManager(requireContext())
             adapter = resultAdapter
         }
-        mbmBar {
-            setOnMenuItemClickListener(::onBottomMenuItemClick)
-        }
-        bottomItemMenu.bottomSheetView = bottomSheetView.view
+        binding.bottomBar.setOnMenuItemClickListener(::onBottomMenuItemClick)
+        bottomItemMenu.bottomSheetView = binding.bottomSheet
         onViewCollect()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        rvResults {
-            adapter = null
-        }
     }
 
     private fun onBottomMenuItemClick(id: Int) {
@@ -114,18 +95,14 @@ class ResultFragment : Fragment(R.layout.fragment_result),
 
     @SuppressLint("RestrictedApi")
     private fun onTaskChange(task: FinderTask) {
-        bView {
-            setVisibility(task.inProgress)
-        }
-        ivStatus {
+        binding.ballsView.setVisibility(task.inProgress)
+        binding.ivStatus.run {
             setVisibility(!task.inProgress)
             isActivated = task.isDone
             isEnabled = task.error == null
         }
-        tvCounter {
-            text = "${task.results.size}/${task.count}"
-        }
-        mbmBar {
+        binding.tvCounter.text = "${task.results.size}/${task.count}"
+        binding.bottomBar.run {
             var item = menu.findItem(R.id.menu_stop)
             if (item.isEnabled != task.inProgress) {
                 item.isEnabled = task.inProgress
@@ -153,11 +130,9 @@ class ResultFragment : Fragment(R.layout.fragment_result),
 
     @SuppressLint("RestrictedApi")
     private fun enableOptions(enable: Boolean) {
-        mbmBar {
-            val item = menu.findItem(R.id.menu_options)
-            if (item.isEnabled != enable) {
-                item.isEnabled = enable
-            }
+        val item = binding.bottomBar.menu.findItem(R.id.menu_options)
+        if (item.isEnabled != enable) {
+            item.isEnabled = enable
         }
     }
 

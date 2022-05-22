@@ -4,22 +4,15 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
-import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.common.util.setVisible
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.view.BallsView
-import app.atomofiron.searchboxapp.custom.view.BottomMenuBar
-import app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
-import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
+import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.screens.viewer.sheet.SearchDelegate
 
@@ -33,12 +26,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         const val KEY_IGNORE_CASE = "KEY_IGNORE_CASE"
     }
 
-    private val bottomSheetView = Knife<BottomSheetView>(this, R.id.text_viewer_bsv)
-    private val rvTextViewer = Knife<RecyclerView>(this, R.id.text_viewer_rv)
-    private val tvCounter = Knife<TextView>(this, R.id.text_viewer_tv_counter)
-    private val bvLoading = Knife<BallsView>(this, R.id.text_viewer_bv)
-    private val bottomMenuBar = Knife<BottomMenuBar>(this, R.id.text_viewer_bmb)
-    private val bottomAppBar = Knife<FixedBottomAppBar>(this, R.id.text_viewer_fbab)
+    private lateinit var binding: FragmentTextViewerBinding
 
     private val viewerAdapter = TextViewerAdapter()
 
@@ -54,29 +42,27 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rvTextViewer {
+        binding = FragmentTextViewerBinding.bind(view)
+
+        binding.recyclerView.run {
             layoutManager = LinearLayoutManager(context)
             adapter = viewerAdapter
             itemAnimator = null
         }
-        bottomMenuBar {
-            setOnMenuItemClickListener { id ->
-                when (id) {
-                    R.id.menu_search -> searchDelegate.show(viewModel.xFile, viewModel.composition)
-                    R.id.menu_previous -> presenter.onPreviousClick()
-                    R.id.menu_next -> presenter.onNextClick()
-                }
+        binding.bottomBar.setOnMenuItemClickListener { id ->
+            when (id) {
+                R.id.menu_search -> searchDelegate.show(viewModel.xFile, viewModel.composition)
+                R.id.menu_previous -> presenter.onPreviousClick()
+                R.id.menu_next -> presenter.onNextClick()
             }
         }
-        searchDelegate.bottomSheetView = bottomSheetView.view
+        searchDelegate.bottomSheetView = binding.bottomSheet
         onViewCollect()
     }
 
     override fun onStart() {
         super.onStart()
-        bottomAppBar {
-            updateElevation()
-        }
+        binding.bottomAppBar.updateElevation()
     }
 
     private fun onViewCollect() = viewModel.apply {
@@ -90,12 +76,10 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         viewCollect(closeBottomSheet, collector = this@TextViewerFragment::closeBottomSheet)
     }
 
-    override fun onBack(): Boolean = bottomSheetView.view.hide() || super.onBack()
+    override fun onBack(): Boolean = binding.bottomSheet.hide() || super.onBack()
 
     private fun setLoading(visible: Boolean) {
-        bvLoading {
-            setVisible(visible, invisibleMode = View.INVISIBLE)
-        }
+        binding.ballsView.setVisible(visible, invisibleMode = View.INVISIBLE)
         onMatchCounterChanged(viewModel.matchesCounter.value)
     }
 
@@ -103,21 +87,17 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     private fun onMatchCounterChanged(counter: Long?) {
         var index: Int? = null
         var count: Int? = null
-        tvCounter {
-            text = when (counter) {
-                null -> null
-                else -> {
-                    index = counter.shr(32).toInt()
-                    count = counter.toInt()
-                    "$index / $count"
-                }
+        binding.tvCounter.text = when (counter) {
+            null -> null
+            else -> {
+                index = counter.shr(32).toInt()
+                count = counter.toInt()
+                "$index / $count"
             }
         }
-        bottomMenuBar {
-            val loading = viewModel.loading.value
-            menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index!! > 1
-            menu.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
-        }
+        val loading = viewModel.loading.value
+        binding.bottomBar.menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index!! > 1
+        binding.bottomBar.menu.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
     }
 
     private fun onMatchCursorChanged(cursor: Long?) {
@@ -133,8 +113,6 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     }
 
     private fun closeBottomSheet(unit: Unit = Unit) {
-        bottomSheetView {
-            hide()
-        }
+        binding.bottomSheet.hide()
     }
 }

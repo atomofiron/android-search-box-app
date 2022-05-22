@@ -10,12 +10,11 @@ import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
-import app.atomofiron.common.util.Knife
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
-import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetView
+import app.atomofiron.searchboxapp.databinding.FragmentPreferenceBinding
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
 import app.atomofiron.searchboxapp.utils.Shell
 
@@ -29,7 +28,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     private lateinit var aboutDelegate: AboutFragmentDelegate
     private lateinit var preferenceDelegate: PreferenceFragmentDelegate
 
-    private val bottomSheetView = Knife<BottomSheetView>(this, R.id.preference_bsv)
+    private lateinit var binding: FragmentPreferenceBinding
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initViewModel(this, PreferenceViewModel::class, savedInstanceState)
@@ -59,11 +58,13 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        exportImportDelegate.bottomSheetView = bottomSheetView.view
-        explorerItemDelegate.bottomSheetView = bottomSheetView.view
-        joystickDelegate.bottomSheetView = bottomSheetView.view
-        toyboxDelegate.bottomSheetView = bottomSheetView.view
-        aboutDelegate.bottomSheetView = bottomSheetView.view
+        binding = FragmentPreferenceBinding.bind(view)
+
+        exportImportDelegate.bottomSheetView = binding.bottomSheet
+        explorerItemDelegate.bottomSheetView = binding.bottomSheet
+        joystickDelegate.bottomSheetView = binding.bottomSheet
+        toyboxDelegate.bottomSheetView = binding.bottomSheet
+        aboutDelegate.bottomSheetView = binding.bottomSheet
 
         onViewCollect()
     }
@@ -82,7 +83,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         viewCollect(alertOutputError, collector = ::showOutputError)
     }
 
-    override fun onBack(): Boolean = bottomSheetView(default = false) { hide() } || super.onBack()
+    override fun onBack(): Boolean = binding.bottomSheet.hide() || super.onBack()
 
     fun onAboutClick() = aboutDelegate.show()
 

@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var explorerFragment: ExplorerFragment
 
-    private val sbExitSnackbarContextView: View get() = findViewById(R.id.finder_bom) ?: joystick
+    private val sbExitSnackbarContextView: View get() = findViewById(R.id.bottom_bar) ?: joystick
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(sbExitSnackbarContextView, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
                 .setAnchorView(joystick)
