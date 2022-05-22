@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.root
+package app.atomofiron.searchboxapp.screens.main
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
 import app.atomofiron.searchboxapp.screens.finder.FinderFragment
 
-class RootRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(activityProperty) {
+class MainRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(activityProperty) {
 
     override val currentDestinationId: Int? = null
     override val isCurrentDestination: Boolean = true
@@ -31,9 +31,9 @@ class RootRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(
             if (!isEmpty) return@activity
             val explorerFragment = ExplorerFragment()
             supportFragmentManager.beginTransaction()
-                .add(R.id.root_fl_main, explorerFragment)
+                .add(R.id.main_fl_main, explorerFragment)
                 .hide(explorerFragment)
-                .add(R.id.root_fl_main, FinderFragment())
+                .add(R.id.main_fl_main, FinderFragment())
                 .commit()
         }
     }

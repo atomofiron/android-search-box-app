@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.root.fragment
+package app.atomofiron.searchboxapp.screens.main.fragment
 
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar

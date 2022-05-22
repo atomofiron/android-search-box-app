@@ -2,14 +2,14 @@
 <FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/root_cl_root"
+	android:id="@+id/main_cl_root"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_gravity="center_horizontal"
 	android:background="?attr/colorBackground"
 	>
 	<FrameLayout
-		android:id="@+id/root_fl_main"
+		android:id="@+id/main_fl_main"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		/>
@@ -22,7 +22,7 @@
 		app:navGraph="@navigation/graph"
 		/>
 	<app.atomofiron.searchboxapp.custom.view.Joystick
-		android:id="@+id/root_iv_joystick"
+		android:id="@+id/main_iv_joystick"
 		android:layout_width="@dimen/joystick_size"
 		android:layout_height="@dimen/joystick_size"
 		android:layout_gravity="bottom|center_horizontal"

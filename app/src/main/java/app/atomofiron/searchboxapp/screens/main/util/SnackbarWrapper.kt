@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.root.util
+package app.atomofiron.searchboxapp.screens.main.util
 
 import android.content.Context
 import app.atomofiron.common.util.findBooleanByAttr

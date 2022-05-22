@@ -2,10 +2,9 @@ package app.atomofiron.searchboxapp.android
 
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
 import android.provider.Settings
-import app.atomofiron.searchboxapp.screens.root.RootActivity
+import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.Const
 
 object Intents {
@@ -24,7 +23,7 @@ object Intents {
 
     //val telegramLink get() = Intent(Intent.ACTION_VIEW, Uri.parse(Const.TELEGRAM_LINK))
 
-    fun rootActivity(context: Context, action: String? = null) = Intent(context, RootActivity::class.java).setAction(action)
+    fun mainActivity(context: Context, action: String? = null) = Intent(context, MainActivity::class.java).setAction(action)
 
     fun appDetails(context: Context) = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         .addCategory(Intent.CATEGORY_DEFAULT)

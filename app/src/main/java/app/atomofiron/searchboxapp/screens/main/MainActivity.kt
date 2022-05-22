@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.root
+package app.atomofiron.searchboxapp.screens.main
 
 import android.os.Bundle
 import android.view.KeyEvent
@@ -21,12 +21,12 @@ import app.atomofiron.searchboxapp.custom.view.Joystick
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
-import app.atomofiron.searchboxapp.screens.root.fragment.SnackbarCallbackFragmentDelegate
-import app.atomofiron.searchboxapp.screens.root.util.SnackbarWrapper
+import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
+import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.utils.Const
 import javax.inject.Inject
 
-class RootActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var root: FrameLayout
     private lateinit var joystick: Joystick
@@ -37,24 +37,24 @@ class RootActivity : AppCompatActivity() {
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(sbExitSnackbarContextView, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
                 .setAnchorView(joystick)
-                .setActionTextColor(this@RootActivity.findColorByAttr(R.attr.colorAccent))
+                .setActionTextColor(this@MainActivity.findColorByAttr(R.attr.colorAccent))
                 .setAction(R.string.exit) { presenter.onExitClick() }
                 .addCallback(SnackbarCallbackFragmentDelegate(presenter))
     }
 
-    private lateinit var viewModel: RootViewModel
+    private lateinit var viewModel: MainViewModel
     @Inject
-    lateinit var presenter: RootPresenter
+    lateinit var presenter: MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getAppTheme())
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_root)
+        setContentView(R.layout.activity_main)
 
-        root = findViewById(R.id.root_cl_root)
-        joystick = findViewById(R.id.root_iv_joystick)
+        root = findViewById(R.id.main_cl_root)
+        joystick = findViewById(R.id.main_iv_joystick)
 
-        viewModel = ViewModelProvider(this)[RootViewModel::class.java]
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.inject(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)

@@ -1,17 +1,16 @@
-package app.atomofiron.searchboxapp.screens.root
+package app.atomofiron.searchboxapp.screens.main
 
 import androidx.lifecycle.viewModelScope
-import app.atomofiron.common.util.flow.emitLast
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.screens.root.fragment.SnackbarCallbackFragmentDelegate
-import app.atomofiron.searchboxapp.screens.root.util.tasks.XTask
+import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
+import app.atomofiron.searchboxapp.screens.main.util.tasks.XTask
 import app.atomofiron.searchboxapp.utils.Shell
 
-class RootPresenter(
-    private val viewModel: RootViewModel,
-    private val router: RootRouter,
+class MainPresenter(
+    private val viewModel: MainViewModel,
+    private val router: MainRouter,
     preferenceStore: PreferenceStore
 ) : SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput {
     override var isExitSnackbarShown: Boolean = false

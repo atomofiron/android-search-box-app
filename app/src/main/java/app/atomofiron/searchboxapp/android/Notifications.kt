@@ -22,7 +22,7 @@ object Notifications {
     fun update(context: Context, action: String, titleId: Int, actionId: Int) {
         createUpdateChannel(context)
         val notificationManager = NotificationManagerCompat.from(context)
-        val intent = Intents.rootActivity(context, action)
+        val intent = Intents.mainActivity(context, action)
         val notificationIntent = PendingIntent.getActivity(context, Intents.REQUEST_UPDATE, intent, FLAG_UPDATE_CURRENT)
         val actionIntent = PendingIntent.getActivity(context, Intents.REQUEST_UPDATE, intent, FLAG_UPDATE_CURRENT)
         val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID_UPDATE)

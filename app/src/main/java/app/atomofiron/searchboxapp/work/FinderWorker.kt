@@ -21,7 +21,7 @@ import app.atomofiron.searchboxapp.model.explorer.MutableXFile
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
-import app.atomofiron.searchboxapp.screens.root.RootActivity
+import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.ChannelUtil
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
@@ -237,7 +237,7 @@ class FinderWorker(
 
     private fun showNotification() {
         val id = task.id.toInt()
-        val intent = Intent(context, RootActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val color = ContextCompat.getColor(context, R.color.colorPrimaryLight)
         val icon = when {

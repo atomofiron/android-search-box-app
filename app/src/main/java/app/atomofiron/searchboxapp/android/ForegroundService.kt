@@ -14,7 +14,7 @@ import androidx.work.WorkManager
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.logI
-import app.atomofiron.searchboxapp.screens.root.RootActivity
+import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.ChannelUtil
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.work.NotificationWorker
@@ -55,7 +55,7 @@ class ForegroundService : IntentService("NotificationService") {
                 .importance(IMPORTANCE_LOW)
                 .fix(this)
 
-        val intent = Intent(this, RootActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, Const.FOREGROUND_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val color = ContextCompat.getColor(this, R.color.colorPrimaryLight)
         val notification = NotificationCompat.Builder(this, Const.FOREGROUND_NOTIFICATION_CHANNEL_ID)

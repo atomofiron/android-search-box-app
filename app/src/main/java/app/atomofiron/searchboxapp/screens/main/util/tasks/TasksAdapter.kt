@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.root.util.tasks
+package app.atomofiron.searchboxapp.screens.main.util.tasks
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
