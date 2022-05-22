@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.finder.history.adapter
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 
@@ -32,7 +33,7 @@ class HistoryHolder(itemView: View, onItemActionListener: OnItemActionListener) 
     fun onBind(title: String, pinned: Boolean) {
         btnPinned.isActivated = pinned
         tvTitle.text = title
-        btnRemove.visibility = if (pinned) View.GONE else View.VISIBLE
+        btnRemove.isGone = pinned
     }
 
     interface OnItemActionListener {

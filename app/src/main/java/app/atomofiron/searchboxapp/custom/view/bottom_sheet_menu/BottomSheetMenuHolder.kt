@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import app.atomofiron.searchboxapp.R
@@ -32,7 +34,7 @@ class BottomSheetMenuHolder(
         itemView.id = item.itemId
         icon.setImageDrawable(item.icon)
         title.text = item.title
-        button.visibility = View.GONE
+        button.isGone = true
     }
 
     override fun onClick(view: View) {
@@ -43,7 +45,7 @@ class BottomSheetMenuHolder(
             }
             R.id.item_menu_tv_button -> if (view.isEnabled) {
                 button.isEnabled = false
-                view.visibility = View.GONE
+                view.isGone = true
                 listener.onMenuItemSelected(item.itemId)
             }
         }
@@ -56,11 +58,11 @@ class BottomSheetMenuHolder(
         val parent = itemView as ViewGroup
         TransitionManager.beginDelayedTransition(parent)
         button.isEnabled = true
-        button.visibility = View.VISIBLE
+        button.isVisible = true
         button.postDelayed({
             if (button.visibility != View.GONE) {
                 TransitionManager.beginDelayedTransition(parent)
-                button.visibility = View.GONE
+                button.isGone = true
             }
         }, CONFIRM_BUTTON_DURATION)
     }

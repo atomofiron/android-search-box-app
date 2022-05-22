@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isGone
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
@@ -14,7 +17,6 @@ import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Tool
-import app.atomofiron.searchboxapp.utils.setVisibility
 
 class ExplorerItemBinder(private val itemView: View) {
     companion object {
@@ -114,13 +116,13 @@ class ExplorerItemBinder(private val itemView: View) {
         }
 
         cbBox.isChecked = item.isChecked
-        cbBox.setVisibility(!item.isDeleting)
+        cbBox.isGone = item.isDeleting
         when {
-            item.isDeleting -> cbBox.setVisibility(false)
-            item.isRoot && !item.isOpened -> cbBox.setVisibility(false, View.INVISIBLE)
-            else -> cbBox.setVisibility(true)
+            item.isDeleting -> cbBox.isGone = true
+            item.isRoot && !item.isOpened -> cbBox.isInvisible = true
+            else -> cbBox.isVisible = true
         }
-        psProgress.setVisibility(item.isDeleting)
+        psProgress.isVisible = item.isDeleting
     }
 
     fun bindComposition(composition: ExplorerItemComposition) {
@@ -143,7 +145,7 @@ class ExplorerItemBinder(private val itemView: View) {
             string.append(" ").append(item.time)
         }
         tvDate.text = string.toString()
-        tvSize.setVisibility(composition.visibleSize)
+        tvSize.isVisible = composition.visibleSize
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 

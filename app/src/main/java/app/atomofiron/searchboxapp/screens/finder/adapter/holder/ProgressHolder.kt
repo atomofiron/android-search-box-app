@@ -1,15 +1,15 @@
 package app.atomofiron.searchboxapp.screens.finder.adapter.holder
 
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import app.atomofiron.searchboxapp.utils.setVisibility
 
 class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : CardViewHolder(parent, id) {
     private val tvLabel = itemView.findViewById<TextView>(R.id.progress_tv_label)
@@ -42,7 +42,7 @@ class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : C
         tvStatus.text = text
         btnAction.isActivated = !task.inProgress
         btnAction.isEnabled = true
-        bView.setVisibility(task.inProgress, View.INVISIBLE)
+        bView.isInvisible = !task.inProgress
 
         val idLabel = when {
             task.inProgress -> R.string.look
@@ -64,7 +64,7 @@ class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : C
             else -> R.string.remove
         }
         btnAction.setText(idAction)
-        btnAction.setVisibility(!task.isDone || task.isRemovable)
+        btnAction.isVisible = !task.isDone || task.isRemovable
     }
 
     interface OnActionListener {

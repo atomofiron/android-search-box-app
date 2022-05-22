@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
+import androidx.core.view.isGone
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
@@ -71,8 +72,8 @@ class ConfigHolder(
         }
 
         if (item.isLocal) {
-            cpSearchInContent.visibility = View.GONE
-            cbExcludeDirs.visibility = View.GONE
+            cpSearchInContent.isGone = true
+            cbExcludeDirs.isGone = true
         }
     }
 

@@ -9,6 +9,8 @@ import android.widget.RelativeLayout
 import android.widget.RelativeLayout.LayoutParams
 import android.widget.RelativeLayout.LayoutParams.MATCH_PARENT
 import android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 
@@ -52,18 +54,18 @@ class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(co
 
     public override fun onClick() {
         summary.alpha = INVISIBLE
-        editText.visibility = View.VISIBLE
+        editText.isVisible = true
         editText.performClick()
     }
 
     private fun initField(context: Context) {
         editText = TextField(context)
-        editText.visibility = View.GONE
+        editText.isGone = true
         editText.setOnSubmitListener(::onSubmit)
         editText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 summary.alpha = VISIBLE
-                editText.visibility = View.GONE
+                editText.isGone = true
             }
         }
     }

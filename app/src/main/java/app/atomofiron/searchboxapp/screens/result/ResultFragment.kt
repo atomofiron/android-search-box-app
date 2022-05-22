@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
@@ -18,7 +20,6 @@ import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.sheet.BottomSheetMenuWithTitle
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
-import app.atomofiron.searchboxapp.utils.setVisibility
 import javax.inject.Inject
 
 class ResultFragment : Fragment(R.layout.fragment_result),
@@ -95,9 +96,9 @@ class ResultFragment : Fragment(R.layout.fragment_result),
 
     @SuppressLint("RestrictedApi")
     private fun onTaskChange(task: FinderTask) {
-        binding.ballsView.setVisibility(task.inProgress)
+        binding.ballsView.isVisible = task.inProgress
         binding.ivStatus.run {
-            setVisibility(!task.inProgress)
+            isGone = task.inProgress
             isActivated = task.isDone
             isEnabled = task.error == null
         }
@@ -139,10 +140,10 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     private fun showOptions(options: ExplorerItemOptions) {
         bottomItemMenu.show(options)
         if (options.items.size == 1) {
-            bottomItemMenu.tvDescription.visibility = View.VISIBLE
+            bottomItemMenu.tvDescription.isVisible = true
             bottomItemMenu.tvDescription.text = options.items[0].completedPath
         } else {
-            bottomItemMenu.tvDescription.visibility = View.GONE
+            bottomItemMenu.tvDescription.isGone = true
         }
     }
 }

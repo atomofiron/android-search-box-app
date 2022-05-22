@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinder
-import app.atomofiron.searchboxapp.utils.setVisibility
 
 class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
     private val binder = ExplorerItemBinder(itemView)
@@ -27,7 +27,7 @@ class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
         item as FinderResultItem.Item
         val result = item.item
         binder.onBind(result)
-        tvCounter.setVisibility(result.count > 0)
+        tvCounter.isVisible = result.count > 0
         tvCounter.text = result.count.toString()
     }
 

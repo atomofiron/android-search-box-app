@@ -3,6 +3,8 @@ package app.atomofiron.searchboxapp.screens.explorer.sheet
 import android.content.Context
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenu
@@ -28,15 +30,15 @@ class BottomSheetMenuWithTitle(
         super.show(options.ids)
         when (options.items.size) {
             1 -> {
-                tvTitle.visibility = View.GONE
-                exItem.visibility = View.VISIBLE
+                tvTitle.isGone = true
+                exItem.isVisible = true
                 val holder = ExplorerHolder(exItem)
-                holder.bind(options.items[0])
+                holder.bind(options.items.first())
                 holder.bindComposition(options.composition)
             }
             else -> {
-                tvTitle.visibility = View.VISIBLE
-                exItem.visibility = View.GONE
+                tvTitle.isVisible = true
+                exItem.isGone = true
                 var files = 0
                 var dirs = 0
                 options.items.forEach {

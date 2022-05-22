@@ -4,13 +4,13 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
-import app.atomofiron.common.util.setVisible
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
@@ -79,7 +79,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     override fun onBack(): Boolean = binding.bottomSheet.hide() || super.onBack()
 
     private fun setLoading(visible: Boolean) {
-        binding.ballsView.setVisible(visible, invisibleMode = View.INVISIBLE)
+        binding.ballsView.isInvisible = !visible
         onMatchCounterChanged(viewModel.matchesCounter.value)
     }
 

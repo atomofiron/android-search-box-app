@@ -6,6 +6,8 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.RegexInputField
@@ -31,7 +33,7 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
 
     override fun onBind(item: FinderStateItem, position: Int) {
         item as SearchAndReplaceItem
-        viewReplace.visibility = if (item.replaceEnabled) View.VISIBLE else View.GONE
+        viewReplace.isVisible = item.replaceEnabled
         etFind.imeOptions = if (item.replaceEnabled) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_SEARCH
         if (etFind.text.toString() != item.query) {
             etFind.setText(item.query)
@@ -57,12 +59,12 @@ class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionList
                 Pattern.compile(query)
             } catch (e: Exception) {
                 etFind.isActivated = true
-                btnFind.visibility = View.GONE
+                btnFind.isGone = true
                 return
             }
         }
         etFind.isActivated = false
-        btnFind.visibility = View.VISIBLE
+        btnFind.isVisible = true
         btnFind.isEnabled = query.isNotEmpty()
     }
 
