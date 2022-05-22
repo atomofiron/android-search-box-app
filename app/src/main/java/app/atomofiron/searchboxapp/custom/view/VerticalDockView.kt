@@ -10,18 +10,20 @@ import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.DrawerStateListenerImpl
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import app.atomofiron.common.util.insets.ViewInsetsController
 import com.google.android.material.navigation.NavigationView
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.databinding.LayoutDrawerNavigationBinding
+import app.atomofiron.searchboxapp.utils.Const
 
 class VerticalDockView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = com.google.android.material.R.attr.navigationViewStyle
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = com.google.android.material.R.attr.navigationViewStyle
 ) : NavigationView(context, attrs, defStyleAttr) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.layout_drawer_navigation, this, true)
-    }
+    private val binding = LayoutDrawerNavigationBinding.inflate(LayoutInflater.from(context), this, true)
 
     private val ibDockSide: ImageButton = findViewById(R.id.drawer_ib_dock_side)
     val recyclerView: RecyclerView = findViewById(R.id.drawer_rv)
@@ -39,10 +41,18 @@ class VerticalDockView @JvmOverloads constructor(
             val gravity = if (gravity == Gravity.START) Gravity.END else Gravity.START
             onGravityChangeListener?.invoke(gravity)
         }
-        val tvTitle = findViewById<TextView>(R.id.drawer_tv_title)
+        val tvTitle = findViewById<TextView>(R.id.drawer_title)
         val styled = context.obtainStyledAttributes(attrs, R.styleable.VerticalDockView, defStyleAttr, 0)
         tvTitle.text = styled.getString(R.styleable.VerticalDockView_title)
         styled.recycle()
+
+        binding.drawerTitleContainer.run {
+            background = background.mutate()
+            background.alpha = Const.ALPHA_80_PERCENT
+        }
+        ViewGroupInsetsProxy.set(this)
+        ViewInsetsController.bindPadding(binding.drawerTitleContainer, left = true, top = true, right = true)
+        ViewInsetsController.bindPadding(binding.drawerRv, left = true, top = true, right = true, bottom = true)
     }
 
     override fun setLayoutParams(params: ViewGroup.LayoutParams?) {

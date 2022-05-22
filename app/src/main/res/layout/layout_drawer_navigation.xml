@@ -15,21 +15,16 @@
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:alpha="0.8"
-        android:background="?attr/colorBackground"
-        />
     <LinearLayout
+        android:id="@+id/drawer_title_container"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:background="@color/transparent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorBackground"
         >
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/drawer_tv_title"
+            android:id="@+id/drawer_title"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:textColor="?attr/colorAccent"
             android:paddingStart="44dp"
