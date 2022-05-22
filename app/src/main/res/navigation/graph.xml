@@ -13,7 +13,7 @@
         android:name="app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment"
         android:label="ExplorerFragment" />
     <activity
-        android:id="@+id/rootActivity"
+        android:id="@+id/mainActivity"
         android:name="app.atomofiron.searchboxapp.screens.main.MainActivity"
         android:label="RootActivity" />
     <fragment
