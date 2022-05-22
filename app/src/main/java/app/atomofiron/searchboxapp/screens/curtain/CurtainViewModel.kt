@@ -3,7 +3,7 @@ package app.atomofiron.searchboxapp.screens.curtain
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.emitNow
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
@@ -17,9 +17,9 @@ class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, Curtai
 
     var initialLayoutId = 0
         private set
-    val adapter = sharedFlow<CurtainApi.Adapter<*>>()
-    val action = sharedFlow<CurtainAction>(single = true)
-    val cancelable = sharedFlow(value = true)
+    val adapter = dataFlow<CurtainApi.Adapter<*>>()
+    val action = dataFlow<CurtainAction>(single = true)
+    val cancelable = dataFlow(value = true)
 
     private lateinit var params: CurtainPresenterParams
 

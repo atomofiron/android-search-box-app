@@ -3,7 +3,7 @@ package app.atomofiron.common.util.flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.reflect.KProperty
 
-class MutableSharedFlowProperty<T>() : MutableSharedFlow<T> by sharedFlow() {
+class MutableDataFlowProperty<T>() : MutableSharedFlow<T> by dataFlow() {
 
     constructor(value: T) : this() {
         this.value = value

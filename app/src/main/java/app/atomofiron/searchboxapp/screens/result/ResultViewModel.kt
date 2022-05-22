@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
@@ -25,13 +25,13 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPre
     val oneFileOptions = listOf(R.id.menu_copy_path, R.id.menu_remove)
     val manyFilesOptions = listOf(R.id.menu_remove)
 
-    val task = sharedFlow<FinderTask>()
-    val composition = sharedFlow<ExplorerItemComposition>()
-    val enableOptions = sharedFlow(value = false)
-    val showOptions = sharedFlow<ExplorerItemOptions>(single = true)
-    val notifyTaskHasChanged = sharedFlow(Unit, single = true)
-    val notifyItemChanged = sharedFlow<FinderResultItem.Item>(single = true)
-    val alerts = sharedFlow<String>(single = true)
+    val task = dataFlow<FinderTask>()
+    val composition = dataFlow<ExplorerItemComposition>()
+    val enableOptions = dataFlow(value = false)
+    val showOptions = dataFlow<ExplorerItemOptions>(single = true)
+    val notifyTaskHasChanged = dataFlow(Unit, single = true)
+    val notifyItemChanged = dataFlow<FinderResultItem.Item>(single = true)
+    val alerts = dataFlow<String>(single = true)
 
     @Inject
     override lateinit var presenter: ResultPresenter

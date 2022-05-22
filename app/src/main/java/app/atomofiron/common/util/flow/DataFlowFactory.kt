@@ -6,13 +6,13 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.lang.NullPointerException
 
-fun <T> sharedFlow(single: Boolean = false): MutableSharedFlow<T> {
+fun <T> dataFlow(single: Boolean = false): MutableSharedFlow<T> {
     val replayLimit = if (single) 0 else 1
     return MutableSharedFlow(replayLimit, extraBufferCapacity = Int.MAX_VALUE)
 }
 
-fun <T> sharedFlow(value: T, single: Boolean = false): MutableSharedFlow<T> {
-    val flow = sharedFlow<T>(single)
+fun <T> dataFlow(value: T, single: Boolean = false): MutableSharedFlow<T> {
+    val flow = dataFlow<T>(single)
     flow.value = value
     return flow
 }

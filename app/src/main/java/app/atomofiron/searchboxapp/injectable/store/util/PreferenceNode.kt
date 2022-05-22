@@ -2,7 +2,7 @@ package app.atomofiron.searchboxapp.injectable.store.util
 
 import android.content.SharedPreferences
 import app.atomofiron.common.util.flow.emitNow
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.FlowCollector
@@ -62,7 +62,7 @@ class PreferenceNode<E, V> private constructor(
     private val toValue: ((E) -> V) = getValue ?: { it as V }
     private val fromValue: ((V) -> E) = fromValue ?: { it as E }
 
-    private val flow = sharedFlow(pullEntity())
+    private val flow = dataFlow(pullEntity())
 
     val value: V get() = toValue(flow.value)
     val entity: E get() = flow.value

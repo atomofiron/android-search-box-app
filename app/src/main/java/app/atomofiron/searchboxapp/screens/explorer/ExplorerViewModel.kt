@@ -3,7 +3,7 @@ package app.atomofiron.searchboxapp.screens.explorer
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.property.WeakProperty
 import kotlinx.coroutines.launch
@@ -24,23 +24,23 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     val oneFileOptions = listOf(R.id.menu_remove, R.id.menu_rename)
     val manyFilesOptions = listOf(R.id.menu_remove)
 
-    val permissionRequiredWarning = sharedFlow(Unit, single = true)
-    val showOptions = sharedFlow<ExplorerItemOptions>(single = true)
-    val showCreate = sharedFlow<XFile>(single = true)
-    val showRename = sharedFlow<RenameData>(single = true)
-    val scrollToCurrentDir = sharedFlow(Unit, single = true)
-    val historyDrawerGravity = sharedFlow<Int>()
-    val places = sharedFlow<List<XPlace>>()
-    val itemComposition = sharedFlow<ExplorerItemComposition>()
-    val items = sharedFlow<List<XFile>>()
-    val current = sharedFlow<XFile?>()
-    val notifyUpdate = sharedFlow<XFile>(single = true)
-    val notifyRemove = sharedFlow<XFile>(single = true)
-    val notifyInsert = sharedFlow<Pair<XFile, XFile>>(single = true)
-    val notifyUpdateRange = sharedFlow<List<XFile>>(single = true)
-    val notifyRemoveRange = sharedFlow<List<XFile>>(single = true)
-    val notifyInsertRange = sharedFlow<Pair<XFile, List<XFile>>>(single = true)
-    val alerts = sharedFlow<String>(single = true)
+    val permissionRequiredWarning = dataFlow(Unit, single = true)
+    val showOptions = dataFlow<ExplorerItemOptions>(single = true)
+    val showCreate = dataFlow<XFile>(single = true)
+    val showRename = dataFlow<RenameData>(single = true)
+    val scrollToCurrentDir = dataFlow(Unit, single = true)
+    val historyDrawerGravity = dataFlow<Int>()
+    val places = dataFlow<List<XPlace>>()
+    val itemComposition = dataFlow<ExplorerItemComposition>()
+    val items = dataFlow<List<XFile>>()
+    val current = dataFlow<XFile?>()
+    val notifyUpdate = dataFlow<XFile>(single = true)
+    val notifyRemove = dataFlow<XFile>(single = true)
+    val notifyInsert = dataFlow<Pair<XFile, XFile>>(single = true)
+    val notifyUpdateRange = dataFlow<List<XFile>>(single = true)
+    val notifyRemoveRange = dataFlow<List<XFile>>(single = true)
+    val notifyInsertRange = dataFlow<Pair<XFile, List<XFile>>>(single = true)
+    val alerts = dataFlow<String>(single = true)
 
     @Inject
     override lateinit var presenter: ExplorerPresenter

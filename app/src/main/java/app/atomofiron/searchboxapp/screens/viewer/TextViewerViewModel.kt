@@ -3,7 +3,7 @@ package app.atomofiron.searchboxapp.screens.viewer
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -43,17 +43,17 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         .dependencies(DaggerInjector.appComponent)
         .build()
 
-    val insertInQuery = sharedFlow<String>(single = true)
-    val closeBottomSheet = sharedFlow(Unit, single = true)
+    val insertInQuery = dataFlow<String>(single = true)
+    val closeBottomSheet = dataFlow(Unit, single = true)
 
-    val textLines = sharedFlow<List<TextLine>>()
+    val textLines = dataFlow<List<TextLine>>()
     /** line index -> line matches */
-    val matchesMap = sharedFlow<Map<Int, List<TextLineMatch>>>()
+    val matchesMap = dataFlow<Map<Int, List<TextLineMatch>>>()
     /** match counter -> matches quantity */
-    val matchesCounter = sharedFlow<Long?>(null)
+    val matchesCounter = dataFlow<Long?>(null)
     /** line index -> line match index */
-    val matchesCursor = sharedFlow<Long?>(null)
-    val loading = sharedFlow(value = true)
+    val matchesCursor = dataFlow<Long?>(null)
+    val loading = dataFlow(value = true)
     lateinit var composition: ExplorerItemComposition
     lateinit var xFile: XFile
 

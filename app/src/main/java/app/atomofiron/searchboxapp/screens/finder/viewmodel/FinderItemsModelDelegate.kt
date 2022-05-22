@@ -1,6 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
@@ -11,7 +11,7 @@ class FinderItemsModelDelegate : FinderItemsModel {
     override val progressItems = ArrayList<FinderStateItem.ProgressItem>()
     override val targetItems = ArrayList<FinderStateItem.TargetItem>()
 
-    override val searchItems = sharedFlow<List<FinderStateItem>>()
+    override val searchItems = dataFlow<List<FinderStateItem>>()
 
     override fun updateState() {
         val items = ArrayList<FinderStateItem>()

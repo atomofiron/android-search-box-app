@@ -3,7 +3,7 @@ package app.atomofiron.searchboxapp.screens.main
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.property.MutableWeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
@@ -15,11 +15,11 @@ class MainViewModel : ViewModel() {
     private var component: MainComponent? = null
     private val activityProperty = MutableWeakProperty<FragmentActivity>()
 
-    val showExitSnackbar = sharedFlow(Unit, single = true)
-    val setTheme = sharedFlow<AppTheme>(single = true)
-    val setOrientation = sharedFlow<AppOrientation>()
-    val setJoystick = sharedFlow<JoystickComposition>()
-    val tasks = sharedFlow<List<XTask>>()
+    val showExitSnackbar = dataFlow(Unit, single = true)
+    val setTheme = dataFlow<AppTheme>(single = true)
+    val setOrientation = dataFlow<AppOrientation>()
+    val setJoystick = dataFlow<JoystickComposition>()
+    val tasks = dataFlow<List<XTask>>()
 
     fun inject(activity: MainActivity) {
         activityProperty.value = activity

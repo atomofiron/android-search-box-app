@@ -2,7 +2,7 @@ package app.atomofiron.searchboxapp.screens.preferences
 
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.android.App
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -18,9 +18,9 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
     @Inject
     lateinit var preferenceStore: PreferenceStore
 
-    val alert = sharedFlow<String>(single = true)
-    val alertOutputSuccess = sharedFlow<Int>(single = true)
-    val alertOutputError = sharedFlow<Shell.Output>(single = true)
+    val alert = dataFlow<String>(single = true)
+    val alertOutputSuccess = dataFlow<Int>(single = true)
+    val alertOutputError = dataFlow<Shell.Output>(single = true)
     val isExportImportAvailable: Boolean get() = App.appContext.getExternalFilesDir(null) != null
     val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
     val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity

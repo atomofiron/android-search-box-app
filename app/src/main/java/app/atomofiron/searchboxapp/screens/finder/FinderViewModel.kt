@@ -2,7 +2,7 @@ package app.atomofiron.searchboxapp.screens.finder
 
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.sharedFlow
+import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.XFile
@@ -17,12 +17,12 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPre
         private set
     val targets = ArrayList<XFile>()
 
-    val historyDrawerGravity = sharedFlow<Int>()
-    val reloadHistory = sharedFlow(Unit, single = true)
-    val insertInQuery = sharedFlow<String>(single = true)
-    val replaceQuery = sharedFlow<String>(single = true)
-    val snackbar = sharedFlow<String>(single = true)
-    val history = sharedFlow<String>(single = true)
+    val historyDrawerGravity = dataFlow<Int>()
+    val reloadHistory = dataFlow(Unit, single = true)
+    val insertInQuery = dataFlow<String>(single = true)
+    val replaceQuery = dataFlow<String>(single = true)
+    val snackbar = dataFlow<String>(single = true)
+    val history = dataFlow<String>(single = true)
 
     @Inject
     override lateinit var presenter: FinderPresenter
