@@ -17,7 +17,7 @@
 		app:navGraph="@navigation/graph"
 		/>
 	<app.atomofiron.searchboxapp.custom.view.Joystick
-		android:id="@+id/main_iv_joystick"
+		android:id="@+id/joystick"
 		android:layout_width="@dimen/joystick_size"
 		android:layout_height="@dimen/joystick_size"
 		android:layout_gravity="bottom|center_horizontal"
