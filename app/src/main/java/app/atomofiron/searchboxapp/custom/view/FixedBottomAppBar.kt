@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.custom.view
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
@@ -14,11 +15,13 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.MaterialShapeDrawable.SHADOW_COMPAT_MODE_ALWAYS
 import com.google.android.material.shape.MaterialShapeUtils
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.getColorByAttr
 import kotlin.math.max
 import kotlin.math.min
 
 class FixedBottomAppBar @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null,
 ) : FrameLayout(context, attrs), AttachedBehavior {
     private val materialShapeDrawable = MaterialShapeDrawable()
     private val mBehavior: Behavior
@@ -28,6 +31,7 @@ class FixedBottomAppBar @JvmOverloads constructor(
         materialShapeDrawable.shadowCompatibilityMode = SHADOW_COMPAT_MODE_ALWAYS
         materialShapeDrawable.paintStyle = Paint.Style.FILL
         materialShapeDrawable.initializeElevationOverlay(context)
+        materialShapeDrawable.fillColor = ColorStateList.valueOf(context.getColorByAttr(android.R.attr.colorBackground))
         background = materialShapeDrawable
 
         val maxElevation = resources.getDimension(R.dimen.bottom_bar_elevation)

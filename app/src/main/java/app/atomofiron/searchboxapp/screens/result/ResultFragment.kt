@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import app.atomofiron.common.util.insets.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
@@ -20,34 +22,21 @@ import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.sheet.BottomSheetMenuWithTitle
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
-import javax.inject.Inject
 
 class ResultFragment : Fragment(R.layout.fragment_result),
     BaseFragment<ResultFragment, ResultViewModel, ResultPresenter> by BaseFragmentImpl()
 {
-    companion object {
-        const val KEY_TASK_ID = "KEY_TASK_ID"
-
-        fun create(taskId: Long): ResultFragment {
-            val fragment = ResultFragment()
-            val arguments = Bundle()
-            arguments.putLong(KEY_TASK_ID, taskId)
-            fragment.arguments = arguments
-            return fragment
-        }
-    }
 
     private lateinit var binding: FragmentResultBinding
 
     private val resultAdapter = ResultAdapter()
     private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
-    private val errorSnackbar = Snackbar.make(requireView(), "", Snackbar.LENGTH_INDEFINITE)
-        .setAnchorView(anchorView)
-        .setAction(R.string.dismiss) { presenter.onDropTaskErrorClick() }
+    private val errorSnackbar by lazy(LazyThreadSafetyMode.NONE) {
+        Snackbar.make(requireView(), "", Snackbar.LENGTH_INDEFINITE)
+            .setAnchorView(anchorView)
+            .setAction(R.string.dismiss) { presenter.onDropTaskErrorClick() }
+    }
     private var snackbarError: String? = null
-
-    @Inject
-    override lateinit var presenter: ResultPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +58,8 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         }
         binding.bottomBar.setOnMenuItemClickListener(::onBottomMenuItemClick)
         bottomItemMenu.bottomSheetView = binding.bottomSheet
-        onViewCollect()
+        viewModel.onViewCollect()
+        onApplyInsets(view)
     }
 
     private fun onBottomMenuItemClick(id: Int) {
@@ -80,13 +70,20 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         }
     }
 
-    private fun onViewCollect() = viewModel.apply {
+    override fun ResultViewModel.onViewCollect() {
         viewCollect(composition, collector = ::onCompositionChange)
         viewCollect(task, collector = ::onTaskChange)
         viewCollect(enableOptions, collector = ::enableOptions)
         viewCollect(showOptions, collector = ::showOptions)
         viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
         viewCollect(notifyItemChanged, collector = resultAdapter::setItem) // todo works poor
+    }
+
+    override fun onApplyInsets(root: View) {
+        ViewGroupInsetsProxy.set(root)
+        ViewGroupInsetsProxy.set(binding.bottomSheet)
+        ViewInsetsController.bindPadding(binding.recyclerView, left = true, top = true, right = true, bottom = true)
+        ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

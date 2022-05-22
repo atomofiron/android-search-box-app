@@ -64,7 +64,9 @@ class TextViewerPresenter(
         }
         viewModel.composition = preferenceStore.explorerItemComposition.entity
 
-        val queryParams = FinderQueryParams(params.query, params.useRegex, params.ignoreCase)
+        val queryParams = params.query?.let {
+            FinderQueryParams(params.query, params.useRegex, params.ignoreCase)
+        }
         val xFile = MutableXFile.byPath(params.path)
         interactor.loadFile(xFile, queryParams) {
             viewModel.xFile = xFile

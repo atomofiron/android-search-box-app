@@ -7,15 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import app.atomofiron.common.util.findResIdByAttr
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import app.atomofiron.common.util.insets.ViewInsetsController
 import app.atomofiron.common.util.moveChildrenFrom
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import app.atomofiron.searchboxapp.R
 import kotlin.math.min
 
 class BottomSheetView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : CoordinatorLayout(context, attrs, defStyleAttr) {
     companion object {
         private const val CONTENT_VIEW_INDEX = 1
@@ -57,6 +59,8 @@ class BottomSheetView @JvmOverloads constructor(
         overlay.isClickable = false
         overlay.isFocusable = false
         hide()
+        ViewGroupInsetsProxy.set(this)
+        ViewInsetsController.bindPadding(viewContainer, bottom = true)
     }
 
     private fun onOverlayClick(v: View) {

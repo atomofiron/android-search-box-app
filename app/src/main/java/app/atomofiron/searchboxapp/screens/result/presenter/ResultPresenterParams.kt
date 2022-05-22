@@ -15,7 +15,7 @@ class ResultPresenterParams(
         }
 
         fun params(arguments: Bundle) = ResultPresenterParams(
-            arguments.getLong(ResultFragment.KEY_TASK_ID, Const.UNDEFINEDL)
+            arguments.getLong(KEY_TASK_ID, Const.UNDEFINEDL)
         )
     }
 }

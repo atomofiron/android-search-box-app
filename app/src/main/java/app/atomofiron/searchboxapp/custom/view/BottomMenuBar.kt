@@ -12,9 +12,9 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.menu.MenuImpl
 
 class BottomMenuBar @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     companion object {
         private const val ALPHA_ENABLED = 1f
@@ -27,7 +27,7 @@ class BottomMenuBar @JvmOverloads constructor(
     init {
         menu.setMenuChangedListener(::onMenuChanged)
         orientation = HORIZONTAL
-        // fix tab's ripple background
+        // cuts tab's ripple background
         setBackgroundColor(context.findColorByAttr(R.attr.colorBackground))
 
         val styled = context.obtainStyledAttributes(attrs, R.styleable.BottomMenuBar, defStyleAttr, 0)

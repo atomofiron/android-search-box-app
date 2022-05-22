@@ -1,9 +1,11 @@
 package app.atomofiron.searchboxapp.screens.root
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
 import app.atomofiron.searchboxapp.screens.finder.FinderFragment
@@ -24,5 +26,11 @@ class RootFragment : Fragment(R.layout.fragment_root),
                 .add(R.id.main_fl_root, finder)
                 .commit()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        ViewGroupInsetsProxy.set(view)
     }
 }

@@ -11,19 +11,21 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:maxWidth="@dimen/card_max_width"
         android:paddingBottom="@dimen/joystick_size"
+        android:clipToPadding="false"
         />
     <app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_tab_bar_height"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         >
         <app.atomofiron.searchboxapp.custom.view.BottomMenuBar
             android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/bottom_tab_bar_height"
             app:menu="@menu/nav_text_viewer"
             />
         <LinearLayout

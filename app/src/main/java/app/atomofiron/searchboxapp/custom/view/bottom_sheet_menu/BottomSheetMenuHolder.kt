@@ -41,7 +41,7 @@ class BottomSheetMenuHolder(
         when(view.id) {
             itemView.id -> when {
                 item.hasSubMenu() -> showButton()
-                else ->listener.onMenuItemSelected(item.itemId)
+                else -> listener.onMenuItemSelected(item.itemId)
             }
             R.id.item_menu_tv_button -> if (view.isEnabled) {
                 button.isEnabled = false

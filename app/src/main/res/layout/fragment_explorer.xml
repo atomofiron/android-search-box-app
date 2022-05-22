@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     >
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
@@ -25,14 +26,15 @@
             android:layout_marginTop="-999dp"
             />
         <app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
+            android:id="@+id/bottom_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/bottom_tab_bar_height"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             >
             <app.atomofiron.searchboxapp.custom.view.BottomMenuBar
                 android:id="@+id/bottom_bar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/bottom_tab_bar_height"
                 app:menu="@menu/nav_explorer"
                 />
         </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>

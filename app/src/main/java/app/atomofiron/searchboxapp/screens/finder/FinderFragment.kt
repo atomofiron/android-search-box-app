@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import app.atomofiron.common.util.insets.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
@@ -66,7 +68,8 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             recyclerView.adapter = historyAdapter
         }
 
-        onViewCollect()
+        viewModel.onViewCollect()
+        onApplyInsets(view)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -80,7 +83,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         }
     }
 
-    private fun onViewCollect() = viewModel.apply {
+    override fun FinderViewModel.onViewCollect() {
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(reloadHistory, collector = historyAdapter::reload)
         viewCollect(history, collector = historyAdapter::add)
@@ -88,6 +91,14 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         viewCollect(searchItems, collector = ::onStateChange)
         viewCollect(replaceQuery, collector = ::replaceQuery)
         viewCollect(snackbar, collector = ::showSnackbar)
+    }
+
+    override fun onApplyInsets(root: View) {
+        ViewGroupInsetsProxy.set(root)
+        ViewGroupInsetsProxy.set(binding.coordinator)
+        ViewGroupInsetsProxy.set(binding.verticalDock)
+        ViewInsetsController.bindPadding(binding.recyclerView, top = true, bottom = true)
+        ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }
 
     override fun onBack(): Boolean {

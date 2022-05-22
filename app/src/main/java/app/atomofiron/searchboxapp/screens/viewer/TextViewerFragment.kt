@@ -11,6 +11,8 @@ import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import app.atomofiron.common.util.insets.ViewInsetsController
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
@@ -57,7 +59,8 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             }
         }
         searchDelegate.bottomSheetView = binding.bottomSheet
-        onViewCollect()
+        viewModel.onViewCollect()
+        onApplyInsets(view)
     }
 
     override fun onStart() {
@@ -65,7 +68,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         binding.bottomAppBar.updateElevation()
     }
 
-    private fun onViewCollect() = viewModel.apply {
+    override fun TextViewerViewModel.onViewCollect() {
         viewCollect(loading, collector = ::setLoading)
         viewCollect(textLines, collector = viewerAdapter::setItems)
         viewCollect(matchesMap, collector = viewerAdapter::setMatches)
@@ -74,6 +77,13 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         viewCollect(searchItems, collector = searchDelegate::setItems)
         viewCollect(insertInQuery, collector = ::insertInQuery)
         viewCollect(closeBottomSheet, collector = this@TextViewerFragment::closeBottomSheet)
+    }
+
+    override fun onApplyInsets(root: View) {
+        ViewGroupInsetsProxy.set(root)
+        ViewGroupInsetsProxy.set(binding.bottomSheet)
+        ViewInsetsController.bindPadding(binding.recyclerView, left = true, top = true, right = true, bottom = true)
+        ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }
 
     override fun onBack(): Boolean = binding.bottomSheet.hide() || super.onBack()

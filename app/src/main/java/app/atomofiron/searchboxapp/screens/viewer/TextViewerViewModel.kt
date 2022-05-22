@@ -40,6 +40,7 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         .bind(this)
         .bind(fragmentProperty)
         .bind(viewModelScope)
+        .bind(params)
         .dependencies(DaggerInjector.appComponent)
         .build()
 

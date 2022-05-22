@@ -13,9 +13,9 @@ import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 
 class BottomSheetMenuWithTitle(
-        menuId: Int,
-        context: Context,
-        menuItemClickListener: BottomSheetMenuListener
+    menuId: Int,
+    context: Context,
+    menuItemClickListener: BottomSheetMenuListener
 ) : BottomSheetMenu(R.layout.sheet_explorer_options, context, menuId, menuItemClickListener) {
     private val tvTitle: TextView get() = bottomSheetView.contentView.findViewById(R.id.explorer_menu_tv_title)
     private val exItem: View get() = bottomSheetView.contentView.findViewById(R.id.explorer_menu_item)

@@ -15,6 +15,8 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.hideKeyboard
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import app.atomofiron.common.util.insets.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.Joystick
@@ -52,7 +54,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         root = findViewById(R.id.main_cl_root)
+        val fragmentContainer = findViewById<View>(R.id.nav_host_fragment)
         joystick = findViewById(R.id.main_iv_joystick)
+
+        ViewGroupInsetsProxy.set(root)
+        ViewGroupInsetsProxy.set(fragmentContainer)
+        ViewInsetsController.bindMargin(joystick, bottom = true)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.inject(this)

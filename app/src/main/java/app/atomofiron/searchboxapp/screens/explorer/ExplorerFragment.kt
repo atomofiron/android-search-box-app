@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import app.atomofiron.common.util.insets.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
@@ -74,10 +76,11 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         explorerAdapter.setHeaderView(binding.explorerHeader)
         binding.explorerHeader.setOnItemActionListener(headerViewOutputDelegate)
-        onViewCollect()
+        viewModel.onViewCollect()
+        onApplyInsets(view)
     }
 
-    private fun onViewCollect() = viewModel.apply {
+    override fun ExplorerViewModel.onViewCollect() {
         viewCollect(items, collector = explorerAdapter::setItems)
         viewCollect(itemComposition, collector = explorerAdapter::setComposition)
         viewCollect(current, collector = explorerAdapter::setCurrentDir)
@@ -94,6 +97,15 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(showRename, collector = renameDelegate::show)
         viewCollect(showCreate, collector = createDelegate::show)
         viewCollect(scrollToCurrentDir, collector = explorerAdapter::scrollToCurrentDir)
+    }
+
+    override fun onApplyInsets(root: View) {
+        ViewGroupInsetsProxy.set(root)
+        ViewGroupInsetsProxy.set(binding.coordinator)
+        ViewGroupInsetsProxy.set(binding.verticalDock)
+        ViewInsetsController.bindPadding(binding.recyclerView, top = true, bottom = true)
+        ViewInsetsController.bindMargin(binding.explorerHeader, top = true)
+        ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }
 
     override fun onBack(): Boolean {
