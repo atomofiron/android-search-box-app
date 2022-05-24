@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import app.atomofiron.common.util.findResIdByAttr
-import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
-import app.atomofiron.common.util.insets.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
+import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import app.atomofiron.common.util.moveChildrenFrom
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import app.atomofiron.searchboxapp.R

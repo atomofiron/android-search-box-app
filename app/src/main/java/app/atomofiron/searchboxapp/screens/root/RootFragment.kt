@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
-import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
 import app.atomofiron.searchboxapp.screens.finder.FinderFragment

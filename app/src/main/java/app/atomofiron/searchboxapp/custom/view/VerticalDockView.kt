@@ -10,8 +10,8 @@ import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.DrawerStateListenerImpl
-import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
-import app.atomofiron.common.util.insets.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
+import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.navigation.NavigationView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.LayoutDrawerNavigationBinding

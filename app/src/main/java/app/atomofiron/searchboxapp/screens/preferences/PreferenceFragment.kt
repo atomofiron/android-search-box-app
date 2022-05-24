@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
-import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
-import app.atomofiron.common.util.insets.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
+import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView

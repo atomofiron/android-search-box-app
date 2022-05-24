@@ -13,8 +13,8 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.hideKeyboard
-import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
-import app.atomofiron.common.util.insets.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
+import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding

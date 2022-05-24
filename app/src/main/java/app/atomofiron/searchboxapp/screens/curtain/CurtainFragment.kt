@@ -17,7 +17,7 @@ import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.arch.TranslucentFragment
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
-import app.atomofiron.common.util.insets.ViewGroupInsetsProxy
+import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
@@ -281,7 +281,8 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
                 .setInsets(WindowInsetsCompat.Type.statusBars(), systemBars)
                 .setInsets(WindowInsetsCompat.Type.ime(), ime)
                 .build()
-            return ViewGroupInsetsProxy.dispatchChildrenWindowInsets(view, new)
+            ViewGroupInsetsProxy.dispatchChildrenWindowInsets(view, new)
+            return WindowInsetsCompat.CONSUMED
         }
     }
 }

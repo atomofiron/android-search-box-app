@@ -44,8 +44,7 @@ class ExplorerItemActionListenerDelegate(
         when {
             useSu -> openItem(item)
             SDK_INT < Android.R -> {
-                val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-                router.permissions.request(permission)
+                router.permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .granted {
                         openItem(item)
                     }

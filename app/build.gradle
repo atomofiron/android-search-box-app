@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: 'appmetrica.gradle'
 
@@ -63,6 +62,10 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 ext {
     androidx = "1.7.0"
     fragment = "1.4.1"
@@ -120,4 +123,6 @@ dependencies {
 
     implementation "com.google.android.play:core:$play_core"
     implementation "com.google.android.play:core-ktx:$play_core_ktx"
+
+    implementation "com.github.atomofiron:android-window-insets-compat:1.0.0"
 }
