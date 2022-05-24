@@ -50,9 +50,9 @@ class PermissionDelegate private constructor(
     override fun request(vararg permissions: String): PermissionDelegateApi {
         if (SDK_INT < M) return this
         val notGranted = activity?.filterNotGranted(*permissions)
+        requestedPermissions.clear()
+        requestedPermissions.addAll(permissions)
         if (!notGranted.isNullOrEmpty()) {
-            requestedPermissions.removeAll(notGranted)
-            requestedPermissions.addAll(notGranted)
             contract.launch(notGranted.toTypedArray())
         }
         return this
