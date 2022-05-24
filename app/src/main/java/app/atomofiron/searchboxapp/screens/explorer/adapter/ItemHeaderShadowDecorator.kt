@@ -28,6 +28,7 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
 
     private lateinit var headerView: ExplorerHeaderView
     private val headerHeight: Int get() = headerView.measuredHeight
+    private val topEdge: Int get() = headerView.paddingTop
 
     private var headerItemPosition: Int = UNDEFINED
     private var headerItem: XFile? = null
@@ -69,7 +70,7 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         val notChildPosition = children.keys.find { !headerItem.hasChild(items[it]) } ?: UNDEFINED
         val childPosition = children.keys.find { headerItem.hasChild(items[it]) } ?: Int.MAX_VALUE
         val top = when {
-            (children[headerItemPosition]?.top ?: 0) > headerView.paddingTop -> -headerHeight
+            (children[headerItemPosition]?.top ?: 0) >= topEdge -> -headerHeight
             notChildPosition > childPosition -> {
                 val itemView = children.getValue(notChildPosition)
                 min(0, itemView.top - headerHeight)
@@ -122,12 +123,12 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
             val dynamicOffset = child.bottom * shadowSize / parent.measuredHeight
             when {
                 currentIsNullOrEmpty -> drawForEmpty(canvas, child, parent, dynamicOffset, drawTop = child.top > 0)
-                child.top > 0 -> drawTop(canvas, child, dynamicOffset)
+                child.top >= topEdge -> drawTop(canvas, child, dynamicOffset)
             }
         }
 
         child = child ?: children.values.first()
-        if (child.top <= 0) {
+        if (child.top < topEdge) {
             drawTopPinned(canvas, child)
         }
     }

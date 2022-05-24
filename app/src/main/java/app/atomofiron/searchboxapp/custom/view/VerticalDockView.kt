@@ -51,8 +51,8 @@ class VerticalDockView @JvmOverloads constructor(
             background.alpha = Const.ALPHA_80_PERCENT
         }
         ViewGroupInsetsProxy.set(this)
-        ViewInsetsController.bindPadding(binding.drawerTitleContainer, left = true, top = true, right = true)
-        ViewInsetsController.bindPadding(binding.drawerRv, left = true, top = true, right = true, bottom = true)
+        ViewInsetsController.bindPadding(binding.drawerTitleContainer, start = true, top = true, end = true)
+        ViewInsetsController.bindPadding(binding.drawerRv, start = true, top = true, end = true, bottom = true)
     }
 
     override fun setLayoutParams(params: ViewGroup.LayoutParams?) {

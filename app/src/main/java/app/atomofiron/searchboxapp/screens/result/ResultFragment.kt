@@ -82,7 +82,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     override fun onApplyInsets(root: View) {
         ViewGroupInsetsProxy.set(root)
         ViewGroupInsetsProxy.set(binding.bottomSheet)
-        ViewInsetsController.bindPadding(binding.recyclerView, left = true, top = true, right = true, bottom = true)
+        ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
         ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }
 

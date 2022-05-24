@@ -105,9 +105,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         ViewGroupInsetsProxy.set(root)
         ViewGroupInsetsProxy.set(binding.coordinator)
         ViewGroupInsetsProxy.set(binding.verticalDock)
-        ViewInsetsController.bindPadding(binding.recyclerView, top = true, bottom = true)
-        ViewInsetsController.bindPadding(binding.explorerHeader, top = true)
-        ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
+        ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
+        ViewInsetsController.bindPadding(binding.explorerHeader, start = true, top = true, end = true)
+        ViewInsetsController.bindPadding(binding.bottomAppBar, start = true, bottom = true, end = true)
     }
 
     override fun onBack(): Boolean {

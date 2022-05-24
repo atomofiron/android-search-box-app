@@ -78,7 +78,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         recyclerView.clipToPadding = false
         val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)
         recyclerView.updatePadding(bottom = padding)
-        ViewInsetsController.bindPadding(recyclerView, left = true, top = true, right = true, bottom = true)
+        ViewInsetsController.bindPadding(recyclerView, start = true, top = true, end = true, bottom = true)
         return recyclerView
     }
 

@@ -8,11 +8,14 @@ import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-typealias InsetsListener = (WindowInsetsCompat) -> Unit
+typealias InsetsListener = (View, WindowInsetsCompat) -> Unit
 
-class ViewGroupInsetsProxy private constructor(private val listener: InsetsListener?) : OnApplyWindowInsetsListener {
+class ViewGroupInsetsProxy private constructor(
+    private val listener: InsetsListener?,
+) : OnApplyWindowInsetsListener {
     companion object {
-        fun consume(viewGroup: View) = ViewCompat.setOnApplyWindowInsetsListener(viewGroup) { _, _ ->
+
+        fun consume(view: View) = ViewCompat.setOnApplyWindowInsetsListener(view) { _, _ ->
             WindowInsetsCompat.CONSUMED
         }
 
@@ -23,20 +26,19 @@ class ViewGroupInsetsProxy private constructor(private val listener: InsetsListe
             return proxy
         }
 
-        fun dispatchChildrenWindowInsets(viewGroup: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+        fun dispatchChildrenWindowInsets(viewGroup: View, insets: WindowInsetsCompat) {
             viewGroup as ViewGroup
             val windowInsets = insets.toWindowInsets()
             for (index in 0 until viewGroup.childCount) {
                 val child = viewGroup.getChildAt(index)
                 child.dispatchApplyWindowInsets(windowInsets)
             }
-            return WindowInsetsCompat.CONSUMED
         }
     }
 
-    override fun onApplyWindowInsets(viewGroup: View, insets: WindowInsetsCompat): WindowInsetsCompat {
-        dispatchChildrenWindowInsets(viewGroup, insets)
-        listener?.invoke(insets)
+    override fun onApplyWindowInsets(view: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+        dispatchChildrenWindowInsets(view, insets)
+        listener?.invoke(view, insets)
         return WindowInsetsCompat.CONSUMED
     }
 }
