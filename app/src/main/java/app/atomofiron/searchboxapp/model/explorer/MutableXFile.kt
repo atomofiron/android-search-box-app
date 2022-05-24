@@ -247,52 +247,49 @@ class MutableXFile : XFile {
         isCaching = true
         sleep((Math.random() * 300).toLong())
         val output = Shell.exec(Shell[Shell.LS_LAHL].format(completedPath), su)
-        return when {
-            dropCaching -> {
-                isCaching = false
-                return "Dir was cleared. $this"
-            }
-            output.success -> {
-                val lines = output.output.split("\n")
-                val dirs = ArrayList<MutableXFile>()
-                val files = ArrayList<MutableXFile>()
 
-                if (lines.isNotEmpty()) {
-                    var start = 0
-                    if (lines[start].startsWith(TOTAL)) {
-                        start++
-                    }
-                    for (i in start until lines.size) {
-                        if (lines[i].isNotEmpty()) {
-                            val file = parse(completedPath, lines[i], root, this)
-                            if (file.isDirectory) {
-                                dirs.add(file)
-                            } else {
-                                files.add(file)
-                            }
-                        }
+        if (dropCaching) {
+            isCaching = false
+            return "Dir was cleared. $this"
+        }
+        // todo ls: /storage/AA83-2C7F//.android_secure: Permission denied
+        if (!output.success && parseDoesExists(output.error)) {
+            children = ArrayList()
+            isCaching = false
+            isCacheActual = true
+            return output.error
+        }
+        val lines = output.output.split("\n")
+        val dirs = ArrayList<MutableXFile>()
+        val files = ArrayList<MutableXFile>()
+
+        if (lines.isNotEmpty()) {
+            var start = 0
+            if (lines[start].startsWith(TOTAL)) {
+                start++
+            }
+            for (i in start until lines.size) {
+                if (lines[i].isNotEmpty()) {
+                    val file = parse(completedPath, lines[i], root, this)
+                    if (file.isDirectory) {
+                        dirs.add(file)
+                    } else {
+                        files.add(file)
                     }
                 }
-
-                dirs.sortBy { it.name.toLowerCase(Locale.ROOT) }
-                files.sortBy { it.name.toLowerCase(Locale.ROOT) }
-                files.addAll(0, dirs)
-
-                val oldFiles = this.children
-                this.children = files
-                persistOldFiles(oldFiles)
-                isCaching = false
-                isCacheActual = true
-                null
-            }
-            else -> {
-                parseDoesExists(output.error)
-                children = ArrayList()
-                isCaching = false
-                isCacheActual = true
-                output.error
             }
         }
+
+        dirs.sortBy { it.name.toLowerCase(Locale.ROOT) }
+        files.sortBy { it.name.toLowerCase(Locale.ROOT) }
+        files.addAll(0, dirs)
+
+        val oldFiles = this.children
+        this.children = files
+        persistOldFiles(oldFiles)
+        isCaching = false
+        isCacheActual = true
+        return null
     }
 
     private fun persistOldFiles(oldFiles: MutableList<MutableXFile>?) {
@@ -340,10 +337,11 @@ class MutableXFile : XFile {
         isFile = !isDirectory && access[0] == FILE_CHAR
     }
 
-    private fun parseDoesExists(error: String) {
+    private fun parseDoesExists(error: String): Boolean {
         if (error == NO_SUCH_FILE.format(completedPath)) {
             exists = false
         }
+        return !exists
     }
 
     private fun updateData(file: MutableXFile) {
