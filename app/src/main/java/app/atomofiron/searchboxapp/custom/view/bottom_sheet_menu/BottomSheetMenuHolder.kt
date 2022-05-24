@@ -52,7 +52,7 @@ class BottomSheetMenuHolder(
     }
 
     private fun showButton() {
-        if (button.visibility == View.VISIBLE) {
+        if (button.isVisible) {
             return
         }
         val parent = itemView as ViewGroup
@@ -60,9 +60,9 @@ class BottomSheetMenuHolder(
         button.isEnabled = true
         button.isVisible = true
         button.postDelayed({
-            if (button.visibility != View.GONE) {
+            if (button.isVisible) {
                 TransitionManager.beginDelayedTransition(parent)
-                button.isGone = true
+                button.isVisible = false
             }
         }, CONFIRM_BUTTON_DURATION)
     }

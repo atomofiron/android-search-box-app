@@ -13,8 +13,8 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionLi
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinder
 
 class ExplorerHeaderView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
     init {
         LayoutInflater.from(context).inflate(R.layout.item_explorer, this)

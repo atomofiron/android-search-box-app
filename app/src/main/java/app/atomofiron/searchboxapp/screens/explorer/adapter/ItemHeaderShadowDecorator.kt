@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
@@ -61,14 +62,14 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     private fun bindHeader(headerItem: XFile, children: Map<Int, View>) {
         when {
             headerItemPosition == UNDEFINED -> return
-            headerView.visibility == View.GONE -> return
+            headerView.isGone -> return
         }
 
         val firstVisiblePosition = children.keys.first()
         val notChildPosition = children.keys.find { !headerItem.hasChild(items[it]) } ?: UNDEFINED
         val childPosition = children.keys.find { headerItem.hasChild(items[it]) } ?: Int.MAX_VALUE
         val top = when {
-            children[headerItemPosition]?.top ?: 0 > 0 -> -headerHeight
+            (children[headerItemPosition]?.top ?: 0) > headerView.paddingTop -> -headerHeight
             notChildPosition > childPosition -> {
                 val itemView = children.getValue(notChildPosition)
                 min(0, itemView.top - headerHeight)

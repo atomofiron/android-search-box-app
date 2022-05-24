@@ -141,8 +141,8 @@ object Shell {
     }
 
     class Output(
-            val success: Boolean,
-            val output: String,
-            val error: String
+        val success: Boolean,
+        val output: String,
+        val error: String
     )
 }
