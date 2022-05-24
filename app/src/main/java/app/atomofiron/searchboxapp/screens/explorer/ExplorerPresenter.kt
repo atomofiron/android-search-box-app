@@ -4,7 +4,6 @@ import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.value
-import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenuListener
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
@@ -15,6 +14,7 @@ import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
+import app.atomofiron.searchboxapp.screens.explorer.places.XPlaceType
 import app.atomofiron.searchboxapp.screens.explorer.presenter.BottomSheetMenuListenerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
@@ -29,14 +29,10 @@ class ExplorerPresenter(
     itemListener: ExplorerItemActionListenerDelegate,
     placesListener: PlacesActionListenerDelegate,
     menuListener: BottomSheetMenuListenerDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(
-        viewModel,
-        router,
-        //permissionResultListener = itemListener.permissions
-),
-        ExplorerItemActionListener by itemListener,
-        PlacesAdapter.ItemActionListener by placesListener,
-        BottomSheetMenuListener by menuListener {
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router,),
+    ExplorerItemActionListener by itemListener,
+    PlacesAdapter.ItemActionListener by placesListener,
+    BottomSheetMenuListener by menuListener {
 
     private val resources by appStore.resourcesProperty
 
@@ -48,8 +44,8 @@ class ExplorerPresenter(
         }
 
         val items = ArrayList<XPlace>()
-        items.add(XPlace.InternalStorage(resources.getString(R.string.internal_storage), visible = true))
-        items.add(XPlace.ExternalStorage(resources.getString(R.string.external_storage), visible = true))
+        items.add(XPlace.InternalStorage(resources.getString(XPlaceType.InternalStorage.titleId), visible = true))
+        items.add(XPlace.ExternalStorage(resources.getString(XPlaceType.ExternalStorage.titleId), visible = true))
         items.add(XPlace.AnotherPlace("Another Place 0"))
         items.add(XPlace.AnotherPlace("Another Place 1"))
         items.add(XPlace.AnotherPlace("Another Place 2"))
@@ -82,8 +78,8 @@ class ExplorerPresenter(
         }
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions
-            files[0].isChecked -> viewModel.manyFilesOptions
-            files[0].isDirectory -> viewModel.directoryOptions
+            files.first().isChecked -> viewModel.manyFilesOptions
+            files.first().isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }
         viewModel.showOptions.value = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)

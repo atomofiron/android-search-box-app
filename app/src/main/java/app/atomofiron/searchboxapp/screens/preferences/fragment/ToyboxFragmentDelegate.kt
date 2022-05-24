@@ -56,12 +56,9 @@ class ToyboxFragmentDelegate(
             }
         }
         when {
-            cpOutput == null && test() ->
-                output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, customPath))
-            cpOutput?.success == true && test() ->
-                output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, importedPath!!))
-            cpOutput?.success == false ->
-                snackbar.setText(cpOutput.error).show()
+            cpOutput == null && test() -> output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, customPath))
+            cpOutput?.success == true && test() -> output.onPreferenceUpdate(Const.PREF_TOYBOX, setOf(variant, importedPath!!))
+            cpOutput?.success == false -> snackbar.setText(cpOutput.error).show()
         }
     }
 
@@ -88,10 +85,10 @@ class ToyboxFragmentDelegate(
             else -> rbPath.isChecked = true
         }
         radioGroup.clear()
-                .syncWith(rbPath)
-                .syncWith(rbToybox64)
-                .syncWith(rbToybox32)
-                .syncWith(rbToybox8664)
+            .syncWith(rbPath)
+            .syncWith(rbToybox64)
+            .syncWith(rbToybox32)
+            .syncWith(rbToybox8664)
 
         etPath.setOnEditorActionListener { view, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -103,9 +100,11 @@ class ToyboxFragmentDelegate(
         }
 
         snackbar = Snackbar
-                .make(bottomSheetView, "", Snackbar.LENGTH_LONG)
-                .setAnchorView(bottomSheetView.anchorView)
+            .make(bottomSheetView, "", Snackbar.LENGTH_LONG)
+            .setAnchorView(bottomSheetView.anchorView)
     }
 
-    override fun onViewHidden() = etPath.hideKeyboard()
+    override fun onViewHidden() {
+        etPath.hideKeyboard()
+    }
 }

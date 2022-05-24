@@ -28,9 +28,13 @@ class CreateDelegate(private val output: ExplorerPresenter) : BottomSheetDelegat
         btnConfirm.isEnabled = false
     }
 
-    override fun onViewShown() = etName.showKeyboard()
+    override fun onViewShown() {
+        etName.showKeyboard()
+    }
 
-    override fun onViewHidden() = etName.hideKeyboard()
+    override fun onViewHidden() {
+        etName.hideKeyboard()
+    }
 
     fun show(dir: XFile) {
         this.dir = dir

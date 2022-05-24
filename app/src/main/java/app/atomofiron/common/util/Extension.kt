@@ -11,16 +11,16 @@ import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 
 
-fun View.showKeyboard() {
-    this.requestFocus()
-    val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    inputMethodManager.showSoftInput(this, 0)
+fun View.showKeyboard(): Boolean {
+    requestFocus()
+    val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+    return inputMethodManager?.showSoftInput(this, 0) == true
 }
 
-fun View.hideKeyboard() {
-    this.clearFocus()
+fun View.hideKeyboard(): Boolean {
+    clearFocus()
     val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-    inputMethodManager?.hideSoftInputFromWindow(windowToken, 0)
+    return inputMethodManager?.hideSoftInputFromWindow(windowToken, 0) == true
 }
 
 

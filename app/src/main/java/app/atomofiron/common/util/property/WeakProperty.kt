@@ -9,4 +9,6 @@ open class WeakProperty<T : Any> constructor(value: T? = null) {
     open val value: T? get() = reference.get()
 
     operator fun getValue(any: Any, property: KProperty<*>): T? = value
+
+    open fun observe(observer: (T?) -> Unit) = observer(value)
 }

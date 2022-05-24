@@ -104,19 +104,6 @@ object Util {
     }
 }
 
-fun View.showKeyboard() {
-    requestFocus()
-    val manager = context.getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
-    manager.showSoftInput(this, 0);
-}
-
-fun View.hideKeyboard() {
-    clearFocus()
-    val manager = context.getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
-    manager.hideSoftInputFromWindow(windowToken, 0)
-    clearFocus()
-}
-
 fun Resources.getLocale(): Locale = when {
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> configuration.locales.get(0)
     else -> configuration.locale

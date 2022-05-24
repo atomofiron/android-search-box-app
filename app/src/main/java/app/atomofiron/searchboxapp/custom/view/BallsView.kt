@@ -10,9 +10,9 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 
 class BallsView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr), ValueAnimator.AnimatorUpdateListener {
     companion object {
         private const val DURATION = 1024L

@@ -48,14 +48,13 @@ class ExplorerModule {
     @Provides
     @ExplorerScope
     fun itemListener(
-        fragment: WeakProperty<Fragment>,
         viewModel: ExplorerViewModel,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
         router: ExplorerRouter,
         explorerInteractor: ExplorerInteractor,
     ): ExplorerItemActionListenerDelegate {
-        return ExplorerItemActionListenerDelegate(fragment, viewModel, explorerStore, preferenceStore, router, explorerInteractor)
+        return ExplorerItemActionListenerDelegate(viewModel, explorerStore, preferenceStore, router, explorerInteractor)
     }
 
     @Provides

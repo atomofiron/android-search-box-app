@@ -48,7 +48,9 @@ class RenameDelegate(private val output: ExplorerPresenter)
         }
     }
 
-    override fun onViewHidden() = etName.hideKeyboard()
+    override fun onViewHidden() {
+        etName.hideKeyboard()
+    }
 
     override fun onClick(view: View) {
         hide()

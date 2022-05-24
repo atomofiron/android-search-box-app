@@ -1,12 +1,11 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
 import android.Manifest
-import androidx.fragment.app.Fragment
+import android.os.Build.VERSION.SDK_INT
+import android.os.Environment
+import app.atomofiron.common.util.Android
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.value
-import app.atomofiron.common.util.permission.PermissionResultListener
-import app.atomofiron.common.util.permission.Permissions
-import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -17,15 +16,12 @@ import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 
 class ExplorerItemActionListenerDelegate(
-    fragment: WeakProperty<Fragment>,
     private val viewModel: ExplorerViewModel,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
     private val router: ExplorerRouter,
     private val explorerInteractor: ExplorerInteractor
-) : ExplorerItemActionListener, PermissionResultListener {
-    private var readStorageGranted = false
-    val permissions = Permissions(fragment)
+) : ExplorerItemActionListener {
 
     override fun onItemLongClick(item: XFile) {
         val files: List<XFile> = when {
@@ -34,9 +30,9 @@ class ExplorerItemActionListenerDelegate(
         }
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions
-            files[0].isRoot -> viewModel.rootOptions
-            files[0].isChecked -> viewModel.manyFilesOptions
-            files[0].isDirectory -> viewModel.directoryOptions
+            files.first().isRoot -> viewModel.rootOptions
+            files.first().isChecked -> viewModel.manyFilesOptions
+            files.first().isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }
         val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
@@ -46,13 +42,24 @@ class ExplorerItemActionListenerDelegate(
     override fun onItemClick(item: XFile) {
         val useSu = preferenceStore.useSu.value
         when {
-            !useSu && !readStorageGranted -> permissions
-                    .check(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            useSu -> openItem(item)
+            SDK_INT < Android.R -> {
+                val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+                router.permissions.request(permission)
                     .granted {
-                        readStorageGranted = true
-                        onItemClick(item)
+                        openItem(item)
                     }
-                    .forbidden { viewModel.permissionRequiredWarning.invoke() }
+                    .denied { _, _ ->
+                        viewModel.permissionRequiredWarning.invoke()
+                    }
+            }
+            Environment.isExternalStorageManager() -> openItem(item)
+            else -> router.showSystemPermissionsAppSettings()
+        }
+    }
+
+    private fun openItem(item: XFile) {
+        when {
             item.isDirectory -> explorerInteractor.openDir(item)
             else -> {
                 val textFormats = preferenceStore.textFormats.entity

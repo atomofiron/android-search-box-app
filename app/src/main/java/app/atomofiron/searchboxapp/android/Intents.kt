@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.annotation.RequiresApi
+import app.atomofiron.common.util.Android
+import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.Const
 
@@ -21,6 +24,9 @@ object Intents {
     const val KEY_REMIND_IN_MINUTES = "KEY_REMIND_IN_MINUTES"
     const val KEY_WITH_SOUND = "KEY_WITH_SOUND"
 
+    private const val PACKAGE_SCHEME = "package:"
+    private const val MAX_REQUEST_CODE = 65536
+
     //val telegramLink get() = Intent(Intent.ACTION_VIEW, Uri.parse(Const.TELEGRAM_LINK))
 
     fun mainActivity(context: Context, action: String? = null) = Intent(context, MainActivity::class.java).setAction(action)
@@ -35,4 +41,19 @@ object Intents {
         .setType(Const.MIME_TYPE_ANY)
         .putExtra(Intent.EXTRA_STREAM, uri)
 
+    val settingsIntent: Intent
+        get() {
+            val packageUri = Uri.parse(PACKAGE_SCHEME + BuildConfig.APPLICATION_ID)
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageUri)
+            intent.addCategory(Intent.CATEGORY_DEFAULT)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            return intent
+        }
+
+    val storagePermissionIntent: Intent
+        @RequiresApi(Android.R)
+        get() = Intent(
+            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+            Uri.parse(PACKAGE_SCHEME + BuildConfig.APPLICATION_ID)
+        )
 }

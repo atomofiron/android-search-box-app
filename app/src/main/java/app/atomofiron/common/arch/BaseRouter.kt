@@ -2,23 +2,28 @@ package app.atomofiron.common.arch
 
 import android.content.Context
 import android.os.Bundle
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.*
+import app.atomofiron.common.util.property.MutableWeakProperty
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 
 abstract class BaseRouter(
     fragmentProperty: WeakProperty<Fragment>,
-    private val activityProperty: WeakProperty<FragmentActivity> = WeakProperty(null),
+    protected val activityProperty: WeakProperty<FragmentActivity> = activityProperty(fragmentProperty),
 ) {
     companion object {
         const val RECIPIENT = "RECIPIENT"
+
+        private fun activityProperty(fragmentProperty: WeakProperty<Fragment>): WeakProperty<FragmentActivity> {
+            val activityProperty = MutableWeakProperty<FragmentActivity>()
+            fragmentProperty.observe { fragment ->
+                activityProperty.value = fragment?.activity
+            }
+            return activityProperty
+        }
 
         val navOptions: NavOptions = NavOptions.Builder()
             .setEnterAnim(R.anim.fragment_enter_scale)
@@ -51,7 +56,7 @@ abstract class BaseRouter(
 
     val fragment: Fragment? by fragmentProperty
 
-    val activity: FragmentActivity? get() = fragment?.activity ?: activityProperty.value
+    val activity: FragmentActivity? by activityProperty
 
     fun <R> fragment(action: Fragment.() -> R): R? = fragment?.run(action)
 
@@ -77,17 +82,6 @@ abstract class BaseRouter(
                 navigate(actionId, args, navOptions)
             }
         }
-    }
-
-    fun <I, O> register(
-        contract: ActivityResultContract<I, O>,
-        callback: ActivityResultCallback<O>,
-    ): ActivityResultLauncher<I> = fragment {
-        registerForActivityResult(contract, callback)
-    }!!
-
-    fun shouldShowRequestPermissionRationale(permission: String) = activity {
-        ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
     }
 
     protected fun switchScreen(predicate: (Fragment) -> Boolean) {
