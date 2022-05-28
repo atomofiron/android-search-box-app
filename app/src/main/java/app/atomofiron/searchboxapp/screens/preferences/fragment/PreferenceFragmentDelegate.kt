@@ -1,13 +1,11 @@
 package app.atomofiron.searchboxapp.screens.preferences.fragment
 
 import android.os.Build
-import androidx.preference.Preference
-import androidx.preference.PreferenceCategory
-import androidx.preference.PreferenceScreen
-import androidx.preference.SwitchPreference
+import androidx.preference.*
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.preference.TextFieldPreference
+import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceFragment
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
 import app.atomofiron.searchboxapp.utils.Const
@@ -93,8 +91,10 @@ class PreferenceFragmentDelegate(
                 DOES_NOT_MATTER
             }
             Const.PREF_APP_THEME -> {
-                val i = (newValue as? String ?: viewModel.getCurrentValue(key) as String).toInt()
-                preference.summary = resources.getStringArray(R.array.theme_var)[i]
+                var name = newValue as? String ?: viewModel.getCurrentValue(key) as String
+                name = AppTheme.fromString(name).name
+                val index = resources.getStringArray(R.array.theme_val).indexOf(name)
+                preference.summary = resources.getStringArray(R.array.theme_var)[index]
                 if (newValue is String) {
                     output.onPreferenceUpdate(key, newValue)
                 }
@@ -166,11 +166,12 @@ class PreferenceFragmentDelegate(
                 }
                 DOES_NOT_MATTER
             }
+            Const.PREF_DEEP_BLACK -> true
             Const.PREF_LEAK_CANARY -> {
-                preference as SwitchPreference
+                preference as SwitchPreferenceCompat
                 preference.isChecked = viewModel.getCurrentValue(preference.key) as Boolean
                 preference.setOnPreferenceClickListener {
-                    it as SwitchPreference
+                    it as SwitchPreferenceCompat
                     fragment.onLeakCanaryClick(it.isChecked)
                     true
                 }

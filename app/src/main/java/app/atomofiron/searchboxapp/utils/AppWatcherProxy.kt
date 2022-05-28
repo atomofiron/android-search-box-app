@@ -1,9 +1,11 @@
 package app.atomofiron.searchboxapp.utils
 
+import leakcanary.AppWatcher
+
 object AppWatcherProxy {
-    fun isEnabled(): Boolean = false//leakcanary.AppWatcher.config.enabled
+    fun isEnabled(): Boolean = AppWatcher.config.enabled
 
     fun setEnabled(enabled: Boolean) {
-        //leakcanary.AppWatcher.config = leakcanary.AppWatcher.config.copy(enabled = enabled)
+        AppWatcher.config = AppWatcher.config.copy(enabled = enabled)
     }
 }

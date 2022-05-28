@@ -7,10 +7,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.updatePadding
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceScreen
+import androidx.preference.forEach
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.viewCollect
 import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
@@ -69,6 +72,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         toyboxDelegate.bottomSheetView = binding.bottomSheet
         aboutDelegate.bottomSheetView = binding.bottomSheet
 
+        preferenceScreen.fixIcons()
         viewModel.onViewCollect()
         onApplyInsets(view)
     }
@@ -107,12 +111,20 @@ class PreferenceFragment : PreferenceFragmentCompat(),
 
     fun onLeakCanaryClick(isChecked: Boolean) = presenter.onLeakCanaryClick(isChecked)
 
+    private fun PreferenceGroup.fixIcons() {
+        // todo foresee NoticeableDrawable and colored icons
+        val iconTint = requireContext().findColorByAttr(R.attr.colorControlNormal)
+        forEach {
+            it.icon?.setTint(iconTint)
+            if (it is PreferenceGroup) it.fixIcons()
+        }
+    }
+
     private fun showAlert(message: String) {
         val view = view ?: return
-        Snackbar
-                .make(view, message, Snackbar.LENGTH_SHORT)
-                .setAnchorView(anchorView)
-                .show()
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+            .setAnchorView(anchorView)
+            .show()
     }
 
     private fun showOutputSuccess(message: Int) {
@@ -126,17 +138,16 @@ class PreferenceFragment : PreferenceFragmentCompat(),
 
     private fun showOutputError(output: Shell.Output) {
         val view = view ?: return
-        Snackbar.make(view, R.string.error, Snackbar.LENGTH_SHORT)
-                .apply {
-                    if (output.error.isNotEmpty()) {
-                        setAction(R.string.more) {
-                            AlertDialog.Builder(context)
-                                    .setMessage(output.error)
-                                    .show()
-                        }
-                    }
+        Snackbar.make(view, R.string.error, Snackbar.LENGTH_SHORT).apply {
+            if (output.error.isNotEmpty()) {
+                setAction(R.string.more) {
+                    AlertDialog.Builder(context)
+                            .setMessage(output.error)
+                            .show()
                 }
-                .setAnchorView(anchorView)
-                .show()
+            }
+            anchorView = anchorView
+            show()
+        }
     }
 }

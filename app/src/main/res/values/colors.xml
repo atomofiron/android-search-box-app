@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorPrimary">@color/colorPrimaryDark</color>
+	<color name="colorPrimary">@color/colorPrimaryLight</color>
 	<color name="colorPrimaryDark">#ff5BC0BE</color>
 	<color name="colorPrimaryLight">#ff1D7874</color>
 	<color name="colorPrimaryLite">@color/colorPrimaryDarkLite</color>
@@ -16,6 +16,10 @@
 
 	<color name="statusBarColor">@color/black</color>
 	<color name="navigationBarColor">@color/black</color>
+
+	<color name="system_bar_light">#55ffffff</color>
+	<color name="system_bar_dark">#55131313</color>
+	<color name="system_bar_black">#55000000</color>
 
 	<color name="cardBackgroundColorDark">#ff212121</color>
 	<color name="cardBackgroundColorLight">@color/white</color>
@@ -58,6 +62,7 @@
 	<color name="grey_dark_lite">#aa333333</color>
 	<color name="grey_light">#ffcccccc</color>
 	<color name="grey_light_lite">#aacccccc</color>
+	<color name="error">#ffff604f</color>
 	<color name="shadow">#ff909090</color>
 	<color name="shadow_transparent">#00909090</color>
 	<color name="red">#ffff0000</color>

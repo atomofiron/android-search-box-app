@@ -39,11 +39,11 @@ fun Context.findResIdsByAttr(@AttrRes vararg attrs: Int): IntArray {
     return resIds
 }
 
-fun Context?.findBooleanByAttr(@AttrRes attr: Int): Boolean = findBooleansByAttr(attr)[0]
+fun Context.findBooleanByAttr(@AttrRes attr: Int): Boolean = findBooleansByAttr(attr)[0]
 
-fun Context?.findBooleansByAttr(@AttrRes vararg attrs: Int): BooleanArray {
+fun Context.findBooleansByAttr(@AttrRes vararg attrs: Int): BooleanArray {
     @SuppressLint("ResourceType")
-    val array = this!!.obtainStyledAttributes(attrs)
+    val array = this.obtainStyledAttributes(attrs)
 
     val values = BooleanArray(attrs.size)
     for (i in attrs.indices) {
@@ -54,11 +54,11 @@ fun Context?.findBooleansByAttr(@AttrRes vararg attrs: Int): BooleanArray {
     return values
 }
 
-fun Context?.findDimenByAttr(@AttrRes attr: Int): Int = findDimensByAttr(attr)[0]
+fun Context.findDimenByAttr(@AttrRes attr: Int): Int = findDimensByAttr(attr)[0]
 
-fun Context?.findDimensByAttr(@AttrRes vararg attrs: Int): IntArray {
+fun Context.findDimensByAttr(@AttrRes vararg attrs: Int): IntArray {
     @SuppressLint("ResourceType")
-    val array = this!!.obtainStyledAttributes(attrs)
+    val array = this.obtainStyledAttributes(attrs)
 
     val values = IntArray(attrs.size)
     for (i in attrs.indices) {

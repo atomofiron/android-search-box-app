@@ -2,6 +2,8 @@ package app.atomofiron.searchboxapp.screens.main
 
 import androidx.fragment.app.FragmentActivity
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.injectable.service.WindowService
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -39,8 +41,14 @@ class MainModule {
 
     @Provides
     @MainScope
-    fun presenter(viewModel: MainViewModel, router: MainRouter, preferenceStore: PreferenceStore): MainPresenter {
-        return MainPresenter(viewModel, router, preferenceStore)
+    fun presenter(
+        viewModel: MainViewModel,
+        router: MainRouter,
+        windowService: WindowService,
+        appStore: AppStore,
+        preferenceStore: PreferenceStore,
+    ): MainPresenter {
+        return MainPresenter(viewModel, router, windowService, appStore, preferenceStore)
     }
 
     @Provides
@@ -49,5 +57,7 @@ class MainModule {
 }
 
 interface MainDependencies {
+    fun windowService(): WindowService
+    fun appStore(): AppStore
     fun preferenceStore(): PreferenceStore
 }

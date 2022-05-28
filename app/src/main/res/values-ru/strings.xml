@@ -42,6 +42,7 @@
     <string name="pref_orientation">Ориентация экрана</string>
     <string name="fucking_provider">Не удалось открыть файл из-за системных ограничений, попробуйте скопировать абсолютный путь к файлу и открыть его в другом приложении</string>
     <string name="pref_theme">Тема оформления</string>
+    <string name="pref_deep_black">Глубокий чёрный</string>
     <string name="pref_max_depth">Максимальная глубина поиска</string>
     <string name="pref_max_size">Максимальный размер файла</string>
     <string name="max_size_sum">При поиске по содержимому</string>
@@ -100,7 +101,11 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="update_available">Доступно обновление</string>
+    <string name="failed_check_updates">Не удалость проверить обновления</string>
+    <string name="update_loading">Обновление скачивается</string>
+    <string name="update_downloaded">Обновление загружено</string>
     <string name="get_update">Обновить</string>
+    <string name="install">Установить</string>
     <string name="channel_name_updates">Обновления</string>
     <string name="tip">В Проводнике укажите где искать</string>
     <string name="search_here">Ищем здесь:</string>

@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.main
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.util.navigation.CustomNavHostFragment
@@ -12,24 +13,30 @@ class MainRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(
     override val currentDestinationId = 0
     override val isCurrentDestination: Boolean = true
 
-    private val fragments: List<Fragment>? get() = activity?.supportFragmentManager
+    private val fragmentManager: FragmentManager? get() = activity?.supportFragmentManager
         ?.fragments
         ?.first()
         ?.let {
             it as CustomNavHostFragment
         }?.childFragmentManager
-        ?.fragments
+
+    private val fragments: List<Fragment>? get() = fragmentManager?.fragments
+
+    val lastVisibleFragment get() = fragments?.filter { it is BaseFragment<*,*,*> }?.run {
+        lastOrNull { it.isVisible } ?: lastOrNull { !it.isHidden }
+    } as? BaseFragment<*,*,*>
 
     fun reattachFragments() {
-        /* todo manager {
-            val transaction = beginTransaction()
-            fragments.filter{ it is BaseFragment<*, *> || it is BasePreferenceFragment<*, *> }
-                    .forEach {
-                        transaction.detach(it)
-                        transaction.attach(it)
-                    }
-            transaction.commit()
-        }*/
+        fragmentManager?.run {
+            beginTransaction().run {
+                fragments.forEach { detach(it) }
+                commit()
+            }
+            beginTransaction().run {
+                fragments.forEach { attach(it) }
+                commit()
+            }
+        }
     }
 
     fun onBack(): Boolean {

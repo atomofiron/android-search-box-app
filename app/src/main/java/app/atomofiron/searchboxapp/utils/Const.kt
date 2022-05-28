@@ -16,6 +16,7 @@ object Const {
     const val PREF_TEXT_FORMATS = "pref_text_formats"
     const val PREF_APP_ORIENTATION = "pref_app_orientation"
     const val PREF_APP_THEME = "pref_app_theme"
+    const val PREF_DEEP_BLACK = "pref_deep_black"
     const val PREF_MAX_SIZE = "pref_max_size"
     const val PREF_MAX_DEPTH = "pref_max_depth"
     const val PREF_EXCLUDE_DIRS = "pref_exclude_dirs"

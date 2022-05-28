@@ -13,8 +13,8 @@
 
         <item name="colorShadow">@color/shadow_day_night</item>
 
-        <item name="android:statusBarColor">@color/statusBarColor</item>
-        <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/isDayTheme</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/isDayTheme</item>
 
@@ -23,7 +23,7 @@
         <item name="cardViewStyle">@style/CardViewStyle</item>
 	</style>
 
-	<style name="AppTheme.White" parent="Theme.MaterialComponents.Light.NoActionBar">
+	<style name="AppTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
 		<item name="android:windowEnableSplitTouch">false</item>
 		<item name="android:splitMotionEvents">false</item>
 		<item name="isDarkTheme">false</item>
@@ -56,8 +56,8 @@
 
         <item name="colorShadow">@color/shadow_light</item>
 
-        <item name="android:statusBarColor">@color/statusBarColor</item>
-        <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
 	</style>
@@ -94,15 +94,13 @@
 
         <item name="colorShadow">@color/shadow_dark</item>
 
-        <item name="android:statusBarColor" tools:ignore="DuplicateDefinition">@color/statusBarColor</item>
-        <item name="android:navigationBarColor" tools:ignore="DuplicateDefinition">@color/navigationBarColor</item>
+		<item name="android:statusBarColor">@color/transparent</item>
+		<item name="android:navigationBarColor">@color/transparent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
 	</style>
 	<style name="AppTheme.Black" parent="@style/AppTheme.Dark">
 		<item name="android:windowBackground">@color/windowBackgroundBlack</item>
-		<item name="android:statusBarColor">@color/windowBackgroundBlack</item>
-		<item name="android:navigationBarColor">@color/windowBackgroundBlack</item>
 
 		<item name="colorBackground">@color/windowBackgroundBlack</item>
 		<item name="colorFieldBackground">@color/windowBackgroundDark</item>
@@ -111,8 +109,8 @@
 
 		<item name="colorShadow">@color/shadow_dark</item>
 
-		<item name="android:statusBarColor" tools:ignore="DuplicateDefinition">@color/statusBarColor</item>
-		<item name="android:navigationBarColor" tools:ignore="DuplicateDefinition">@color/navigationBarColor</item>
+		<item name="android:statusBarColor">@color/transparent</item>
+		<item name="android:navigationBarColor">@color/transparent</item>
 		<item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
 		<item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
 	</style>

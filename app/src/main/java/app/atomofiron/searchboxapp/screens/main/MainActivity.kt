@@ -1,7 +1,10 @@
 package app.atomofiron.searchboxapp.screens.main
 
+import android.app.Service
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -9,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
+import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.value
@@ -42,6 +46,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     @Inject
     lateinit var presenter: MainPresenter
+    private var theme: AppTheme? = null
+    private val isDarkTheme: Boolean get() = findBooleanByAttr(R.attr.isDarkTheme)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getAppTheme())
@@ -56,6 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.inject(this)
+        presenter.onActivityCreate(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding.joystick.setOnClickListener { onEscClick() }
@@ -63,15 +70,37 @@ class MainActivity : AppCompatActivity() {
         viewModel.showExitSnackbar.collect(lifecycleScope) {
             sbExit.show()
         }
+        if (savedInstanceState == null) onIntent(intent)
 
+        // todo apply fake system bars color if needed
+        val manager = getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
+        val onBackStackChangedListener: () -> Unit = {
+            presenter.updateLightStatusBar(isDarkTheme)
+            manager.hideSoftInputFromWindow(binding.root.windowToken, 0)
+        }
+        val childFragmentManager = supportFragmentManager.fragments.first().childFragmentManager
+        childFragmentManager.addOnBackStackChangedListener(onBackStackChangedListener)
+        supportFragmentManager.addOnBackStackChangedListener(onBackStackChangedListener)
+
+        presenter.updateLightNavigationBar(isDarkTheme)
+        presenter.updateLightStatusBar(isDarkTheme)
         setOrientation(viewModel.setOrientation.value)
         onCollect()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        onIntent(intent)
+    }
+
+    private fun onIntent(intent: Intent?) {
+        presenter.onIntent(intent ?: return)
+    }
+
     private fun getAppTheme(): AppTheme {
         val sp = PreferenceManager.getDefaultSharedPreferences(this)
-        val themeIndex = sp.getString(Const.PREF_APP_THEME, null) ?: AppTheme.WHITE.ordinal.toString()
-        return AppTheme.values()[themeIndex.toInt()]
+        val name = sp.getString(Const.PREF_APP_THEME, null)
+        return AppTheme.fromString(name)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -101,12 +130,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTheme(theme: AppTheme) {
-        when (theme) {
-            AppTheme.WHITE -> setTheme(R.style.AppTheme_White)
-            AppTheme.DARK -> setTheme(R.style.AppTheme_Dark)
-            AppTheme.BLACK -> setTheme(R.style.AppTheme_Black)
+        when {
+            theme == this.theme -> return
+            theme is AppTheme.System -> setTheme(R.style.AppTheme)
+            theme is AppTheme.Light -> setTheme(R.style.AppTheme_Light)
+            theme is AppTheme.Dark && theme.deepBlack -> setTheme(R.style.AppTheme_Black)
+            theme is AppTheme.Dark -> setTheme(R.style.AppTheme_Dark)
         }
         window.decorView.setBackgroundColor(findColorByAttr(R.attr.colorBackground))
+        this.theme = theme
+        if (::presenter.isInitialized) presenter.applyTheme(isDarkTheme)
     }
 
     override fun onBackPressed() = presenter.onBackButtonClick()

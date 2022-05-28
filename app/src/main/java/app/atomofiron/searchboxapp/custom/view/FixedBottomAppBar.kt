@@ -31,7 +31,7 @@ class FixedBottomAppBar @JvmOverloads constructor(
         materialShapeDrawable.shadowCompatibilityMode = SHADOW_COMPAT_MODE_ALWAYS
         materialShapeDrawable.paintStyle = Paint.Style.FILL
         materialShapeDrawable.initializeElevationOverlay(context)
-        materialShapeDrawable.fillColor = ColorStateList.valueOf(context.getColorByAttr(android.R.attr.colorBackground))
+        materialShapeDrawable.fillColor = ColorStateList.valueOf(context.getColorByAttr(R.attr.colorBackground))
         background = materialShapeDrawable
 
         val maxElevation = resources.getDimension(R.dimen.bottom_bar_elevation)

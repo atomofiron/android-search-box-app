@@ -3,23 +3,31 @@ package app.atomofiron.searchboxapp.screens.main
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.value
+import app.atomofiron.searchboxapp.injectable.service.WindowService
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
+import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegate
+import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegateApi
 import app.atomofiron.searchboxapp.screens.main.util.tasks.XTask
 import app.atomofiron.searchboxapp.utils.Shell
 
 class MainPresenter(
     private val viewModel: MainViewModel,
     private val router: MainRouter,
-    preferenceStore: PreferenceStore
-) : SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput {
+    private val windowService: WindowService,
+    appStore: AppStore,
+    preferenceStore: PreferenceStore,
+) : SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput,
+    AppEventDelegateApi by AppEventDelegate(viewModel.viewModelScope, appStore)
+{
     override var isExitSnackbarShown: Boolean = false
     private val scope = viewModel.viewModelScope
 
     init {
+        viewModel.setTheme.value = preferenceStore.appTheme.entity
         preferenceStore.appTheme.collect(scope) {
             viewModel.setTheme.value = it
-            router.reattachFragments()
         }
         preferenceStore.appOrientation.collect(scope) {
             viewModel.setOrientation.value = it
@@ -44,5 +52,23 @@ class MainPresenter(
         router.onBack() -> Unit
         isExitSnackbarShown -> router.closeApp()
         else -> viewModel.showExitSnackbar.invoke()
+    }
+
+    fun applyTheme(isDarkTheme: Boolean) {
+        router.reattachFragments()
+        updateLightStatusBar(isDarkTheme)
+    }
+
+    fun updateLightNavigationBar(isDarkTheme: Boolean) {
+        if (windowService.isLightNavigationBars xor isDarkTheme) {
+            windowService.isLightNavigationBars = isDarkTheme
+        }
+    }
+
+    fun updateLightStatusBar(isDarkTheme: Boolean) {
+        val lightStatusBar = router.lastVisibleFragment?.isLightStatusBar ?: !isDarkTheme
+        if (windowService.isLightStatusBars xor lightStatusBar) {
+            windowService.isLightStatusBars = lightStatusBar
+        }
     }
 }

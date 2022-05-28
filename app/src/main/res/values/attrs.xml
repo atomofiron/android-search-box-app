@@ -32,4 +32,9 @@
     <declare-styleable name="BallsView">
         <attr name="oneBall" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="SpinnerPreference">
+        <attr name="entries" />
+        <attr name="entryValues" />
+    </declare-styleable>
 </resources>

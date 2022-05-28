@@ -30,7 +30,7 @@
             android:key="pref_exclude_dirs"
             android:summary="@string/exclude_dirs_summary"
             />
-        <androidx.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             app:title="@string/pref_use_su"
             app:key="pref_use_su"
             app:defaultValue="false"
@@ -53,12 +53,18 @@
     </PreferenceCategory>
     <PreferenceCategory
         app:title="@string/user_interface">
-        <ListPreference
+        <app.atomofiron.searchboxapp.custom.preference.DropDownPreference
             app:title="@string/pref_theme"
             app:key="pref_app_theme"
             app:entries="@array/theme_var"
             app:entryValues="@array/theme_val"
             app:icon="@drawable/ic_theme"
+            app:widgetLayout="@layout/widget_spinner"
+            />
+        <SwitchPreferenceCompat
+            app:title="@string/pref_deep_black"
+            app:key="pref_deep_black"
+            app:defaultValue="false"
             />
         <ListPreference
             app:title="@string/pref_orientation"
@@ -94,7 +100,7 @@
     <PreferenceCategory
         android:key="pref_category_debug"
         app:title="@string/pref_category_debug">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             app:title="@string/pref_leak_canary"
             app:key="pref_leak_canary"
             />

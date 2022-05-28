@@ -18,14 +18,14 @@
     </string-array>
 
     <string-array name="theme_var">
-        <item>White</item>
+        <item>System</item>
+        <item>Light</item>
         <item>Dark</item>
-        <item>Black</item>
     </string-array>
     <string-array name="theme_val">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
     </string-array>
 
     <string-array name="size_suffix_arr">

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<color name="statusBarColor">@color/system_bar_dark</color>
+	<color name="navigationBarColor">@color/system_bar_dark</color>
+
 	<color name="windowBackgroundThemed">@android:color/background_dark</color>
 
-	<color name="colorPrimary">@color/colorPrimaryLight</color>
-	<color name="colorPrimaryLite">@color/colorPrimaryLightLite</color>
+	<color name="colorPrimary">@color/colorPrimaryDark</color>
+	<color name="colorPrimaryLite">@color/colorPrimaryDarkLite</color>
 
 	<color name="colorBackgroundDayNight">@color/colorBackgroundDark</color>
 	<color name="cardBackgroundColor">@color/cardBackgroundColorDark</color>

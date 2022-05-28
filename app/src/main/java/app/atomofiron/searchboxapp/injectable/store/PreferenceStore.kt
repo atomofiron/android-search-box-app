@@ -28,100 +28,100 @@ class PreferenceStore(context: Context, sp: SharedPreferences) {
     }
 
     val useSu = PreferenceNode.forBoolean<Boolean>(
-            sp,
-            key = Const.PREF_USE_SU,
-            default = false
+        sp,
+        key = Const.PREF_USE_SU,
+        default = false,
     )
 
     val storagePath = PreferenceNode.forString<String>(
-            sp,
-            key = Const.PREF_STORAGE_PATH,
-            default = Tool.getExternalStorageDirectory(context) ?: Const.ROOT
+        sp,
+        key = Const.PREF_STORAGE_PATH,
+        default = Tool.getExternalStorageDirectory(context) ?: Const.ROOT,
     )
 
     val openedDirPath = PreferenceNode.forNullableString<String?>(
-            sp,
-            key = Const.PREF_OPENED_DIR_PATH,
-            default = null
+        sp,
+        key = Const.PREF_OPENED_DIR_PATH,
+        default = null,
     )
 
     val dockGravity = PreferenceNode.forInt<Int>(
-            sp,
-            key = Const.PREF_DOCK_GRAVITY,
-            default = Gravity.START
+        sp,
+        key = Const.PREF_DOCK_GRAVITY,
+        default = Gravity.START,
     )
 
     val specialCharacters = PreferenceNode.forString(
-            sp,
-            key = Const.PREF_SPECIAL_CHARACTERS,
-            default = Const.DEFAULT_SPECIAL_CHARACTERS,
-            toValue = { it.joinToString(separator = " ") },
-            fromValue = { it.split(" ").toTypedArray() }
+        sp,
+        key = Const.PREF_SPECIAL_CHARACTERS,
+        default = Const.DEFAULT_SPECIAL_CHARACTERS,
+        toValue = { it.joinToString(separator = " ") },
+        fromValue = { it.split(" ").toTypedArray() },
     )
 
     val excludeDirs = PreferenceNode.forBoolean<Boolean>(
-            sp,
-            key = Const.PREF_EXCLUDE_DIRS,
-            default = false
+        sp,
+        key = Const.PREF_EXCLUDE_DIRS,
+        default = false,
     )
 
     val textFormats = PreferenceNode.forString(
-            sp,
-            key = Const.PREF_TEXT_FORMATS,
-            default = Const.DEFAULT_TEXT_FORMATS,
-            toValue = { it.joinToString(separator = " ") },
-            fromValue = { it.split(" ").toTypedArray() }
+        sp,
+        key = Const.PREF_TEXT_FORMATS,
+        default = Const.DEFAULT_TEXT_FORMATS,
+        toValue = { it.joinToString(separator = " ") },
+        fromValue = { it.split(" ").toTypedArray() },
     )
 
     val maxFileSizeForSearch = PreferenceNode.forLong<Long>(
-            sp,
-            key = Const.PREF_MAX_SIZE,
-            default = Const.DEFAULT_MAX_SIZE
+        sp,
+        key = Const.PREF_MAX_SIZE,
+        default = Const.DEFAULT_MAX_SIZE,
     )
 
     val maxDepthForSearch = PreferenceNode.forInt<Int>(
-            sp,
-            key = Const.PREF_MAX_DEPTH,
-            default = Const.DEFAULT_MAX_DEPTH
+        sp,
+        key = Const.PREF_MAX_DEPTH,
+        default = Const.DEFAULT_MAX_DEPTH,
     )
 
     val appTheme = PreferenceNode.forString(
-            sp,
-            key = Const.PREF_APP_THEME,
-            default = AppTheme.WHITE.ordinal.toString(),
-            toValue = { it.ordinal.toString() },
-            fromValue = { AppTheme.values()[it.toInt()] }
+        sp,
+        key = Const.PREF_APP_THEME,
+        default = AppTheme.default().name,
+        toValue = { it.name },
+        fromValue = { AppTheme.fromString(it) },
     )
 
     val appOrientation = PreferenceNode.forString(
-            sp,
-            key = Const.PREF_APP_ORIENTATION,
-            default = AppOrientation.UNDEFINED.ordinal.toString(),
-            toValue = { it.ordinal.toString() },
-            fromValue = { AppOrientation.values()[it.toInt()] }
+        sp,
+        key = Const.PREF_APP_ORIENTATION,
+        default = AppOrientation.UNDEFINED.ordinal.toString(),
+        toValue = { it.ordinal.toString() },
+        fromValue = { AppOrientation.values()[it.toInt()] },
     )
 
     val explorerItemComposition = PreferenceNode.forInt(
-            sp,
-            key = Const.PREF_EXPLORER_ITEM,
-            default = Const.DEFAULT_EXPLORER_ITEM,
-            toValue = { it.flags },
-            fromValue = { ExplorerItemComposition(it) }
+        sp,
+        key = Const.PREF_EXPLORER_ITEM,
+        default = Const.DEFAULT_EXPLORER_ITEM,
+        toValue = { it.flags },
+        fromValue = { ExplorerItemComposition(it) },
     )
 
     val joystickComposition = PreferenceNode.forInt(
-            sp,
-            key = Const.PREF_JOYSTICK,
-            default = Const.DEFAULT_JOYSTICK,
-            toValue = { it.data },
-            fromValue = { JoystickComposition(it) }
+        sp,
+        key = Const.PREF_JOYSTICK,
+        default = Const.DEFAULT_JOYSTICK,
+        toValue = { it.data },
+        fromValue = { JoystickComposition(it) },
     )
 
     val toyboxVariant = PreferenceNode.forSet(
-            sp,
-            key = Const.PREF_TOYBOX,
-            default = setOf(Const.VALUE_TOYBOX_CUSTOM, Const.DEFAULT_TOYBOX_PATH),
-            toValue = { throw Exception() },
-            fromValue = { ToyboxVariant.fromSet(context, it) }
+        sp,
+        key = Const.PREF_TOYBOX,
+        default = setOf(Const.VALUE_TOYBOX_CUSTOM, Const.DEFAULT_TOYBOX_PATH),
+        toValue = { throw Exception() },
+        fromValue = { ToyboxVariant.fromSet(context, it) },
     )
 }
