@@ -9,7 +9,10 @@ import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Tool
 
-class PreferenceStore(context: Context, sp: SharedPreferences) {
+class PreferenceStore(
+    context: Context,
+    private val sp: SharedPreferences,
+) {
 
     fun getCurrentValue(key: String): Any {
         return when (key) {
@@ -90,7 +93,18 @@ class PreferenceStore(context: Context, sp: SharedPreferences) {
         key = Const.PREF_APP_THEME,
         default = AppTheme.default().name,
         toValue = { it.name },
-        fromValue = { AppTheme.fromString(it) },
+        fromValue = {
+            when (val theme = AppTheme.fromString(it)) {
+                is AppTheme.Dark -> theme.copy(deepBlack = deepBlack.value)
+                else -> theme
+            }
+        },
+    )
+
+    val deepBlack = PreferenceNode.forBoolean<Boolean>(
+        sp,
+        key = Const.PREF_DEEP_BLACK,
+        default = false,
     )
 
     val appOrientation = PreferenceNode.forString(

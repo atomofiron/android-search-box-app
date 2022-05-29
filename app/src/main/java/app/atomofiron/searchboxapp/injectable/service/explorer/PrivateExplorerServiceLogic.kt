@@ -335,7 +335,7 @@ abstract class PrivateExplorerServiceLogic(
     }
 
     private suspend fun updateFile(file: MutableXFile) {
-        logI("updateTheFile $file")
+        logI("updateFile $file")
         require(!file.isDirectory) { IllegalArgumentException("Is is a directory! $file") }
         when {
             file.isDeleting -> Unit
@@ -356,7 +356,7 @@ abstract class PrivateExplorerServiceLogic(
         }
         val dirFiles = dir.children
         val error = dir.updateCache(useSu)
-        if (error != null) {
+        if (!error.isNullOrEmpty()) {
             logI("updateCurrentDir return error != null $dir\n$error")
             if (!dir.exists) {
                 closeDir(dir)
@@ -437,14 +437,14 @@ abstract class PrivateExplorerServiceLogic(
         val cacheWasNotActual = !dir.isCacheActual
         val error = dir.updateCache(useSu)
 
-        if (error != null) {
+        if (!error.isNullOrEmpty()) {
             logI("updateClosedDir error != null $dir\n$error")
         }
         when {
             cacheWasNotActual && dir.isRoot -> explorerStore.notifyUpdate(dir)
             dir.isRoot -> Unit
             !dir.exists -> dropEntity(dir)
-            error != null -> Unit
+            !error.isNullOrEmpty() -> Unit
             else -> {
                 explorerStore.notifyUpdate(dir)
                 /*

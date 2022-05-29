@@ -177,7 +177,10 @@ class MutableXFile : XFile {
         return null
     }
 
-    /** @return error or null */
+    /**
+     *  @return error or null or "" if nothing changed
+     *  todo try FileObserver
+     */
     fun updateCache(su: Boolean, completely: Boolean = false): String? {
         dropCaching = false
         when {
@@ -189,7 +192,7 @@ class MutableXFile : XFile {
         return when {
             completely -> {
                 var error = cacheAsFile(su)
-                if (error == null && isDirectory) {
+                if (error.isNullOrEmpty() && isDirectory) {
                     error = cacheAsDir(su)
                 }
                 error
@@ -310,19 +313,35 @@ class MutableXFile : XFile {
         isCaching = true
         val output = Shell.exec(Shell[Shell.LS_LAHLD].format(completedPath), su)
         val line = output.output.replace("\n", "")
+        var wasChanged = true
         if (output.success && line.isNotEmpty()) {
+            wasChanged = !compareAttributes(line)
             updateAttributes(line)
         }
         isCaching = false
         isCacheActual = true
 
-        return when (output.success) {
-            true -> null
-            false -> {
+        return when {
+            !output.success -> {
                 parseDoesExists(output.error)
                 output.error
             }
+            wasChanged -> null
+            else -> ""
         }
+    }
+
+    private fun compareAttributes(line: String): Boolean {
+        val parts = line.split(spaces, 8)
+        if (access != parts[0]) return false
+        if (owner != parts[2]) return false
+        if (group != parts[3]) return false
+        if (size != parts[4]) return false
+        if (date != parts[5]) return false
+        if (time != parts[6]) return false
+        if (isDirectory != (access[0] == DIR_CHAR)) return false
+        if (isFile != (!isDirectory && access[0] == FILE_CHAR)) return false
+        return true
     }
 
     private fun updateAttributes(line: String) {
