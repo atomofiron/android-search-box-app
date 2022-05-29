@@ -11,6 +11,7 @@
 		<item name="android:clipToPadding">false</item>
 
 
+		<item name="colorBackground">@color/windowBackgroundThemed</item>
         <item name="colorShadow">@color/shadow_day_night</item>
 
         <item name="android:statusBarColor">@color/transparent</item>

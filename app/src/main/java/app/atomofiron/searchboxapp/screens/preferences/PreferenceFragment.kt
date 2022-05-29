@@ -6,14 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.updatePadding
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceGroup
-import androidx.preference.PreferenceScreen
-import androidx.preference.forEach
+import androidx.lifecycle.lifecycleScope
+import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.findColorByAttr
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.viewCollect
 import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
@@ -22,6 +21,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentPreferenceBinding
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
+import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
 
 class PreferenceFragment : PreferenceFragmentCompat(),
@@ -47,6 +47,11 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         joystickDelegate = JoystickFragmentDelegate(viewModel.joystickComposition, presenter)
         toyboxDelegate = ToyboxFragmentDelegate(viewModel.toyboxVariant, presenter)
         aboutDelegate = AboutFragmentDelegate()
+
+        val deepBlack = findPreference<Preference>(Const.PREF_DEEP_BLACK)!!
+        viewModel.showDeepBlack.collect(lifecycleScope) {
+            deepBlack.isVisible = it
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

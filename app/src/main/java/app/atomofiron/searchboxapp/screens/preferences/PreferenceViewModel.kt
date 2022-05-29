@@ -21,6 +21,7 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
     val alert = dataFlow<String>(single = true)
     val alertOutputSuccess = dataFlow<Int>(single = true)
     val alertOutputError = dataFlow<Shell.Output>(single = true)
+    val showDeepBlack = dataFlow<Boolean>()
     val isExportImportAvailable: Boolean get() = App.appContext.getExternalFilesDir(null) != null
     val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
     val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity

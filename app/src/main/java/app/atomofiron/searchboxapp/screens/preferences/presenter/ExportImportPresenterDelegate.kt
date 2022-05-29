@@ -1,12 +1,15 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter
 
 import android.content.Context
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.MutableXFile
+import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
 import app.atomofiron.searchboxapp.screens.preferences.fragment.ExportImportFragmentDelegate
 import app.atomofiron.searchboxapp.utils.Shell
@@ -15,9 +18,16 @@ class ExportImportPresenterDelegate(
     context: Context,
     private val viewModel: PreferenceViewModel,
     private val preferenceService: PreferenceService,
-    private val preferenceChannel: PreferenceChannel
+    private val preferenceStore: PreferenceStore,
+    private val preferenceChannel: PreferenceChannel,
 ) : ExportImportFragmentDelegate.ExportImportOutput {
     override val externalPath = MutableXFile.completePathAsDir(context.getExternalFilesDir(null)!!.absolutePath)
+
+    init {
+        preferenceStore.appTheme.collect(viewModel.viewModelScope) {
+            viewModel.showDeepBlack.value = it !is AppTheme.Light
+        }
+    }
 
     override fun exportPreferences() {
         val output = preferenceService.exportPreferences()

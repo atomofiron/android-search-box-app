@@ -14,13 +14,13 @@ import app.atomofiron.searchboxapp.utils.Util
 class PreferenceFragmentDelegate(
     private val fragment: PreferenceFragment,
     private val viewModel: PreferenceViewModel,
-    private val output: PreferenceUpdateOutput
+    private val output: PreferenceUpdateOutput,
 ) : Preference.OnPreferenceChangeListener {
     companion object {
         private const val DOES_NOT_MATTER = true
     }
 
-    private val resources = fragment.resources
+    private val resources get() = fragment.resources
 
     override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
         return onUpdatePreference(preference, newValue)
@@ -100,6 +100,10 @@ class PreferenceFragmentDelegate(
                 }
                 DOES_NOT_MATTER
             }
+            Const.PREF_DEEP_BLACK -> {
+                if (newValue !is Boolean) return DOES_NOT_MATTER
+                output.onPreferenceUpdate(key, newValue)
+            }
             Const.PREF_APP_ORIENTATION -> {
                 val i = (newValue as? String ?: viewModel.getCurrentValue(key) as String).toInt()
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
@@ -166,7 +170,6 @@ class PreferenceFragmentDelegate(
                 }
                 DOES_NOT_MATTER
             }
-            Const.PREF_DEEP_BLACK -> true
             Const.PREF_LEAK_CANARY -> {
                 preference as SwitchPreferenceCompat
                 preference.isChecked = viewModel.getCurrentValue(preference.key) as Boolean

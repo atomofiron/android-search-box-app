@@ -41,7 +41,7 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun preferenceUpdatePresenterDelegate(
-            context: Context, viewModel: PreferenceViewModel, preferenceStore: PreferenceStore
+        context: Context, viewModel: PreferenceViewModel, preferenceStore: PreferenceStore
     ): PreferenceUpdatePresenterDelegate {
         return PreferenceUpdatePresenterDelegate(context, viewModel, preferenceStore)
     }
@@ -55,22 +55,23 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun exportImportPresenterDelegate(
-            context: Context,
-            viewModel: PreferenceViewModel,
-            preferenceService: PreferenceService,
-            preferenceChannel: PreferenceChannel
+        context: Context,
+        viewModel: PreferenceViewModel,
+        preferenceService: PreferenceService,
+        preferenceStore: PreferenceStore,
+        preferenceChannel: PreferenceChannel,
     ): ExportImportPresenterDelegate {
-        return ExportImportPresenterDelegate(context, viewModel, preferenceService, preferenceChannel)
+        return ExportImportPresenterDelegate(context, viewModel, preferenceService, preferenceStore, preferenceChannel)
     }
 
     @Provides
     @PreferenceScope
     fun presenter(
-            viewModel: PreferenceViewModel,
-            router: PreferenceRouter,
-            joystickDelegate: JoystickPresenterDelegate,
-            exportImportDelegate: ExportImportPresenterDelegate,
-            preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate
+        viewModel: PreferenceViewModel,
+        router: PreferenceRouter,
+        joystickDelegate: JoystickPresenterDelegate,
+        exportImportDelegate: ExportImportPresenterDelegate,
+        preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate
     ): PreferencePresenter {
         return PreferencePresenter(viewModel, router, joystickDelegate, exportImportDelegate, preferenceUpdateDelegate)
     }

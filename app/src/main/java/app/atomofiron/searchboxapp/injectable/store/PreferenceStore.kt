@@ -88,6 +88,12 @@ class PreferenceStore(
         default = Const.DEFAULT_MAX_DEPTH,
     )
 
+    val deepBlack = PreferenceNode.forBoolean<Boolean>(
+        sp,
+        key = Const.PREF_DEEP_BLACK,
+        default = false,
+    )
+
     val appTheme = PreferenceNode.forString(
         sp,
         key = Const.PREF_APP_THEME,
@@ -99,12 +105,6 @@ class PreferenceStore(
                 else -> theme
             }
         },
-    )
-
-    val deepBlack = PreferenceNode.forBoolean<Boolean>(
-        sp,
-        key = Const.PREF_DEEP_BLACK,
-        default = false,
     )
 
     val appOrientation = PreferenceNode.forString(

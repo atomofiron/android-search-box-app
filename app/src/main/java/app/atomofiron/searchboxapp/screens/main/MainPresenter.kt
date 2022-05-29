@@ -19,7 +19,7 @@ class MainPresenter(
     appStore: AppStore,
     preferenceStore: PreferenceStore,
 ) : SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput,
-    AppEventDelegateApi by AppEventDelegate(viewModel.viewModelScope, appStore)
+    AppEventDelegateApi by AppEventDelegate(viewModel.viewModelScope, appStore, preferenceStore)
 {
     override var isExitSnackbarShown: Boolean = false
     private val scope = viewModel.viewModelScope

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -59,14 +59,13 @@
             app:entries="@array/theme_var"
             app:entryValues="@array/theme_val"
             app:icon="@drawable/ic_theme"
-            app:widgetLayout="@layout/widget_spinner"
             />
         <SwitchPreferenceCompat
             app:title="@string/pref_deep_black"
             app:key="pref_deep_black"
             app:defaultValue="false"
             />
-        <ListPreference
+        <app.atomofiron.searchboxapp.custom.preference.DropDownPreference
             app:title="@string/pref_orientation"
             app:key="pref_app_orientation"
             app:entries="@array/orientation_var"

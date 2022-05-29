@@ -12,7 +12,7 @@ import app.atomofiron.searchboxapp.utils.Shell
 class PreferenceUpdatePresenterDelegate(
     private val context: Context,
     private val viewModel: PreferenceViewModel,
-    private val preferenceStore: PreferenceStore
+    private val preferenceStore: PreferenceStore,
 ) : PreferenceUpdateOutput {
 
     override fun onPreferenceUpdate(key: String, value: Int) {
@@ -34,6 +34,7 @@ class PreferenceUpdatePresenterDelegate(
         when (key) {
             Const.PREF_EXCLUDE_DIRS -> preferenceStore.excludeDirs.notifyByOriginal(value)
             Const.PREF_USE_SU -> return onUpdateUseSu(value)
+            Const.PREF_DEEP_BLACK -> preferenceStore.deepBlack.notifyByOriginal(value)
             else -> throw Exception()
         }
         return true
