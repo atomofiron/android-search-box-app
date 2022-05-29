@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string-array name="tab_titles">
         <item>Проверка</item>
         <item>Выбрано</item>
@@ -12,7 +12,9 @@
         <item>Альбомная</item>
     </string-array>
 
-    <string-array name="theme_var">
+    <string-array
+        name="theme_var"
+        tools:ignore="InconsistentArrays">
         <item>Системная</item>
         <item>Светлая</item>
         <item>Тёмная</item>

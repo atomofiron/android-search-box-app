@@ -97,13 +97,10 @@ class PreferenceStore(
     val appTheme = PreferenceNode.forString(
         sp,
         key = Const.PREF_APP_THEME,
-        default = AppTheme.default().name,
+        default = AppTheme.defaultName(),
         toValue = { it.name },
         fromValue = {
-            when (val theme = AppTheme.fromString(it)) {
-                is AppTheme.Dark -> theme.copy(deepBlack = deepBlack.value)
-                else -> theme
-            }
+            AppTheme.fromString(it, deepBlack.value)
         },
     )
 

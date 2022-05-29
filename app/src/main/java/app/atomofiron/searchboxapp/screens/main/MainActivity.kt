@@ -100,7 +100,8 @@ class MainActivity : AppCompatActivity() {
     private fun getAppTheme(): AppTheme {
         val sp = PreferenceManager.getDefaultSharedPreferences(this)
         val name = sp.getString(Const.PREF_APP_THEME, null)
-        return AppTheme.fromString(name)
+        val deepBlack = sp.getBoolean(Const.PREF_DEEP_BLACK, false)
+        return AppTheme.fromString(name, deepBlack)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -132,6 +133,7 @@ class MainActivity : AppCompatActivity() {
     private fun setTheme(theme: AppTheme) {
         when {
             theme == this.theme -> return
+            theme is AppTheme.System && theme.deepBlack -> setTheme(R.style.AppTheme_Amoled)
             theme is AppTheme.System -> setTheme(R.style.AppTheme)
             theme is AppTheme.Light -> setTheme(R.style.AppTheme_Light)
             theme is AppTheme.Dark && theme.deepBlack -> setTheme(R.style.AppTheme_Black)

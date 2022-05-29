@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array
+        name="theme_var"
+        tools:ignore="InconsistentArrays">
+        <item>System</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array
+        name="theme_val"
+        tools:ignore="InconsistentArrays">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+</resources>

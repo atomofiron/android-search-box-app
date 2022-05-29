@@ -45,7 +45,8 @@
 	<color name="windowBackgroundDarkLight">#ff222222</color>
 	<color name="windowBackgroundDark">#ff111111</color>
 	<color name="windowBackgroundBlack">#ff000000</color>
-	<color name="windowBackgroundThemed">@android:color/background_light</color>
+	<color name="windowBackgroundThemed">@color/windowBackgroundWhite</color>
+	<color name="windowBackgroundThemedAmoled">@color/windowBackgroundWhite</color>
 
 	<color name="transparent">#00000000</color>
 	<color name="white">#ffffffff</color>

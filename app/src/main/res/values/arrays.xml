@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string-array name="tab_titles">
         <item>Test</item>
         <item>Selected</item>
@@ -17,13 +17,15 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="theme_var">
-        <item>System</item>
+    <string-array
+        name="theme_var"
+        tools:ignore="InconsistentArrays">
         <item>Light</item>
         <item>Dark</item>
     </string-array>
-    <string-array name="theme_val">
-        <item>system</item>
+    <string-array
+        name="theme_val"
+        tools:ignore="InconsistentArrays">
         <item>light</item>
         <item>dark</item>
     </string-array>

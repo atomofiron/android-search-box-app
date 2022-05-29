@@ -24,6 +24,11 @@
         <item name="cardViewStyle">@style/CardViewStyle</item>
 	</style>
 
+	<style name="AppTheme.Amoled" parent="@style/AppTheme">
+		<item name="android:windowBackground">@color/windowBackgroundThemedAmoled</item>
+		<item name="colorBackground">@color/windowBackgroundThemedAmoled</item>
+	</style>
+
 	<style name="AppTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
 		<item name="android:windowEnableSplitTouch">false</item>
 		<item name="android:splitMotionEvents">false</item>
@@ -31,6 +36,7 @@
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
 		<item name="android:windowBackground">@color/windowBackgroundThemed</item>
+		<item name="cardBackgroundColor">@color/cardBackgroundColorLight</item>
 		<item name="android:colorPrimary">@color/colorPrimaryLight</item>
 		<item name="android:colorPrimaryDark">@color/colorPrimaryLight</item>
 		<item name="android:colorAccent">@color/colorAccentLight</item>
@@ -69,6 +75,7 @@
 		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 		<item name="android:clipToPadding">false</item>
 		<item name="android:windowBackground">@color/windowBackgroundThemed</item>
+		<item name="cardBackgroundColor">@color/cardBackgroundColorDark</item>
 		<item name="android:colorPrimary">@color/colorPrimaryDark</item>
 		<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="android:colorAccent">@color/colorAccentDark</item>

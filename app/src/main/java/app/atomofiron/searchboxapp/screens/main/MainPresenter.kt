@@ -25,9 +25,12 @@ class MainPresenter(
     private val scope = viewModel.viewModelScope
 
     init {
-        viewModel.setTheme.value = preferenceStore.appTheme.entity
-        preferenceStore.appTheme.collect(scope) {
-            viewModel.setTheme.value = it
+        preferenceStore.appTheme.collect(scope) { theme ->
+            viewModel.setTheme.value = theme
+        }
+        preferenceStore.deepBlack.collect(scope) { deepBlack ->
+            val appTheme = preferenceStore.appTheme.entity
+            viewModel.setTheme.value = appTheme.copy(deepBlack)
         }
         preferenceStore.appOrientation.collect(scope) {
             viewModel.setOrientation.value = it

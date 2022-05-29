@@ -3,7 +3,8 @@
 	<color name="statusBarColor">@color/system_bar_dark</color>
 	<color name="navigationBarColor">@color/system_bar_dark</color>
 
-	<color name="windowBackgroundThemed">@android:color/background_dark</color>
+	<color name="windowBackgroundThemed">@color/windowBackgroundDark</color>
+	<color name="windowBackgroundThemedAmoled">@color/windowBackgroundBlack</color>
 
 	<color name="colorPrimary">@color/colorPrimaryDark</color>
 	<color name="colorPrimaryLite">@color/colorPrimaryDarkLite</color>
