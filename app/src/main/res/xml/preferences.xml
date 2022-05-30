@@ -93,7 +93,7 @@
         <Preference
             app:title="@string/pref_toybox"
             app:key="pref_toybox"
-            app:icon="@drawable/ic_toybox"
+            app:icon="@drawable/ic_shell"
             />
     </PreferenceCategory>
     <PreferenceCategory
