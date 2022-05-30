@@ -49,12 +49,20 @@ class ExplorerModule {
     @ExplorerScope
     fun itemListener(
         viewModel: ExplorerViewModel,
+        menuListenerDelegate: BottomSheetMenuListenerDelegate,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
         router: ExplorerRouter,
         explorerInteractor: ExplorerInteractor,
     ): ExplorerItemActionListenerDelegate {
-        return ExplorerItemActionListenerDelegate(viewModel, explorerStore, preferenceStore, router, explorerInteractor)
+        return ExplorerItemActionListenerDelegate(
+            viewModel,
+            menuListenerDelegate,
+            explorerStore,
+            preferenceStore,
+            router,
+            explorerInteractor,
+        )
     }
 
     @Provides

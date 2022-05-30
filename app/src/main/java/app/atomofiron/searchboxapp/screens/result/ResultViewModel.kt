@@ -20,7 +20,7 @@ import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParam
 import javax.inject.Inject
 
 class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPresenter>() {
-    val checked = ArrayList<XFile>()
+    val checked = mutableListOf<XFile>()
 
     val oneFileOptions = listOf(R.id.menu_copy_path, R.id.menu_remove)
     val manyFilesOptions = listOf(R.id.menu_remove)

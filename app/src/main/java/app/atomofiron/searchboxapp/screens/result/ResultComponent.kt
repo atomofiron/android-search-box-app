@@ -82,10 +82,11 @@ class ResultModule {
     fun resultItemActionDelegate(
         viewModel: ResultViewModel,
         router: ResultRouter,
+        menuListenerDelegate: BottomSheetMenuListenerDelegate,
         interactor: ResultInteractor,
-        preferenceStore: PreferenceStore
+        preferenceStore: PreferenceStore,
     ): ResultItemActionDelegate {
-        return ResultItemActionDelegate(viewModel, router, interactor, preferenceStore)
+        return ResultItemActionDelegate(viewModel, router, menuListenerDelegate, interactor, preferenceStore)
     }
 
     @Provides

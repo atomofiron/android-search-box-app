@@ -28,7 +28,7 @@ class ExplorerPresenter(
     private val explorerInteractor: ExplorerInteractor,
     itemListener: ExplorerItemActionListenerDelegate,
     placesListener: PlacesActionListenerDelegate,
-    menuListener: BottomSheetMenuListenerDelegate
+    private val menuListener: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router,),
     ExplorerItemActionListener by itemListener,
     PlacesAdapter.ItemActionListener by placesListener,
@@ -82,7 +82,8 @@ class ExplorerPresenter(
             files.first().isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }
-        viewModel.showOptions.value = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
+        val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
+        menuListener.showOptions(options)
     }
 
     fun onSettingsOptionSelected() = router.showSettings()

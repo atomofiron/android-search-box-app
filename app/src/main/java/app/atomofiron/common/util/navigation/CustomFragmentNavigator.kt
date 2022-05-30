@@ -182,7 +182,7 @@ class CustomFragmentNavigator(
         ft.setPrimaryNavigationFragment(frag)
 
         @IdRes val destId = destination.id
-        // TODO Build first class singleTop behavior for fragments
+        // TO DO Build first class singleTop behavior for fragments
         val isSingleTopReplacement = (
                 navOptions != null && !initialNavigation &&
                         navOptions.shouldLaunchSingleTop() &&

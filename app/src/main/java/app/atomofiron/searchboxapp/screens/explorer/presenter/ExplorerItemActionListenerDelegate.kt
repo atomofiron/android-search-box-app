@@ -17,10 +17,11 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionLi
 
 class ExplorerItemActionListenerDelegate(
     private val viewModel: ExplorerViewModel,
+    private val menuListenerDelegate: BottomSheetMenuListenerDelegate,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
     private val router: ExplorerRouter,
-    private val explorerInteractor: ExplorerInteractor
+    private val explorerInteractor: ExplorerInteractor,
 ) : ExplorerItemActionListener {
 
     override fun onItemLongClick(item: XFile) {
@@ -36,7 +37,7 @@ class ExplorerItemActionListenerDelegate(
             else -> viewModel.oneFileOptions
         }
         val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
-        viewModel.showOptions.value = options
+        menuListenerDelegate.showOptions(options)
     }
 
     override fun onItemClick(item: XFile) {

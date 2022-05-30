@@ -14,8 +14,9 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerPresenter
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 
-class RenameDelegate(private val output: ExplorerPresenter)
-    : BottomSheetDelegate(R.layout.sheet_explorer_rename), View.OnClickListener, TextWatcher {
+class RenameDelegate(private val output: ExplorerPresenter) : BottomSheetDelegate(R.layout.sheet_explorer_rename),
+    View.OnClickListener, TextWatcher {
+
     private val itemView: View get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_item)
     private val etName: EditText get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_et)
     private val btnConfirm: Button get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_btn)
@@ -58,9 +59,9 @@ class RenameDelegate(private val output: ExplorerPresenter)
     }
 
     data class RenameData(
-            val composition: ExplorerItemComposition,
-            val item: XFile,
-            val items: List<String>
+        val composition: ExplorerItemComposition,
+        val item: XFile,
+        val items: List<String>
     )
 
     override fun afterTextChanged(s: Editable?) = Unit

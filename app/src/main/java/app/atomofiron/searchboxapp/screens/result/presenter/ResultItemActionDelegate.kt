@@ -15,8 +15,9 @@ import app.atomofiron.searchboxapp.utils.Util
 class ResultItemActionDelegate(
     private val viewModel: ResultViewModel,
     private val router: ResultRouter,
+    private val menuListenerDelegate: BottomSheetMenuListenerDelegate,
     private val interactor: ResultInteractor,
-    private val preferenceStore: PreferenceStore
+    private val preferenceStore: PreferenceStore,
 ) : ResultItemActionListener {
     override fun onItemClick(item: XFile) {
         item as FinderResult
@@ -29,13 +30,12 @@ class ResultItemActionDelegate(
         }
     }
 
-    override fun onItemLongClick(item: XFile) {
-        val options = if (viewModel.checked.contains(item)) {
-            ExplorerItemOptions(viewModel.manyFilesOptions, viewModel.checked, viewModel.composition.value)
-        } else {
-            ExplorerItemOptions(viewModel.oneFileOptions, listOf(item), viewModel.composition.value)
+    override fun onItemLongClick(item: XFile) = viewModel.run {
+        val options = when {
+            checked.contains(item) -> ExplorerItemOptions(manyFilesOptions, checked, composition.value)
+            else -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
         }
-        viewModel.showOptions.value = options
+        menuListenerDelegate.showOptions(options)
     }
 
     override fun onItemCheck(item: XFile, isChecked: Boolean) {

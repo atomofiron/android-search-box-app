@@ -34,7 +34,7 @@ class ResultPresenter(
     private val resultChannel: ResultChannel,
     appStore: AppStore,
     itemActionDelegate: ResultItemActionDelegate,
-    menuListenerDelegate: BottomSheetMenuListenerDelegate
+    private val menuListenerDelegate: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
         ResultItemActionListener by itemActionDelegate,
         BottomSheetMenuListener by menuListenerDelegate {
@@ -85,13 +85,13 @@ class ResultPresenter(
 
     fun onStopClick() = interactor.stop(viewModel.task.value.uuid)
 
-    fun onOptionsClick() {
+    fun onOptionsClick() = viewModel.run {
         val ids = when (viewModel.checked.size) {
             1 -> viewModel.oneFileOptions
             else -> viewModel.manyFilesOptions
         }
         val options = ExplorerItemOptions(ids, viewModel.checked, viewModel.composition.value)
-        viewModel.showOptions.value = options
+        menuListenerDelegate.showOptions(options)
     }
 
     fun onExportClick() {
