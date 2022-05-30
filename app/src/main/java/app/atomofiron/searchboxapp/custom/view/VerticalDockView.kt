@@ -10,12 +10,12 @@ import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.DrawerStateListenerImpl
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.navigation.NavigationView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.LayoutDrawerNavigationBinding
 import app.atomofiron.searchboxapp.utils.Const
+import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
 
 class VerticalDockView @JvmOverloads constructor(
     context: Context,
@@ -23,7 +23,7 @@ class VerticalDockView @JvmOverloads constructor(
     defStyleAttr: Int = com.google.android.material.R.attr.navigationViewStyle
 ) : NavigationView(context, attrs, defStyleAttr) {
 
-    private val binding = LayoutDrawerNavigationBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding = LayoutDrawerNavigationBinding.inflate(LayoutInflater.from(context), this)
 
     private val ibDockSide: ImageButton = findViewById(R.id.drawer_ib_dock_side)
     val recyclerView: RecyclerView = findViewById(R.id.drawer_rv)

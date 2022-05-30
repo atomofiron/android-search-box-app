@@ -96,7 +96,6 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     override fun onApplyInsets(root: View) {
         ViewGroupInsetsProxy.set(root)
         ViewGroupInsetsProxy.set(binding.coordinator)
-        ViewGroupInsetsProxy.set(binding.verticalDock)
         ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
         ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }
