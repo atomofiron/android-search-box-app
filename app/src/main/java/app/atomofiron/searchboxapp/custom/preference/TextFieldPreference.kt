@@ -13,6 +13,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
+import app.atomofiron.searchboxapp.custom.view.TextField
 
 class TextFieldPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs) {
     companion object {

@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.custom.preference
+package app.atomofiron.searchboxapp.custom.view
 
 import android.content.Context
 import android.text.Editable

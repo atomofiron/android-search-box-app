@@ -44,7 +44,7 @@ class MainPresenter(
         viewModel.tasks.value = Array(16) { XTask() }.toList()
     }
 
-    fun onJoystickClick() = when {
+    fun onEscClick() = when {
         router.onBack() -> Unit
         else -> viewModel.showExitSnackbar.invoke()
     }

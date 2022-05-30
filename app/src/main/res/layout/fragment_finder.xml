@@ -39,8 +39,8 @@
 		android:id="@+id/vertical_dock"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
+		android:layout_gravity="start"
 		android:background="?attr/colorBackground"
 		app:title="@string/history"
-		android:layout_gravity="start"
 		/>
 </androidx.drawerlayout.widget.DrawerLayout>

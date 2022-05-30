@@ -18,9 +18,10 @@ fun View.showKeyboard(): Boolean {
 }
 
 fun View.hideKeyboard(): Boolean {
-    clearFocus()
     val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-    return inputMethodManager?.hideSoftInputFromWindow(windowToken, 0) == true
+    val wasShown = inputMethodManager?.hideSoftInputFromWindow(windowToken, 0) == true
+    clearFocus()
+    return wasShown
 }
 
 

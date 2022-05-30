@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.view.NumberTextField
 
 class NumberPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs) {
     private var editText: NumberTextField? = null

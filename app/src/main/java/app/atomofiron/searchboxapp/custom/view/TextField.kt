@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.custom.preference
+package app.atomofiron.searchboxapp.custom.view
 
 import android.content.Context
 import android.graphics.Rect
@@ -7,11 +7,10 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
-import app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
 
 open class TextField @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null
 ) : AutoHideKeyboardField(context, attrs), TextWatcher {
     private var onSubmitListener: OnSubmitListener? = null
 

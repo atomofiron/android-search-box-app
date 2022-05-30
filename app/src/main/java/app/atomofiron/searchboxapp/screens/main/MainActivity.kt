@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         val viewWithFocus = binding.root.findFocus() as? EditText
         val consumed = viewWithFocus?.hideKeyboard() == true
         if (!consumed) {
-            presenter.onJoystickClick()
+            presenter.onEscClick()
         }
     }
 
