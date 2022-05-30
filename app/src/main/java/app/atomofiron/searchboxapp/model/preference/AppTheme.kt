@@ -45,7 +45,10 @@ sealed class AppTheme(
             NAME_SYSTEM -> System(deepBlack)
             NAME_LIGHT -> Light
             NAME_DARK -> Dark(deepBlack)
-            else -> System(deepBlack)
+            else -> when {
+                SDK_INT >= Q -> System(deepBlack)
+                else -> Light
+            }
         }
     }
 }

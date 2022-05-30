@@ -15,7 +15,6 @@
     <string-array
         name="theme_var"
         tools:ignore="InconsistentArrays">
-        <item>Системная</item>
         <item>Светлая</item>
         <item>Тёмная</item>
     </string-array>
