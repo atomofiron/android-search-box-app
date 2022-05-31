@@ -58,13 +58,14 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = explorerAdapter
 
-        binding.bottomBar.setOnMenuItemClickListener { id ->
-            when (id) {
+        binding.bottomBar.setOnItemSelectedListener { item ->
+            when (item.itemId) {
                 R.id.menu_places -> binding.verticalDock.open()
                 R.id.menu_search -> presenter.onSearchOptionSelected()
                 R.id.menu_options -> presenter.onOptionsOptionSelected()
                 R.id.menu_settings -> presenter.onSettingsOptionSelected()
             }
+            false
         }
 
         binding.verticalDock.run {

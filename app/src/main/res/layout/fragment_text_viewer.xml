@@ -22,11 +22,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         >
-        <app.atomofiron.searchboxapp.custom.view.BottomMenuBar
+        <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottom_tab_bar_height"
             app:menu="@menu/nav_text_viewer"
+            app:itemRippleColor="?colorRipple"
+            app:itemTextColor="?android:textColorPrimary"
+            app:itemIconTint="?android:textColorPrimary"
+            app:labelVisibilityMode="labeled"
+            app:elevation="0dp"
             />
         <LinearLayout
             android:layout_width="match_parent"

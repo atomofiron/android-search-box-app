@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.result
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -56,18 +57,19 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             layoutManager = LinearLayoutManager(requireContext())
             adapter = resultAdapter
         }
-        binding.bottomBar.setOnMenuItemClickListener(::onBottomMenuItemClick)
+        binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
         bottomItemMenu.bottomSheetView = binding.bottomSheet
         viewModel.onViewCollect()
         onApplyInsets(view)
     }
 
-    private fun onBottomMenuItemClick(id: Int) {
-        when (id) {
+    private fun onBottomMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menu_stop -> presenter.onStopClick()
             R.id.menu_options -> presenter.onOptionsClick()
             R.id.menu_export -> presenter.onExportClick()
         }
+        return false
     }
 
     override fun ResultViewModel.onViewCollect() {

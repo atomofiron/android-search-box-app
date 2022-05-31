@@ -54,13 +54,14 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             adapter = finderAdapter
         }
 
-        binding.bottomBar.setOnMenuItemClickListener { id ->
-            when (id) {
+        binding.bottomBar.setOnItemSelectedListener { item ->
+            when (item.itemId) {
                 R.id.menu_history -> binding.verticalDock.open()
                 R.id.menu_explorer -> presenter.onExplorerOptionSelected()
                 R.id.menu_options -> presenter.onConfigOptionSelected()
                 R.id.menu_settings -> presenter.onSettingsOptionSelected()
             }
+            false
         }
 
         binding.verticalDock.run {

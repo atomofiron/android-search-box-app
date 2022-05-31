@@ -32,10 +32,10 @@
     <!-- -->
 
 	<color name="colorAccentLight">#ff1D7874</color>
-	<color name="colorRippleLight">#7f4Dc8c4</color>
+	<color name="colorRippleLight">#5f1D7874</color>
 
 	<color name="colorAccentDark">#ff5BC0BE</color>
-	<color name="colorRippleDark">#7f5BC0BE</color>
+	<color name="colorRippleDark">#5f5BC0BE</color>
 
 	<color name="colorPrimaryRed">#ff781D10</color>
 	<color name="colorAccentRed">#ffad7874</color>

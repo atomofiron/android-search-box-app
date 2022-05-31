@@ -51,12 +51,13 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             adapter = viewerAdapter
             itemAnimator = null
         }
-        binding.bottomBar.setOnMenuItemClickListener { id ->
-            when (id) {
+        binding.bottomBar.setOnItemSelectedListener { item ->
+            when (item.itemId) {
                 R.id.menu_search -> searchDelegate.show(viewModel.xFile, viewModel.composition)
                 R.id.menu_previous -> presenter.onPreviousClick()
                 R.id.menu_next -> presenter.onNextClick()
             }
+            false
         }
         searchDelegate.bottomSheetView = binding.bottomSheet
         viewModel.onViewCollect()
