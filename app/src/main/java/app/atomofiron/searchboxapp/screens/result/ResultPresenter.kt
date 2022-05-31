@@ -6,7 +6,7 @@ import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenuListener
+import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
@@ -37,7 +37,7 @@ class ResultPresenter(
     private val menuListenerDelegate: BottomSheetMenuListenerDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
         ResultItemActionListener by itemActionDelegate,
-        BottomSheetMenuListener by menuListenerDelegate {
+        MenuListener by menuListenerDelegate {
     companion object {
         private const val UNDEFINED = -1L
     }

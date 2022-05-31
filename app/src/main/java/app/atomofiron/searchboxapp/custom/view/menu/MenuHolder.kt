@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu
+package app.atomofiron.searchboxapp.custom.view.menu
 
 import android.view.MenuItem
 import android.view.View
@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import app.atomofiron.searchboxapp.R
 
-class BottomSheetMenuHolder(
+class MenuHolder(
     itemView: View,
-    private val listener: BottomSheetMenuListener
+    private val listener: MenuListener
 ) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
     companion object {
         private const val CONFIRM_BUTTON_DURATION = 1024L

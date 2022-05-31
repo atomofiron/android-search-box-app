@@ -13,6 +13,7 @@ import app.atomofiron.searchboxapp.model.explorer.Change
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate.RenameData
 import javax.inject.Inject
@@ -25,7 +26,7 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     val manyFilesOptions = listOf(R.id.menu_remove)
 
     val permissionRequiredWarning = dataFlow(Unit, single = true)
-    val showOptions = dataFlow<ExplorerItemOptions>(single = true)
+    val showOptions = dataFlow<Pair<ExplorerItemOptions, CurtainApi.Controller>>(single = true)
     val showCreate = dataFlow<XFile>(single = true)
     val showRename = dataFlow<RenameData>(single = true)
     val scrollToCurrentDir = dataFlow(Unit, single = true)

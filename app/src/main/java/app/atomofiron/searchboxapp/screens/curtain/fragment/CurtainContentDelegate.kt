@@ -63,5 +63,4 @@ class CurtainContentDelegate(
         }
         return holder
     }
-
 }

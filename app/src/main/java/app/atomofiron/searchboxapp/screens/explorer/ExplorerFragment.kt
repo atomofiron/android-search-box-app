@@ -14,10 +14,12 @@ import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
+import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
+import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
-import app.atomofiron.searchboxapp.screens.explorer.sheet.BottomSheetMenuWithTitle
+import app.atomofiron.searchboxapp.screens.explorer.sheet.CurtainMenuWithTitle
 import app.atomofiron.searchboxapp.screens.explorer.sheet.CreateDelegate
 import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
@@ -27,7 +29,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     KeyCodeConsumer
 {
     private lateinit var binding: FragmentExplorerBinding
-    private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
+    private lateinit var bottomItemMenu: CurtainMenuWithTitle
     private lateinit var renameDelegate: RenameDelegate
     private lateinit var createDelegate: CreateDelegate
 
@@ -45,7 +47,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         renameDelegate = RenameDelegate(presenter)
         createDelegate = CreateDelegate(presenter)
-        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_explorer, requireContext(), presenter)
+        bottomItemMenu = CurtainMenuWithTitle(R.menu.item_options_explorer, presenter)
 
         headerViewOutputDelegate = HeaderViewOutputDelegate(explorerAdapter, presenter)
     }
@@ -75,7 +77,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         renameDelegate.bottomSheetView = binding.bottomSheet
         createDelegate.bottomSheetView = binding.bottomSheet
-        bottomItemMenu.bottomSheetView = binding.bottomSheet
 
         explorerAdapter.setHeaderView(binding.explorerHeader)
         binding.explorerHeader.setOnItemActionListener(headerViewOutputDelegate)
@@ -96,10 +97,15 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(places, collector = placesAdapter::setItems)
-        viewCollect(showOptions, collector = bottomItemMenu::show)
+        viewCollect(showOptions, collector = ::setOptions)
         viewCollect(showRename, collector = renameDelegate::show)
         viewCollect(showCreate, collector = createDelegate::show)
         viewCollect(scrollToCurrentDir, collector = explorerAdapter::scrollToCurrentDir)
+    }
+
+    private fun setOptions(pair: Pair<ExplorerItemOptions, CurtainApi.Controller>) {
+        bottomItemMenu.setOptions(pair.first)
+        pair.second.setAdapter(bottomItemMenu)
     }
 
     override fun onApplyInsets(root: View) {

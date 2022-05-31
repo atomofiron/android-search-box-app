@@ -15,6 +15,7 @@ import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 import javax.inject.Inject
@@ -28,7 +29,7 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPre
     val task = dataFlow<FinderTask>()
     val composition = dataFlow<ExplorerItemComposition>()
     val enableOptions = dataFlow(value = false)
-    val showOptions = dataFlow<ExplorerItemOptions>(single = true)
+    val showOptions = dataFlow<Pair<ExplorerItemOptions, CurtainApi.Controller>>(single = true)
     val notifyTaskHasChanged = dataFlow(Unit, single = true)
     val notifyItemChanged = dataFlow<FinderResultItem.Item>(single = true)
     val alerts = dataFlow<String>(single = true)

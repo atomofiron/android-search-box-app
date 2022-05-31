@@ -27,9 +27,10 @@
         android:layout_marginEnd="@dimen/common_margin"
         android:visibility="gone"
         />
-    <androidx.recyclerview.widget.RecyclerView
+    <app.atomofiron.searchboxapp.custom.view.MenuView
         android:id="@+id/explorer_menu_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/bottom_tab_bar_height"
         />
 </LinearLayout>

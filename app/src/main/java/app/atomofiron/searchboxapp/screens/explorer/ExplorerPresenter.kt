@@ -4,7 +4,7 @@ import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.value
-import app.atomofiron.searchboxapp.custom.view.bottom_sheet_menu.BottomSheetMenuListener
+import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -32,7 +32,7 @@ class ExplorerPresenter(
 ) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router,),
     ExplorerItemActionListener by itemListener,
     PlacesAdapter.ItemActionListener by placesListener,
-    BottomSheetMenuListener by menuListener {
+    MenuListener by menuListener {
 
     private val resources by appStore.resourcesProperty
 

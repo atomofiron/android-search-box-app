@@ -21,7 +21,8 @@ import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.sheet.BottomSheetMenuWithTitle
+import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
+import app.atomofiron.searchboxapp.screens.explorer.sheet.CurtainMenuWithTitle
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
 
 class ResultFragment : Fragment(R.layout.fragment_result),
@@ -31,7 +32,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     private lateinit var binding: FragmentResultBinding
 
     private val resultAdapter = ResultAdapter()
-    private lateinit var bottomItemMenu: BottomSheetMenuWithTitle
+    private lateinit var bottomItemMenu: CurtainMenuWithTitle
     private val errorSnackbar by lazy(LazyThreadSafetyMode.NONE) {
         Snackbar.make(requireView(), "", Snackbar.LENGTH_INDEFINITE)
             .setAnchorView(anchorView)
@@ -44,7 +45,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         initViewModel(this, ResultViewModel::class, savedInstanceState)
 
         resultAdapter.itemActionListener = presenter
-        bottomItemMenu = BottomSheetMenuWithTitle(R.menu.item_options_result, requireContext(), presenter)
+        bottomItemMenu = CurtainMenuWithTitle(R.menu.item_options_result, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +59,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             adapter = resultAdapter
         }
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
-        bottomItemMenu.bottomSheetView = binding.bottomSheet
         viewModel.onViewCollect()
         onApplyInsets(view)
     }
@@ -76,7 +76,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         viewCollect(composition, collector = ::onCompositionChange)
         viewCollect(task, collector = ::onTaskChange)
         viewCollect(enableOptions, collector = ::enableOptions)
-        viewCollect(showOptions, collector = ::showOptions)
+        viewCollect(showOptions, collector = ::setOptions)
         viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
         viewCollect(notifyItemChanged, collector = resultAdapter::setItem) // todo works poor
     }
@@ -136,13 +136,18 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         }
     }
 
+    private fun setOptions(pair: Pair<ExplorerItemOptions, CurtainApi.Controller>) {
+        bottomItemMenu.setOptions(pair.first)
+        pair.second.setAdapter(bottomItemMenu)
+    }
+
     private fun showOptions(options: ExplorerItemOptions) {
-        bottomItemMenu.show(options)
-        if (options.items.size == 1) {
+        bottomItemMenu.setOptions(options)
+        /* todo if (options.items.size == 1) {
             bottomItemMenu.tvDescription.isVisible = true
             bottomItemMenu.tvDescription.text = options.items[0].completedPath
         } else {
             bottomItemMenu.tvDescription.isGone = true
-        }
+        }*/
     }
 }

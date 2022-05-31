@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.result
 
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -93,10 +94,12 @@ class ResultModule {
     @ResultScope
     fun menuListenerDelegate(
         viewModel: ResultViewModel,
+        router: ResultRouter,
         interactor: ResultInteractor,
         appStore: AppStore,
+        curtainChannel: CurtainChannel,
     ): BottomSheetMenuListenerDelegate {
-        return BottomSheetMenuListenerDelegate(viewModel, interactor, appStore)
+        return BottomSheetMenuListenerDelegate(viewModel, router, interactor, appStore, curtainChannel)
     }
 
     @Provides
@@ -117,4 +120,5 @@ interface ResultDependencies {
     fun resultStore(): ResultStore
     fun resultChannel(): ResultChannel
     fun appStore(): AppStore
+    fun curtainChannel(): CurtainChannel
 }

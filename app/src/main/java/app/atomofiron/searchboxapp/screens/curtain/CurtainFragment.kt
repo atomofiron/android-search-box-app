@@ -84,10 +84,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
         transitionAnimator = TransitionAnimator(binding, ::updateUi)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            ViewCompat.dispatchApplyWindowInsets(binding.curtainSheet, insets)
-            WindowInsetsCompat.CONSUMED
-        }
+        ViewGroupInsetsProxy.set(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.curtainSheet, insetsCalculator)
 
         onViewCollect()
@@ -264,22 +261,15 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
             private set
 
         override fun onApplyWindowInsets(view: View, insets: WindowInsetsCompat): WindowInsetsCompat {
-            var ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-            var systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            var statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             insetBottom = ime.bottom
-            insetTop = systemBars.top
+            insetTop = statusBars.top
             paddingTop = view.resources.getDimensionPixelSize(R.dimen.curtain_padding_top)
-            val contentMargin = view.resources.getDimensionPixelSize(R.dimen.content_margin)
-            val minPaddingBottom = view.resources.getDimensionPixelSize(R.dimen.curtain_padding_bottom)
-            var systemBarsBottom = if (systemBars.bottom == 0) 0 else minPaddingBottom
-            systemBarsBottom = max(systemBarsBottom, systemBars.bottom + contentMargin)
-            val top = paddingTop + systemBars.top
-            val imeBottom = if (ime.bottom == 0) 0 else ime.bottom + contentMargin
-            ime = Insets.of(ime.left, ime.top, ime.right, imeBottom)
-            systemBars = Insets.of(systemBars.left, top, systemBars.right, systemBarsBottom)
+            val top = paddingTop + statusBars.top
+            statusBars = Insets.of(statusBars.left, top, statusBars.right, statusBars.bottom)
             val new = WindowInsetsCompat.Builder(insets)
-                .setInsets(WindowInsetsCompat.Type.statusBars(), systemBars)
-                .setInsets(WindowInsetsCompat.Type.ime(), ime)
+                .setInsets(WindowInsetsCompat.Type.statusBars(), statusBars)
                 .build()
             ViewGroupInsetsProxy.dispatchChildrenWindowInsets(view, new)
             return WindowInsetsCompat.CONSUMED

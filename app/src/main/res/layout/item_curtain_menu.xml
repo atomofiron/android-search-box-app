@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,21 +18,21 @@
         android:paddingBottom="@dimen/common_margin"
         android:gravity="center_vertical"
         >
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/item_menu_iv_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tint="?attr/colorContent"
-        />
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/item_menu_tv_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="@dimen/common_margin"
-        android:layout_marginEnd="@dimen/common_margin"
-        android:textColor="?attr/colorContent"
-        />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_menu_iv_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="?attr/colorContent"
+            />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/item_menu_tv_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/common_margin"
+            android:layout_marginEnd="@dimen/common_margin"
+            android:textColor="?attr/colorContent"
+            />
     </LinearLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/item_menu_tv_button"

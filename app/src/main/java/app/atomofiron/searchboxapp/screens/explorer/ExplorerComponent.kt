@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -75,10 +76,12 @@ class ExplorerModule {
     @ExplorerScope
     fun menuListener(
         viewModel: ExplorerViewModel,
+        router: ExplorerRouter,
         explorerStore: ExplorerStore,
         explorerInteractor: ExplorerInteractor,
+        curtainChannel: CurtainChannel,
     ): BottomSheetMenuListenerDelegate {
-        return BottomSheetMenuListenerDelegate(viewModel, explorerStore, explorerInteractor)
+        return BottomSheetMenuListenerDelegate(viewModel, router, explorerStore, explorerInteractor, curtainChannel)
     }
 
     @Provides
@@ -126,4 +129,5 @@ interface ExplorerDependencies {
     fun explorerStore(): ExplorerStore
     fun preferenceStore(): PreferenceStore
     fun appStore(): AppStore
+    fun curtainChannel(): CurtainChannel
 }
