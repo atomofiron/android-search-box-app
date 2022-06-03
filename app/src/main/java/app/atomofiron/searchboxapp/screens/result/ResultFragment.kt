@@ -19,9 +19,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
-import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.sheet.CurtainMenuWithTitle
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
 
@@ -45,7 +43,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         initViewModel(this, ResultViewModel::class, savedInstanceState)
 
         resultAdapter.itemActionListener = presenter
-        bottomItemMenu = CurtainMenuWithTitle(R.menu.item_options_result, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,7 +73,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         viewCollect(composition, collector = ::onCompositionChange)
         viewCollect(task, collector = ::onTaskChange)
         viewCollect(enableOptions, collector = ::enableOptions)
-        viewCollect(showOptions, collector = ::setOptions)
         viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
         viewCollect(notifyItemChanged, collector = resultAdapter::setItem) // todo works poor
     }
@@ -134,20 +130,5 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         if (item.isEnabled != enable) {
             item.isEnabled = enable
         }
-    }
-
-    private fun setOptions(pair: Pair<ExplorerItemOptions, CurtainApi.Controller>) {
-        bottomItemMenu.setOptions(pair.first)
-        pair.second.setAdapter(bottomItemMenu)
-    }
-
-    private fun showOptions(options: ExplorerItemOptions) {
-        bottomItemMenu.setOptions(options)
-        /* todo if (options.items.size == 1) {
-            bottomItemMenu.tvDescription.isVisible = true
-            bottomItemMenu.tvDescription.text = options.items[0].completedPath
-        } else {
-            bottomItemMenu.tvDescription.isGone = true
-        }*/
     }
 }

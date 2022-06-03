@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/bottom_sheet_title_margin"
+        android:layout_marginBottom="@dimen/content_margin_half"
         android:textSize="@dimen/bottom_sheet_title_size"
         android:textColor="?attr/colorContent"
         android:textStyle="bold"

@@ -66,24 +66,21 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
             headerView.isGone -> return
         }
 
+        val headerItemView = children[headerItemPosition]
         val firstVisiblePosition = children.keys.first()
-        val notChildPosition = children.keys.find { !headerItem.hasChild(items[it]) } ?: UNDEFINED
-        val childPosition = children.keys.find { headerItem.hasChild(items[it]) } ?: Int.MAX_VALUE
+        val notChildPosition = children.keys.find { it > headerItemPosition && !headerItem.hasChild(items[it]) } ?: UNDEFINED
+        val childPosition = children.keys.find { headerItem.hasChild(items[it]) } ?: UNDEFINED
         val top = when {
-            (children[headerItemPosition]?.top ?: 0) >= topEdge -> -headerHeight
+            headerItem.children.isNullOrEmpty() -> -headerHeight
+            (headerItemView?.top ?: 0) >= topEdge -> -headerHeight
             notChildPosition > childPosition -> {
-                val itemView = children.getValue(notChildPosition)
-                min(0, itemView.top - headerHeight)
+                val bottom = children[notChildPosition.dec()]?.bottom ?: 0
+                min(0, bottom - headerHeight)
             }
-            firstVisiblePosition == headerItemPosition -> when {
-                headerItem.children.isNullOrEmpty() -> {
-                    val itemView = children.getValue(firstVisiblePosition.inc())
-                    min(0, itemView.top - headerHeight)
-                }
-                else -> 0
-            }
+            firstVisiblePosition == headerItemPosition -> 0
             firstVisiblePosition == childPosition -> 0
-            else -> -headerHeight
+            headerItemView == null -> -headerHeight
+            else -> 0
         }
 
         headerView.top = top
@@ -122,14 +119,17 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         if (child != null) {
             val dynamicOffset = child.bottom * shadowSize / parent.measuredHeight
             when {
-                currentIsNullOrEmpty -> drawForEmpty(canvas, child, parent, dynamicOffset, drawTop = child.top > 0)
+                currentIsNullOrEmpty -> drawForEmpty(canvas, child, parent, dynamicOffset)
                 child.top >= topEdge -> drawTop(canvas, child, dynamicOffset)
             }
         }
 
         child = child ?: children.values.first()
-        if (child.top < topEdge) {
-            drawTopPinned(canvas, child)
+        val content = currentDir.children
+        when {
+            content.isNullOrEmpty() -> Unit
+            children.keys.first() > headerItemPosition + content.size -> Unit
+            child.top < topEdge -> drawTopPinned(canvas, child)
         }
     }
 
@@ -139,13 +139,11 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         drawBottom(canvas, rect)
     }
 
-    private fun drawForEmpty(canvas: Canvas, child: View, parent: RecyclerView, dynamicOffset: Int, drawTop: Boolean) {
+    private fun drawForEmpty(canvas: Canvas, child: View, parent: RecyclerView, dynamicOffset: Int) {
         val rect = Rect()
         parent.getDecoratedBoundsWithMargins(child, rect)
         drawBottom(canvas, rect)
-        if (drawTop) {
-            drawTop(canvas, child, dynamicOffset)
-        }
+        drawTop(canvas, child, dynamicOffset)
     }
 
     private fun drawTop(canvas: Canvas, child: View, dynamicOffset: Int) {

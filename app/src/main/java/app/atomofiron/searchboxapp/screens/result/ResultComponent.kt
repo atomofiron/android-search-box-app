@@ -15,7 +15,7 @@ import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.injectable.store.ResultStore
-import app.atomofiron.searchboxapp.screens.result.presenter.BottomSheetMenuListenerDelegate
+import app.atomofiron.searchboxapp.screens.result.presenter.ResultCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultItemActionDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 import javax.inject.Scope
@@ -61,7 +61,7 @@ class ResultModule {
         resultChannel: ResultChannel,
         appStore: AppStore,
         itemActionDelegate: ResultItemActionDelegate,
-        menuListenerDelegate: BottomSheetMenuListenerDelegate,
+        menuListenerDelegate: ResultCurtainMenuDelegate,
     ): ResultPresenter {
         return ResultPresenter(
             params,
@@ -83,7 +83,7 @@ class ResultModule {
     fun resultItemActionDelegate(
         viewModel: ResultViewModel,
         router: ResultRouter,
-        menuListenerDelegate: BottomSheetMenuListenerDelegate,
+        menuListenerDelegate: ResultCurtainMenuDelegate,
         interactor: ResultInteractor,
         preferenceStore: PreferenceStore,
     ): ResultItemActionDelegate {
@@ -98,8 +98,8 @@ class ResultModule {
         interactor: ResultInteractor,
         appStore: AppStore,
         curtainChannel: CurtainChannel,
-    ): BottomSheetMenuListenerDelegate {
-        return BottomSheetMenuListenerDelegate(viewModel, router, interactor, appStore, curtainChannel)
+    ): ResultCurtainMenuDelegate {
+        return ResultCurtainMenuDelegate(viewModel, router, interactor, appStore, curtainChannel)
     }
 
     @Provides

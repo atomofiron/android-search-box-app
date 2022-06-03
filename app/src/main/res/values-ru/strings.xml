@@ -77,8 +77,8 @@
     <string name="allow">Разрешить</string>
     <string name="places">Места</string>
     <string name="confirm">Подтвердить</string>
-    <string name="internal_storage">Внутреннее Хранилище</string>
-    <string name="external_storage">Внешнее Хранилище</string>
+    <string name="internal_storage">Внутреннее хранилище</string>
+    <string name="external_storage">Внешнее хранилище</string>
     <string name="oops_not_working">Упс, пока не работает</string>
     <string name="user_interface">Интерфейс</string>
     <string name="pref_explorer_item">Файл / Директория</string>

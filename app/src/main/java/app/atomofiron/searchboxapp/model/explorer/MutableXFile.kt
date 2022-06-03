@@ -246,6 +246,8 @@ class MutableXFile : XFile {
         return if (output.success) null else output.error
     }
 
+    fun isParentOf(xFile: XFile) = xFile.root == root && xFile.completedParentPath == completedPath
+
     private fun cacheAsDir(su: Boolean): String? {
         isCaching = true
         sleep((Math.random() * 300).toLong())

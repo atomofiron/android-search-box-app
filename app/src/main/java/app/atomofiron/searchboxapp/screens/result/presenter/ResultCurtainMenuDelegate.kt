@@ -11,11 +11,12 @@ import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
+import app.atomofiron.searchboxapp.screens.explorer.sheet.CurtainMenuWithTitle
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
 import app.atomofiron.searchboxapp.screens.result.ResultViewModel
 import app.atomofiron.searchboxapp.utils.showCurtain
 
-class BottomSheetMenuListenerDelegate(
+class ResultCurtainMenuDelegate(
     private val viewModel: ResultViewModel,
     private val router: ResultRouter,
     private val interactor: ResultInteractor,
@@ -23,22 +24,16 @@ class BottomSheetMenuListenerDelegate(
     curtainChannel: CurtainChannel,
 ) : Recipient, MenuListener {
 
-    private var options: ExplorerItemOptions? = null
     private val resources by appStore.resourcesProperty
+    private val curtainAdapter = CurtainMenuWithTitle(R.menu.item_options_result, this)
 
     init {
-        curtainChannel.flow.filterForMe().collect(viewModel.viewModelScope) { controller ->
-            val options = options
-            when {
-                controller == null -> Unit
-                options == null -> controller.close(immediately = true)
-                else -> viewModel.showOptions.value = Pair(options, controller)
-            }
-        }
+        curtainChannel.flow.filterForMe().collect(viewModel.viewModelScope, curtainAdapter::setController)
     }
 
     override fun onMenuItemSelected(id: Int) {
-        val options = options ?: return
+        val options = curtainAdapter.data ?: return
+        curtainAdapter.controller?.close()
         val items = options.items
         when (id) {
             R.id.menu_copy_path -> {
@@ -50,7 +45,13 @@ class BottomSheetMenuListenerDelegate(
     }
 
     fun showOptions(options: ExplorerItemOptions) {
-        this.options = options
+        curtainAdapter.data = options
         router.showCurtain(recipient, 0)
+        /* todo if (options.items.size == 1) {
+            bottomItemMenu.tvDescription.isVisible = true
+            bottomItemMenu.tvDescription.text = options.items[0].completedPath
+        } else {
+            bottomItemMenu.tvDescription.isGone = true
+        }*/
     }
 }

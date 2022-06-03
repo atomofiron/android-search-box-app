@@ -17,7 +17,7 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionLi
 
 class ExplorerItemActionListenerDelegate(
     private val viewModel: ExplorerViewModel,
-    private val menuListenerDelegate: BottomSheetMenuListenerDelegate,
+    private val menuListenerDelegate: ExplorerCurtainMenuDelegate,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
     private val router: ExplorerRouter,

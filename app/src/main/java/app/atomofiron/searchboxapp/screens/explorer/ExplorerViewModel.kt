@@ -26,7 +26,6 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     val manyFilesOptions = listOf(R.id.menu_remove)
 
     val permissionRequiredWarning = dataFlow(Unit, single = true)
-    val showOptions = dataFlow<Pair<ExplorerItemOptions, CurtainApi.Controller>>(single = true)
     val showCreate = dataFlow<XFile>(single = true)
     val showRename = dataFlow<RenameData>(single = true)
     val scrollToCurrentDir = dataFlow(Unit, single = true)

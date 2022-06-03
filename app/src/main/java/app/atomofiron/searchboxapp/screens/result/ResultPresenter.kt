@@ -6,7 +6,6 @@ import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
@@ -16,7 +15,7 @@ import app.atomofiron.searchboxapp.injectable.store.ResultStore
 import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
-import app.atomofiron.searchboxapp.screens.result.presenter.BottomSheetMenuListenerDelegate
+import app.atomofiron.searchboxapp.screens.result.presenter.ResultCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultItemActionDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 import app.atomofiron.searchboxapp.utils.Const
@@ -34,10 +33,9 @@ class ResultPresenter(
     private val resultChannel: ResultChannel,
     appStore: AppStore,
     itemActionDelegate: ResultItemActionDelegate,
-    private val menuListenerDelegate: BottomSheetMenuListenerDelegate
+    private val curtainMenuDelegate: ResultCurtainMenuDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
-        ResultItemActionListener by itemActionDelegate,
-        MenuListener by menuListenerDelegate {
+        ResultItemActionListener by itemActionDelegate {
     companion object {
         private const val UNDEFINED = -1L
     }
@@ -91,7 +89,7 @@ class ResultPresenter(
             else -> viewModel.manyFilesOptions
         }
         val options = ExplorerItemOptions(ids, viewModel.checked, viewModel.composition.value)
-        menuListenerDelegate.showOptions(options)
+        curtainMenuDelegate.showOptions(options)
     }
 
     fun onExportClick() {

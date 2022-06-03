@@ -15,7 +15,7 @@ import app.atomofiron.searchboxapp.utils.Util
 class ResultItemActionDelegate(
     private val viewModel: ResultViewModel,
     private val router: ResultRouter,
-    private val menuListenerDelegate: BottomSheetMenuListenerDelegate,
+    private val curtainM: ResultCurtainMenuDelegate,
     private val interactor: ResultInteractor,
     private val preferenceStore: PreferenceStore,
 ) : ResultItemActionListener {
@@ -35,7 +35,7 @@ class ResultItemActionDelegate(
             checked.contains(item) -> ExplorerItemOptions(manyFilesOptions, checked, composition.value)
             else -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
         }
-        menuListenerDelegate.showOptions(options)
+        curtainM.showOptions(options)
     }
 
     override fun onItemCheck(item: XFile, isChecked: Boolean) {

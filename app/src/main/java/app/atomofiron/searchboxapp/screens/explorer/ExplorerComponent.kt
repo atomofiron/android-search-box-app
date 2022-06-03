@@ -16,7 +16,7 @@ import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.screens.explorer.presenter.BottomSheetMenuListenerDelegate
+import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
 import javax.inject.Scope
@@ -50,7 +50,7 @@ class ExplorerModule {
     @ExplorerScope
     fun itemListener(
         viewModel: ExplorerViewModel,
-        menuListenerDelegate: BottomSheetMenuListenerDelegate,
+        menuListenerDelegate: ExplorerCurtainMenuDelegate,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
         router: ExplorerRouter,
@@ -80,8 +80,8 @@ class ExplorerModule {
         explorerStore: ExplorerStore,
         explorerInteractor: ExplorerInteractor,
         curtainChannel: CurtainChannel,
-    ): BottomSheetMenuListenerDelegate {
-        return BottomSheetMenuListenerDelegate(viewModel, router, explorerStore, explorerInteractor, curtainChannel)
+    ): ExplorerCurtainMenuDelegate {
+        return ExplorerCurtainMenuDelegate(viewModel, router, explorerStore, explorerInteractor, curtainChannel)
     }
 
     @Provides
@@ -95,7 +95,7 @@ class ExplorerModule {
         explorerInteractor: ExplorerInteractor,
         itemListener: ExplorerItemActionListenerDelegate,
         placesListener: PlacesActionListenerDelegate,
-        menuListener: BottomSheetMenuListenerDelegate,
+        curtainMenuDelegate: ExplorerCurtainMenuDelegate,
     ): ExplorerPresenter {
         return ExplorerPresenter(
             viewModel,
@@ -106,7 +106,7 @@ class ExplorerModule {
             explorerInteractor,
             itemListener,
             placesListener,
-            menuListener,
+            curtainMenuDelegate,
         )
     }
 

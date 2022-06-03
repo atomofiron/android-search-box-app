@@ -40,5 +40,5 @@ class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, Curtai
         .dependencies(DaggerInjector.appComponent)
         .build()
 
-    fun setCurtainAdapter(factory: CurtainApi.Adapter<*>) = this.adapter.emitNow(factory)
+    fun setCurtainAdapter(factory: CurtainApi.Adapter<*>) = adapter.emitNow(factory)
 }

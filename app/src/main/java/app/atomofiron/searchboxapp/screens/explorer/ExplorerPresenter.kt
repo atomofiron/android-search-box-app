@@ -4,7 +4,6 @@ import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.value
-import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -15,7 +14,7 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionLi
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlaceType
-import app.atomofiron.searchboxapp.screens.explorer.presenter.BottomSheetMenuListenerDelegate
+import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
 
@@ -28,11 +27,10 @@ class ExplorerPresenter(
     private val explorerInteractor: ExplorerInteractor,
     itemListener: ExplorerItemActionListenerDelegate,
     placesListener: PlacesActionListenerDelegate,
-    private val menuListener: BottomSheetMenuListenerDelegate
+    private val curtainMenuDelegate: ExplorerCurtainMenuDelegate
 ) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router,),
     ExplorerItemActionListener by itemListener,
-    PlacesAdapter.ItemActionListener by placesListener,
-    MenuListener by menuListener {
+    PlacesAdapter.ItemActionListener by placesListener {
 
     private val resources by appStore.resourcesProperty
 
@@ -83,7 +81,7 @@ class ExplorerPresenter(
             else -> viewModel.oneFileOptions
         }
         val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
-        menuListener.showOptions(options)
+        curtainMenuDelegate.showOptions(options)
     }
 
     fun onSettingsOptionSelected() = router.showSettings()

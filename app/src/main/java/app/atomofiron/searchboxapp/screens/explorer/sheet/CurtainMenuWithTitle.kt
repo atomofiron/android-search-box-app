@@ -20,10 +20,10 @@ class CurtainMenuWithTitle(
     private val menuItemClickListener: MenuListener,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
-    private var options: ExplorerItemOptions? = null
+    override var data: ExplorerItemOptions? = null
 
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder? {
-        val options = options ?: return null
+        val options = data ?: return null
         val binding = CurtainExplorerOptionsBinding.inflate(LayoutInflater.from(container.context), container, false)
         binding.explorerMenuRv.run {
             inflateMenu(menuId)
@@ -33,10 +33,6 @@ class CurtainMenuWithTitle(
         ViewInsetsController.bindPadding(binding.root, top = true, withProxy = true)
         ViewInsetsController.bindPadding(binding.explorerMenuRv, bottom = true)
         return CurtainApi.ViewHolder(binding.root)
-    }
-
-    fun setOptions(options: ExplorerItemOptions) {
-        this.options = options
     }
 
     fun CurtainExplorerOptionsBinding.init(context: Context, options: ExplorerItemOptions) {

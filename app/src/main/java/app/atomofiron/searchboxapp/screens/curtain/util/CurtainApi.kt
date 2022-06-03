@@ -25,10 +25,14 @@ object CurtainApi {
     }
 
     abstract class Adapter<H : ViewHolder> {
+        companion object {
+            private val unused = Any()
+        }
         private val holderList = HashMap<Int, H>()
         private var controllerReference = WeakReference<Controller>(null)
         val holders: Map<Int, H> = holderList
         val controller: Controller? get() = controllerReference.get()
+        open val data: Any? = unused
 
         inline fun <reified B : H> holder(): B? = holders.values.find { it is B } as B?
 
@@ -41,8 +45,13 @@ object CurtainApi {
         inline fun <reified B : H> getHolderProvider(): (action: B.() -> Unit) -> Unit = { action -> holder(action) }
 
         fun setController(controller: Controller?) {
-            this.controllerReference = WeakReference(controller)
-            controller?.setAdapter(this)
+            when (data) {
+                null -> controller?.close(immediately = true)
+                else -> {
+                    this.controllerReference = WeakReference(controller)
+                    controller?.setAdapter(this)
+                }
+            }
         }
 
         fun drop(layoutId: Int) {
