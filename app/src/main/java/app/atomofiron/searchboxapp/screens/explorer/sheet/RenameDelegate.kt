@@ -2,60 +2,47 @@ package app.atomofiron.searchboxapp.screens.explorer.sheet
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
-import app.atomofiron.common.util.hideKeyboard
-import app.atomofiron.common.util.showKeyboard
-import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetDelegate
+import app.atomofiron.searchboxapp.databinding.CurtainExplorerRenameBinding
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerPresenter
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
+import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
-class RenameDelegate(private val output: ExplorerPresenter) : BottomSheetDelegate(R.layout.sheet_explorer_rename),
-    View.OnClickListener, TextWatcher {
+class RenameDelegate(
+    private val output: ExplorerCurtainMenuDelegate,
+) {
 
-    private val itemView: View get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_item)
-    private val etName: EditText get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_et)
-    private val btnConfirm: Button get() = bottomSheetView.contentView.findViewById(R.id.explorer_rename_btn)
+    var data: RenameData? = null
 
-    private lateinit var data: RenameData
-
-    fun show(data: RenameData) {
-        this.data = data
-        super.show()
+    fun getView(data: RenameData, inflater: LayoutInflater, container: ViewGroup): View {
+        val binding = CurtainExplorerRenameBinding.inflate(inflater, container, false)
+        binding.init(data)
+        return binding.root
     }
 
-    override fun onViewReady() {
-        val holder = ExplorerHolder(itemView)
+    private fun CurtainExplorerRenameBinding.init(data: RenameData) {
+        ViewInsetsController.bindPadding(root, top = true, bottom = true)
+        val holder = ExplorerHolder(explorerRenameItem.root)
         holder.bind(data.item)
         holder.bindComposition(data.composition)
         holder.removeBackground()
         holder.disableCheckBox()
-        etName.setText(data.item.name)
-        etName.addTextChangedListener(this)
-        btnConfirm.setOnClickListener(this)
-        btnConfirm.isEnabled = false
-    }
-
-    override fun onViewShown() {
-        etName.showKeyboard()
+        explorerRenameEt.setText(data.item.name)
+        explorerRenameEt.addTextChangedListener(ButtonClick(data, explorerRenameBtn))
+        explorerRenameBtn.setOnClickListener {
+            output.onRenameConfirm(data.item, explorerRenameEt.text.toString())
+        }
+        explorerRenameBtn.isEnabled = false
 
         val dotIndex = data.item.name.lastIndexOf('.')
         if (dotIndex > 0) {
-            etName.setSelection(dotIndex)
+            explorerRenameEt.setSelection(dotIndex)
         }
-    }
-
-    override fun onViewHidden() {
-        etName.hideKeyboard()
-    }
-
-    override fun onClick(view: View) {
-        hide()
-        output.onRenameClick(data.item, etName.text.toString())
     }
 
     data class RenameData(
@@ -64,10 +51,15 @@ class RenameDelegate(private val output: ExplorerPresenter) : BottomSheetDelegat
         val items: List<String>
     )
 
-    override fun afterTextChanged(s: Editable?) = Unit
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-    override fun onTextChanged(sequence: CharSequence, start: Int, before: Int, count: Int) {
-        val allow = sequence.isNotEmpty() && !data.items.contains(sequence.toString())
-        btnConfirm.isEnabled = allow
+    private class ButtonClick(
+        private val data: RenameData,
+        private val button: Button,
+    ) : TextWatcher {
+        override fun afterTextChanged(s: Editable?) = Unit
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+        override fun onTextChanged(sequence: CharSequence, start: Int, before: Int, count: Int) {
+            val allow = sequence.isNotEmpty() && !data.items.contains(sequence.toString())
+            button.isEnabled = allow
+        }
     }
 }

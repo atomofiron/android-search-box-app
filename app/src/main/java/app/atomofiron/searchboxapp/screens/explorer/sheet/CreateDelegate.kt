@@ -2,60 +2,62 @@ package app.atomofiron.searchboxapp.screens.explorer.sheet
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioGroup
-import app.atomofiron.common.util.hideKeyboard
-import app.atomofiron.common.util.showKeyboard
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.XFile
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerPresenter
-import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetDelegate
+import app.atomofiron.searchboxapp.databinding.CurtainExplorerCreateBinding
+import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
+import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
-class CreateDelegate(private val output: ExplorerPresenter) : BottomSheetDelegate(R.layout.sheet_explorer_create), View.OnClickListener, TextWatcher {
-    private val rGroup: RadioGroup get() = bottomSheetView.contentView.findViewById(R.id.explorer_create_rg)
-    private val etName: EditText get() = bottomSheetView.contentView.findViewById(R.id.explorer_create_et)
-    private val btnConfirm: Button get() = bottomSheetView.contentView.findViewById(R.id.explorer_create_btn)
+class CreateDelegate(
+    private val output: ExplorerCurtainMenuDelegate,
+) {
 
-    private lateinit var dir: XFile
-    private lateinit var dirFiles: List<String>
-
-    override fun onViewReady() {
-        etName.text.clear()
-        etName.addTextChangedListener(this)
-        btnConfirm.setOnClickListener(this)
-        btnConfirm.isEnabled = false
+    fun getView(dir: XFile, inflater: LayoutInflater, container: ViewGroup): View {
+        val dirFiles = dir.children!!.map { it.name }
+        val binding = CurtainExplorerCreateBinding.inflate(inflater, container, false)
+        binding.init(dir, dirFiles)
+        return binding.root
     }
 
-    override fun onViewShown() {
-        etName.showKeyboard()
+    private fun CurtainExplorerCreateBinding.init(dir: XFile, dirFiles: List<String>) {
+        ViewInsetsController.bindPadding(root, top = true, bottom = true)
+        root.requestApplyInsets()
+        explorerCreateEt.text?.clear()
+        explorerCreateEt.addTextChangedListener(ButtonState(dirFiles, explorerCreateBtn))
+        explorerCreateBtn.setOnClickListener(ButtonClick(dir, explorerCreateEt, explorerCreateRg))
+        explorerCreateBtn.isEnabled = false
     }
 
-    override fun onViewHidden() {
-        etName.hideKeyboard()
-    }
-
-    fun show(dir: XFile) {
-        this.dir = dir
-        dirFiles = dir.children!!.map { it.name }
-        show()
-    }
-
-    override fun onClick(view: View) {
-        hide()
-        val directory = when (rGroup.checkedRadioButtonId) {
-            R.id.explorer_create_dir -> true
-            R.id.explorer_create_file -> false
-            else -> throw Exception()
+    private inner class ButtonClick(
+        private val dir: XFile,
+        private val editText: EditText,
+        private val radioGroup: RadioGroup,
+    ) : View.OnClickListener {
+        override fun onClick(v: View?) {
+            val directory = when (radioGroup.checkedRadioButtonId) {
+                R.id.explorer_create_dir -> true
+                R.id.explorer_create_file -> false
+                else -> throw Exception()
+            }
+            output.onCreateConfirm(dir, editText.text.toString(), directory)
         }
-        output.onCreateClick(dir, etName.text.toString(), directory)
     }
 
-    override fun afterTextChanged(s: Editable?) = Unit
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-    override fun onTextChanged(sequence: CharSequence, start: Int, before: Int, count: Int) {
-        val allow = sequence.isNotEmpty() && !dirFiles.contains(sequence.toString())
-        btnConfirm.isEnabled = allow
+    private inner class ButtonState(
+        private val dirFiles: List<String>,
+        private val button: Button,
+    ) : TextWatcher {
+        override fun afterTextChanged(s: Editable?) = Unit
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+        override fun onTextChanged(sequence: CharSequence, start: Int, before: Int, count: Int) {
+            val allow = sequence.isNotEmpty() && !dirFiles.contains(sequence.toString())
+            button.isEnabled = allow
+        }
     }
 }

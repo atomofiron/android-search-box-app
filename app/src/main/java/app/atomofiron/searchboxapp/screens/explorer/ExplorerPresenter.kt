@@ -8,7 +8,6 @@ import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
@@ -87,12 +86,6 @@ class ExplorerPresenter(
     fun onSettingsOptionSelected() = router.showSettings()
 
     fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.pushByEntity(gravity)
-
-    fun onCreateClick(dir: XFile, name: String, directory: Boolean) {
-        explorerInteractor.create(dir, name, directory)
-    }
-
-    fun onRenameClick(item: XFile, name: String) = explorerInteractor.rename(item, name)
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 

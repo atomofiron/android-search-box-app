@@ -17,8 +17,6 @@ import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
-import app.atomofiron.searchboxapp.screens.explorer.sheet.CreateDelegate
-import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 
 class ExplorerFragment : Fragment(R.layout.fragment_explorer),
@@ -26,8 +24,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     KeyCodeConsumer
 {
     private lateinit var binding: FragmentExplorerBinding
-    private lateinit var renameDelegate: RenameDelegate
-    private lateinit var createDelegate: CreateDelegate
 
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
@@ -40,9 +36,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         explorerAdapter.itemActionListener = presenter
         placesAdapter.itemActionListener = presenter
-
-        renameDelegate = RenameDelegate(presenter)
-        createDelegate = CreateDelegate(presenter)
 
         headerViewOutputDelegate = HeaderViewOutputDelegate(explorerAdapter, presenter)
     }
@@ -70,9 +63,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             recyclerView.adapter = placesAdapter
         }
 
-        renameDelegate.bottomSheetView = binding.bottomSheet
-        createDelegate.bottomSheetView = binding.bottomSheet
-
         explorerAdapter.setHeaderView(binding.explorerHeader)
         binding.explorerHeader.setOnItemActionListener(headerViewOutputDelegate)
         viewModel.onViewCollect()
@@ -92,8 +82,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(places, collector = placesAdapter::setItems)
-        viewCollect(showRename, collector = renameDelegate::show)
-        viewCollect(showCreate, collector = createDelegate::show)
         viewCollect(scrollToCurrentDir, collector = explorerAdapter::scrollToCurrentDir)
     }
 
@@ -107,26 +95,20 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun onBack(): Boolean {
-        val consumed = binding.verticalDock.run {
-            when {
-                isOpened -> {
-                    close()
-                    true
-                }
-                else -> binding.bottomSheet.hide()
-            }
+        if (binding.verticalDock.isOpened) {
+            binding.verticalDock.close()
+            return true
         }
-        return consumed || super.onBack()
+        return super.onBack()
     }
 
     override fun onKeyDown(keyCode: Int): Boolean = when {
-        binding.bottomSheet.isSheetShown -> false
-        isHidden -> false
-        keyCode == KeyEvent.KEYCODE_VOLUME_UP -> {
+        !isVisible -> false
+        keyCode != KeyEvent.KEYCODE_VOLUME_UP -> false
+        else -> {
             presenter.onVolumeUp(explorerAdapter.isCurrentDirVisible())
             true
         }
-        else -> false
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

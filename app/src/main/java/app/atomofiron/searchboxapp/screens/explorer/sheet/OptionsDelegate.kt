@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.explorer.sheet
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
@@ -11,28 +12,24 @@ import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerOptionsBinding
 import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
-import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
-class CurtainMenuWithTitle(
+class OptionsDelegate(
     private val menuId: Int,
-    private val menuItemClickListener: MenuListener,
-) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
+    private val output: MenuListener,
+) {
 
-    override var data: ExplorerItemOptions? = null
-
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder? {
-        val options = data ?: return null
-        val binding = CurtainExplorerOptionsBinding.inflate(LayoutInflater.from(container.context), container, false)
+    fun getView(options: ExplorerItemOptions, inflater: LayoutInflater, container: ViewGroup): View {
+        val binding = CurtainExplorerOptionsBinding.inflate(inflater, container, false)
         binding.explorerMenuRv.run {
             inflateMenu(menuId)
-            setMenuListener(menuItemClickListener)
+            setMenuListener(output)
         }
         binding.init(container.context, options)
         ViewInsetsController.bindPadding(binding.root, top = true, withProxy = true)
         ViewInsetsController.bindPadding(binding.explorerMenuRv, bottom = true)
-        return CurtainApi.ViewHolder(binding.root)
+        return binding.root
     }
 
     fun CurtainExplorerOptionsBinding.init(context: Context, options: ExplorerItemOptions) {

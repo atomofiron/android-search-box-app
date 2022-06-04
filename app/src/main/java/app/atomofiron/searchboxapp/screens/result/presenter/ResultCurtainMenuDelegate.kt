@@ -1,5 +1,7 @@
 package app.atomofiron.searchboxapp.screens.result.presenter
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
 import app.atomofiron.common.util.flow.collect
@@ -11,7 +13,8 @@ import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
-import app.atomofiron.searchboxapp.screens.explorer.sheet.CurtainMenuWithTitle
+import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
+import app.atomofiron.searchboxapp.screens.explorer.sheet.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
 import app.atomofiron.searchboxapp.screens.result.ResultViewModel
 import app.atomofiron.searchboxapp.utils.showCurtain
@@ -22,19 +25,26 @@ class ResultCurtainMenuDelegate(
     private val interactor: ResultInteractor,
     appStore: AppStore,
     curtainChannel: CurtainChannel,
-) : Recipient, MenuListener {
+) : Recipient, CurtainApi.Adapter<CurtainApi.ViewHolder>(), MenuListener {
 
     private val resources by appStore.resourcesProperty
-    private val curtainAdapter = CurtainMenuWithTitle(R.menu.item_options_result, this)
+    private val optionsDelegate = OptionsDelegate(R.menu.item_options_result, this)
+    override var data: ExplorerItemOptions? = null
 
     init {
-        curtainChannel.flow.filterForMe().collect(viewModel.viewModelScope, curtainAdapter::setController)
+        curtainChannel.flow.filterForMe().collect(viewModel.viewModelScope, ::setController)
+    }
+
+    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder? {
+        val data = data ?: return null
+        val view = optionsDelegate.getView(data, inflater, container)
+        return CurtainApi.ViewHolder(view)
     }
 
     override fun onMenuItemSelected(id: Int) {
-        val options = curtainAdapter.data ?: return
-        curtainAdapter.controller?.close()
-        val items = options.items
+        val data = data ?: return
+        controller?.close()
+        val items = data.items
         when (id) {
             R.id.menu_copy_path -> {
                 interactor.copyToClipboard(items.first() as FinderResult)
@@ -45,7 +55,7 @@ class ResultCurtainMenuDelegate(
     }
 
     fun showOptions(options: ExplorerItemOptions) {
-        curtainAdapter.data = options
+        data = options
         router.showCurtain(recipient, 0)
         /* todo if (options.items.size == 1) {
             bottomItemMenu.tvDescription.isVisible = true
