@@ -29,7 +29,7 @@
         android:visibility="gone"
         />
     <app.atomofiron.searchboxapp.custom.view.MenuView
-        android:id="@+id/explorer_menu_rv"
+        android:id="@+id/menu_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/bottom_tab_bar_height"

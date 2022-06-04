@@ -22,13 +22,14 @@ class OptionsDelegate(
 
     fun getView(options: ExplorerItemOptions, inflater: LayoutInflater, container: ViewGroup): View {
         val binding = CurtainExplorerOptionsBinding.inflate(inflater, container, false)
-        binding.explorerMenuRv.run {
+        binding.menuView.run {
             inflateMenu(menuId)
             setMenuListener(output)
+            markAsDangerous(R.id.menu_remove)
         }
         binding.init(container.context, options)
         ViewInsetsController.bindPadding(binding.root, top = true, withProxy = true)
-        ViewInsetsController.bindPadding(binding.explorerMenuRv, bottom = true)
+        ViewInsetsController.bindPadding(binding.menuView, bottom = true)
         return binding.root
     }
 

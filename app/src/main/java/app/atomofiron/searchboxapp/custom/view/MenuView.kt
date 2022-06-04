@@ -27,4 +27,6 @@ class MenuView : RecyclerView {
     fun setMenuListener(listener: MenuListener) {
         menuAdapter.menuListener = listener
     }
+
+    fun markAsDangerous(itemId: Int) = menuAdapter.markAsDangerous(itemId)
 }
