@@ -1,12 +1,10 @@
 package app.atomofiron.searchboxapp.screens.preferences.fragment
 
-import android.graphics.Color
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.bottom_sheet.BottomSheetDelegate
 import app.atomofiron.searchboxapp.model.explorer.MutableXFile
@@ -36,7 +34,6 @@ class ExplorerItemFragmentDelegate(
 
     private val onClickListener = Listener()
     private lateinit var holder: ExplorerHolder
-    private var backgroundColor: Int = 0
 
     public override fun show() = super.show()
 
@@ -62,12 +59,11 @@ class ExplorerItemFragmentDelegate(
         holder = ExplorerHolder(itemView)
         holder.bind(dir)
         holder.bindComposition(composition)
-        holder.removeBackground()
+        holder.disableClicks()
 
         ivIcon.alpha = 1f
         tvSize.text = dir.size
 
-        backgroundColor = ContextCompat.getColor(itemView.context, R.color.item_explorer_background)
         bindBackground()
     }
 
@@ -92,11 +88,5 @@ class ExplorerItemFragmentDelegate(
         }
     }
 
-    private fun bindBackground() {
-        val color = when (composition.visibleBg) {
-            true -> backgroundColor
-            else -> Color.TRANSPARENT
-        }
-        holder.itemView.setBackgroundColor(color)
-    }
+    private fun bindBackground() = holder.setGreyBackgroundColor(composition.visibleBg)
 }

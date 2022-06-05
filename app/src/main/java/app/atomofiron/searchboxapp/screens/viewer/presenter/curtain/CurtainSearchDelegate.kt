@@ -31,8 +31,9 @@ class CurtainSearchDelegate(
         val holder = ExplorerHolder(binding.itemExplorer.root)
         holder.bind(xFile)
         holder.bindComposition(composition)
-        holder.removeBackground()
+        holder.disableClicks()
         holder.hideCheckBox()
+        holder.setGreyBackgroundColor()
 
         binding.sheetViewerSearchRv.adapter = finderAdapter
         binding.sheetViewerSearchRv.itemAnimator = null

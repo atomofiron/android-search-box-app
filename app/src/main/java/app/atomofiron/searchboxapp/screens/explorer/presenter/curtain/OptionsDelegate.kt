@@ -4,15 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerOptionsBinding
-import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinder
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
 class OptionsDelegate(
@@ -40,7 +39,12 @@ class OptionsDelegate(
                 explorerMenuItem.root.isVisible = true
                 val holder = ExplorerHolder(explorerMenuItem.root)
                 holder.bind(options.items.first())
-                holder.bindComposition(options.composition)
+                holder.bindComposition(options.composition.copy(visibleBg = true))
+
+                val binder = ExplorerItemBinder(explorerMenuItem.root)
+                binder.setGreyBackgroundColor()
+                binder.disableClicks()
+                explorerMenuItem.itemExplorerCb.isEnabled = false
             }
             else -> {
                 explorerMenuTvTitle.isVisible = true
@@ -63,14 +67,5 @@ class OptionsDelegate(
                 explorerMenuTvTitle.text = string.toString()
             }
         }
-        explorerMenuItem.disableClicks()
-    }
-
-    private fun ItemExplorerBinding.disableClicks() {
-        itemExplorer.isFocusable = false
-        itemExplorer.isClickable = false
-        itemExplorer.isLongClickable = false
-        itemExplorer.setBackgroundColor(ContextCompat.getColor(root.context, R.color.item_explorer_background))
-        itemExplorerCb.isEnabled = false
     }
 }

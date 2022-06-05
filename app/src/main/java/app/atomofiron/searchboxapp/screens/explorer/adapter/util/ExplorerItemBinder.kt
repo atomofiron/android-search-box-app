@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -152,8 +153,23 @@ class ExplorerItemBinder(
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 
+    fun disableClicks() {
+        itemView.isFocusable = false
+        itemView.isClickable = false
+        itemView.isLongClickable = false
+        itemView.setOnClickListener(null)
+    }
+
     fun hideCheckBox() {
         cbBox.isVisible = false
+    }
+
+    fun setGreyBackgroundColor(visible: Boolean = true) {
+        val color = when {
+            visible -> ContextCompat.getColor(itemView.context, R.color.item_explorer_background)
+            else -> Color.TRANSPARENT
+        }
+        itemView.setBackgroundColor(color)
     }
 
     interface ExplorerItemBinderActionListener {

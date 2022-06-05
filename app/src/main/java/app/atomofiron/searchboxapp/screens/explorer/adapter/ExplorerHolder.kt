@@ -17,11 +17,9 @@ class ExplorerHolder(itemView: View) : GeneralHolder<XFile>(itemView) {
 
     fun bindComposition(composition: ExplorerItemComposition) = binder.bindComposition(composition)
 
-    fun removeBackground() {
-        itemView.background = null
-        itemView.isFocusable = false
-        itemView.isClickable = false
-    }
+    fun disableClicks() = binder.disableClicks()
 
     fun hideCheckBox() = binder.hideCheckBox()
+
+    fun setGreyBackgroundColor(visible: Boolean = true) = binder.setGreyBackgroundColor(visible)
 }
