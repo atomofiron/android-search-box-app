@@ -20,7 +20,7 @@ import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import javax.inject.Inject
 
 class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragment, TextViewerPresenter>(),
-        FinderItemsModel by FinderItemsModelDelegate() {
+    FinderItemsModel by FinderItemsModelDelegate() {
     companion object {
         const val UNDEFINED = -1
     }
@@ -45,7 +45,6 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         .build()
 
     val insertInQuery = dataFlow<String>(single = true)
-    val closeBottomSheet = dataFlow(Unit, single = true)
 
     val textLines = dataFlow<List<TextLine>>()
     /** line index -> line matches */

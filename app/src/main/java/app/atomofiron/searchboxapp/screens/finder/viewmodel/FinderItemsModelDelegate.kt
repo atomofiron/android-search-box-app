@@ -13,13 +13,14 @@ class FinderItemsModelDelegate : FinderItemsModel {
 
     override val searchItems = dataFlow<List<FinderStateItem>>()
 
-    override fun updateState() {
+    override fun updateState(isLocal: Boolean) {
         val items = ArrayList<FinderStateItem>()
         items.addAll(uniqueItems)
         items.addAll(progressItems)
         items.addAll(targetItems)
-        when (targetItems.isEmpty()) {
-            true -> items.add(FinderStateItem.TipItem(R.string.tip))
+        when {
+            isLocal -> Unit
+            targetItems.isEmpty() -> items.add(FinderStateItem.TipItem(R.string.tip))
             else -> items.add(FinderStateItem.TipItem(R.string.search_here))
         }
         searchItems.value = items

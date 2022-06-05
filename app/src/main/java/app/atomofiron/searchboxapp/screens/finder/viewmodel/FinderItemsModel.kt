@@ -18,7 +18,7 @@ interface FinderItemsModel {
 
     val searchItems: MutableSharedFlow<List<FinderStateItem>>
 
-    fun updateState()
+    fun updateState(isLocal: Boolean = false)
     fun updateSearchQuery(value: String)
     fun updateConfig(item: FinderStateItem.ConfigItem)
 

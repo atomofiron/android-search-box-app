@@ -16,7 +16,6 @@ import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
-import app.atomofiron.searchboxapp.screens.viewer.sheet.SearchDelegate
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     BaseFragment<TextViewerFragment, TextViewerViewModel, TextViewerPresenter> by BaseFragmentImpl()
@@ -32,13 +31,10 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     private val viewerAdapter = TextViewerAdapter()
 
-    private lateinit var searchDelegate: SearchDelegate
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewModel(this, TextViewerViewModel::class, savedInstanceState)
         viewerAdapter.textViewerListener = presenter
-        searchDelegate = SearchDelegate(presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,13 +49,12 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.menu_search -> searchDelegate.show(viewModel.xFile, viewModel.composition)
+                R.id.menu_search -> presenter.onSearchClick()
                 R.id.menu_previous -> presenter.onPreviousClick()
                 R.id.menu_next -> presenter.onNextClick()
             }
             false
         }
-        searchDelegate.bottomSheetView = binding.bottomSheet
         viewModel.onViewCollect()
         onApplyInsets(view)
     }
@@ -75,19 +70,14 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         viewCollect(matchesMap, collector = viewerAdapter::setMatches)
         viewCollect(matchesCursor, collector = ::onMatchCursorChanged)
         viewCollect(matchesCounter, collector = ::onMatchCounterChanged)
-        viewCollect(searchItems, collector = searchDelegate::setItems)
         viewCollect(insertInQuery, collector = ::insertInQuery)
-        viewCollect(closeBottomSheet, collector = this@TextViewerFragment::closeBottomSheet)
     }
 
     override fun onApplyInsets(root: View) {
         ViewGroupInsetsProxy.set(root)
-        ViewGroupInsetsProxy.set(binding.bottomSheet)
         ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
         ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }
-
-    override fun onBack(): Boolean = binding.bottomSheet.hide() || super.onBack()
 
     private fun setLoading(visible: Boolean) {
         binding.ballsView.isInvisible = !visible
@@ -117,13 +107,9 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     private fun insertInQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)
-                ?.takeIf { it.isFocused }
-                ?.apply {
-                    text.replace(selectionStart, selectionEnd, value)
-                }
-    }
-
-    private fun closeBottomSheet(unit: Unit = Unit) {
-        binding.bottomSheet.hide()
+            ?.takeIf { it.isFocused }
+            ?.apply {
+                text.replace(selectionStart, selectionEnd, value)
+            }
     }
 }

@@ -149,9 +149,8 @@ class ExplorerItemBinder(private val itemView: View) {
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 
-    fun disableCheckBox() {
-        cbBox.isFocusable = false
-        cbBox.isClickable = false
+    fun hideCheckBox() {
+        cbBox.isVisible = false
     }
 
     interface ExplorerItemBinderActionListener {

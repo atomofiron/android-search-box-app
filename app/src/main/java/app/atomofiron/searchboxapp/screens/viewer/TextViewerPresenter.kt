@@ -19,13 +19,13 @@ class TextViewerPresenter(
     params: TextViewerParams,
     viewModel: TextViewerViewModel,
     router: TextViewerRouter,
-    searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
+    private val searchDelegate: SearchAdapterPresenterDelegate,
     private val interactor: TextViewerInteractor,
     preferenceStore: PreferenceStore,
     textViewerChannel: TextViewerChannel
 ) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router),
-        TextViewerAdapter.TextViewerListener,
-        FinderAdapterOutput by searchAdapterPresenterDelegate
+    TextViewerAdapter.TextViewerListener,
+    FinderAdapterOutput by searchDelegate
 {
     private var lineIndexMatchesMap: Map<Int, List<TextLineMatch>> = HashMap()
     private var matchesCount: Int? = null
@@ -76,6 +76,8 @@ class TextViewerPresenter(
     override fun onSubscribeData() = Unit
 
     override fun onLineVisible(index: Int) = interactor.onLineVisible(index)
+
+    fun onSearchClick() = searchDelegate.show()
 
     fun onPreviousClick() = viewModel.changeCursor(increment = false)
 

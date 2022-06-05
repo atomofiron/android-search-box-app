@@ -31,7 +31,7 @@ class RenameDelegate(
         holder.bind(data.item)
         holder.bindComposition(data.composition)
         holder.removeBackground()
-        holder.disableCheckBox()
+        holder.hideCheckBox()
         explorerRenameEt.setText(data.item.name)
         explorerRenameEt.addTextChangedListener(ButtonClick(data, explorerRenameBtn))
         explorerRenameBtn.setOnClickListener {

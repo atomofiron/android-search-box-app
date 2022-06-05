@@ -13,7 +13,6 @@ class ExplorerHolder(itemView: View) : GeneralHolder<XFile>(itemView) {
         binder.onItemActionListener = listener
     }
 
-
     override fun onBind(item: XFile, position: Int) = binder.onBind(item)
 
     fun bindComposition(composition: ExplorerItemComposition) = binder.bindComposition(composition)
@@ -24,5 +23,5 @@ class ExplorerHolder(itemView: View) : GeneralHolder<XFile>(itemView) {
         itemView.isClickable = false
     }
 
-    fun disableCheckBox() = binder.disableCheckBox()
+    fun hideCheckBox() = binder.hideCheckBox()
 }

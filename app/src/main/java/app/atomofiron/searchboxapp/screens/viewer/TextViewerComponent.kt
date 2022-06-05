@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.viewer
 
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -69,10 +70,12 @@ class TextViewerModule {
     @TextViewerScope
     fun searchOutputDelegate(
         viewModel: TextViewerViewModel,
+        router: TextViewerRouter,
         interactor: TextViewerInteractor,
-        preferenceStore: PreferenceStore
+        preferenceStore: PreferenceStore,
+        curtainChannel: CurtainChannel,
     ): SearchAdapterPresenterDelegate {
-        return SearchAdapterPresenterDelegate(viewModel, interactor, preferenceStore)
+        return SearchAdapterPresenterDelegate(viewModel, router, interactor, preferenceStore, curtainChannel)
     }
 
     @Provides
@@ -100,4 +103,5 @@ class TextViewerModule {
 
 interface TextViewerDependencies {
     fun preferenceStore(): PreferenceStore
+    fun curtainChannel(): CurtainChannel
 }

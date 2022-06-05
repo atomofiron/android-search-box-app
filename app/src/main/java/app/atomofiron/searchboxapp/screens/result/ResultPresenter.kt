@@ -35,7 +35,7 @@ class ResultPresenter(
     itemActionDelegate: ResultItemActionDelegate,
     private val curtainMenuDelegate: ResultCurtainMenuDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
-        ResultItemActionListener by itemActionDelegate {
+    ResultItemActionListener by itemActionDelegate {
     companion object {
         private const val UNDEFINED = -1L
     }
