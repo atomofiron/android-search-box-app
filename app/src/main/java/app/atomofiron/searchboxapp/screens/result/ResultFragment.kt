@@ -20,7 +20,6 @@ import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.sheet.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
 
 class ResultFragment : Fragment(R.layout.fragment_result),
@@ -30,7 +29,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     private lateinit var binding: FragmentResultBinding
 
     private val resultAdapter = ResultAdapter()
-    private lateinit var bottomItemMenu: OptionsDelegate
     private val errorSnackbar by lazy(LazyThreadSafetyMode.NONE) {
         Snackbar.make(requireView(), "", Snackbar.LENGTH_INDEFINITE)
             .setAnchorView(anchorView)
@@ -79,7 +77,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
 
     override fun onApplyInsets(root: View) {
         ViewGroupInsetsProxy.set(root)
-        ViewGroupInsetsProxy.set(binding.bottomSheet)
         ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
         ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
     }

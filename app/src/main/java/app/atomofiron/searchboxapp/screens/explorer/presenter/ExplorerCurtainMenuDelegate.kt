@@ -15,9 +15,9 @@ import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
-import app.atomofiron.searchboxapp.screens.explorer.sheet.CreateDelegate
-import app.atomofiron.searchboxapp.screens.explorer.sheet.OptionsDelegate
-import app.atomofiron.searchboxapp.screens.explorer.sheet.RenameDelegate
+import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.CreateDelegate
+import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
+import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.RenameDelegate
 import app.atomofiron.searchboxapp.utils.showCurtain
 
 class ExplorerCurtainMenuDelegate(

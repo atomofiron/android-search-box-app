@@ -14,7 +14,7 @@ import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
-import app.atomofiron.searchboxapp.screens.explorer.sheet.OptionsDelegate
+import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
 import app.atomofiron.searchboxapp.screens.result.ResultViewModel
 import app.atomofiron.searchboxapp.utils.showCurtain

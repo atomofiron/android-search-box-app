@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.sheet
+package app.atomofiron.searchboxapp.screens.explorer.presenter.curtain
 
 import android.text.Editable
 import android.text.TextWatcher
