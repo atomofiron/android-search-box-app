@@ -110,8 +110,17 @@ class MutableXFile : XFile {
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(
-            access: String, owner: String, group: String, size: String, date: String, time: String,
-            name: String, suffix: String, isDirectory: Boolean, absolutePath: String, root: Int? = 0, parent: MutableXFile? = null
+        access: String,
+        owner: String,
+        group: String,
+        size: String,
+        date: String,
+        time: String,
+        name: String,
+        suffix: String,
+        isDirectory: Boolean,
+        absolutePath: String,
+        root: Int? = 0, parent: MutableXFile? = null
     ) {
         this.access = access
         this.owner = owner

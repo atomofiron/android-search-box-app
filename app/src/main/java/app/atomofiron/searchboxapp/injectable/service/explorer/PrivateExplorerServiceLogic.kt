@@ -529,6 +529,7 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
+    // todo fix updating parent
     protected suspend fun deleteItems(items: List<MutableXFile>) {
         logI("deleteItems ${items.size}")
         items.forEach { item ->
@@ -604,6 +605,7 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
+    // todo fix updating parent
     suspend fun create(dir: MutableXFile, name: String, directory: Boolean) {
         logI("create $directory $name $dir")
         val item = MutableXFile.create(dir, name, directory, dir.root)
