@@ -30,6 +30,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
+    private val topInsetDecorator = TopInsetDecorator()
 
     private fun getFirstChild(): View? {
         val recyclerView = recyclerView ?: return null
@@ -92,6 +93,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         headerItemPosition = items.indexOf(dir)
         headerView.onBind(dir)
         shadowDecorator.onHeaderChanged(dir, headerItemPosition)
+        topInsetDecorator.useGrey = headerItemPosition % 2 == 0
     }
 
     fun setHeaderView(view: ExplorerHeaderView) {
@@ -152,6 +154,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         recyclerView.addItemDecoration(separationDecorator)
         recyclerView.addItemDecoration(shadowDecorator)
         recyclerView.addItemDecoration(gravityDecorator)
+        recyclerView.addItemDecoration(topInsetDecorator)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
@@ -163,6 +166,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         recyclerView.removeItemDecoration(separationDecorator)
         recyclerView.removeItemDecoration(shadowDecorator)
         recyclerView.removeItemDecoration(gravityDecorator)
+        recyclerView.removeItemDecoration(topInsetDecorator)
     }
 
     override fun getItemViewType(position: Int): Int = VIEW_TYPE

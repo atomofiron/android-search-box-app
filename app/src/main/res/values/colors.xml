@@ -71,6 +71,7 @@
 	<color name="spanBlue">#5f4f60c0</color>
 	<color name="spanGreen">@color/colorPrimaryDark</color>
 	<color name="item_explorer_background">#20a0a0a0</color>
+	<color name="item_explorer_background_intensive">#80a0a0a0</color>
 
 	<color name="ic_launcher_background">#1D7874</color>
 </resources>
