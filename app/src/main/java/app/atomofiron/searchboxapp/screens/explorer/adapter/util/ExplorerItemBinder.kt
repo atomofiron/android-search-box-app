@@ -18,9 +18,13 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Tool
 
-class ExplorerItemBinder(private val itemView: View) {
+class ExplorerItemBinder(
+    private val itemView: View,
+) {
     companion object {
         private const val BYTE_LETTER = "B"
+        private const val SPACE = " "
+        private const val EMPTY = ""
     }
     /*
     16842910 enabled
@@ -100,19 +104,18 @@ class ExplorerItemBinder(private val itemView: View) {
             else -> R.drawable.ic_explorer_folder
         }
         ivIcon.setImageResource(image)
-        ivIcon.alpha = if (item.isDirectory && !item.isCached) .4f else 1f
+        ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
 
         val aliasId = rootsAliases[item.completedPath]
-        tvName.text = when {
-            aliasId != null -> itemView.context.getString(aliasId)
-            else -> item.name
+        tvName.text = when (aliasId) {
+            null -> item.name
+            else -> itemView.context.getString(aliasId)
         }
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         tvSize.text = when {
-            item.isFile && item.size.length == 1 -> item.size + BYTE_LETTER
-            item.isFile -> item.size
-            else -> ""
+            item.isFile -> item.size + BYTE_LETTER
+            else -> EMPTY
         }
 
         cbBox.isChecked = item.isChecked
@@ -128,10 +131,10 @@ class ExplorerItemBinder(private val itemView: View) {
     fun bindComposition(composition: ExplorerItemComposition) {
         val string = StringBuilder()
         if (composition.visibleAccess) {
-            string.append(item.access).append(" ")
+            string.append(item.access).append(SPACE)
         }
         if (composition.visibleOwner) {
-            string.append(item.owner).append(" ")
+            string.append(item.owner).append(SPACE)
         }
         if (composition.visibleGroup) {
             string.append(item.group)
@@ -142,7 +145,7 @@ class ExplorerItemBinder(private val itemView: View) {
             string.append(item.date)
         }
         if (composition.visibleTime) {
-            string.append(" ").append(item.time)
+            string.append(SPACE).append(item.time)
         }
         tvDate.text = string.toString()
         tvSize.isVisible = composition.visibleSize
