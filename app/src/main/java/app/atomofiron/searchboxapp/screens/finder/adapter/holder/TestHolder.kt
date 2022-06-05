@@ -14,10 +14,10 @@ import java.util.regex.Pattern
 
 class TestHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id), TextWatcher {
     private val editText: EditText
-    private val span = RoundedBackgroundSpan(
-            context.findColorByAttr(R.attr.colorAccent),
-            ContextCompat.getColor(context, R.color.white),
-            context.resources.getDimension(R.dimen.background_span_corner_radius)
+    private val span get() = RoundedBackgroundSpan(
+        context.findColorByAttr(R.attr.colorAccent),
+        ContextCompat.getColor(context, R.color.white),
+        context.resources.getDimension(R.dimen.background_span_corner_radius),
     )
 
     init {
