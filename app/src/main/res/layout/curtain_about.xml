@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:gravity="center_horizontal">
-
+    android:gravity="center_horizontal"
+    android:paddingBottom="@dimen/bottom_tab_bar_height"
+    >
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,5 +65,4 @@
         android:text="@string/faq_4pda"
         android:paddingEnd="@dimen/padding_large"
         />
-
 </LinearLayout>

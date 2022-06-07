@@ -3,15 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/bottom_tab_bar_height"
+    >
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/preference_joystick_tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/bottom_sheet_title_margin"
+        android:layout_marginStart="@dimen/curtain_title_margin"
         android:layout_marginBottom="@dimen/common_margin_half"
-        android:textSize="@dimen/bottom_sheet_title_size"
+        android:textSize="@dimen/curtain_title_size"
         android:textColor="?attr/colorContent"
         android:textStyle="bold"
         android:typeface="monospace"

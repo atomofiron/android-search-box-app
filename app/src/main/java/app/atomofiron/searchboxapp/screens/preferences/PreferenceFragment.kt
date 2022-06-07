@@ -19,7 +19,6 @@ import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
-import app.atomofiron.searchboxapp.databinding.FragmentPreferenceBinding
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
@@ -27,38 +26,18 @@ import app.atomofiron.searchboxapp.utils.Shell
 class PreferenceFragment : PreferenceFragmentCompat(),
     BaseFragment<PreferenceFragment, PreferenceViewModel, PreferencePresenter> by BaseFragmentImpl()
 {
-    private lateinit var exportImportDelegate: ExportImportFragmentDelegate
-    private lateinit var explorerItemDelegate: ExplorerItemFragmentDelegate
-    private lateinit var joystickDelegate: JoystickFragmentDelegate
-    private lateinit var toyboxDelegate: ToyboxFragmentDelegate
-    private lateinit var aboutDelegate: AboutFragmentDelegate
     private lateinit var preferenceDelegate: PreferenceFragmentDelegate
-
-    private lateinit var binding: FragmentPreferenceBinding
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initViewModel(this, PreferenceViewModel::class, savedInstanceState)
 
-        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter)
+        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter, presenter)
         setPreferencesFromResource(R.xml.preferences, rootKey)
-
-        exportImportDelegate = ExportImportFragmentDelegate(presenter)
-        explorerItemDelegate = ExplorerItemFragmentDelegate(viewModel.explorerItemComposition, presenter)
-        joystickDelegate = JoystickFragmentDelegate(viewModel.joystickComposition, presenter)
-        toyboxDelegate = ToyboxFragmentDelegate(viewModel.toyboxVariant, presenter)
-        aboutDelegate = AboutFragmentDelegate()
 
         val deepBlack = findPreference<Preference>(Const.PREF_DEEP_BLACK)!!
         viewModel.showDeepBlack.collect(lifecycleScope) {
             deepBlack.isVisible = it
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = super.onCreateView(inflater, container, savedInstanceState)
-        val viewGroup = inflater.inflate(R.layout.fragment_preference, container, false) as ViewGroup
-        viewGroup.addView(view, 0)
-        return viewGroup
     }
 
     override fun onCreateAdapter(preferenceScreen: PreferenceScreen): RecyclerView.Adapter<*> {
@@ -69,14 +48,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentPreferenceBinding.bind(view)
-
-        exportImportDelegate.bottomSheetView = binding.bottomSheet
-        explorerItemDelegate.bottomSheetView = binding.bottomSheet
-        joystickDelegate.bottomSheetView = binding.bottomSheet
-        toyboxDelegate.bottomSheetView = binding.bottomSheet
-        aboutDelegate.bottomSheetView = binding.bottomSheet
-
+        view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         viewModel.onViewCollect()
         onApplyInsets(view)
@@ -99,22 +71,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
 
     override fun onApplyInsets(root: View) {
         ViewGroupInsetsProxy.set(root)
-        ViewGroupInsetsProxy.set(binding.bottomSheet)
     }
-
-    override fun onBack(): Boolean = binding.bottomSheet.hide() || super.onBack()
-
-    fun onAboutClick() = aboutDelegate.show()
-
-    fun onExportImportClick() = exportImportDelegate.show()
-
-    fun onExplorerItemClick() = explorerItemDelegate.show()
-
-    fun onJoystickClick() = joystickDelegate.show()
-
-    fun onToyboxClick() = toyboxDelegate.show()
-
-    fun onLeakCanaryClick(isChecked: Boolean) = presenter.onLeakCanaryClick(isChecked)
 
     private fun PreferenceGroup.fixIcons() {
         // todo foresee NoticeableDrawable and colored icons

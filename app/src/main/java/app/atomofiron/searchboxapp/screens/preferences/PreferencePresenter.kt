@@ -1,27 +1,21 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
 import app.atomofiron.common.arch.BasePresenter
-import app.atomofiron.searchboxapp.screens.preferences.fragment.ExportImportFragmentDelegate
-import app.atomofiron.searchboxapp.screens.preferences.fragment.JoystickFragmentDelegate
+import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportFragmentDelegate
+import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceUpdateOutput
-import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPresenterDelegate
-import app.atomofiron.searchboxapp.screens.preferences.presenter.JoystickPresenterDelegate
-import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceUpdatePresenterDelegate
-import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 
 class PreferencePresenter(
     viewModel: PreferenceViewModel,
     router: PreferenceRouter,
-    joystickDelegate: JoystickPresenterDelegate,
-    exportImportDelegate: ExportImportPresenterDelegate,
-    preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate,
+    exportImportDelegate: ExportImportFragmentDelegate.ExportImportOutput,
+    preferenceUpdateDelegate: PreferenceUpdateOutput,
+    preferenceClickOutput: PreferenceClickOutput,
 ) : BasePresenter<PreferenceViewModel, PreferenceRouter>(viewModel, router),
-    JoystickFragmentDelegate.JoystickPreferenceOutput by joystickDelegate,
     ExportImportFragmentDelegate.ExportImportOutput by exportImportDelegate,
-    PreferenceUpdateOutput by preferenceUpdateDelegate
+    PreferenceUpdateOutput by preferenceUpdateDelegate,
+    PreferenceClickOutput by preferenceClickOutput
 {
-
-    fun onLeakCanaryClick(isChecked: Boolean) = AppWatcherProxy.setEnabled(isChecked)
 
     override fun onSubscribeData() = Unit
 }

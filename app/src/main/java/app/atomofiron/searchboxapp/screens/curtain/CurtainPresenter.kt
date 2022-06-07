@@ -18,6 +18,9 @@ class CurtainPresenter(
 ) : BasePresenter<CurtainViewModel, CurtainRouter>(viewModel, router), CurtainApi.Controller {
     private var adapter: CurtainApi.Adapter<*>? = null
 
+    override val requestFrom: String = params.recipient
+    override val requestId: Int = params.layoutId
+
     init {
         curtainChannel.emit(CurtainResponse(params.recipient, this))
     }

@@ -53,7 +53,6 @@ class PreferenceUpdatePresenterDelegate(
 
     override fun onPreferenceUpdate(key: String, value: Set<String>) {
         when (key) {
-            Const.PREF_TOYBOX -> preferenceStore.toyboxVariant.pushByOriginal(value)
             else -> throw Exception()
         }
     }

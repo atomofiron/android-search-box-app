@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.preferences
 import android.content.Context
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -10,9 +11,12 @@ import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
+import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceUpdateOutput
 import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPresenterDelegate
-import app.atomofiron.searchboxapp.screens.preferences.presenter.JoystickPresenterDelegate
+import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceClickPresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceUpdatePresenterDelegate
+import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportFragmentDelegate
 import javax.inject.Scope
 
 @Scope
@@ -38,18 +42,13 @@ interface PreferenceComponent {
 
 @Module
 class PreferenceModule {
+
     @Provides
     @PreferenceScope
     fun preferenceUpdatePresenterDelegate(
         context: Context, viewModel: PreferenceViewModel, preferenceStore: PreferenceStore
-    ): PreferenceUpdatePresenterDelegate {
+    ): PreferenceUpdateOutput {
         return PreferenceUpdatePresenterDelegate(context, viewModel, preferenceStore)
-    }
-
-    @Provides
-    @PreferenceScope
-    fun joystickPreferenceDelegate(preferenceStore: PreferenceStore): JoystickPresenterDelegate {
-        return JoystickPresenterDelegate(preferenceStore.joystickComposition)
     }
 
     @Provides
@@ -60,8 +59,26 @@ class PreferenceModule {
         preferenceService: PreferenceService,
         preferenceStore: PreferenceStore,
         preferenceChannel: PreferenceChannel,
-    ): ExportImportPresenterDelegate {
+    ): ExportImportFragmentDelegate.ExportImportOutput {
         return ExportImportPresenterDelegate(context, viewModel, preferenceService, preferenceStore, preferenceChannel)
+    }
+
+    @Provides
+    @PreferenceScope
+    fun preferenceClickPresenterDelegate(
+        viewModel: PreferenceViewModel,
+        router: PreferenceRouter,
+        exportImportDelegate: ExportImportFragmentDelegate.ExportImportOutput,
+        preferenceStore: PreferenceStore,
+        curtainChannel: CurtainChannel,
+    ): PreferenceClickOutput {
+        return PreferenceClickPresenterDelegate(
+            viewModel,
+            router,
+            exportImportDelegate,
+            preferenceStore,
+            curtainChannel,
+        )
     }
 
     @Provides
@@ -69,11 +86,17 @@ class PreferenceModule {
     fun presenter(
         viewModel: PreferenceViewModel,
         router: PreferenceRouter,
-        joystickDelegate: JoystickPresenterDelegate,
-        exportImportDelegate: ExportImportPresenterDelegate,
-        preferenceUpdateDelegate: PreferenceUpdatePresenterDelegate
+        exportImportDelegate: ExportImportFragmentDelegate.ExportImportOutput,
+        preferenceUpdateDelegate: PreferenceUpdateOutput,
+        preferenceClickOutput: PreferenceClickOutput,
     ): PreferencePresenter {
-        return PreferencePresenter(viewModel, router, joystickDelegate, exportImportDelegate, preferenceUpdateDelegate)
+        return PreferencePresenter(
+            viewModel,
+            router,
+            exportImportDelegate,
+            preferenceUpdateDelegate,
+            preferenceClickOutput,
+        )
     }
 
     @Provides
@@ -91,4 +114,5 @@ interface PreferenceDependencies {
     fun preferenceChannel(): PreferenceChannel
     fun preferenceStore(): PreferenceStore
     fun context(): Context
+    fun curtainChannel(): CurtainChannel
 }

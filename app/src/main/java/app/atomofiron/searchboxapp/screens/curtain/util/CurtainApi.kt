@@ -10,6 +10,9 @@ import java.util.*
 object CurtainApi {
 
     interface Controller {
+        val requestFrom: String
+        val requestId: Int
+
         fun setAdapter(adapter: Adapter<*>)
         fun showNext(layoutId: Int)
         fun showPrev()

@@ -1,0 +1,85 @@
+package app.atomofiron.searchboxapp.screens.preferences.presenter.curtain
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
+import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.databinding.CurtainPreferenceExplorerItemBinding
+import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
+import app.atomofiron.searchboxapp.model.explorer.MutableXFile
+import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
+import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
+import app.atomofiron.searchboxapp.utils.Const
+import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+
+class ExplorerItemFragmentDelegate(
+    private val node: PreferenceNode<ExplorerItemComposition, Int>,
+) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
+    private val dir = MutableXFile("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038",
+            "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android")
+
+    private var composition = node.entity
+
+    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
+        val binding = CurtainPreferenceExplorerItemBinding.inflate(inflater, container, false)
+        binding.init()
+        ViewInsetsController.bindPadding(binding.root, top = true, bottom = true)
+        return CurtainApi.ViewHolder(binding.root)
+    }
+
+    private fun CurtainPreferenceExplorerItemBinding.init() {
+        preferenceAccess.isChecked = composition.visibleAccess
+        preferenceOwner.isChecked = composition.visibleOwner
+        preferenceGroup.isChecked = composition.visibleGroup
+        preferenceDate.isChecked = composition.visibleDate
+        preferenceTime.isChecked = composition.visibleTime
+        preferenceSize.isChecked = composition.visibleSize
+        preferenceBox.isChecked = composition.visibleBox
+        preferenceBg.isChecked = composition.visibleBg
+
+        val holder = ExplorerHolder(preferenceExplorerItem.root)
+        val onClickListener = Listener(holder)
+        preferenceAccess.setOnClickListener(onClickListener)
+        preferenceOwner.setOnClickListener(onClickListener)
+        preferenceGroup.setOnClickListener(onClickListener)
+        preferenceDate.setOnClickListener(onClickListener)
+        preferenceTime.setOnClickListener(onClickListener)
+        preferenceSize.setOnClickListener(onClickListener)
+        preferenceBox.setOnClickListener(onClickListener)
+        preferenceBg.setOnClickListener(onClickListener)
+
+        holder.bind(dir)
+        holder.bindComposition(composition)
+        holder.disableClicks()
+        holder.setGreyBackgroundColor(composition.visibleBg)
+
+        preferenceExplorerItem.itemExplorerIvIcon.alpha = Const.ALPHA_VISIBLE
+        preferenceExplorerItem.itemExplorerTvSize.text = dir.size
+    }
+
+    private inner class Listener(
+        private val holder: ExplorerHolder,
+    ) : View.OnClickListener {
+
+        override fun onClick(view: View) {
+            view as CompoundButton
+            val isChecked = view.isChecked
+            composition = when (view.id) {
+                R.id.preference_access -> composition.copy(visibleAccess = isChecked)
+                R.id.preference_owner -> composition.copy(visibleOwner = isChecked)
+                R.id.preference_group -> composition.copy(visibleGroup = isChecked)
+                R.id.preference_date -> composition.copy(visibleDate = isChecked)
+                R.id.preference_time -> composition.copy(visibleTime = isChecked)
+                R.id.preference_size -> composition.copy(visibleSize = isChecked)
+                R.id.preference_box -> composition.copy(visibleBox = isChecked)
+                R.id.preference_bg -> composition.copy(visibleBg = isChecked)
+                else -> throw Exception()
+            }
+            holder.bindComposition(composition)
+            holder.setGreyBackgroundColor(composition.visibleBg)
+            node.pushByOriginal(composition.flags)
+        }
+    }
+}

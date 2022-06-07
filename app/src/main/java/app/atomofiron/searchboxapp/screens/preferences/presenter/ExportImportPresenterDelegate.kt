@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.MutableXFile
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
-import app.atomofiron.searchboxapp.screens.preferences.fragment.ExportImportFragmentDelegate
+import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportFragmentDelegate
 import app.atomofiron.searchboxapp.utils.Shell
 
 class ExportImportPresenterDelegate(

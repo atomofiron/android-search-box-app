@@ -14,7 +14,8 @@ import app.atomofiron.searchboxapp.utils.Util
 class PreferenceFragmentDelegate(
     private val fragment: PreferenceFragment,
     private val viewModel: PreferenceViewModel,
-    private val output: PreferenceUpdateOutput,
+    private val updateOutput: PreferenceUpdateOutput,
+    private val clickOutput: PreferenceClickOutput,
 ) : Preference.OnPreferenceChangeListener {
     companion object {
         private const val DOES_NOT_MATTER = true
@@ -55,7 +56,7 @@ class PreferenceFragmentDelegate(
         return when (val key = preference.key) {
             Const.PREF_ABOUT -> {
                 preference.setOnPreferenceClickListener {
-                    fragment.onAboutClick()
+                    clickOutput.onAboutClick()
                     true
                 }
                 DOES_NOT_MATTER
@@ -66,21 +67,21 @@ class PreferenceFragmentDelegate(
                 }
                 preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
                 if (newValue is String) {
-                    output.onPreferenceUpdate(key, newValue)
+                    updateOutput.onPreferenceUpdate(key, newValue)
                 }
                 true
             }
             Const.PREF_TEXT_FORMATS -> {
                 preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
                 if (newValue is String) {
-                    output.onPreferenceUpdate(key, newValue)
+                    updateOutput.onPreferenceUpdate(key, newValue)
                 }
                 DOES_NOT_MATTER
             }
             Const.PREF_SPECIAL_CHARACTERS -> {
                 preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
                 when (newValue) {
-                    is String -> output.onPreferenceUpdate(key, newValue)
+                    is String -> updateOutput.onPreferenceUpdate(key, newValue)
                     else -> {
                         preference as TextFieldPreference
                         preference.setFilter {
@@ -96,33 +97,33 @@ class PreferenceFragmentDelegate(
                 val index = resources.getStringArray(R.array.theme_val).indexOf(name)
                 preference.summary = resources.getStringArray(R.array.theme_var)[index]
                 if (newValue is String) {
-                    output.onPreferenceUpdate(key, newValue)
+                    updateOutput.onPreferenceUpdate(key, newValue)
                 }
                 DOES_NOT_MATTER
             }
             Const.PREF_DEEP_BLACK -> {
                 if (newValue !is Boolean) return DOES_NOT_MATTER
-                output.onPreferenceUpdate(key, newValue)
+                updateOutput.onPreferenceUpdate(key, newValue)
             }
             Const.PREF_APP_ORIENTATION -> {
                 val i = (newValue as? String ?: viewModel.getCurrentValue(key) as String).toInt()
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
                 if (newValue is String) {
-                    output.onPreferenceUpdate(key, newValue)
+                    updateOutput.onPreferenceUpdate(key, newValue)
                 }
                 DOES_NOT_MATTER
             }
             Const.PREF_USE_SU -> {
                 newValue ?: return DOES_NOT_MATTER
                 when (newValue) {
-                    is Boolean -> output.onPreferenceUpdate(key, newValue)
+                    is Boolean -> updateOutput.onPreferenceUpdate(key, newValue)
                     else -> DOES_NOT_MATTER
                 }
             }
             Const.PREF_MAX_SIZE -> {
                 when (newValue) {
                     !is Int -> return DOES_NOT_MATTER
-                    else -> output.onPreferenceUpdate(preference.key, newValue)
+                    else -> updateOutput.onPreferenceUpdate(preference.key, newValue)
                 }
                 onUpdateMaxSize(preference, newValue)
                 return DOES_NOT_MATTER
@@ -130,31 +131,31 @@ class PreferenceFragmentDelegate(
             Const.PREF_EXPORT_IMPORT -> {
                 preference.isEnabled = viewModel.isExportImportAvailable
                 preference.setOnPreferenceClickListener {
-                    fragment.onExportImportClick()
+                    clickOutput.onExportImportClick()
                     true
                 }
                 DOES_NOT_MATTER
             }
             Const.PREF_EXPLORER_ITEM -> {
                 preference.setOnPreferenceClickListener {
-                    fragment.onExplorerItemClick()
+                    clickOutput.onExplorerItemClick()
                     true
                 }
                 DOES_NOT_MATTER
             }
             Const.PREF_MAX_DEPTH -> {
                 newValue ?: return DOES_NOT_MATTER
-                output.onPreferenceUpdate(key, newValue as Int)
+                updateOutput.onPreferenceUpdate(key, newValue as Int)
                 DOES_NOT_MATTER
             }
             Const.PREF_EXCLUDE_DIRS -> {
                 newValue ?: return DOES_NOT_MATTER
-                output.onPreferenceUpdate(key, newValue as Boolean)
+                updateOutput.onPreferenceUpdate(key, newValue as Boolean)
                 DOES_NOT_MATTER
             }
             Const.PREF_JOYSTICK -> {
                 preference.setOnPreferenceClickListener {
-                    fragment.onJoystickClick()
+                    clickOutput.onJoystickClick()
                     true
                 }
                 DOES_NOT_MATTER
@@ -164,7 +165,7 @@ class PreferenceFragmentDelegate(
                     preference.isVisible = false
                 } else {
                     preference.setOnPreferenceClickListener {
-                        fragment.onToyboxClick()
+                        clickOutput.onToyboxClick()
                         true
                     }
                 }
@@ -175,7 +176,7 @@ class PreferenceFragmentDelegate(
                 preference.isChecked = viewModel.getCurrentValue(preference.key) as Boolean
                 preference.setOnPreferenceClickListener {
                     it as SwitchPreferenceCompat
-                    fragment.onLeakCanaryClick(it.isChecked)
+                    clickOutput.onLeakCanaryClick(it.isChecked)
                     true
                 }
                 DOES_NOT_MATTER
