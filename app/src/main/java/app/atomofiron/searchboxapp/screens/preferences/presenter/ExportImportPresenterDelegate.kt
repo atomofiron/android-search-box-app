@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.MutableXFile
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
-import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportFragmentDelegate
+import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportDelegate
 import app.atomofiron.searchboxapp.utils.Shell
 
 class ExportImportPresenterDelegate(
@@ -20,7 +20,7 @@ class ExportImportPresenterDelegate(
     private val preferenceService: PreferenceService,
     private val preferenceStore: PreferenceStore,
     private val preferenceChannel: PreferenceChannel,
-) : ExportImportFragmentDelegate.ExportImportOutput {
+) : ExportImportDelegate.ExportImportOutput {
     override val externalPath = MutableXFile.completePathAsDir(context.getExternalFilesDir(null)!!.absolutePath)
 
     init {

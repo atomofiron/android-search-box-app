@@ -7,7 +7,7 @@ import app.atomofiron.searchboxapp.databinding.CurtainPreferenceExportImportBind
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
-class ExportImportFragmentDelegate(
+class ExportImportDelegate(
     private val output: ExportImportOutput,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 

@@ -12,7 +12,7 @@ import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.utils.Const
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
-class AboutFragmentDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
+class AboutDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
     companion object {
         private const val ALPHA_ENABLED = 1f
         private const val ALPHA_DISABLED = 0.5f

@@ -15,7 +15,7 @@ import app.atomofiron.searchboxapp.utils.Shell
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import java.io.File
 
-class ToyboxFragmentDelegate(
+class ToyboxDelegate(
     private val node: PreferenceNode<ToyboxVariant, Set<String>>,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 

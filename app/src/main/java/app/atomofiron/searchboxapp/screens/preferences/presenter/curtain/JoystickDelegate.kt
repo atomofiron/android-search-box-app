@@ -13,7 +13,7 @@ import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
-class JoystickFragmentDelegate(
+class JoystickDelegate(
     private val joystickNode: PreferenceNode<JoystickComposition, Int>,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 

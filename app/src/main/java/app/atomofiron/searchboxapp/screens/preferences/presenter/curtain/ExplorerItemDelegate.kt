@@ -14,7 +14,7 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 import app.atomofiron.searchboxapp.utils.Const
 import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 
-class ExplorerItemFragmentDelegate(
+class ExplorerItemDelegate(
     private val node: PreferenceNode<ExplorerItemComposition, Int>,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
     private val dir = MutableXFile("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038",

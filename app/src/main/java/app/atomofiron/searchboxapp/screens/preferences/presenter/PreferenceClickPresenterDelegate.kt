@@ -16,7 +16,7 @@ import app.atomofiron.searchboxapp.utils.showCurtain
 class PreferenceClickPresenterDelegate(
     viewModel: PreferenceViewModel,
     private val router: PreferenceRouter,
-    private val exportImportDelegate: ExportImportFragmentDelegate.ExportImportOutput,
+    private val exportImportDelegate: ExportImportDelegate.ExportImportOutput,
     private val preferenceStore: PreferenceStore,
     curtainChannel: CurtainChannel,
 ) : Recipient, PreferenceClickOutput {
@@ -25,11 +25,11 @@ class PreferenceClickPresenterDelegate(
         curtainChannel.flow.collectForMe(viewModel.viewModelScope) { controller ->
             controller ?: return@collectForMe
             val adapter: CurtainApi.Adapter<*> = when (controller.requestId) {
-                R.layout.curtain_about -> AboutFragmentDelegate()
-                R.layout.curtain_preference_export_import -> ExportImportFragmentDelegate(exportImportDelegate)
-                R.layout.curtain_preference_explorer_item -> ExplorerItemFragmentDelegate(preferenceStore.explorerItemComposition)
-                R.layout.curtain_preference_joystick -> JoystickFragmentDelegate(preferenceStore.joystickComposition)
-                R.layout.curtain_preference_toybox -> ToyboxFragmentDelegate(preferenceStore.toyboxVariant)
+                R.layout.curtain_about -> AboutDelegate()
+                R.layout.curtain_preference_export_import -> ExportImportDelegate(exportImportDelegate)
+                R.layout.curtain_preference_explorer_item -> ExplorerItemDelegate(preferenceStore.explorerItemComposition)
+                R.layout.curtain_preference_joystick -> JoystickDelegate(preferenceStore.joystickComposition)
+                R.layout.curtain_preference_toybox -> ToyboxDelegate(preferenceStore.toyboxVariant)
                 else -> return@collectForMe
             }
             adapter.setController(controller)
