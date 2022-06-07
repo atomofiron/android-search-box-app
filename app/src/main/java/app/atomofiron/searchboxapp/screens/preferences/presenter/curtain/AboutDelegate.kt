@@ -29,7 +29,6 @@ class AboutDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
     private fun CurtainAboutBinding.init() {
         val context = root.context
-        // todo requires
         var componentName = githubIntent.resolveActivity(context.packageManager)
         aboutTvGithub.isEnabled = componentName != null
         aboutTvGithub.alpha = if (componentName == null) ALPHA_DISABLED else ALPHA_ENABLED
