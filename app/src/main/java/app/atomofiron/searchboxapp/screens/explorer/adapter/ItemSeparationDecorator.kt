@@ -21,7 +21,7 @@ class ItemSeparationDecorator(private val separationType: (position: Int) -> Sep
     private lateinit var downSeparation: Drawable
     private var separationSize = 0
 
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         initShadow(parent.context, forced = false)
 
         parent.getSortedChildren().forEach {

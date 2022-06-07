@@ -18,8 +18,8 @@ class TopInsetDecorator : RecyclerView.ItemDecoration() {
     private var topColorGrey = 0
     var useGrey = false
 
-    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        super.onDraw(canvas, parent, state)
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        super.onDrawOver(canvas, parent, state)
 
         if (!colorsDefined) {
             colorsDefined = true
