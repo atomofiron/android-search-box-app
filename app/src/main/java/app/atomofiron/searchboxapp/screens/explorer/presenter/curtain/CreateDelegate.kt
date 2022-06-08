@@ -19,7 +19,7 @@ class CreateDelegate(
 ) {
 
     fun getView(dir: XFile, inflater: LayoutInflater, container: ViewGroup): View {
-        val dirFiles = dir.children!!.map { it.name }
+        val dirFiles = dir.children?.map { it.name } ?: listOf()
         val binding = CurtainExplorerCreateBinding.inflate(inflater, container, false)
         binding.init(dir, dirFiles)
         return binding.root
