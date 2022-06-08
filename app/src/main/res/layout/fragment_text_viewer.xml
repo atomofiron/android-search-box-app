@@ -66,4 +66,8 @@
                 />
         </LinearLayout>
     </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
+    <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

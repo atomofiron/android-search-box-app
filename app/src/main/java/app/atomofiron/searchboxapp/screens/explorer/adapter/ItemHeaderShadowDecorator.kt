@@ -4,9 +4,9 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.findColorByAttr
@@ -33,21 +33,22 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     private var headerItemPosition: Int = UNDEFINED
     private var headerItem: XFile? = null
 
-    private lateinit var background: ShapeDrawable
     private var backgroundGrey = 0
     private var backgroundColor = 0
+    private var headerCurrentColor = 0
 
     fun onHeaderChanged(item: XFile?, position: Int) {
         headerItem = item
         headerItemPosition = position
+        setHeaderBackground()
     }
 
     fun setHeaderView(headerView: ExplorerHeaderView) {
         this.headerView = headerView
         initShadow(headerView.context)
-        background = ShapeDrawable()
         backgroundColor = headerView.context.findColorByAttr(R.attr.colorBackground)
         backgroundGrey = ContextCompat.getColor(headerView.context, R.color.item_explorer_background)
+        backgroundGrey = ColorUtils.compositeColors(backgroundGrey, backgroundColor)
     }
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -57,7 +58,6 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         val children = parent.getSortedChildren()
         bindHeader(headerItem, children)
         drawShadows(children, canvas, parent)
-        drawHeaderBackground(canvas)
     }
 
     private fun bindHeader(headerItem: XFile, children: Map<Int, View>) {
@@ -87,13 +87,14 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         headerView.bottom = top + headerHeight
     }
 
-    private fun drawHeaderBackground(canvas: Canvas) {
-        background.setBounds(headerView.left, headerView.top, headerView.right, headerView.bottom)
-        background.paint.color = backgroundColor
-        background.draw(canvas)
-        if (headerItemPosition % 2 == 0) {
-            background.paint.color = backgroundGrey
-            background.draw(canvas)
+    private fun setHeaderBackground() {
+        val color = when (headerItemPosition % 2) {
+            0 -> backgroundGrey
+            else -> backgroundColor
+        }
+        if (color != headerCurrentColor) {
+            headerCurrentColor = color
+            headerView.setBackgroundColor(color)
         }
     }
 

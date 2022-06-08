@@ -40,6 +40,10 @@
 		</app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+	<app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		/>
 	<app.atomofiron.searchboxapp.custom.view.VerticalDockView
 		android:id="@+id/vertical_dock"
 		android:layout_width="wrap_content"

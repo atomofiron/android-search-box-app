@@ -45,9 +45,18 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         return super.onCreateAdapter(preferenceScreen)
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val container = inflater.inflate(R.layout.fragment_preference, container, false)
+        container as ViewGroup
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        container.addView(view, 0)
+        return container
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        ViewGroupInsetsProxy.set(view)
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         viewModel.onViewCollect()

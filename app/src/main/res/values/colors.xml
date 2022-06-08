@@ -49,6 +49,7 @@
 	<color name="windowBackgroundThemedAmoled">@color/windowBackgroundWhite</color>
 
 	<color name="transparent">#00000000</color>
+	<color name="transparent_navigation">#01777777</color>
 	<color name="white">#ffffffff</color>
 	<color name="white_middle">#78ffffff</color>
 	<color name="white_low">#33ffffff</color>
