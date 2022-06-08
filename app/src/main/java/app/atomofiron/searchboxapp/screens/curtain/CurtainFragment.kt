@@ -11,14 +11,12 @@ import androidx.core.view.*
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.arch.TranslucentFragment
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
 import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
-import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainContentDelegate
@@ -88,12 +86,6 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         ViewCompat.setOnApplyWindowInsetsListener(binding.curtainSheet, insetsCalculator)
 
         onViewCollect()
-
-        if (BuildConfig.DEBUG) view.postDelayed({
-            showSnackbar {
-                Snackbar.make(it, "Snackbar", Snackbar.LENGTH_INDEFINITE).setAction("Dismiss") { }
-            }
-        }, 1000)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -173,6 +165,9 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
             .apply {
                 view.elevation = binding.curtainSheet.elevation
                 snackbarView = WeakReference(view)
+                ViewCompat.setOnApplyWindowInsetsListener(view) { _, _ ->
+                    WindowInsetsCompat.CONSUMED
+                }
             }
             .show()
     }
