@@ -529,7 +529,6 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
-    // todo fix updating parent
     protected suspend fun deleteItems(items: List<MutableXFile>) {
         logI("deleteItems ${items.size}")
         items.forEach { item ->
@@ -540,8 +539,20 @@ abstract class PrivateExplorerServiceLogic(
             }
         }
         explorerStore.notifyChecked()
+
+        val affectedDirs = mutableListOf<String>()
         items.forEach { item ->
             deleteItem(item)
+            if (affectedDirs.contains(item.completedPath)) affectedDirs.remove(item.completedPath)
+            if (!affectedDirs.contains(item.completedParentPath)) affectedDirs.add(item.completedParentPath)
+        }
+        affectedDirs.forEach { dirPath ->
+            files.find {
+                it.completedPath == dirPath
+            }?.let {
+                it.invalidateCache()
+                updateItem(it)
+            }
         }
     }
 
@@ -605,35 +616,36 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
-    // todo fix updating parent
-    suspend fun create(dir: MutableXFile, name: String, directory: Boolean) {
-        logI("create $directory $name $dir")
-        val item = MutableXFile.create(dir, name, directory, dir.root)
+    suspend fun create(parent: MutableXFile, name: String, directory: Boolean) {
+        logI("create $directory $name $parent")
+        val item = MutableXFile.create(parent, name, directory, parent.root)
         val error = item.create(useSu)
         when {
             error != null -> {
-                logI("create error != null $dir\n$error")
+                logI("create error != null $parent\n$error")
                 explorerStore.alerts.value = error
                 when {
-                    dir.isOpened -> updateCurrentDir(currentOpenedDir!!)
-                    dir.isDirectory -> updateClosedDir(dir)
-                    else -> updateItem(dir)
+                    parent.isOpened -> updateCurrentDir(currentOpenedDir!!)
+                    parent.isDirectory -> updateClosedDir(parent)
+                    else -> updateItem(parent)
                 }
             }
             else -> {
+                item.updateCache(useSu, completely = true)
                 mutex.withLock {
-                    val index = files.indexOf(dir)
+                    val index = files.indexOf(parent)
                     if (index == UNKNOWN) {
-                        logI("create return -1 $dir\n$item -> $dir")
+                        logI("create return -1 $parent\n$item -> $parent")
                         return@withLock
                     }
-                    val err = dir.add(item)
+                    val err = parent.add(item)
                     if (err != null) {
-                        logI("create error != null $dir\n$err $item -> $dir")
+                        logI("create error != null $parent\n$err $item -> $parent")
                         return
                     }
                     files.add(index.inc(), item)
-                    explorerStore.notifyInsert(dir, item)
+                    explorerStore.notifyInsert(parent, item)
+                    explorerStore.notifyUpdate(parent)
                 }
             }
         }
