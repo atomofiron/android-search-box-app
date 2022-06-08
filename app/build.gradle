@@ -67,10 +67,10 @@ repositories {
 }
 
 ext {
-    androidx = "1.7.0"
+    androidx = "1.8.0"
     fragment = "1.4.1"
-    material = "1.6.0"
-    appcompat = "1.4.1"
+    material = "1.6.1"
+    appcompat = "1.4.2"
     coroutines = "1.6.1"
     lifecycle_ext = "2.2.0"
     lifecycle_ktx = "2.4.1"
