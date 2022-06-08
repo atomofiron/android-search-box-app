@@ -18,6 +18,7 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
+import app.atomofiron.searchboxapp.setContentMaxWidthRes
 
 class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     BaseFragment<ExplorerFragment, ExplorerViewModel, ExplorerPresenter> by BaseFragmentImpl(),
@@ -48,6 +49,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = explorerAdapter
 
+        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_places -> binding.verticalDock.open()

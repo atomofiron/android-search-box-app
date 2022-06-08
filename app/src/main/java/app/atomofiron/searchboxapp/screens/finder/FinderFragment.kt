@@ -19,6 +19,7 @@ import app.atomofiron.searchboxapp.databinding.FragmentFinderBinding
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
+import app.atomofiron.searchboxapp.setContentMaxWidthRes
 
 class FinderFragment : Fragment(R.layout.fragment_finder),
     BaseFragment<FinderFragment, FinderViewModel, FinderPresenter> by BaseFragmentImpl()
@@ -54,6 +55,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             adapter = finderAdapter
         }
 
+        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_history -> binding.verticalDock.open()
