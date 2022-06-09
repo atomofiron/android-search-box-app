@@ -57,11 +57,5 @@ class ResultCurtainMenuDelegate(
     fun showOptions(options: ExplorerItemOptions) {
         data = options
         router.showCurtain(recipient, 0)
-        /* todo if (options.items.size == 1) {
-            bottomItemMenu.tvDescription.isVisible = true
-            bottomItemMenu.tvDescription.text = options.items[0].completedPath
-        } else {
-            bottomItemMenu.tvDescription.isGone = true
-        }*/
     }
 }

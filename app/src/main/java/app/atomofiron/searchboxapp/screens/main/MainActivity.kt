@@ -72,7 +72,6 @@ class MainActivity : AppCompatActivity() {
         }
         if (savedInstanceState == null) onIntent(intent)
 
-        // todo apply fake system bars color if needed
         val manager = getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
         val onBackStackChangedListener: () -> Unit = {
             presenter.updateLightStatusBar(isDarkTheme)

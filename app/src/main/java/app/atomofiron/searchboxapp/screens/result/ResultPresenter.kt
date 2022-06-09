@@ -46,16 +46,13 @@ class ResultPresenter(
     init {
         onSubscribeData()
 
-        //if (taskId == UNDEFINED) {
-            val task = finderStore.tasks.find { it.id == taskId }
-            // todo start task here
-            if (task == null) {
-                logE("No task found!")
-                router.navigateBack()
-            } else {
-                viewModel.task.value = task.copyTask()
-            }
-        //}
+        val task = finderStore.tasks.find { it.id == taskId }
+        if (task == null) {
+            logE("No task found!")
+            router.navigateBack()
+        } else {
+            viewModel.task.value = task.copyTask()
+        }
     }
 
     override fun onSubscribeData() {
