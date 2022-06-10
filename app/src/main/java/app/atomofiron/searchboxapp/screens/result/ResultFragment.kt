@@ -21,6 +21,7 @@ import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
+import app.atomofiron.searchboxapp.setContentMaxWidthRes
 
 class ResultFragment : Fragment(R.layout.fragment_result),
     BaseFragment<ResultFragment, ResultViewModel, ResultPresenter> by BaseFragmentImpl()
@@ -53,6 +54,8 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             layoutManager = LinearLayoutManager(requireContext())
             adapter = resultAdapter
         }
+        binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
         viewModel.onViewCollect()
         onApplyInsets(view)

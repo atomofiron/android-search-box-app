@@ -116,6 +116,6 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         val items = tasks.map { FinderStateItem.ProgressItem(it) }
         progressItems.clear()
         progressItems.addAll(items)
-        updateState()
+        updateState(isLocal = true)
     }
 }

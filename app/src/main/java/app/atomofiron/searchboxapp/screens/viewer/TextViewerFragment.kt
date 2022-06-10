@@ -16,6 +16,7 @@ import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
+import app.atomofiron.searchboxapp.setContentMaxWidthRes
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     BaseFragment<TextViewerFragment, TextViewerViewModel, TextViewerPresenter> by BaseFragmentImpl()
@@ -47,6 +48,8 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             adapter = viewerAdapter
             itemAnimator = null
         }
+        binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_search -> presenter.onSearchClick()
