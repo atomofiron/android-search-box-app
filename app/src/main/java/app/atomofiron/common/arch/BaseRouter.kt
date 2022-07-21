@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.*
 import app.atomofiron.common.util.property.MutableWeakProperty
@@ -84,14 +85,22 @@ abstract class BaseRouter(
         }
     }
 
-    protected fun switchScreen(predicate: (Fragment) -> Boolean) {
-        fragment {
-            val fragments = parentFragmentManager.fragments
-            parentFragmentManager.beginTransaction()
-                .hide(this)
-                .show(fragments.find(predicate)!!)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit()
-        }
+    protected fun FragmentManager.switchScreen(predicate: (Fragment) -> Boolean) {
+        val lastVisible = fragments.findLastVisibleFragment()
+        val target = fragments.find(predicate)
+        if (lastVisible === target) return
+        beginTransaction()
+            .apply {
+                lastVisible?.let { hide(it as Fragment) }
+            }
+            .show(target!!)
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            .commit()
     }
+
+    protected fun List<Fragment>?.findLastVisibleFragment() = this?.filter {
+        it is BaseFragment<*,*,*>
+    }?.run {
+        lastOrNull { it.isVisible } ?: lastOrNull { !it.isHidden }
+    } as? BaseFragment<*,*,*>
 }

@@ -6,8 +6,6 @@ import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
-import app.atomofiron.searchboxapp.screens.finder.FinderFragment
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class RootFragment : Fragment(R.layout.fragment_root),
@@ -16,16 +14,6 @@ class RootFragment : Fragment(R.layout.fragment_root),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewModel(this, RootViewModel::class, savedInstanceState)
-
-        if (childFragmentManager.fragments.isEmpty()) {
-            val explorer = ExplorerFragment()
-            val finder = FinderFragment()
-            childFragmentManager.beginTransaction()
-                .add(R.id.main_fl_root, explorer)
-                .hide(explorer)
-                .add(R.id.main_fl_root, finder)
-                .commit()
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,4 +21,6 @@ class RootFragment : Fragment(R.layout.fragment_root),
 
         view.insetsProxying()
     }
+
+    override fun onBack(): Boolean = presenter.onBack()
 }

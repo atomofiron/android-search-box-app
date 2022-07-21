@@ -12,8 +12,8 @@ class FinderRouter(fragment: WeakProperty<Fragment>) : BaseRouter(fragment) {
     override val currentDestinationId = R.id.rootFragment
 
     fun showExplorer() {
-        switchScreen {
-            it is ExplorerFragment
+        fragment {
+            parentFragmentManager.switchScreen { it is ExplorerFragment }
         }
     }
 

@@ -10,4 +10,6 @@ class RootPresenter(
 ) : BasePresenter<RootViewModel, RootRouter>(viewModel, router) {
 
     override fun onSubscribeData() = Unit
+
+    fun onBack() = router.onBack()
 }
