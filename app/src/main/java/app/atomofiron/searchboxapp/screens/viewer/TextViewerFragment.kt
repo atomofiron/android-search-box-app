@@ -11,12 +11,12 @@ import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     BaseFragment<TextViewerFragment, TextViewerViewModel, TextViewerPresenter> by BaseFragmentImpl()
@@ -77,9 +77,9 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     }
 
     override fun onApplyInsets(root: View) {
-        ViewGroupInsetsProxy.set(root)
-        ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
-        ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
+        root.insetsProxying()
+        binding.recyclerView.applyPaddingInsets()
+        binding.bottomAppBar.applyPaddingInsets(bottom = true)
     }
 
     private fun setLoading(visible: Boolean) {

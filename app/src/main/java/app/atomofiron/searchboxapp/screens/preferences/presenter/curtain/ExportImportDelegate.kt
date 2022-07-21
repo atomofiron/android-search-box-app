@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainPreferenceExportImportBinding
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class ExportImportDelegate(
     private val output: ExportImportOutput,
@@ -14,7 +14,7 @@ class ExportImportDelegate(
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
         val binding = CurtainPreferenceExportImportBinding.inflate(inflater, container, false)
         binding.init()
-        ViewInsetsController.bindPadding(binding.root, top = true, bottom = true)
+        binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)
     }
 

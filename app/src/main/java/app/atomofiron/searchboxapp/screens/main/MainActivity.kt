@@ -12,13 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.hideKeyboard
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
@@ -28,6 +26,8 @@ import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmen
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
 import app.atomofiron.searchboxapp.utils.Const
+import lib.atomofiron.android_window_insets_compat.applyMarginInsets
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var presenter: MainPresenter
     private var theme: AppTheme? = null
-    private val isDarkTheme: Boolean get() = findBooleanByAttr(R.attr.isDarkTheme)
+    private val isDarkTheme: Boolean get() = isDarkTheme()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getAppTheme())
@@ -56,9 +56,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewGroupInsetsProxy.set(binding.root)
-        ViewGroupInsetsProxy.set(binding.navHostFragment)
-        ViewInsetsController.bindMargin(binding.joystick, bottom = true)
+        binding.root.insetsProxying()
+        binding.navHostFragment.insetsProxying()
+        binding.joystick.applyMarginInsets(bottom = true)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.inject(this)

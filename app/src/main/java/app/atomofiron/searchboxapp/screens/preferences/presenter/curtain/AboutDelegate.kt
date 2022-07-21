@@ -10,7 +10,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainAboutBinding
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.utils.Const
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class AboutDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
     companion object {
@@ -23,7 +23,7 @@ class AboutDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
         val binding = CurtainAboutBinding.inflate(inflater, container, false)
         binding.init()
-        ViewInsetsController.bindPadding(binding.root, top = true, bottom = true)
+        binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)
     }
 

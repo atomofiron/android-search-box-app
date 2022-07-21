@@ -16,7 +16,6 @@ import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.arch.TranslucentFragment
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainContentDelegate
@@ -25,6 +24,8 @@ import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.curtain.fragment.TransitionAnimator
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainBackground
+import lib.atomofiron.android_window_insets_compat.dispatchChildrenWindowInsets
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 import java.lang.ref.WeakReference
 import kotlin.math.max
 import kotlin.math.min
@@ -82,7 +83,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
         transitionAnimator = TransitionAnimator(binding, ::updateUi)
 
-        ViewGroupInsetsProxy.set(binding.root)
+        binding.root.insetsProxying()
         ViewCompat.setOnApplyWindowInsetsListener(binding.curtainSheet, insetsCalculator)
 
         onViewCollect()
@@ -266,7 +267,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
             val new = WindowInsetsCompat.Builder(insets)
                 .setInsets(WindowInsetsCompat.Type.statusBars(), statusBars)
                 .build()
-            ViewGroupInsetsProxy.dispatchChildrenWindowInsets(view, new)
+            (view as ViewGroup).dispatchChildrenWindowInsets(new)
             return WindowInsetsCompat.CONSUMED
         }
     }

@@ -14,14 +14,14 @@ import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.viewCollect
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class PreferenceFragment : PreferenceFragmentCompat(),
     BaseFragment<PreferenceFragment, PreferenceViewModel, PreferencePresenter> by BaseFragmentImpl()
@@ -56,7 +56,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ViewGroupInsetsProxy.set(view)
+        view.insetsProxying()
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         viewModel.onViewCollect()
@@ -68,7 +68,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         recyclerView.clipToPadding = false
         val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)
         recyclerView.updatePadding(bottom = padding)
-        ViewInsetsController.bindPadding(recyclerView, start = true, top = true, end = true, bottom = true)
+        recyclerView.applyPaddingInsets()
         return recyclerView
     }
 
@@ -79,7 +79,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     }
 
     override fun onApplyInsets(root: View) {
-        ViewGroupInsetsProxy.set(root)
+        root.insetsProxying()
     }
 
     private fun PreferenceGroup.fixIcons() {

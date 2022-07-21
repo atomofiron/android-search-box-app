@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.model.preference.JoystickComposition
 import app.atomofiron.searchboxapp.databinding.CurtainPreferenceJoystickBinding
 import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class JoystickDelegate(
     private val joystickNode: PreferenceNode<JoystickComposition, Int>,
@@ -22,7 +22,7 @@ class JoystickDelegate(
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
         val binding = CurtainPreferenceJoystickBinding.inflate(inflater, container, false)
         binding.init()
-        ViewInsetsController.bindPadding(binding.root, top = true, bottom = true)
+        binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)
     }
 

@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
@@ -19,6 +17,8 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDel
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     BaseFragment<ExplorerFragment, ExplorerViewModel, ExplorerPresenter> by BaseFragmentImpl(),
@@ -88,12 +88,12 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun onApplyInsets(root: View) {
-        ViewGroupInsetsProxy.set(root)
-        ViewGroupInsetsProxy.set(binding.coordinator)
-        ViewGroupInsetsProxy.set(binding.verticalDock)
-        ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
-        ViewInsetsController.bindPadding(binding.explorerHeader, start = true, top = true, end = true)
-        ViewInsetsController.bindPadding(binding.bottomAppBar, start = true, bottom = true, end = true)
+        root.insetsProxying()
+        binding.coordinator.insetsProxying()
+        binding.verticalDock.insetsProxying()
+        binding.recyclerView.applyPaddingInsets()
+        binding.explorerHeader.applyPaddingInsets(start = true, top = true, end = true)
+        binding.bottomAppBar.applyPaddingInsets(start = true, bottom = true, end = true)
     }
 
     override fun onBack(): Boolean {

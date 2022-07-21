@@ -21,8 +21,8 @@ class ExplorerRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
     val permissions = PermissionDelegate.create(activityProperty)
 
     fun showFinder() {
-        switchScreen {
-            it is FinderFragment
+        fragment {
+            parentFragmentManager.switchScreen { it is FinderFragment }
         }
     }
 

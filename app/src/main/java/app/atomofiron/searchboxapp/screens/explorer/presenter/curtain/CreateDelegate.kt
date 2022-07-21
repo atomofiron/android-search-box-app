@@ -12,7 +12,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerCreateBinding
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class CreateDelegate(
     private val output: ExplorerCurtainMenuDelegate,
@@ -26,7 +26,7 @@ class CreateDelegate(
     }
 
     private fun CurtainExplorerCreateBinding.init(dir: XFile, dirFiles: List<String>) {
-        ViewInsetsController.bindPadding(root, top = true, bottom = true)
+        root.applyPaddingInsets(vertical = true)
         root.requestApplyInsets()
         explorerCreateEt.text?.clear()
         explorerCreateEt.addTextChangedListener(ButtonState(dirFiles, explorerCreateBtn))

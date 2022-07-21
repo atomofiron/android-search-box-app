@@ -10,7 +10,7 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class CurtainSearchDelegate(
     output: FinderAdapterOutput,
@@ -38,8 +38,8 @@ class CurtainSearchDelegate(
         binding.sheetViewerSearchRv.adapter = finderAdapter
         binding.sheetViewerSearchRv.itemAnimator = null
 
-        ViewInsetsController.bindPadding(binding.root, top = true, withProxy = true)
-        ViewInsetsController.bindPadding(binding.sheetViewerSearchRv, bottom = true)
+        binding.root.applyPaddingInsets(top = true, withProxying = true)
+        binding.sheetViewerSearchRv.applyPaddingInsets(bottom = true)
 
         return CurtainApi.ViewHolder(binding.root)
     }

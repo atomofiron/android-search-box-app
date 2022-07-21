@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
@@ -20,6 +18,8 @@ import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class FinderFragment : Fragment(R.layout.fragment_finder),
     BaseFragment<FinderFragment, FinderViewModel, FinderPresenter> by BaseFragmentImpl()
@@ -97,10 +97,10 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     }
 
     override fun onApplyInsets(root: View) {
-        ViewGroupInsetsProxy.set(root)
-        ViewGroupInsetsProxy.set(binding.coordinator)
-        ViewInsetsController.bindPadding(binding.recyclerView, start = true, top = true, end = true, bottom = true)
-        ViewInsetsController.bindPadding(binding.bottomAppBar, bottom = true)
+        root.insetsProxying()
+        binding.coordinator.insetsProxying()
+        binding.recyclerView.applyPaddingInsets()
+        binding.bottomAppBar.applyPaddingInsets(bottom = true)
     }
 
     override fun onBack(): Boolean {

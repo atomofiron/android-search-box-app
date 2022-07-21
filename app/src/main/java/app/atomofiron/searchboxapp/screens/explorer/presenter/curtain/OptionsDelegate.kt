@@ -12,7 +12,7 @@ import app.atomofiron.searchboxapp.databinding.CurtainExplorerOptionsBinding
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinder
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class OptionsDelegate(
     private val menuId: Int,
@@ -27,8 +27,8 @@ class OptionsDelegate(
             markAsDangerous(R.id.menu_remove)
         }
         binding.init(container.context, options)
-        ViewInsetsController.bindPadding(binding.root, top = true, withProxy = true)
-        ViewInsetsController.bindPadding(binding.menuView, bottom = true)
+        binding.root.applyPaddingInsets(top = true, withProxying = true)
+        binding.menuView.applyPaddingInsets(bottom = true)
         return binding.root
     }
 
