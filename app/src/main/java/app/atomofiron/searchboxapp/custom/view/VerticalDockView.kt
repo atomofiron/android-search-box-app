@@ -10,12 +10,12 @@ import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.DrawerStateListenerImpl
-import lib.atomofiron.android_window_insets_compat.ViewInsetsController
 import com.google.android.material.navigation.NavigationView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.LayoutDrawerNavigationBinding
 import app.atomofiron.searchboxapp.utils.Const
-import lib.atomofiron.android_window_insets_compat.ViewGroupInsetsProxy
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class VerticalDockView @JvmOverloads constructor(
     context: Context,
@@ -50,9 +50,9 @@ class VerticalDockView @JvmOverloads constructor(
             background = background.mutate()
             background.alpha = Const.ALPHA_80_PERCENT
         }
-        ViewGroupInsetsProxy.set(this)
-        ViewInsetsController.bindPadding(binding.drawerTitleContainer, start = true, top = true, end = true)
-        ViewInsetsController.bindPadding(binding.drawerRv, start = true, top = true, end = true, bottom = true)
+        this.insetsProxying()
+        binding.drawerTitleContainer.applyPaddingInsets(start = true, top = true, end = true)
+        binding.drawerRv.applyPaddingInsets()
     }
 
     override fun setLayoutParams(params: ViewGroup.LayoutParams?) {
