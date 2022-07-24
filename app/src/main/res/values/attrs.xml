@@ -33,8 +33,8 @@
         <attr name="oneBall" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="SpinnerPreference">
-        <attr name="entries" />
-        <attr name="entryValues" />
+    <declare-styleable name="SystemUiBackgroundView">
+        <attr name="statusBar" format="boolean" />
+        <attr name="navigationBar" format="boolean" />
     </declare-styleable>
 </resources>

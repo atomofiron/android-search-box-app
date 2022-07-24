@@ -1,52 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorPrimary">@color/colorPrimaryLight</color>
-	<color name="colorPrimaryDark">#ff5BC0BE</color>
-	<color name="colorPrimaryLight">#ff1D7874</color>
-	<color name="colorPrimaryLite">@color/colorPrimaryDarkLite</color>
-	<color name="colorPrimaryDarkLite">#335BC0BE</color>
-	<color name="colorPrimaryLightLite">#331D7874</color>
-	<color name="colorSurface">@color/white</color>
-	<color name="colorOnSurface">@color/black</color>
+	<color name="day_night_primary">@color/primary_light</color>
+	<color name="day_night_primary_lite">@color/primary_dark_lite</color>
 
-	<color name="colorBackgroundLight">#ffffffff</color>
-	<color name="colorBackgroundDark">#ff131313</color>
-	<color name="colorBackgroundDayNight">@color/colorBackgroundLight</color>
-	<color name="shadow_day_night">@color/shadow_light</color>
+	<color name="day_night_content">@color/grey_dark</color>
+	<color name="day_night_secondary">@color/grey_dark_lite</color>
+	<color name="day_night_positive">@color/black</color>
+	<color name="day_night_negative">@color/white</color>
+	<color name="day_night_ripple">@color/ripple_light</color>
+	<color name="day_night_background">@color/white</color>
+	<color name="day_night_background_amoled">@color/white</color>
+	<color name="day_night_shadow">@color/shadow_light</color>
+	<color name="day_night_card_background">@color/card_background_light</color>
+	<color name="day_night_card_background_amoled">@color/card_background_light</color>
 
-	<color name="statusBarColor">@color/black</color>
-	<color name="navigationBarColor">@color/black</color>
+	<color name="day_night_field_divider">@color/grey_light</color>
+	<color name="day_night_field_divider_amoled">@color/grey_light</color>
+	<color name="day_night_bone">@color/grey_light</color>
+	<color name="day_night_overlay">@color/overlay_black</color>
+
+	<!-- -->
+
+	<color name="status_bar">@color/black</color>
+	<color name="navigation_bar">@color/black</color>
+
+	<color name="primary_dark">#ff5BC0BE</color>
+	<color name="primary_light">#ff1D7874</color>
+	<color name="primary_dark_lite">#335BC0BE</color>
+	<color name="primary_light_lite">#331D7874</color>
 
 	<color name="system_bar_light">#55ffffff</color>
 	<color name="system_bar_dark">#55131313</color>
-	<color name="system_bar_black">#55000000</color>
+	<color name="system_bar_dark_amoled">#55000000</color>
 
-	<color name="cardBackgroundColorDark">#ff212121</color>
-	<color name="cardBackgroundColorLight">@color/white</color>
-	<color name="cardBackgroundColor">@color/cardBackgroundColorLight</color>
+	<color name="card_background_light">@color/white</color>
+	<color name="card_background_dark">@color/grey_dark_21</color>
+	<color name="card_background_dark_amoled">@color/grey_dark_13</color>
 
 	<color name="shadow_light">#22000000</color>
 	<color name="shadow_dark">#77000000</color>
 	<color name="latch">#55999999</color>
 
-    <!-- -->
+	<color name="accent_light">#ff1D7874</color>
+	<color name="ripple_light">#5f1D7874</color>
 
-	<color name="colorAccentLight">#ff1D7874</color>
-	<color name="colorRippleLight">#5f1D7874</color>
+	<color name="accent_dark">#ff5BC0BE</color>
+	<color name="ripple_dark">#5f5BC0BE</color>
 
-	<color name="colorAccentDark">#ff5BC0BE</color>
-	<color name="colorRippleDark">#5f5BC0BE</color>
+	<color name="primary_red">#ff781D10</color>
+	<color name="accent_red">#ffad7874</color>
+	<color name="accent_yellow">#ffada874</color>
 
-	<color name="colorPrimaryRed">#ff781D10</color>
-	<color name="colorAccentRed">#ffad7874</color>
-	<color name="colorAccentYellow">#ffada874</color>
+	<color name="colorSurface">@color/white</color>
+	<color name="colorOnSurface">@color/black</color>
 
-	<color name="windowBackgroundWhite">#ffffffff</color>
-	<color name="windowBackgroundDarkLight">#ff222222</color>
-	<color name="windowBackgroundDark">#ff111111</color>
-	<color name="windowBackgroundBlack">#ff000000</color>
-	<color name="windowBackgroundThemed">@color/windowBackgroundWhite</color>
-	<color name="windowBackgroundThemedAmoled">@color/windowBackgroundWhite</color>
+	<!-- -->
 
 	<color name="transparent">#00000000</color>
 	<color name="transparent_navigation">#01777777</color>
@@ -61,6 +69,8 @@
 	<color name="grey_middle">#ff787878</color>
 	<color name="grey_middle_lite">#aa787878</color>
 	<color name="grey_dark">#ff333333</color>
+	<color name="grey_dark_21">#ff212121</color>
+	<color name="grey_dark_13">#ff131313</color>
 	<color name="grey_dark_lite">#aa333333</color>
 	<color name="grey_light">#ffcccccc</color>
 	<color name="grey_light_lite">#aacccccc</color>
@@ -70,7 +80,7 @@
 	<color name="red">#ffff0000</color>
 	<color name="red_transparent">#33ff0000</color>
 	<color name="spanBlue">#5f4f60c0</color>
-	<color name="spanGreen">@color/colorPrimaryDark</color>
+	<color name="spanGreen">@color/primary_dark</color>
 	<color name="item_explorer_background">#20a0a0a0</color>
 	<color name="item_explorer_background_intensive">#80a0a0a0</color>
 

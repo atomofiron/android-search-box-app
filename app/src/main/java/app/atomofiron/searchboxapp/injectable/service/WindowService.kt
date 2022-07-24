@@ -13,19 +13,13 @@ class WindowService(
     private val window by appStore.windowProperty
     private val controller by appStore.insetsControllerProperty
 
-    var isLightStatusBars: Boolean = false
-        get() = controller?.isAppearanceLightStatusBars ?: field
-        set(value) {
-            field = value
-            controller?.isAppearanceLightStatusBars = value
-        }
+    fun setLightStatusBar(value: Boolean) {
+        controller?.isAppearanceLightStatusBars = value
+    }
 
-    var isLightNavigationBars: Boolean = false
-        get() = controller?.isAppearanceLightNavigationBars ?: field
-        set(value) {
-            field = value
-            controller?.isAppearanceLightNavigationBars = value
-        }
+    fun setLightNavigationBar(value: Boolean) {
+        controller?.isAppearanceLightNavigationBars = value
+    }
 
     fun setSecureFlag(value: Boolean) = window?.apply {
         val appearance = getSystemBarsAppearance()

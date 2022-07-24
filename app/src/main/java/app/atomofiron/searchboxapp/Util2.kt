@@ -70,70 +70,9 @@ fun Any.natik(s: String) {
     Log.e("searchboxapp", "[${this.javaClass.simpleName}] $dif $s")
 }
 
-object Util {
-    /**
-     * @return true, если цвет фона яркий, и текст на нём должен быть тёмным
-     */
-    fun setRippleAndBackgroundColors(itemView: View, color: Int): Boolean {
-        val rippleColor = ContextCompat.getColor(itemView.context, R.color.white)
-        val rippleColorList = ColorStateList.valueOf(rippleColor)
-
-        val rippleDrawable = itemView.background as RippleDrawable
-        val gradientDrawable = rippleDrawable.getDrawable(0) as GradientDrawable
-
-        rippleDrawable.setColor(rippleColorList)
-        gradientDrawable.setColor(color)
-
-        val isDarkTheme =  itemView.context.isDarkTheme()
-        return isLight(color, isDarkTheme)
-    }
-
-    fun setRippleColor(itemView: View, @ColorInt rippleColor: Int) {
-        val rippleColorLite = ColorUtils.setAlphaComponent(rippleColor, Const.RIPPLE_ALPHA)
-        val rippleColorList = ColorStateList.valueOf(rippleColorLite)
-        val rippleDrawable = itemView.background as RippleDrawable
-        rippleDrawable.setColor(rippleColorList)
-    }
-
-    fun isLight(color: Int, isDarkTheme: Boolean): Boolean {
-        return ColorUtils.calculateLuminance(color) > if (isDarkTheme) 0.4 else 0.6
-    }
-
-    fun isLightExtra(color: Int): Boolean {
-        return ColorUtils.calculateLuminance(color) > 0.05
-    }
-}
-
 fun Resources.getLocale(): Locale = when {
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> configuration.locales.get(0)
     else -> configuration.locale
-}
-
-fun Context.isDarkTheme(): Boolean = findBooleanByAttr(R.attr.isDarkTheme)
-
-fun  Context.getOptimalColor(accentColor: Int): Int {
-    val isDarkTheme = isDarkTheme()
-    val defaultColor = getColorByAttr(android.R.attr.textColorPrimary)
-    return when (isDarkTheme) {
-        Util.isLightExtra(accentColor) -> accentColor
-        Util.isLight(accentColor, isDarkTheme) -> accentColor
-        else -> defaultColor
-    }
-}
-
-fun Context.findBooleanByAttr(@AttrRes attr: Int): Boolean = findBooleansByAttr(attr)[0]
-
-fun Context.findBooleansByAttr(@AttrRes vararg attrs: Int): BooleanArray {
-    @SuppressLint("ResourceType")
-    val array = obtainStyledAttributes(attrs)
-
-    val values = BooleanArray(attrs.size)
-    for (i in attrs.indices) {
-        values[i] = array.getBoolean(i, false)
-    }
-    array.recycle()
-
-    return values
 }
 
 fun Context.findResIdByAttr(@AttrRes attr: Int): Int = findResIdsByAttr(attr)[0]

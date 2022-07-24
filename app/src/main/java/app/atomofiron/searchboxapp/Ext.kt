@@ -1,6 +1,12 @@
 package app.atomofiron.searchboxapp
 
+import android.content.Context
+import android.content.res.TypedArray
+import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.AttrRes
+import androidx.annotation.StyleRes
+import androidx.annotation.StyleableRes
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import kotlin.math.max
@@ -21,4 +27,16 @@ fun View.setContentMaxWidth(value: Int) {
             view.updatePadding(left = paddingLeft, right = paddingRight)
         }
     }
+}
+
+inline fun Context.obtainStyledAttributes(
+    attrs: AttributeSet?,
+    @StyleableRes styleable: IntArray,
+    @AttrRes defStyleAttr: Int = 0,
+    @StyleRes defStyleRes: Int = 0,
+    action: TypedArray.() -> Unit,
+) {
+    val styled = obtainStyledAttributes(attrs, styleable, defStyleAttr, defStyleRes)
+    action(styled)
+    styled.recycle()
 }

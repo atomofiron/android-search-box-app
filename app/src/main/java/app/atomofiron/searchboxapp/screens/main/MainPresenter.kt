@@ -60,18 +60,15 @@ class MainPresenter(
     fun applyTheme(isDarkTheme: Boolean) {
         router.reattachFragments()
         updateLightStatusBar(isDarkTheme)
+        updateLightNavigationBar(isDarkTheme)
     }
 
     fun updateLightNavigationBar(isDarkTheme: Boolean) {
-        if (windowService.isLightNavigationBars xor isDarkTheme) {
-            windowService.isLightNavigationBars = isDarkTheme
-        }
+        windowService.setLightNavigationBar(!isDarkTheme)
     }
 
     fun updateLightStatusBar(isDarkTheme: Boolean) {
         val lightStatusBar = router.lastVisibleFragment?.isLightStatusBar ?: !isDarkTheme
-        if (windowService.isLightStatusBars xor lightStatusBar) {
-            windowService.isLightStatusBars = lightStatusBar
-        }
+        windowService.setLightStatusBar(lightStatusBar)
     }
 }

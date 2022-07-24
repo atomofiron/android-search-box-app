@@ -239,7 +239,7 @@ class FinderWorker(
         val id = task.id.toInt()
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val color = ContextCompat.getColor(context, R.color.colorPrimaryLight)
+        val color = ContextCompat.getColor(context, R.color.primary_light)
         val icon = when {
             task.error != null -> R.drawable.ic_notification_error
             task.isDone -> R.drawable.ic_notification_done

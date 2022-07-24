@@ -99,7 +99,7 @@ class App : Application(), Configuration.Provider {
                 .setSmallIcon(R.drawable.ic_notification_update)
                 .setContentIntent(notificationIntent)
                 .addAction(0, getString(R.string.get_update), actionIntent)
-                .setColor(ContextCompat.getColor(this, R.color.colorPrimaryLight))
+                .setColor(ContextCompat.getColor(this, R.color.primary_light))
                 .build()
 
         notificationManager.notify(Const.NOTIFICATION_ID_UPDATE, notification)

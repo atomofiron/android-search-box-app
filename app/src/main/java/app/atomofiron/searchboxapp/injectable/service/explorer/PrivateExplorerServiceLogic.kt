@@ -643,8 +643,10 @@ abstract class PrivateExplorerServiceLogic(
                         logI("create error != null $parent\n$err $item -> $parent")
                         return
                     }
-                    files.add(index.inc(), item)
-                    explorerStore.notifyInsert(parent, item)
+                    if (parent.isOpened) {
+                        files.add(index.inc(), item)
+                        explorerStore.notifyInsert(parent, item)
+                    }
                     explorerStore.notifyUpdate(parent)
                 }
             }

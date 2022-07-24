@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Dark"
         android:windowSoftInputMode="adjustResize"
+        android:requestLegacyExternalStorage="true"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
             android:name=".screens.main.MainActivity"

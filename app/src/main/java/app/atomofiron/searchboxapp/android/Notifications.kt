@@ -31,7 +31,7 @@ object Notifications {
             .setSmallIcon(R.drawable.ic_explorer_folder)
             .setContentIntent(notificationIntent)
             .addAction(0, context.getString(actionId), actionIntent)
-            .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
+            .setColor(ContextCompat.getColor(context, R.color.day_night_primary))
             .build()
         notificationManager.notify(NOTIFICATION_ID_UPDATE, notification)
     }

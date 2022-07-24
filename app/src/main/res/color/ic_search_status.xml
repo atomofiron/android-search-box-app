@@ -7,7 +7,7 @@
         />
     <item
         android:state_enabled="false"
-        android:color="@color/colorAccentRed"
+        android:color="@color/accent_red"
         />
-    <item android:color="@color/colorAccentYellow" />
+    <item android:color="@color/accent_yellow" />
 </selector>

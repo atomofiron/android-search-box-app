@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.model.explorer
 
+import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.sleep
 import app.atomofiron.searchboxapp.utils.Shell
 import java.io.File
@@ -267,6 +268,8 @@ class MutableXFile : XFile {
             return "Dir was cleared. $this"
         }
         // todo ls: /storage/AA83-2C7F//.android_secure: Permission denied
+        poop("output.error ${output.error}")
+        poop("output.output ${output.output}")
         if (!output.success && parseDoesExists(output.error)) {
             children = ArrayList()
             isCaching = false

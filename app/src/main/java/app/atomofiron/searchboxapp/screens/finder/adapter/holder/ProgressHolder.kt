@@ -52,9 +52,9 @@ class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : C
         }
         val colorLabel = when {
             task.inProgress -> context.findColorByAttr(R.attr.colorAccent)
-            task.error != null -> ContextCompat.getColor(context, R.color.colorAccentRed)
+            task.error != null -> ContextCompat.getColor(context, R.color.accent_red)
             task.isDone -> context.findColorByAttr(R.attr.colorAccent)
-            else ->  ContextCompat.getColor(context, R.color.colorAccentYellow)
+            else ->  ContextCompat.getColor(context, R.color.accent_yellow)
         }
         tvLabel.setText(idLabel)
         tvLabel.setTextColor(colorLabel)

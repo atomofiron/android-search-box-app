@@ -22,7 +22,7 @@ class TextViewerHolder(private val textView: TextView) : GeneralHolder<TextLine>
 
     private val spanPartFocus: RoundedBackgroundSpan
         get() = RoundedBackgroundSpan(
-            ContextCompat.getColor(context, R.color.colorPrimaryRed),
+            ContextCompat.getColor(context, R.color.primary_red),
             ContextCompat.getColor(context, R.color.white),
             context.resources.getDimension(R.dimen.background_span_corner_radius)
     )
@@ -36,7 +36,7 @@ class TextViewerHolder(private val textView: TextView) : GeneralHolder<TextLine>
 
     private val spanLineFocus: EntireLineSpan
         get() = EntireLineSpan(
-            ContextCompat.getColor(context, R.color.colorPrimaryRed),
+            ContextCompat.getColor(context, R.color.primary_red),
             ContextCompat.getColor(context, R.color.white),
             context.resources.getDimension(R.dimen.background_span_corner_radius)
     )

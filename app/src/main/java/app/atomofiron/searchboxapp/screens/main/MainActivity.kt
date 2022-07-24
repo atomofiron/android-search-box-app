@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(binding.root, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
             .setAnchorView(binding.joystick)
-            .setActionTextColor(this@MainActivity.findColorByAttr(R.attr.colorAccent))
             .setAction(R.string.exit) { presenter.onExitClick() }
             .addCallback(SnackbarCallbackFragmentDelegate(presenter))
     }

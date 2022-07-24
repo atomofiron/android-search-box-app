@@ -57,7 +57,7 @@ class ForegroundService : IntentService("NotificationService") {
 
         val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, Const.FOREGROUND_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val color = ContextCompat.getColor(this, R.color.colorPrimaryLight)
+        val color = ContextCompat.getColor(this, R.color.primary_light)
         val notification = NotificationCompat.Builder(this, Const.FOREGROUND_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle(getString(R.string.searching))

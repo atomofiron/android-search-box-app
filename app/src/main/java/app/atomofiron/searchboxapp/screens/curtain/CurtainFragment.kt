@@ -156,7 +156,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         val context = context ?: return
         val colorSurface = ContextCompat.getColor(context, R.color.colorSurface)
         val colorOnSurface = ContextCompat.getColor(context, R.color.colorOnSurface)
-        val colorPrimary = ContextCompat.getColor(context, R.color.colorPrimaryLight)
+        val colorPrimary = ContextCompat.getColor(context, R.color.primary_light)
         val alpha = ResourcesCompat.getFloat(resources, R.dimen.mtrl_snackbar_background_overlay_color_alpha)
         val backgroundColor = MaterialColors.layer(colorOnSurface, colorSurface, alpha)
         provider.getSnackbar(binding.root)

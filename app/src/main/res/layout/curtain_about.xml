@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_launcher_round"
+        android:layout_margin="@dimen/content_margin"
         />
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"

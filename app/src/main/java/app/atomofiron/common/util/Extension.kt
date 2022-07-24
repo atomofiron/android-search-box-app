@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
+import app.atomofiron.searchboxapp.R
 
 
 fun View.showKeyboard(): Boolean {
@@ -44,7 +45,7 @@ fun Context.findBooleanByAttr(@AttrRes attr: Int): Boolean = findBooleansByAttr(
 
 fun Context.findBooleansByAttr(@AttrRes vararg attrs: Int): BooleanArray {
     @SuppressLint("ResourceType")
-    val array = this.obtainStyledAttributes(attrs)
+    val array = obtainStyledAttributes(attrs)
 
     val values = BooleanArray(attrs.size)
     for (i in attrs.indices) {
@@ -82,3 +83,5 @@ fun ViewGroup.moveChildrenFrom(layoutId: Int) {
         addView(child)
     }
 }
+
+fun Context.isDarkTheme(): Boolean = findBooleanByAttr(R.attr.isDarkTheme)

@@ -16,6 +16,7 @@ open class CurtainBackground(context: Context) : Drawable() {
     }
     private val cornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius)
     private val curtainColor = context.getColorByAttr(android.R.attr.colorBackground)
+    private val overlayColor = context.getColorByAttr(R.attr.colorOverlay)
     private val latchColor = ContextCompat.getColor(context, R.color.latch)
     private val latchRect = RectF()
     private val paint = Paint()
@@ -70,12 +71,11 @@ open class CurtainBackground(context: Context) : Drawable() {
 
     fun setSaturation(value: Float) {
         val alpha = (MAX_SATURATION * value).toInt()
-        saturationColor = ColorUtils.setAlphaComponent(Color.BLACK, alpha)
+        saturationColor = ColorUtils.setAlphaComponent(overlayColor, alpha)
         invalidateSelf()
     }
 
-    fun updateTop(viewTop: Int) =
-        updateTrueBounds(insetTop = 0, viewTop, viewBottom = bounds.bottom, paddingHorizontal = 0)
+    fun updateTop(viewTop: Int) = updateTrueBounds(insetTop = 0, viewTop, viewBottom = bounds.bottom, paddingHorizontal = 0)
 
     fun updateTrueBounds(insetTop: Int, viewTop: Int, viewBottom: Int, paddingHorizontal: Int) {
         this.insetTop = insetTop
