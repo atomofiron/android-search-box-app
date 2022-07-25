@@ -13,8 +13,6 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
-import com.yandex.metrica.YandexMetrica
-import com.yandex.metrica.YandexMetricaConfig
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.Const
@@ -43,13 +41,6 @@ class App : Application(), Configuration.Provider {
 
         AppWatcherProxy.setEnabled(false)
 
-        if (BuildConfig.YANDEX_API_KEY != null) {
-            val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YANDEX_API_KEY)
-                    .withLocationTracking(false)
-                    .withCrashReporting(true)
-                    .build()
-            YandexMetrica.activate(applicationContext, config)
-        }
         checkForUpdate(this)
     }
 
@@ -65,13 +56,13 @@ class App : Application(), Configuration.Provider {
                 isAvailable -> showNotificationForUpdate()
                 !BuildConfig.DEBUG -> {
                     val throwable = Throwable("${Const.ERROR_UPDATE_AVAILABILITY} Availability: $availability")
-                    YandexMetrica.reportError(Const.ERROR_UPDATE_AVAILABILITY, throwable)
+                    // reportError(Const.ERROR_UPDATE_AVAILABILITY, throwable)
                 }
             }
         }
         appUpdateInfoTask.addOnFailureListener {
             if (!BuildConfig.DEBUG) {
-                YandexMetrica.reportError(Const.ERROR_CHECK_UPDATE, Throwable(it.message))
+                // reportError(Const.ERROR_CHECK_UPDATE, Throwable(it.message))
             }
         }
     }

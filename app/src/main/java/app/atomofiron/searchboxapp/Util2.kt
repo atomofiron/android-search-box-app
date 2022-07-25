@@ -1,27 +1,17 @@
 package app.atomofiron.searchboxapp
 
 import android.annotation.SuppressLint
-import android.app.Service
 import android.content.Context
-import android.content.res.ColorStateList
 import android.content.res.Resources
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.util.TypedValue
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.AttrRes
-import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
-import app.atomofiron.searchboxapp.utils.Const
 import java.util.*
 import kotlin.collections.ArrayList
-import com.yandex.metrica.YandexMetrica
 
 private var timestamp: Long = 0
 private var nanotimestamp: Long = 0
@@ -33,7 +23,7 @@ fun Any.sleep(t: Long) = if (delay) Thread.sleep(t) else Unit
 
 fun Any.logE(s: String) {
     if (!BuildConfig.DEBUG) {
-        YandexMetrica.reportError(s, null)
+        // reportError(s, null)
     }
     Log.e("searchboxapp", "[ERROR] [${this.javaClass.simpleName}] $s")
 }
