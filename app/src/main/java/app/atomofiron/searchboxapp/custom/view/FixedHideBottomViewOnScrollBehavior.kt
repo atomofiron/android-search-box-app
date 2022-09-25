@@ -50,13 +50,16 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
 
     @Suppress("NAME_SHADOWING")
     override fun onNestedScroll(
-            coordinatorLayout: CoordinatorLayout,
-            child: V,
-            target: View,
-            dxConsumed: Int,
-            dyConsumed: Int,
-            dxUnconsumed: Int,
-            dyUnconsumed: Int) {
+        coordinatorLayout: CoordinatorLayout,
+        child: V,
+        target: View,
+        dxConsumed: Int,
+        dyConsumed: Int,
+        dxUnconsumed: Int,
+        dyUnconsumed: Int,
+        type: Int,
+        consumed: IntArray
+    ) {
         if (dyConsumed == 0 && dyUnconsumed == 0) {
             return
         }

@@ -64,6 +64,8 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPre
                     !task.areContentsTheSame(newTask) -> this.task.value = newTask.copyTask()
                 }
             }
+            is FinderTaskChange.Add -> Unit
+            is FinderTaskChange.Drop -> Unit
         }
     }
 }

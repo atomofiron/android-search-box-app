@@ -68,6 +68,7 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPre
             }
             is FinderTaskChange.Drop -> {
                 val index = progressItems.indexOfFirst { it.finderTask.id == change.task.id }
+                // todo wtf
                 progressItems.removeAt(index)
             }
         }

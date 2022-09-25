@@ -8,6 +8,7 @@ import androidx.core.graphics.ColorUtils
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.getColorByAttr
+import java.lang.Deprecated
 import kotlin.math.min
 
 open class CurtainBackground(context: Context) : Drawable() {
@@ -46,6 +47,7 @@ open class CurtainBackground(context: Context) : Drawable() {
 
     override fun setColorFilter(colorFilter: ColorFilter?) = Unit
 
+    @Deprecated
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
@@ -136,6 +138,7 @@ open class CurtainBackground(context: Context) : Drawable() {
 
         override fun setColorFilter(colorFilter: ColorFilter?) = Unit
 
+        @Deprecated
         override fun getOpacity(): Int = PixelFormat.OPAQUE
 
         override fun getOutline(outline: Outline) {

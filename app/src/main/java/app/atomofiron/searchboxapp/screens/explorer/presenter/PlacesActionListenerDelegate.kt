@@ -22,6 +22,7 @@ class PlacesActionListenerDelegate(
                 if (it == item) XPlace.ExternalStorage(item.title, !item.visible) else it
             }
             is XPlace.AnotherPlace -> viewModel.places.value = viewModel.places.value.filter { it != item }
+            is XPlace.StoragePlace -> Unit
         }
     }
 }

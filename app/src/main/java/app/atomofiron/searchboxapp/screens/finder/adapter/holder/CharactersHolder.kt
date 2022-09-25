@@ -21,6 +21,7 @@ class CharactersHolder(
         }
         item as FinderStateItem.SpecialCharactersItem
         bindedItem = item
+        val itemView = itemView
         itemView as ViewGroup
         itemView.removeAllViews()
 

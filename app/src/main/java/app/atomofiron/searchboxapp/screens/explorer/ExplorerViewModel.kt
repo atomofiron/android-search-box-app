@@ -69,6 +69,7 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
                 is Change.UpdateRange -> notifyUpdateRange.value = change.items
                 is Change.RemoveRange -> notifyRemoveRange.value = change.items
                 is Change.InsertRange -> notifyInsertRange.value = Pair(change.previous, change.items)
+                is Change.Nothing -> Unit
             }
         }
     }

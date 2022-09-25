@@ -18,10 +18,14 @@ import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.ChannelUtil
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.work.NotificationWorker
+import java.lang.Deprecated
 import java.util.*
 import javax.inject.Inject
 
 class ForegroundService : IntentService("NotificationService") {
+    companion object {
+        private const val flag = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    }
 
     @Inject
     lateinit var workManager: WorkManager
@@ -32,6 +36,7 @@ class ForegroundService : IntentService("NotificationService") {
         DaggerInjector.appComponent.inject(this)
     }
 
+    @Deprecated
     override fun onCreate() {
         super.onCreate()
         logI("onCreate")
@@ -42,6 +47,7 @@ class ForegroundService : IntentService("NotificationService") {
         workUUID = request.id
     }
 
+    @Deprecated
     override fun onDestroy() {
         super.onDestroy()
         logI("onDestroy")
@@ -56,7 +62,7 @@ class ForegroundService : IntentService("NotificationService") {
                 .fix(this)
 
         val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, Const.FOREGROUND_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(this, Const.FOREGROUND_INTENT_REQUEST_CODE, intent, flag)
         val color = ContextCompat.getColor(this, R.color.primary_light)
         val notification = NotificationCompat.Builder(this, Const.FOREGROUND_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
@@ -68,6 +74,7 @@ class ForegroundService : IntentService("NotificationService") {
         startForeground(Const.FOREGROUND_NOTIFICATION_ID, notification)
     }
 
+    @Deprecated
     override fun onBind(intent: Intent?): IBinder? {
         logI("onBind")
         return null
@@ -78,5 +85,6 @@ class ForegroundService : IntentService("NotificationService") {
         return super.onUnbind(intent)
     }
 
+    @Deprecated
     override fun onHandleIntent(intent: Intent?) = Unit
 }

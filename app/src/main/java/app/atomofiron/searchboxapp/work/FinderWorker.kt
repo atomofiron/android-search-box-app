@@ -27,6 +27,7 @@ import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.Util
 import app.atomofiron.searchboxapp.utils.escapeQuotes
+import kotlinx.coroutines.delay
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -214,6 +215,9 @@ class FinderWorker(
         }
 
         val data = try {
+            if (true) {
+                Thread.sleep(10000)
+            } else
             when {
                 forContent -> searchForContent(where)
                 else -> searchForName(where)

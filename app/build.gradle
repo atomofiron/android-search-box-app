@@ -7,7 +7,7 @@ android {
     def fileProviderName = ".FileProvider"
     def appId = "app.atomofiron.searchboxapp"
 
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     buildFeatures {
         viewBinding true
@@ -64,21 +64,21 @@ repositories {
 }
 
 ext {
-    androidx = "1.8.0"
-    fragment = "1.4.1"
+    androidx = "1.9.0"
+    fragment = "1.5.3"
     material = "1.6.1"
-    appcompat = "1.4.2"
-    coroutines = "1.6.1"
+    appcompat = "1.5.1"
+    coroutines = "1.6.4"
     lifecycle_ext = "2.2.0"
-    lifecycle_ktx = "2.4.1"
+    lifecycle_ktx = "2.5.1"
     retrofit = "2.6.0"
     constraint = "2.1.4"
-    navigation = "2.4.2"
+    navigation = "2.5.2"
     preference = "1.2.0"
     flexbox = "2.0.1"
-    room = "2.4.2"
-    dagger = "2.39.1"
-    leakcanary = "2.2"
+    room = "2.4.3"
+    dagger = "2.43.2"
+    leakcanary = "2.9.1"
     work = "2.7.1"
     play_core = "1.10.3"
     play_core_ktx = "1.8.1"
