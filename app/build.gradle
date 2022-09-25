@@ -20,8 +20,8 @@ android {
         applicationId appId
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 7
-        versionName "1.1.1"
+        versionCode 8
+        versionName "1.1.2"
 
         resValue "string", "version_name", "v$versionName ($versionCode)"
     }
