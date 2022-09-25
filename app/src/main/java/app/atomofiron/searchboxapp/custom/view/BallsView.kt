@@ -8,6 +8,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
+import kotlin.math.min
 
 class BallsView @JvmOverloads constructor(
     context: Context,
@@ -23,7 +24,8 @@ class BallsView @JvmOverloads constructor(
     private var radians = 0.0
     private val paintCircle = Paint()
     private val paintBall = Paint()
-    private val paintColoredMask = Paint()
+
+    private val ballCirclePath = Path()
 
     init {
         val styled = context.obtainStyledAttributes(attrs, R.styleable.BallsView, defStyleAttr, 0)
@@ -37,13 +39,13 @@ class BallsView @JvmOverloads constructor(
 
         val colorAccent = context.findColorByAttr(R.attr.colorAccent)
         paintCircle.color = colorAccent
-        paintBall.color = Color.BLACK
-        paintBall.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-        paintColoredMask.color = colorAccent
-        paintColoredMask.xfermode = PorterDuffXfermode(PorterDuff.Mode.XOR)
+        paintBall.color = colorAccent
+        if (oneBall) {
+            paintBall.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        }
 
         paintBall.isAntiAlias = true
-        paintCircle.isAntiAlias = oneBall
+        paintCircle.isAntiAlias = true
 
         setLayerType(LAYER_TYPE_HARDWARE, null)
     }
@@ -76,6 +78,21 @@ class BallsView @JvmOverloads constructor(
         }
     }
 
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+
+        val width = (right - left).toFloat()
+        val height = (bottom - top).toFloat()
+        val centerX = width / 2
+        val centerY = height / 2
+        var size = min(width, height)
+        size -= size % 2
+        val radius = size / 6
+        val radiusMask = size / 2
+        ballCirclePath.addCircle(centerX, centerY - radiusMask - radius, radiusMask, Path.Direction.CW)
+        ballCirclePath.addCircle(centerX, centerY + radiusMask + radius, radiusMask, Path.Direction.CW)
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -97,12 +114,9 @@ class BallsView @JvmOverloads constructor(
         } else {
             val x2 = centerX - cos
             val y2 = centerY - sin
-            canvas.drawCircle(centerX, centerY - radiusMask - radius, radiusMask, paintCircle)
-            canvas.drawCircle(centerX, centerY + radiusMask + radius, radiusMask, paintCircle)
+            canvas.clipPath(ballCirclePath)
             canvas.drawCircle(x1.toFloat(), y1.toFloat(), radius, paintBall)
             canvas.drawCircle(x2.toFloat(), y2.toFloat(), radius, paintBall)
-            canvas.drawCircle(centerX, centerY - radiusMask - radius, radiusMask, paintColoredMask)
-            canvas.drawCircle(centerX, centerY + radiusMask + radius, radiusMask, paintColoredMask)
         }
     }
 
