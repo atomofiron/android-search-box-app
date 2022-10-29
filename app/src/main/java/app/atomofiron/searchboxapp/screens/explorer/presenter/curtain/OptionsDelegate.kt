@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerOptionsBinding
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
-import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinder
+import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinderImpl
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class OptionsDelegate(
@@ -41,7 +41,7 @@ class OptionsDelegate(
                 holder.bind(options.items.first())
                 holder.bindComposition(options.composition.copy(visibleBg = true))
 
-                val binder = ExplorerItemBinder(explorerMenuItem.root)
+                val binder = ExplorerItemBinderImpl(explorerMenuItem.root)
                 binder.setGreyBackgroundColor()
                 binder.disableClicks()
                 explorerMenuItem.itemExplorerCb.isEnabled = false

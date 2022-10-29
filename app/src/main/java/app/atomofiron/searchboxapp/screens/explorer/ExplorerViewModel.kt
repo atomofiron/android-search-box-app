@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.Change
+import app.atomofiron.searchboxapp.model.explorer.MediaDirectories
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
@@ -26,6 +27,7 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     val scrollToCurrentDir = dataFlow(Unit, single = true)
     val historyDrawerGravity = dataFlow<Int>()
     val places = dataFlow<List<XPlace>>()
+    val mediaDirectories = dataFlow<MediaDirectories>()
     val itemComposition = dataFlow<ExplorerItemComposition>()
     val items = dataFlow<List<XFile>>()
     val current = dataFlow<XFile?>()

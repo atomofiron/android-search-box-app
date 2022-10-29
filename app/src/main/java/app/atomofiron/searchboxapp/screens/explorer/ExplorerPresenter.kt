@@ -16,6 +16,7 @@ import app.atomofiron.searchboxapp.screens.explorer.places.XPlaceType
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
+import app.atomofiron.searchboxapp.utils.Tool.getMediaDirectories
 
 class ExplorerPresenter(
     viewModel: ExplorerViewModel,
@@ -34,6 +35,7 @@ class ExplorerPresenter(
     private val resources by appStore.resourcesProperty
 
     init {
+        viewModel.mediaDirectories.value = appStore.context.getMediaDirectories()
         preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
         preferenceStore.storagePath.collect(scope, ::onStoragePathChanged)
         preferenceStore.explorerItemComposition.collect(scope) {

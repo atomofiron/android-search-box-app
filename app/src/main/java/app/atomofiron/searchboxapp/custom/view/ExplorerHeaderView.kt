@@ -10,7 +10,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
-import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinder
+import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinderImpl
 
 class ExplorerHeaderView @JvmOverloads constructor(
     context: Context,
@@ -20,7 +20,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.item_explorer, this)
     }
 
-    private val binder = ExplorerItemBinder(getChildAt(0))
+    private val binder = ExplorerItemBinderImpl(getChildAt(0))
     lateinit var composition: ExplorerItemComposition; private set
     private var item: XFile? = null
 

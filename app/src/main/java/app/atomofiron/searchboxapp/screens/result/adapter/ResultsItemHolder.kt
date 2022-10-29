@@ -7,10 +7,10 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinder
+import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinderImpl
 
 class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
-    private val binder = ExplorerItemBinder(itemView)
+    private val binder = ExplorerItemBinderImpl(itemView)
 
     init {
         itemView as ViewGroup
@@ -19,7 +19,7 @@ class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
 
     private val tvCounter = itemView.findViewById<TextView>(R.id.result_tv_count)
 
-    fun setOnItemActionListener(listener: ExplorerItemBinder.ExplorerItemBinderActionListener?) {
+    fun setOnItemActionListener(listener: ExplorerItemBinderImpl.ExplorerItemBinderActionListener?) {
         binder.onItemActionListener = listener
     }
 

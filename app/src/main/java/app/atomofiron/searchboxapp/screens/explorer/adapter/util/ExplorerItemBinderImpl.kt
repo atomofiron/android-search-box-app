@@ -14,14 +14,17 @@ import androidx.core.view.isVisible
 import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
+import app.atomofiron.searchboxapp.model.explorer.DirectoryMediaType
+import app.atomofiron.searchboxapp.model.explorer.MediaDirectories
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Tool
 
-class ExplorerItemBinder(
+class ExplorerItemBinderImpl(
     private val itemView: View,
-) {
+) : IExplorerItemBinder {
     companion object {
         private const val BYTE_LETTER = "B"
         private const val SPACE = " "
@@ -67,6 +70,7 @@ class ExplorerItemBinder(
         view as CheckBox
         onItemActionListener?.onItemCheck(item, view.isChecked)
     }
+    private var mediaDirectories: MediaDirectories? = null
 
     init {
         if (cbBox.buttonTintList == null) {
@@ -92,17 +96,21 @@ class ExplorerItemBinder(
         rootsAliases[Const.ROOT] = R.string.root
     }
 
-    fun onBind(item: XFile) {
+    override fun onBind(item: XFile) {
         this.item = item
 
         itemView.setOnClickListener(onClickListener)
         itemView.setOnLongClickListener(onLongClickListener)
         cbBox.setOnClickListener(onCheckListener)
 
+        val withoutChildren = item.children?.isEmpty() == true
         val image = when {
             !item.isDirectory -> R.drawable.ic_file_circle
-            item.children?.isEmpty() == true -> R.drawable.ic_explorer_folder_empty
-            else -> R.drawable.ic_explorer_folder
+            else -> when (mediaDirectories?.getMediaType(item.completedPath)) {
+                DirectoryMediaType.Download -> if (withoutChildren) R.drawable.ic_explorer_folder_download_empty else R.drawable.ic_explorer_folder_download
+                // todo other
+                else -> if (withoutChildren) R.drawable.ic_explorer_folder_empty else R.drawable.ic_explorer_folder
+            }
         }
         ivIcon.setImageResource(image)
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
@@ -129,7 +137,11 @@ class ExplorerItemBinder(
         psProgress.isVisible = item.isDeleting
     }
 
-    fun bindComposition(composition: ExplorerItemComposition) {
+    override fun setOnItemActionListener(listener: ExplorerItemActionListener?) {
+        onItemActionListener = listener
+    }
+
+    override fun bindComposition(composition: ExplorerItemComposition) {
         val string = StringBuilder()
         if (composition.visibleAccess) {
             string.append(item.access).append(SPACE)
@@ -153,18 +165,22 @@ class ExplorerItemBinder(
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 
-    fun disableClicks() {
+    override fun setMediaDirectories(mediaDirectories: MediaDirectories) {
+        this.mediaDirectories = mediaDirectories
+    }
+
+    override fun disableClicks() {
         itemView.isFocusable = false
         itemView.isClickable = false
         itemView.isLongClickable = false
         itemView.setOnClickListener(null)
     }
 
-    fun hideCheckBox() {
+    override fun hideCheckBox() {
         cbBox.isVisible = false
     }
 
-    fun setGreyBackgroundColor(visible: Boolean = true) {
+    override fun setGreyBackgroundColor(visible: Boolean) {
         val color = when {
             visible -> ContextCompat.getColor(itemView.context, R.color.item_explorer_background)
             else -> Color.TRANSPARENT

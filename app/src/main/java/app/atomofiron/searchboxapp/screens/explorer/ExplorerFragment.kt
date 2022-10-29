@@ -72,6 +72,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun ExplorerViewModel.onViewCollect() {
+        viewCollect(mediaDirectories, collector = explorerAdapter::setMediaDirectories)
         viewCollect(items, collector = explorerAdapter::setItems)
         viewCollect(itemComposition, collector = explorerAdapter::setComposition)
         viewCollect(current, collector = explorerAdapter::setCurrentDir)

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
+import app.atomofiron.searchboxapp.model.explorer.MediaDirectories
 import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSeparationDecorator.Separation
@@ -25,6 +26,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     private var currentDir: XFile? = null
     private lateinit var composition: ExplorerItemComposition
+    private lateinit var mediaDirectories: MediaDirectories
     private lateinit var headerView: ExplorerHeaderView
     private var headerItemPosition: Int = UNDEFINED
 
@@ -110,6 +112,10 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         notifyItemRangeChanged(0, items.size)
     }
 
+    fun setMediaDirectories(mediaDirectories: MediaDirectories) {
+        this.mediaDirectories = mediaDirectories
+    }
+
     fun scrollToCurrentDir(unit: Unit = Unit) {
         val dir = currentDir ?: return
         var lastChild = getLastChild() ?: return
@@ -178,6 +184,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         holder.setOnItemActionListener(itemActionListener)
         super.onBindViewHolder(holder, position)
         holder.bindComposition(composition)
+        holder.setMediaDirectories(mediaDirectories)
         itemActionListener.onItemVisible(holder.item)
         if (position == headerItemPosition) {
             headerView.onBind(items[position])
