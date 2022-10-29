@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply from: 'appmetrica.gradle'
 
 android {
     def fileProviderName = ".FileProvider"
@@ -65,15 +64,15 @@ repositories {
 
 ext {
     androidx = "1.9.0"
-    fragment = "1.5.3"
-    material = "1.6.1"
+    fragment = "1.5.4"
+    material = "1.7.0"
     appcompat = "1.5.1"
     coroutines = "1.6.4"
     lifecycle_ext = "2.2.0"
     lifecycle_ktx = "2.5.1"
     retrofit = "2.6.0"
     constraint = "2.1.4"
-    navigation = "2.5.2"
+    navigation = "2.5.3"
     preference = "1.2.0"
     flexbox = "2.0.1"
     room = "2.4.3"
