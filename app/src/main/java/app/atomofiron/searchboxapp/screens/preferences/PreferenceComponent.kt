@@ -17,6 +17,7 @@ import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPre
 import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceClickPresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceUpdatePresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportDelegate
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import javax.inject.Scope
 
 @Scope
@@ -71,6 +72,7 @@ class PreferenceModule {
         exportImportDelegate: ExportImportDelegate.ExportImportOutput,
         preferenceStore: PreferenceStore,
         curtainChannel: CurtainChannel,
+        appWatcher: AppWatcherProxy,
     ): PreferenceClickOutput {
         return PreferenceClickPresenterDelegate(
             viewModel,
@@ -78,6 +80,7 @@ class PreferenceModule {
             exportImportDelegate,
             preferenceStore,
             curtainChannel,
+            appWatcher,
         )
     }
 
@@ -115,4 +118,5 @@ interface PreferenceDependencies {
     fun preferenceStore(): PreferenceStore
     fun context(): Context
     fun curtainChannel(): CurtainChannel
+    fun appWatcherProxy(): AppWatcherProxy
 }

@@ -1,8 +1,14 @@
 package app.atomofiron.searchboxapp.utils
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES
+import android.os.Build.VERSION_CODES.M
+import androidx.annotation.IntDef
+import androidx.core.view.ContentInfoCompat
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainPresenterParams
@@ -16,4 +22,9 @@ fun BaseRouter.showCurtain(recipient: String, layoutId: Int) {
         val args = CurtainPresenterParams.args(recipient, layoutId)
         navigate(R.id.curtainFragment, args, BaseRouter.curtainOptions)
     }
+}
+
+fun Int.immutable(): Int = when {
+    SDK_INT >= M -> this or PendingIntent.FLAG_IMMUTABLE
+    else -> this
 }

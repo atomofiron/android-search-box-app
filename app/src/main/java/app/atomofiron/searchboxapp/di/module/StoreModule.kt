@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.di.module
 import android.content.Context
 import android.content.SharedPreferences
 import app.atomofiron.searchboxapp.injectable.store.*
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -24,7 +25,11 @@ open class StoreModule {
 
     @Provides
     @Singleton
-    open fun provideSettingsStore(context: Context, sp: SharedPreferences): PreferenceStore = PreferenceStore(context, sp)
+    open fun provideSettingsStore(
+        context: Context,
+        sp: SharedPreferences,
+        watcher: AppWatcherProxy,
+    ): PreferenceStore = PreferenceStore(context, sp, watcher)
 
     @Provides
     @Singleton

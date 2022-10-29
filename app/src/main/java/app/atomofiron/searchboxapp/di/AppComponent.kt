@@ -18,6 +18,7 @@ import app.atomofiron.searchboxapp.screens.result.ResultDependencies
 import app.atomofiron.searchboxapp.screens.main.MainDependencies
 import app.atomofiron.searchboxapp.screens.root.RootDependencies
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerDependencies
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.work.FinderWorker
 import app.atomofiron.searchboxapp.work.NotificationWorker
 import javax.inject.Singleton
@@ -45,6 +46,9 @@ interface AppComponent :
 
         @BindsInstance
         fun appContext(context: Context): Builder
+
+        @BindsInstance
+        fun appWatcher(proxy: AppWatcherProxy): Builder
 
         @BindsInstance
         fun assetManager(assetManager: AssetManager): Builder

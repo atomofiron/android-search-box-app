@@ -1,5 +1,7 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.dataFlow
@@ -17,12 +19,15 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
 
     @Inject
     lateinit var preferenceStore: PreferenceStore
+    @SuppressLint("StaticFieldLeak")
+    @Inject
+    lateinit var appContext: Context
 
     val alert = dataFlow<String>(single = true)
     val alertOutputSuccess = dataFlow<Int>(single = true)
     val alertOutputError = dataFlow<Shell.Output>(single = true)
     val showDeepBlack = dataFlow<Boolean>()
-    val isExportImportAvailable: Boolean get() = App.appContext.getExternalFilesDir(null) != null
+    val isExportImportAvailable: Boolean get() = appContext.getExternalFilesDir(null) != null
     val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
     val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity
     val toyboxVariant: ToyboxVariant get() = preferenceStore.toyboxVariant.entity

@@ -9,9 +9,10 @@ import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Tool
 
-class PreferenceStore(
+class PreferenceStore constructor(
     context: Context,
     private val sp: SharedPreferences,
+    private val watcher: AppWatcherProxy,
 ) {
 
     fun getCurrentValue(key: String): Any {
@@ -25,7 +26,7 @@ class PreferenceStore(
             Const.PREF_MAX_SIZE -> maxFileSizeForSearch.value
 
             Const.PREF_USE_SU -> useSu.value
-            Const.PREF_LEAK_CANARY -> AppWatcherProxy.isEnabled()
+            Const.PREF_LEAK_CANARY -> watcher.isEnabled
             else -> throw Exception("Key = $key.")
         }
     }

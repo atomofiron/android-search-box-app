@@ -17,15 +17,13 @@ import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.getMarketIntent
+import app.atomofiron.searchboxapp.utils.immutable
 import app.atomofiron.searchboxapp.work.NotificationWorker
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
 import javax.inject.Inject
 
 class App : Application(), Configuration.Provider {
-    companion object {
-        lateinit var appContext: Context
-    }
 
     @Inject
     lateinit var workManager: WorkManager
@@ -33,13 +31,9 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        appContext = applicationContext
-
-        DaggerInjector.init(applicationContext)
+        DaggerInjector.init(this)
         DaggerInjector.appComponent.inject(this)
         workManager.cancelUniqueWork(NotificationWorker.NAME)
-
-        AppWatcherProxy.setEnabled(false)
 
         checkForUpdate(this)
     }
@@ -80,10 +74,9 @@ class App : Application(), Configuration.Provider {
                 notificationManager.createNotificationChannel(channel)
             }
         }
-        val notificationIntent = PendingIntent
-                .getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), PendingIntent.FLAG_UPDATE_CURRENT)
-        val actionIntent = PendingIntent
-                .getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), PendingIntent.FLAG_UPDATE_CURRENT)
+        val flag = PendingIntent.FLAG_UPDATE_CURRENT.immutable()
+        val notificationIntent = PendingIntent.getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), flag)
+        val actionIntent = PendingIntent.getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), flag)
         val notification = NotificationCompat.Builder(this, Const.NOTIFICATION_CHANNEL_UPDATE_ID)
                 .setTicker(getString(R.string.update_available))
                 .setContentTitle(getString(R.string.update_available))

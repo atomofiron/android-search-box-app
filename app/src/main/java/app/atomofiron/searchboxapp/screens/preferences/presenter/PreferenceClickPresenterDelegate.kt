@@ -19,6 +19,7 @@ class PreferenceClickPresenterDelegate(
     private val exportImportDelegate: ExportImportDelegate.ExportImportOutput,
     private val preferenceStore: PreferenceStore,
     curtainChannel: CurtainChannel,
+    private val appWatcher: AppWatcherProxy,
 ) : Recipient, PreferenceClickOutput {
 
     init {
@@ -36,7 +37,9 @@ class PreferenceClickPresenterDelegate(
         }
     }
 
-    override fun onLeakCanaryClick(isChecked: Boolean) = AppWatcherProxy.setEnabled(isChecked)
+    override fun onLeakCanaryClick(isChecked: Boolean) {
+        appWatcher.isEnabled = isChecked
+    }
 
     override fun onAboutClick() = router.showCurtain(recipient, R.layout.curtain_about)
 

@@ -1,16 +1,18 @@
 package app.atomofiron.searchboxapp.di
 
-import android.content.Context
+import android.app.Application
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 
 object DaggerInjector {
 
     lateinit var appComponent: AppComponent
 
-    fun init(context: Context) {
+    fun init(application: Application) {
         appComponent = DaggerAppComponent
             .builder()
-            .appContext(context)
-            .assetManager(context.assets)
+            .appContext(application.applicationContext)
+            .appWatcher(AppWatcherProxy())
+            .assetManager(application.assets)
             .build()
     }
 }
