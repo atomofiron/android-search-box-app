@@ -24,7 +24,7 @@ import app.atomofiron.searchboxapp.utils.Tool
 
 class ExplorerItemBinderImpl(
     private val itemView: View,
-) : IExplorerItemBinder {
+) : ExplorerItemBinder {
     companion object {
         private const val BYTE_LETTER = "B"
         private const val SPACE = " "

@@ -5,7 +5,7 @@ import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 
-interface IExplorerItemBinder {
+interface ExplorerItemBinder {
     fun setOnItemActionListener(listener: ExplorerItemActionListener?)
     fun onBind(item: XFile)
     fun bindComposition(composition: ExplorerItemComposition)
