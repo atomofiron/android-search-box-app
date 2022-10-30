@@ -4,7 +4,6 @@ import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.sleep
 import app.atomofiron.searchboxapp.utils.Shell
 import java.io.File
-import java.util.*
 import kotlin.collections.ArrayList
 
 class MutableXFile : XFile {
@@ -20,13 +19,13 @@ class MutableXFile : XFile {
         private const val UNKNOWN = -1
 
         private val spaces = Regex(" +")
-        private val parentSuffix = Regex("(?<=/)/*[^/]+/*$")
-        private val lastOneSlash = Regex("/*$")
+        private val lastPart = Regex("(?<=/)/*[^/]+/*$")
+        private val endingSlashes = Regex("/*$")
 
         fun completePath(absolutePath: String, isDirectory: Boolean = true): String {
             return when {
                 absolutePath == ROOT -> ROOT
-                isDirectory -> absolutePath.replace(lastOneSlash, SLASH)
+                isDirectory -> absolutePath.replace(endingSlashes, SLASH)
                 else -> absolutePath
             }
         }
@@ -135,7 +134,7 @@ class MutableXFile : XFile {
         this.isFile = !isDirectory && (access.isEmpty() || access[0] == FILE_CHAR)
 
         completedPath = completePath(absolutePath, isDirectory)
-        completedParentPath = completedPath.replace(parentSuffix, "")
+        completedParentPath = completedPath.replace(lastPart, "")
 
         this.parent = parent
         this.root = root ?: completedPath.hashCode()
@@ -297,8 +296,8 @@ class MutableXFile : XFile {
             }
         }
 
-        dirs.sortBy { it.name.toLowerCase(Locale.ROOT) }
-        files.sortBy { it.name.toLowerCase(Locale.ROOT) }
+        dirs.sortBy { it.name.lowercase() }
+        files.sortBy { it.name.lowercase() }
         files.addAll(0, dirs)
 
         val oldFiles = this.children
