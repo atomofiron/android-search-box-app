@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.service.explorer
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.AssetManager
 import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.Dispatchers
@@ -18,20 +19,21 @@ import app.atomofiron.searchboxapp.utils.Const
 import java.io.File
 import java.io.FileOutputStream
 
-abstract class PrivateExplorerServiceLogic(
+class PrivateExplorerServiceLogic(
     context: Context,
+    private val preferences: SharedPreferences,
     private val assets: AssetManager,
-    protected val explorerStore: ExplorerStore,
-    protected val preferenceStore: PreferenceStore
+    private val explorerStore: ExplorerStore,
+    private val preferenceStore: PreferenceStore
 ) {
     companion object {
         private const val UNKNOWN = -1
     }
 
     private val mutex = Mutex()
-    protected val files: MutableList<MutableXFile> get() = explorerStore.items
-    protected val checked: MutableList<MutableXFile> get() = explorerStore.checked
-    protected var currentOpenedDir: MutableXFile? = null
+    private val files: MutableList<MutableXFile> get() = explorerStore.items
+    private val checked: MutableList<MutableXFile> get() = explorerStore.checked
+    private var currentOpenedDir: MutableXFile? = null
         set(value) {
             field = value
             explorerStore.notifyCurrent(value)
@@ -47,7 +49,67 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
-    suspend fun setRoots(roots: List<MutableXFile>) {
+    fun persistState() {
+        preferences.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
+    }
+
+    suspend fun trySetRoots(vararg path: String) {
+        val roots = path.map { MutableXFile.asRoot(it) }
+        logI("setRoots ${roots.size}")
+        setRootsImpl(roots)
+    }
+
+    fun tryInvalidateDir(dir: XFile) {
+        val item = findItem(dir)
+        item ?: return logI("invalidateDir $item")
+        invalidateDir(item)
+    }
+
+    suspend fun tryOpen(it: XFile) {
+        val item = findItem(it)
+        item ?: return logI("open $item")
+        open(item)
+    }
+
+    suspend fun tryOpenParent() {
+        val dir = currentOpenedDir
+        dir ?: return logI("openParent $dir")
+        closeDir(dir)
+    }
+
+    suspend fun tryUpdateItem(it: XFile) {
+        val item = findItem(it)
+        item ?: return logI("updateItem $item")
+        updateItem(item)
+    }
+
+    fun tryCheckItem(it: XFile, isChecked: Boolean) {
+        val item = findItem(it)
+        item ?: return logI("checkItem $isChecked $item")
+        checkItem(item, isChecked)
+    }
+
+    suspend fun tryDelete(its: List<XFile>) {
+        logI("deleteItems ${its.size}")
+        val items = its.mapNotNull { findItem(it) }
+        deleteItems(items)
+    }
+
+    suspend fun tryRename(it: XFile, name: String) {
+        val item = findItem(it)
+        item ?: return logI("rename $name $item")
+        rename(item, name)
+    }
+
+    suspend fun tryCreate(it: XFile, name: String, directory: Boolean) {
+        val dir = findItem(it)
+        dir ?: return logI("create $name $dir")
+        create(dir, name, directory)
+    }
+
+    // -------------------------
+
+    private suspend fun setRootsImpl(roots: List<MutableXFile>) {
         mutex.withLock {
             removeExtraRoots(roots.map { it.root })
             mergeRoots(roots)
@@ -102,12 +164,12 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
-    protected fun invalidateDir(dir: MutableXFile) {
+    private fun invalidateDir(dir: MutableXFile) {
         logI("invalidateDir $dir")
         dir.invalidateCache()
     }
 
-    protected fun findItem(it: XFile): MutableXFile? = findItem(it.completedPath, it.root)
+    private fun findItem(it: XFile): MutableXFile? = findItem(it.completedPath, it.root)
 
     private fun findParentDir(it: XFile): MutableXFile? = findItem(it.completedParentPath, it.root)
 
@@ -187,7 +249,7 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
-    protected suspend fun open(item: MutableXFile) {
+    private suspend fun open(item: MutableXFile) {
         if (!item.isDirectory) {
             logI("open return !isDirectory $item")
             return
@@ -204,14 +266,14 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
-    protected suspend fun updateItem(item: MutableXFile) = when {
+    private suspend fun updateItem(item: MutableXFile) = when {
         item.isOpened && item == currentOpenedDir -> updateCurrentDir(item)
         item.isOpened -> logI("updateItem return isOpened $item")
         item.isDirectory -> updateClosedDir(item)
         else -> updateFile(item)
     }
 
-    fun checkItem(item: MutableXFile, isChecked: Boolean) {
+    private fun checkItem(item: MutableXFile, isChecked: Boolean) {
         logI("checkItem $isChecked $item")
         item.isChecked = isChecked
 
@@ -263,7 +325,7 @@ abstract class PrivateExplorerServiceLogic(
             childDir.close()
             childDir.clearChildren()
             currentOpenedDir = dir
-            invalidateDir(dir)
+            tryInvalidateDir(dir)
 
             removeAllChildren(childDir)
             explorerStore.notifyUpdate(childDir)
@@ -295,7 +357,7 @@ abstract class PrivateExplorerServiceLogic(
         val dirFiles = mutex.withLock {
             dir.open()
             currentOpenedDir = dir
-            invalidateDir(dir)
+            tryInvalidateDir(dir)
 
             val dirFiles = dir.children!!
             if (dirFiles.isNotEmpty()) {
@@ -311,7 +373,7 @@ abstract class PrivateExplorerServiceLogic(
         updateCurrentDir(dir)
     }
 
-    protected suspend fun closeDir(it: XFile) {
+    private suspend fun closeDir(it: XFile) {
         val dir = findItem(it)
         if (dir == null) {
             logI("closeDir return not found $it")
@@ -529,7 +591,7 @@ abstract class PrivateExplorerServiceLogic(
         }
     }
 
-    protected suspend fun deleteItems(items: List<MutableXFile>) {
+    private suspend fun deleteItems(items: List<MutableXFile>) {
         logI("deleteItems ${items.size}")
         items.forEach { item ->
             if (checked.contains(item)) {
@@ -551,7 +613,7 @@ abstract class PrivateExplorerServiceLogic(
                 it.completedPath == dirPath
             }?.let {
                 it.invalidateCache()
-                updateItem(it)
+                tryUpdateItem(it)
             }
         }
     }
@@ -569,11 +631,11 @@ abstract class PrivateExplorerServiceLogic(
         when {
             item.isOpened -> updateCurrentDir(currentOpenedDir!!)
             item.isDirectory -> updateClosedDir(item)
-            else -> updateItem(item)
+            else -> tryUpdateItem(item)
         }
     }
 
-    suspend fun rename(item: MutableXFile, name: String) {
+    private suspend fun rename(item: MutableXFile, name: String) {
         logI("rename $name $item")
         val pair = item.rename(name, useSu)
         val error = pair.first
@@ -611,12 +673,12 @@ abstract class PrivateExplorerServiceLogic(
             when {
                 item.isOpened -> updateCurrentDir(currentOpenedDir!!)
                 item.isDirectory -> updateClosedDir(item)
-                else -> updateItem(item)
+                else -> tryUpdateItem(item)
             }
         }
     }
 
-    suspend fun create(parent: MutableXFile, name: String, directory: Boolean) {
+    private suspend fun create(parent: MutableXFile, name: String, directory: Boolean) {
         logI("create $directory $name $parent")
         val item = MutableXFile.create(parent, name, directory, parent.root)
         val error = item.create(useSu)
@@ -627,7 +689,7 @@ abstract class PrivateExplorerServiceLogic(
                 when {
                     parent.isOpened -> updateCurrentDir(currentOpenedDir!!)
                     parent.isDirectory -> updateClosedDir(parent)
-                    else -> updateItem(parent)
+                    else -> tryUpdateItem(parent)
                 }
             }
             else -> {
