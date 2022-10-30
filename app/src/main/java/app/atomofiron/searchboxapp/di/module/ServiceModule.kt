@@ -12,7 +12,7 @@ import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.service.FinderService
 import app.atomofiron.searchboxapp.injectable.service.ResultService
 import app.atomofiron.searchboxapp.injectable.service.WindowService
-import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.injectable.store.*
 import javax.inject.Singleton
 

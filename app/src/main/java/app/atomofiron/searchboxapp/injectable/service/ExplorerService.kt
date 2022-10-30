@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.injectable.service.explorer
+package app.atomofiron.searchboxapp.injectable.service
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -19,10 +19,10 @@ import app.atomofiron.searchboxapp.utils.Const
 import java.io.File
 import java.io.FileOutputStream
 
-class PrivateExplorerServiceLogic(
+class ExplorerService(
     context: Context,
-    private val preferences: SharedPreferences,
     private val assets: AssetManager,
+    private val preferences: SharedPreferences,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore
 ) {

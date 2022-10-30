@@ -12,7 +12,7 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
-import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
