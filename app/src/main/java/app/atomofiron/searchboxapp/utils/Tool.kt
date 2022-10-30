@@ -15,14 +15,7 @@ object Tool {
     }
 
     fun Context.getMediaDirectories(): MediaDirectories {
-        val storage = getExternalStorageDirectory(this)
-        return MediaDirectories(
-            pathAndroid = "${storage}Android/",
-            pathCamera = "${storage}DCIM/",
-            pathDownload = "${storage}Download/",
-            pathMovies = "${storage}Movies/",
-            pathMusic = "${storage}Music/",
-            pathPictures = "${storage}Pictures/",
-        )
+        val storage = getExternalStorageDirectory(this) ?: Const.ROOT
+        return MediaDirectories(storage)
     }
 }

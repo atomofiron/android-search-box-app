@@ -103,16 +103,7 @@ class ExplorerItemBinderImpl(
         itemView.setOnLongClickListener(onLongClickListener)
         cbBox.setOnClickListener(onCheckListener)
 
-        val withoutChildren = item.children?.isEmpty() == true
-        val image = when {
-            !item.isDirectory -> R.drawable.ic_file_circle
-            else -> when (mediaDirectories?.getMediaType(item.completedPath)) {
-                DirectoryMediaType.Download -> if (withoutChildren) R.drawable.ic_explorer_folder_download_empty else R.drawable.ic_explorer_folder_download
-                // todo other
-                else -> if (withoutChildren) R.drawable.ic_explorer_folder_empty else R.drawable.ic_explorer_folder
-            }
-        }
-        ivIcon.setImageResource(image)
+        ivIcon.setImageResource(item.defineIcon())
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
 
         val aliasId = rootsAliases[item.completedPath]
@@ -186,6 +177,43 @@ class ExplorerItemBinderImpl(
             else -> Color.TRANSPARENT
         }
         itemView.setBackgroundColor(color)
+    }
+
+    private fun XFile.defineIcon(): Int {
+        val empty = children?.isEmpty() == true
+        return when {
+            !isDirectory -> R.drawable.ic_file_circle
+            else -> when (mediaDirectories?.getMediaType(completedPath)) {
+                DirectoryMediaType.Android -> when {
+                    empty -> R.drawable.ic_explorer_folder_android_empty
+                    else -> R.drawable.ic_explorer_folder_android
+                }
+                DirectoryMediaType.Camera -> when {
+                    empty -> R.drawable.ic_explorer_folder_camera_empty
+                    else -> R.drawable.ic_explorer_folder_camera
+                }
+                DirectoryMediaType.Download -> when {
+                    empty -> R.drawable.ic_explorer_folder_download_empty
+                    else -> R.drawable.ic_explorer_folder_download
+                }
+                DirectoryMediaType.Movies -> when {
+                    empty -> R.drawable.ic_explorer_folder_movies_empty
+                    else -> R.drawable.ic_explorer_folder_movies
+                }
+                DirectoryMediaType.Music -> when {
+                    empty -> R.drawable.ic_explorer_folder_music_empty
+                    else -> R.drawable.ic_explorer_folder_music
+                }
+                DirectoryMediaType.Pictures -> when {
+                    empty -> R.drawable.ic_explorer_folder_pictures_empty
+                    else -> R.drawable.ic_explorer_folder_pictures
+                }
+                else -> when {
+                    empty -> R.drawable.ic_explorer_folder_empty
+                    else -> R.drawable.ic_explorer_folder
+                }
+            }
+        }
     }
 
     interface ExplorerItemBinderActionListener {
