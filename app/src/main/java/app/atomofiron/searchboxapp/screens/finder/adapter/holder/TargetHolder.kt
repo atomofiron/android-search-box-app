@@ -25,6 +25,6 @@ class TargetHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id) {
         }
         ivIcon.setImageResource(icon)
         ivIcon.alpha = if (item.target.isDirectory && !item.target.isCached) .4f else 1f
-        tvTitle.text = item.target.completedPath
+        tvTitle.text = item.target.path
     }
 }

@@ -9,7 +9,7 @@ import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
@@ -24,9 +24,9 @@ class ExplorerItemActionListenerDelegate(
     private val explorerInteractor: ExplorerInteractor,
 ) : ExplorerItemActionListener {
 
-    override fun onItemLongClick(item: XFile) {
-        val files: List<XFile> = when {
-            item.isChecked -> explorerStore.checked
+    override fun onItemLongClick(item: Node) {
+        val files: List<Node> = when {
+            item.isChecked -> explorerStore.checked.value
             else -> listOf(item)
         }
         val ids = when {
@@ -40,7 +40,7 @@ class ExplorerItemActionListenerDelegate(
         menuListenerDelegate.showOptions(options)
     }
 
-    override fun onItemClick(item: XFile) {
+    override fun onItemClick(item: Node) {
         val useSu = preferenceStore.useSu.value
         when {
             useSu -> openItem(item)
@@ -58,9 +58,9 @@ class ExplorerItemActionListenerDelegate(
         }
     }
 
-    private fun openItem(item: XFile) {
+    private fun openItem(item: Node) {
         when {
-            item.isDirectory -> explorerInteractor.openDir(item)
+            item.isDirectory -> explorerInteractor.toggleDir(item)
             else -> {
                 val textFormats = preferenceStore.textFormats.entity
                 router.showFile(item, textFormats)
@@ -68,9 +68,7 @@ class ExplorerItemActionListenerDelegate(
         }
     }
 
-    override fun onItemCheck(item: XFile, isChecked: Boolean) = explorerInteractor.checkItem(item, isChecked)
+    override fun onItemCheck(item: Node, isChecked: Boolean) = explorerInteractor.checkItem(item, isChecked)
 
-    override fun onItemVisible(item: XFile) = explorerInteractor.updateItem(item)
-
-    override fun onItemInvalidate(item: XFile) = explorerInteractor.invalidateItem(item)
+    override fun onItemVisible(item: Node) = explorerInteractor.updateItem(item)
 }

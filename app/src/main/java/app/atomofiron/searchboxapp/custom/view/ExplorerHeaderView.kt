@@ -7,7 +7,7 @@ import android.widget.FrameLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinderImpl
@@ -22,7 +22,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
 
     private val binder = ExplorerItemBinderImpl(getChildAt(0))
     lateinit var composition: ExplorerItemComposition; private set
-    private var item: XFile? = null
+    private var item: Node? = null
 
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {
         binder.onItemActionListener = listener
@@ -33,7 +33,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
         bind()
     }
 
-    fun onBind(item: XFile? = this.item) {
+    fun onBind(item: Node? = this.item) {
         this.item = item
         bind()
     }

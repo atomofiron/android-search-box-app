@@ -17,7 +17,8 @@ import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.logI
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
@@ -27,7 +28,6 @@ import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.Util
 import app.atomofiron.searchboxapp.utils.escapeQuotes
-import kotlinx.coroutines.delay
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -105,7 +105,7 @@ class FinderWorker(
 
     private val processObserver: (Process) -> Unit = { process = it }
 
-    private fun searchForContent(where: List<MutableXFile>) {
+    private fun searchForContent(where: List<Node>) {
         forLoop@for (item in where) {
             if (isStopped) {
                 return
@@ -118,14 +118,13 @@ class FinderWorker(
                 useRegex && ignoreCase -> Shell[Shell.GREP_CS_IE]
                 useRegex && !ignoreCase -> Shell[Shell.GREP_CS_E]
                 !useRegex && ignoreCase -> Shell[Shell.GREP_CS_I]
-                !useRegex && !ignoreCase -> Shell[Shell.GREP_CS]
-                else -> throw Exception()
+                else -> Shell[Shell.GREP_CS]
             }
             val nameArgs = textFormats.joinToString(" -o ") { "-name '*.$it'" }
-            val isTextFile = item.isFile && Util.isTextFile(item.completedPath, textFormats)
+            val isTextFile = item.isFile && Util.isTextFile(item.path, textFormats)
             val command = when {
-                item.isDirectory -> template.format(item.completedPath, maxDepth, nameArgs, query.escapeQuotes())
-                isTextFile -> template.format(query.escapeQuotes(), item.completedPath)
+                item.isDirectory -> template.format(item.path, maxDepth, nameArgs, query.escapeQuotes())
+                isTextFile -> template.format(query.escapeQuotes(), item.path)
                 else -> continue@forLoop
             }
             val output = Shell.exec(command, useSu, processObserver, forContentLineListener)
@@ -146,13 +145,13 @@ class FinderWorker(
         task.count++
     }
 
-    private fun searchForName(where: List<MutableXFile>) {
+    private fun searchForName(where: List<Node>) {
         for (item in where) {
             val template = when {
                 excludeDirs -> Shell[Shell.FIND_F]
                 else -> Shell[Shell.FIND_FD]
             }
-            val command = template.format(item.completedPath, maxDepth)
+            val command = template.format(item.path, maxDepth)
             val output = Shell.exec(command, useSu, processObserver, forNameLineListener)
             if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
@@ -170,7 +169,7 @@ class FinderWorker(
     }
 
     private fun addToResults(path: String, count: Int = 0) {
-        val xFile = MutableXFile.byPath(path)
+        val xFile = Node(path, content = NodeContent.File.Other)
         val result = FinderResult(xFile, count)
         task.results.add(result)
     }
@@ -200,10 +199,10 @@ class FinderWorker(
         val intent = Intent(applicationContext, ForegroundService::class.java)
         applicationContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
-        val where = ArrayList<MutableXFile>()
+        val where = ArrayList<Node>()
         val paths = inputData.getStringArray(KEY_WHERE_PATHS)!!
         for (i in paths.indices) {
-            val item = MutableXFile.byPath(paths[i])
+            val item = Node(paths[i], content = NodeContent.File.Other)
             where.add(item)
         }
 

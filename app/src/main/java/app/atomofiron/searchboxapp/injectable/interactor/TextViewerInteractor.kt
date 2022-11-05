@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
@@ -15,9 +15,9 @@ class TextViewerInteractor(
 ) {
     private val context = Dispatchers.IO
 
-    fun loadFile(xFile: MutableXFile, params: FinderQueryParams?, callback: () -> Unit) {
+    fun loadFile(item: Node, params: FinderQueryParams?, callback: () -> Unit) {
         scope.launch(context) {
-            textViewerService.primarySearch(xFile, params)
+            textViewerService.primarySearch(item, params)
             callback()
         }
     }

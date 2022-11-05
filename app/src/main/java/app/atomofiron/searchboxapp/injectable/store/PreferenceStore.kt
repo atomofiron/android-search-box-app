@@ -7,6 +7,7 @@ import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
 import app.atomofiron.searchboxapp.model.preference.*
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.Explorer.getExternalStorageDirectory
 import app.atomofiron.searchboxapp.utils.Tool
 
 class PreferenceStore constructor(
@@ -40,7 +41,7 @@ class PreferenceStore constructor(
     val storagePath = PreferenceNode.forString<String>(
         sp,
         key = Const.PREF_STORAGE_PATH,
-        default = Tool.getExternalStorageDirectory(context) ?: Const.ROOT,
+        default = context.getExternalStorageDirectory() ?: Const.ROOT,
     )
 
     val openedDirPath = PreferenceNode.forNullableString<String?>(

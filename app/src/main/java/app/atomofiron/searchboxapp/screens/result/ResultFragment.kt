@@ -75,7 +75,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         viewCollect(task, collector = ::onTaskChange)
         viewCollect(enableOptions, collector = ::enableOptions)
         viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
-        viewCollect(notifyItemChanged, collector = resultAdapter::setItem) // todo works poor
     }
 
     override fun onApplyInsets(root: View) {

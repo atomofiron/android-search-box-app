@@ -9,7 +9,7 @@ import app.atomofiron.common.util.permission.PermissionDelegate
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.android.Intents
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.finder.FinderFragment
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.utils.Util
@@ -28,9 +28,9 @@ class ExplorerRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
 
     fun showSettings() = navigate(R.id.preferenceFragment)
 
-    fun showFile(item: XFile, textFormats: Array<String>) {
-        if (Util.isTextFile(item.completedPath, textFormats)) {
-            val arguments = TextViewerParams.arguments(item.completedPath)
+    fun showFile(item: Node, textFormats: Array<String>) {
+        if (Util.isTextFile(item.path, textFormats)) {
+            val arguments = TextViewerParams.arguments(item.path)
             navigate(R.id.textViewerFragment, arguments)
         } else {
             activity {

@@ -64,6 +64,7 @@ repositories {
 
 ext {
     androidx = "1.9.0"
+    recyclerview = "1.2.1"
     fragment = "1.5.4"
     material = "1.7.0"
     appcompat = "1.5.1"
@@ -87,6 +88,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.preference:preference-ktx:$preference"
     implementation "androidx.core:core-ktx:$androidx"
+    implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_ext"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_ktx"
     implementation "androidx.fragment:fragment-ktx:$fragment"

@@ -10,7 +10,7 @@ import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.logI
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
@@ -21,7 +21,7 @@ import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParam
 import javax.inject.Inject
 
 class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPresenter>() {
-    val checked = mutableListOf<XFile>()
+    val checked = mutableListOf<Node>()
 
     val oneFileOptions = listOf(R.id.menu_copy_path, R.id.menu_remove)
     val manyFilesOptions = listOf(R.id.menu_remove)
@@ -31,7 +31,6 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPre
     val enableOptions = dataFlow(value = false)
     val showOptions = dataFlow<Pair<ExplorerItemOptions, CurtainApi.Controller>>(single = true)
     val notifyTaskHasChanged = dataFlow(Unit, single = true)
-    val notifyItemChanged = dataFlow<FinderResultItem.Item>(single = true)
     val alerts = dataFlow<String>(single = true)
 
     @Inject

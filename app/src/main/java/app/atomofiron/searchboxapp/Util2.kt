@@ -38,7 +38,11 @@ fun Any.poop(label: String, s: String) {
 
 fun Any.logI(s: String) {
     if (mute) return
+    Log.i("searchboxapp", "[${this.javaClass.simpleName}] $s")
+}
 
+fun Any.logD(s: String) {
+    if (mute) return
     Log.d("searchboxapp", "[${this.javaClass.simpleName}] $s")
 }
 

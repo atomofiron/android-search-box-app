@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.getSortedChildren
+import app.atomofiron.searchboxapp.utils.Explorer.hasChild
 import kotlin.math.min
 
-class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.ItemDecoration() {
+class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : RecyclerView.ItemDecoration() {
     companion object {
         private const val UNDEFINED = -1
         private const val SHADOW_ALPHA = 100
@@ -31,13 +32,13 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     private val topEdge: Int get() = headerView.paddingTop
 
     private var headerItemPosition: Int = UNDEFINED
-    private var headerItem: XFile? = null
+    private var headerItem: Node? = null
 
     private var backgroundGrey = 0
     private var backgroundColor = 0
     private var headerCurrentColor = 0
 
-    fun onHeaderChanged(item: XFile?, position: Int) {
+    fun onHeaderChanged(item: Node?, position: Int) {
         headerItem = item
         headerItemPosition = position
         setHeaderBackground()
@@ -60,11 +61,12 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
         drawShadows(children, canvas, parent)
     }
 
-    private fun bindHeader(headerItem: XFile, children: Map<Int, View>) {
+    private fun bindHeader(headerItem: Node, children: Map<Int, View>) {
         when {
             headerItemPosition == UNDEFINED -> return
             headerView.isGone -> return
         }
+        val items = getItems()
 
         val headerItemView = children[headerItemPosition]
         val firstVisiblePosition = children.keys.first()
@@ -101,6 +103,7 @@ class ItemHeaderShadowDecorator(private val items: List<XFile>) : RecyclerView.I
     private fun drawShadows(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {
         val currentDir = headerItem ?: return
         var lastIndex = UNDEFINED
+        val items = getItems()
         children.forEach {
             val index = it.key
             val item = items[index]

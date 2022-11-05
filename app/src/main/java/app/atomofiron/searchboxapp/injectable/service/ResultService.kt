@@ -3,14 +3,11 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.work.WorkManager
-import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.injectable.store.ResultStore
-import app.atomofiron.searchboxapp.logI
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import java.util.*
@@ -33,26 +30,25 @@ class ResultService(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun deleteItems(items: List<XFile>, uuid: UUID) {
-        items as List<FinderResult>
-        items.forEach {
-            it.willBeDeleted()
+    fun deleteItems(items: List<Node>, uuid: UUID) {
+        /*items.forEach {
+            it.setDeleting()
         }
         resultStore.itemsShellBeDeleted.invoke()
         val useSu = preferenceStore.useSu.value
         items.forEach {
-            when (val error = it.delete(useSu)) {
+            when (val error = Explorer.delete(useSu)) {
                 null -> finderStore.deleteResultFromTask(it, uuid)
                 else -> logI("deleteItems error != null $it\n$error")
             }
-        }
+        }*/
     }
 
     fun cacheFile(item: FinderResultItem.Item) {
         val useSu = preferenceStore.useSu.value
         if (!item.item.isCached) {
             item.item.updateCache(useSu)
-            resultChannel.notifyItemChanged.value = item
+            //resultChannel.notifyItemChanged.value = item
         }
     }
 }

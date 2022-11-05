@@ -8,19 +8,16 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
-import app.atomofiron.searchboxapp.model.explorer.DirectoryMediaType
-import app.atomofiron.searchboxapp.model.explorer.MediaDirectories
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.Tool
+import app.atomofiron.searchboxapp.utils.Explorer.getExternalStorageDirectory
 
 class ExplorerItemBinderImpl(
     private val itemView: View,
@@ -42,7 +39,7 @@ class ExplorerItemBinderImpl(
     }
      */
 
-    private lateinit var item: XFile
+    private lateinit var item: Node
 
     private val ivIcon = itemView.findViewById<ImageView>(R.id.item_explorer_iv_icon)
     private val tvName = itemView.findViewById<TextView>(R.id.item_explorer_tv_title)
@@ -70,8 +67,6 @@ class ExplorerItemBinderImpl(
         view as CheckBox
         onItemActionListener?.onItemCheck(item, view.isChecked)
     }
-    private var mediaDirectories: MediaDirectories? = null
-
     init {
         if (cbBox.buttonTintList == null) {
             cbBox.isUseMaterialThemeColors = true
@@ -88,7 +83,7 @@ class ExplorerItemBinderImpl(
         val colors = intArrayOf(colorEnabledChecked, colorDisabledChecked, Color.TRANSPARENT, colorDisabledUnchecked)
         transparentBoxTintList = ColorStateList(states, colors)
 
-        val externalStoragePath = Tool.getExternalStorageDirectory(itemView.context)
+        val externalStoragePath = itemView.context.getExternalStorageDirectory()
         if (externalStoragePath != null) {
             rootsAliases[externalStoragePath] = R.string.internal_storage
         }
@@ -96,7 +91,7 @@ class ExplorerItemBinderImpl(
         rootsAliases[Const.ROOT] = R.string.root
     }
 
-    override fun onBind(item: XFile) {
+    override fun onBind(item: Node) {
         this.item = item
 
         itemView.setOnClickListener(onClickListener)
@@ -106,7 +101,7 @@ class ExplorerItemBinderImpl(
         ivIcon.setImageResource(item.defineIcon())
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
 
-        val aliasId = rootsAliases[item.completedPath]
+        val aliasId = rootsAliases[item.path]
         tvName.text = when (aliasId) {
             null -> item.name
             else -> itemView.context.getString(aliasId)
@@ -118,14 +113,14 @@ class ExplorerItemBinderImpl(
             else -> EMPTY
         }
 
-        cbBox.isChecked = item.isChecked
-        cbBox.isGone = item.isDeleting
+        // todo cbBox.isChecked = item.isChecked
+        // todo cbBox.isGone = item.isDeleting
         when {
-            item.isDeleting -> cbBox.isGone = true
+            //item.isDeleting -> cbBox.isGone = true
             item.isRoot && !item.isOpened -> cbBox.isInvisible = true
             else -> cbBox.isVisible = true
         }
-        psProgress.isVisible = item.isDeleting
+        //psProgress.isVisible = item.isDeleting
     }
 
     override fun setOnItemActionListener(listener: ExplorerItemActionListener?) {
@@ -156,10 +151,6 @@ class ExplorerItemBinderImpl(
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 
-    override fun setMediaDirectories(mediaDirectories: MediaDirectories) {
-        this.mediaDirectories = mediaDirectories
-    }
-
     override fun disableClicks() {
         itemView.isFocusable = false
         itemView.isClickable = false
@@ -179,37 +170,38 @@ class ExplorerItemBinderImpl(
         itemView.setBackgroundColor(color)
     }
 
-    private fun XFile.defineIcon(): Int {
-        val empty = children?.isEmpty() == true
-        return when {
-            !isDirectory -> R.drawable.ic_file_circle
-            else -> when (mediaDirectories?.getMediaType(completedPath)) {
-                DirectoryMediaType.Android -> when {
-                    empty -> R.drawable.ic_explorer_folder_android_empty
+    private fun Node.defineIcon(): Int {
+        return when (val content = content) {
+            is NodeContent.Unknown,
+            is NodeContent.Link,
+            is NodeContent.File -> R.drawable.ic_file_circle
+            is NodeContent.Directory -> when (content.type) {
+                DirectoryType.Android -> when {
+                    isEmpty -> R.drawable.ic_explorer_folder_android_empty
                     else -> R.drawable.ic_explorer_folder_android
                 }
-                DirectoryMediaType.Camera -> when {
-                    empty -> R.drawable.ic_explorer_folder_camera_empty
+                DirectoryType.Camera -> when {
+                    isEmpty -> R.drawable.ic_explorer_folder_camera_empty
                     else -> R.drawable.ic_explorer_folder_camera
                 }
-                DirectoryMediaType.Download -> when {
-                    empty -> R.drawable.ic_explorer_folder_download_empty
+                DirectoryType.Download -> when {
+                    isEmpty -> R.drawable.ic_explorer_folder_download_empty
                     else -> R.drawable.ic_explorer_folder_download
                 }
-                DirectoryMediaType.Movies -> when {
-                    empty -> R.drawable.ic_explorer_folder_movies_empty
+                DirectoryType.Movies -> when {
+                    isEmpty -> R.drawable.ic_explorer_folder_movies_empty
                     else -> R.drawable.ic_explorer_folder_movies
                 }
-                DirectoryMediaType.Music -> when {
-                    empty -> R.drawable.ic_explorer_folder_music_empty
+                DirectoryType.Music -> when {
+                    isEmpty -> R.drawable.ic_explorer_folder_music_empty
                     else -> R.drawable.ic_explorer_folder_music
                 }
-                DirectoryMediaType.Pictures -> when {
-                    empty -> R.drawable.ic_explorer_folder_pictures_empty
+                DirectoryType.Pictures -> when {
+                    isEmpty -> R.drawable.ic_explorer_folder_pictures_empty
                     else -> R.drawable.ic_explorer_folder_pictures
                 }
                 else -> when {
-                    empty -> R.drawable.ic_explorer_folder_empty
+                    isEmpty -> R.drawable.ic_explorer_folder_empty
                     else -> R.drawable.ic_explorer_folder
                 }
             }
@@ -217,8 +209,8 @@ class ExplorerItemBinderImpl(
     }
 
     interface ExplorerItemBinderActionListener {
-        fun onItemClick(item: XFile)
-        fun onItemLongClick(item: XFile)
-        fun onItemCheck(item: XFile, isChecked: Boolean)
+        fun onItemClick(item: Node)
+        fun onItemLongClick(item: Node)
+        fun onItemCheck(item: Node, isChecked: Boolean)
     }
 }

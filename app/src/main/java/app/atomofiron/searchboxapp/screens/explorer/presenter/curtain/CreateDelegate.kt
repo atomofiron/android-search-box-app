@@ -9,8 +9,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioGroup
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.model.explorer.XFile
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerCreateBinding
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
@@ -18,14 +18,14 @@ class CreateDelegate(
     private val output: ExplorerCurtainMenuDelegate,
 ) {
 
-    fun getView(dir: XFile, inflater: LayoutInflater, container: ViewGroup): View {
+    fun getView(dir: Node, inflater: LayoutInflater, container: ViewGroup): View {
         val dirFiles = dir.children?.map { it.name } ?: listOf()
         val binding = CurtainExplorerCreateBinding.inflate(inflater, container, false)
         binding.init(dir, dirFiles)
         return binding.root
     }
 
-    private fun CurtainExplorerCreateBinding.init(dir: XFile, dirFiles: List<String>) {
+    private fun CurtainExplorerCreateBinding.init(dir: Node, dirFiles: List<String>) {
         root.applyPaddingInsets(vertical = true)
         root.requestApplyInsets()
         explorerCreateEt.text?.clear()
@@ -35,7 +35,7 @@ class CreateDelegate(
     }
 
     private inner class ButtonClick(
-        private val dir: XFile,
+        private val dir: Node,
         private val editText: EditText,
         private val radioGroup: RadioGroup,
     ) : View.OnClickListener {

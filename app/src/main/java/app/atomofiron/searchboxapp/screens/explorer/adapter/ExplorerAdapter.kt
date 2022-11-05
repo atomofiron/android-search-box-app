@@ -3,17 +3,27 @@ package app.atomofiron.searchboxapp.screens.explorer.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
-import app.atomofiron.searchboxapp.model.explorer.MediaDirectories
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSpaceDecorator.Divider
 
-class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
+class NodeCallback : DiffUtil.ItemCallback<Node>() {
+    override fun areItemsTheSame(oldItem: Node, newItem: Node): Boolean {
+        return newItem.uniqueId == oldItem.uniqueId
+    }
+
+    override fun areContentsTheSame(oldItem: Node, newItem: Node): Boolean {
+        return newItem.areContentsTheSame(oldItem)
+    }
+}
+
+class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
     companion object {
         private const val UNDEFINED = -1
         private const val VIEW_TYPE = 1
@@ -24,9 +34,8 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     private var viewPool: Array<View?>? = null
     private var recyclerView: RecyclerView? = null
 
-    private var currentDir: XFile? = null
+    private var currentDir: Node? = null
     private lateinit var composition: ExplorerItemComposition
-    private lateinit var mediaDirectories: MediaDirectories
     private lateinit var headerView: ExplorerHeaderView
     private var headerItemPosition: Int = UNDEFINED
 
@@ -44,6 +53,7 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
     }
 
     private val spaceDecorator = ItemSpaceDecorator { i ->
+        val items = currentList
         val item = items[i]
         val nextPosition = i.inc()
         when {
@@ -51,32 +61,33 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
             item.isOpened -> Divider.SMALL
             nextPosition >= items.size -> Divider.NO // не делаем отступ у последнего элемента
             item.isRoot && items[nextPosition].isRoot -> Divider.NO
-            nextPosition == items.size && item.completedParentPath == currentDir?.completedPath -> Divider.SMALL
+            nextPosition == items.size && item.parentPath == currentDir?.path -> Divider.SMALL
             item.root != items[nextPosition].root -> Divider.SMALL
-            nextPosition != items.size && item.completedParentPath != items[nextPosition].completedParentPath -> Divider.SMALL
+            nextPosition != items.size && item.parentPath != items[nextPosition].parentPath -> Divider.SMALL
             else -> Divider.NO
         }
     }
 
-    private val shadowDecorator = ItemHeaderShadowDecorator(items)
+    private val shadowDecorator = ItemHeaderShadowDecorator { currentList }
 
     private val separationDecorator = ItemSeparationDecorator { position ->
         val currentDir = currentDir ?: return@ItemSeparationDecorator Separation.NO
+        val items = currentList
         val item = items[position]
         val nextPosition = position.inc()
 
         when {
-            item.completedPath == currentDir.completedPath -> Separation.NO
-            item.completedParentPath == currentDir.completedPath -> Separation.NO
+            item.path == currentDir.path -> Separation.NO
+            item.parentPath == currentDir.path -> Separation.NO
             item.root != currentDir.root -> Separation.NO
-            item.completedPath == currentDir.completedPath -> Separation.NO
+            item.path == currentDir.path -> Separation.NO
             item.isOpened && item.children.isNullOrEmpty() -> Separation.NO
             item.isOpened -> Separation.TOP
             nextPosition == items.size -> Separation.NO // не рисуем под последним элементом
             item.isRoot && items[nextPosition].isRoot -> Separation.NO
             currentDir.isRoot -> Separation.NO
             item.root != items[nextPosition].root -> Separation.BOTTOM
-            item.completedParentPath != items[nextPosition].completedParentPath -> Separation.BOTTOM
+            item.parentPath != items[nextPosition].parentPath -> Separation.BOTTOM
             else -> Separation.NO
         }
     }
@@ -89,9 +100,12 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         return headerItemPosition in topItemPosition..bottomItemPosition
     }
 
-    fun setCurrentDir(dir: XFile?) {
+    fun setCurrentDir(dir: Node?) {
         currentDir = dir
-        headerItemPosition = items.indexOf(dir)
+        headerItemPosition = when (dir) {
+            null -> UNDEFINED
+            else -> currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
+        }
         headerView.onBind(dir)
         shadowDecorator.onHeaderChanged(dir, headerItemPosition)
     }
@@ -109,18 +123,14 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
         this.composition = composition
         headerView.setComposition(composition)
         backgroundDecorator.enabled = composition.visibleBg
-        notifyItemRangeChanged(0, items.size)
-    }
-
-    fun setMediaDirectories(mediaDirectories: MediaDirectories) {
-        this.mediaDirectories = mediaDirectories
+        notifyItemRangeChanged(0, currentList.size)
     }
 
     fun scrollToCurrentDir(unit: Unit = Unit) {
         val dir = currentDir ?: return
         var lastChild = getLastChild() ?: return
         val recyclerView = recyclerView!!
-        val position = items.indexOf(dir)
+        val position = currentList.indexOf(dir)
         val lastItemPosition = recyclerView.getChildLayoutPosition(lastChild)
         when {
             position > lastItemPosition -> {
@@ -173,38 +183,31 @@ class ExplorerAdapter : GeneralAdapter<ExplorerHolder, XFile>() {
 
     override fun getItemViewType(position: Int): Int = VIEW_TYPE
 
-    override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
+    override fun getItemId(position: Int): Long = currentList[position].hashCode().toLong()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, inflater: LayoutInflater): ExplorerHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorerHolder {
+        val inflater = LayoutInflater.from(parent.context)
         val view = getNewView(inflater, parent)
         return ExplorerHolder(view)
     }
 
     override fun onBindViewHolder(holder: ExplorerHolder, position: Int) {
+        val item = getItem(position)
+        holder.onBind(item)
         holder.setOnItemActionListener(itemActionListener)
-        super.onBindViewHolder(holder, position)
         holder.bindComposition(composition)
-        holder.setMediaDirectories(mediaDirectories)
-        itemActionListener.onItemVisible(holder.item)
-        if (position == headerItemPosition) {
-            headerView.onBind(items[position])
-        }
+        if (position == headerItemPosition) headerView.onBind(item)
     }
 
-    override fun setItem(item: XFile) {
-        super.setItem(item)
-        if (headerItemPosition == UNDEFINED) {
-            return
-        }
-        val headerItem = items[headerItemPosition]
-        if (item == headerItem) {
-            headerView.onBind(item)
-        }
+    // todo deprecate
+    fun setItem(item: Node) {
     }
 
-    override fun onViewDetachedFromWindow(holder: ExplorerHolder) {
-        super.onViewDetachedFromWindow(holder)
-        itemActionListener.onItemInvalidate(holder.item)
+    override fun onViewAttachedToWindow(holder: ExplorerHolder) {
+        super.onViewAttachedToWindow(holder)
+        if (holder.bindingAdapterPosition > 0) {
+            itemActionListener.onItemVisible(getItem(holder.bindingAdapterPosition))
+        }
     }
 
     private fun getNewView(inflater: LayoutInflater, parent: ViewGroup): View {

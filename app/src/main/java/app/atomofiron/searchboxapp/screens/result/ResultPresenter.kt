@@ -71,11 +71,6 @@ class ResultPresenter(
                 viewModel.updateState()
             }
         }
-        resultChannel.notifyItemChanged.collect(scope) {
-            scope.launch {
-                viewModel.notifyItemChanged.value = it
-            }
-        }
     }
 
     fun onStopClick() = interactor.stop(viewModel.task.value.uuid)

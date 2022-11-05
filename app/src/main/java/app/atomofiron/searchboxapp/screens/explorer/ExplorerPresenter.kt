@@ -16,7 +16,6 @@ import app.atomofiron.searchboxapp.screens.explorer.places.XPlaceType
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
-import app.atomofiron.searchboxapp.utils.Tool.getMediaDirectories
 
 class ExplorerPresenter(
     viewModel: ExplorerViewModel,
@@ -35,7 +34,6 @@ class ExplorerPresenter(
     private val resources by appStore.resourcesProperty
 
     init {
-        viewModel.mediaDirectories.value = appStore.context.getMediaDirectories()
         preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
         preferenceStore.storagePath.collect(scope, ::onStoragePathChanged)
         preferenceStore.explorerItemComposition.collect(scope) {
@@ -54,8 +52,7 @@ class ExplorerPresenter(
     }
 
     override fun onSubscribeData() {
-        explorerStore.store.collect(scope, viewModel::onChanged)
-        explorerStore.updates.collect(scope, viewModel::onChanged)
+        explorerStore.items.collect(scope, viewModel::onChanged)
         explorerStore.current.collect(scope, viewModel::onChanged)
         explorerStore.alerts.collect(scope, viewModel.alerts::emit)
     }
@@ -71,13 +68,13 @@ class ExplorerPresenter(
     fun onOptionsOptionSelected() {
         val current = explorerStore.current.value
         val files = when {
-            explorerStore.checked.isNotEmpty() -> ArrayList(explorerStore.checked)
+            explorerStore.checked.value.isNotEmpty() -> ArrayList(explorerStore.checked.value)
             current != null -> listOf(current)
             else -> return
         }
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions
-            files.first().isChecked -> viewModel.manyFilesOptions
+            // todo files.first().isChecked -> viewModel.manyFilesOptions
             files.first().isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }

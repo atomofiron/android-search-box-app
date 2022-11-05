@@ -24,10 +24,11 @@ open class ServiceModule {
     fun explorerService(
         context: Context,
         assets: AssetManager,
+        appStore: AppStore,
         preferences: SharedPreferences,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
-    ): ExplorerService = ExplorerService(context, assets, preferences, explorerStore, preferenceStore)
+    ): ExplorerService = ExplorerService(context, assets, appStore, preferences, explorerStore, preferenceStore)
 
     @Provides
     @Singleton

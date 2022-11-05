@@ -10,7 +10,7 @@ import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
@@ -18,6 +18,7 @@ import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.CreateDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.RenameDelegate
+import app.atomofiron.searchboxapp.utils.Explorer.isParentOf
 import app.atomofiron.searchboxapp.utils.showCurtain
 
 class ExplorerCurtainMenuDelegate(
@@ -75,24 +76,24 @@ class ExplorerCurtainMenuDelegate(
         }
     }
 
-    fun onCreateConfirm(dir: XFile, name: String, directory: Boolean) {
+    fun onCreateConfirm(dir: Node, name: String, directory: Boolean) {
         controller?.close()
         explorerInteractor.create(dir, name, directory)
     }
 
-    fun onRenameConfirm(item: XFile, name: String) {
+    fun onRenameConfirm(item: Node, name: String) {
         controller?.close()
         explorerInteractor.rename(item, name)
     }
 
-    private fun onRemoveConfirm(items: List<XFile>) {
+    private fun onRemoveConfirm(items: List<Node>) {
         controller?.close()
         explorerInteractor.deleteItems(items)
     }
 
     private fun getRenameData(): RenameDelegate.RenameData? {
         val item = data?.items?.first() ?: return null
-        val dirFiles = explorerStore.items
+        val dirFiles = explorerStore.items.value
             .find { it.isParentOf(item) }
             ?.children?.map { it.name }
         dirFiles ?: return null

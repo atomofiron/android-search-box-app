@@ -2,7 +2,7 @@ package app.atomofiron.searchboxapp.screens.finder.model
 
 import androidx.annotation.StringRes
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 
 sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
@@ -42,7 +42,7 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     ) : FinderStateItem(finderTask.id, R.layout.item_progress)
 
     class TargetItem(
-        val target: XFile,
+        val target: Node,
     ) : FinderStateItem(target.hashCode().toLong(), R.layout.item_finder_target)
 
     class TipItem(

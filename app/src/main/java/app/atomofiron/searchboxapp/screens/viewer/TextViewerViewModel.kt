@@ -7,7 +7,7 @@ import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.model.textviewer.LineIndexMatches
@@ -55,7 +55,7 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     val matchesCursor = dataFlow<Long?>(null)
     val loading = dataFlow(value = true)
     lateinit var composition: ExplorerItemComposition
-    lateinit var xFile: XFile
+    lateinit var item: Node
 
     private var matchesIndex = -1
     /** line index -> line matches */

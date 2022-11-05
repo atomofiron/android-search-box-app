@@ -9,9 +9,7 @@ import app.atomofiron.common.util.property.WeakProperty
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.model.explorer.Change
-import app.atomofiron.searchboxapp.model.explorer.MediaDirectories
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 import javax.inject.Inject
@@ -27,16 +25,9 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     val scrollToCurrentDir = dataFlow(Unit, single = true)
     val historyDrawerGravity = dataFlow<Int>()
     val places = dataFlow<List<XPlace>>()
-    val mediaDirectories = dataFlow<MediaDirectories>()
     val itemComposition = dataFlow<ExplorerItemComposition>()
-    val items = dataFlow<List<XFile>>()
-    val current = dataFlow<XFile?>()
-    val notifyUpdate = dataFlow<XFile>(single = true)
-    val notifyRemove = dataFlow<XFile>(single = true)
-    val notifyInsert = dataFlow<Pair<XFile, XFile>>(single = true)
-    val notifyUpdateRange = dataFlow<List<XFile>>(single = true)
-    val notifyRemoveRange = dataFlow<List<XFile>>(single = true)
-    val notifyInsertRange = dataFlow<Pair<XFile, List<XFile>>>(single = true)
+    val items = dataFlow<List<Node>>()
+    val current = dataFlow<Node?>()
     val alerts = dataFlow<String>(single = true)
 
     @Inject
@@ -56,27 +47,13 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
         component.inject(this)
     }
 
-    fun onChanged(items: List<XFile>) {
+    fun onChanged(items: List<Node>) {
         viewModelScope.launch {
             this@ExplorerViewModel.items.value = items
         }
     }
 
-    fun onChanged(change: Change) {
-        viewModelScope.launch {
-            when (change) {
-                is Change.Update -> notifyUpdate.value = change.item
-                is Change.Remove -> notifyRemove.value = change.item
-                is Change.Insert -> notifyInsert.value = Pair(change.previous, change.item)
-                is Change.UpdateRange -> notifyUpdateRange.value = change.items
-                is Change.RemoveRange -> notifyRemoveRange.value = change.items
-                is Change.InsertRange -> notifyInsertRange.value = Pair(change.previous, change.items)
-                is Change.Nothing -> Unit
-            }
-        }
-    }
-
-    fun onChanged(item: XFile?) {
+    fun onChanged(item: Node?) {
         viewModelScope.launch {
             current.value = item
         }

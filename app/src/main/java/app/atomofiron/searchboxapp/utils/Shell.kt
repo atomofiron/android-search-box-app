@@ -95,7 +95,7 @@ object Shell {
         logI("exec $command")
         var success: Boolean
         var output = ""
-        var error = ""
+        var error: String
 
         var process: Process? = null
         var inputStream: InputStream? = null
@@ -143,6 +143,6 @@ object Shell {
     class Output(
         val success: Boolean,
         val output: String,
-        val error: String
+        val error: String,
     )
 }

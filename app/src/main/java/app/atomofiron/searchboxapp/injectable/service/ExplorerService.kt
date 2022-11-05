@@ -4,232 +4,294 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import app.atomofiron.common.util.flow.value
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.logI
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.Explorer
+import app.atomofiron.searchboxapp.utils.Explorer.ROOT_PARENT_PATH
+import app.atomofiron.searchboxapp.utils.Explorer.cache
+import app.atomofiron.searchboxapp.utils.Explorer.close
+import app.atomofiron.searchboxapp.utils.Explorer.open
+import app.atomofiron.searchboxapp.utils.Explorer.parent
+import app.atomofiron.searchboxapp.utils.Explorer.sortByName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 import java.io.File
 import java.io.FileOutputStream
+import java.util.LinkedList
 
 class ExplorerService(
     context: Context,
     private val assets: AssetManager,
+    appStore: AppStore,
     private val preferences: SharedPreferences,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore
 ) {
-    companion object {
-        private const val UNKNOWN = -1
-    }
 
-    private val mutex = Mutex()
-    private val files: MutableList<MutableXFile> get() = explorerStore.items
-    private val checked: MutableList<MutableXFile> get() = explorerStore.checked
-    private var currentOpenedDir: MutableXFile? = null
+    private val scope = appStore.scope
+    private val mutexLevels = Mutex()
+    private val mutexOperations = Mutex()
+    private val mutexJobs = Mutex()
+
+    private var currentOpenedDir: Node? = null
         set(value) {
             field = value
-            explorerStore.notifyCurrent(value)
+            explorerStore.current.value = value
         }
+
+    private val levels = mutableListOf<NodeLevel>()
+    private val states = LinkedList<NodeState>()
+    private val jobs = LinkedList<NodeJob>()
 
     private val useSu: Boolean get() = preferenceStore.useSu.value
 
     init {
-        GlobalScope.launch(Dispatchers.IO) {
-            mutex.withLock {
+        scope.launch(Dispatchers.IO) {
+            mutexLevels.withLock {
                 copyToybox(context)
             }
         }
     }
 
+    private suspend inline fun withStates(block: LinkedList<NodeState>.() -> Unit) {
+        mutexOperations.withLock {
+            states.block()
+        }
+    }
+
+    private suspend inline fun withJobs(block: MutableList<NodeJob>.() -> Unit) {
+        mutexJobs.withLock {
+            jobs.block()
+        }
+    }
+
+    private suspend inline fun withLevels(block: MutableList<NodeLevel>.() -> ActionResult) {
+        mutexLevels.withLock {
+            when (levels.block()) {
+                is ActionResult.Cancel -> Unit
+                is ActionResult.Update -> levels.run {
+                    dropClosedLevels()
+                    val items = renderNodes()
+                    explorerStore.items.value = items
+                    updateCurrentDir()
+                    items.dropJobs()
+                }
+            }
+        }
+    }
+
+    private fun MutableList<NodeLevel>.dropClosedLevels() {
+        var parentPath = ROOT_PARENT_PATH
+        var chained = true
+        for (i in indices) {
+            val level = get(i)
+            when {
+                !chained -> removeLast()
+                level.parentPath != parentPath -> {
+                    chained = false
+                    removeLast()
+                }
+                else -> when (val opened = level.getOpened()) {
+                    null -> chained = false
+                    else -> parentPath = opened.path
+                }
+            }
+        }
+    }
+
+    private suspend fun List<Node>.dropJobs() {
+        withJobs {
+            val iter = iterator()
+            while (iter.hasNext()) {
+                val nodeJob = iter.next()
+                val index = this@dropJobs.indexOfFirst { it.uniqueId == nodeJob.uniqueId }
+                if (index < 0) {
+                    nodeJob.job.cancel()
+                    iter.remove()
+                }
+            }
+        }
+    }
+
+    private fun List<NodeLevel>.renderNodes(): List<Node> {
+        val count = sumOf { it.count }
+        val items = ArrayList<Node>(count)
+        for (i in levels.indices) {
+            val level = levels[i]
+            for (j in 0..level.getOpenedIndex()) {
+                items.add(level.children[j])
+            }
+        }
+        for (i in levels.indices.reversed()) {
+            val level = levels[i]
+            for (j in level.getOpenedIndex().inc() until level.count) {
+                items.add(level.children[j])
+            }
+        }
+        return items
+    }
+
+    private fun List<NodeLevel>.updateCurrentDir() {
+        explorerStore.current.value = findLast { it.getOpened() != null }?.getOpened()
+    }
+
     fun persistState() {
-        preferences.edit().putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.completedPath).apply()
+        preferences
+            .edit()
+            .putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.path)
+            .apply()
     }
 
-    suspend fun trySetRoots(vararg path: String) {
-        val roots = path.map { MutableXFile.asRoot(it) }
-        logI("setRoots ${roots.size}")
-        setRootsImpl(roots)
+    suspend fun trySetRoots(paths: Collection<String>) {
+        val roots = paths.parMapMut {
+            Explorer.asRoot(it)
+                .cache(useSu)
+                .sortByName()
+        }
+        withLevels {
+            clear()
+            add(NodeLevel(Explorer.ROOT_PARENT_PATH, roots))
+            ActionResult.Update
+        }
     }
 
-    fun tryInvalidateDir(dir: XFile) {
-        val item = findItem(dir)
-        item ?: return logI("invalidateDir $item")
-        invalidateDir(item)
+    private fun findNode(uniqueId: Int): Node? {
+        for (level in levels) {
+            val node = level.children.find { it.uniqueId == uniqueId }
+            if (node != null) return node
+        }
+        return null
     }
 
-    suspend fun tryOpen(it: XFile) {
-        val item = findItem(it)
-        item ?: return logI("open $item")
-        open(item)
+    private fun findNode(path: String): Node? {
+        val parentPath = path.parent()
+        return levels.find {
+            it.parentPath == parentPath
+        }?.children?.find {
+            it.path == path
+        }
+    }
+
+    suspend fun tryToggle(item: Node) {
+        withLevels {
+            val levelIndex = indexOfFirst { it.parentPath == item.parentPath }
+            if (levelIndex < 0) return@withLevels ActionResult.Cancel
+            val level = get(levelIndex)
+
+            val targetIndex = level.children.indexOfFirst { it.uniqueId == item.uniqueId }
+            if (targetIndex < 0) return@withLevels ActionResult.Cancel
+
+            val openedIndex = level.getOpenedIndex()
+            if (openedIndex >= 0 && openedIndex != targetIndex) {
+                val opened = level.children[openedIndex]
+                level.children[openedIndex] = opened.close()
+            }
+
+            for (i in levelIndex.inc()..lastIndex) {
+                removeAt(lastIndex).getOpenedIndex()
+            }
+            val target = level.children[targetIndex]
+            level.children[targetIndex] = when {
+                target.isOpened -> target.close()
+                item.children == null -> return@withLevels ActionResult.Cancel
+                else -> {
+                    add(NodeLevel(target.path, item.children.items))
+                    target.open()
+                }
+            }
+            val a = level.children[targetIndex]
+            ActionResult.Update
+        }
+    }
+
+    suspend fun tryCacheAsync(item: Node) {
+        val jobs = LinkedList<NodeJob>()
+        withStates {
+            when (find { it.uniqueId == item.uniqueId }) {
+                null -> {
+                    add(NodeState.Caching(item.uniqueId))
+                    val job = scope.launch { cacheSync(item) }
+                    jobs.add(NodeJob(item.uniqueId, job))
+                }
+                is NodeState.Caching -> Unit
+                is NodeState.Deleting -> Unit
+            }
+        }
+        withJobs {
+            addAll(jobs)
+        }
+    }
+
+    private suspend fun CoroutineScope.cacheSync(item: Node) {
+        if (!isActive) return
+        val cached = item.cache(useSu).sortByName()
+        withStates {
+            when (val state = find { it.uniqueId == item.uniqueId }) {
+                null -> Unit
+                is NodeState.Caching -> remove(state)
+                is NodeState.Deleting -> Unit
+            }
+        }
+        replaceItem(cached)
+    }
+
+    private suspend fun replaceItem(item: Node) {
+        withLevels {
+            val level = find { it.parentPath == item.parentPath }
+            level ?: return@withLevels ActionResult.Cancel
+            val index = level.children.indexOfFirst { it.uniqueId == item.uniqueId }
+            if (index < 0) return@withLevels ActionResult.Cancel
+            val wasOpened = level.children[index].isOpened
+            level.children[index] = when (item.isOpened) {
+                wasOpened -> item
+                else -> item.copy(children = item.children?.copy(isOpened = wasOpened))
+            }
+            ActionResult.Update
+        }
     }
 
     suspend fun tryOpenParent() {
-        val dir = currentOpenedDir
-        dir ?: return logI("openParent $dir")
-        closeDir(dir)
     }
 
-    suspend fun tryUpdateItem(it: XFile) {
-        val item = findItem(it)
-        item ?: return logI("updateItem $item")
-        updateItem(item)
+    fun tryCheckItem(it: Node, isChecked: Boolean) {
     }
 
-    fun tryCheckItem(it: XFile, isChecked: Boolean) {
-        val item = findItem(it)
-        item ?: return logI("checkItem $isChecked $item")
-        checkItem(item, isChecked)
+    suspend fun tryDelete(its: List<Node>) {
     }
 
-    suspend fun tryDelete(its: List<XFile>) {
-        logI("deleteItems ${its.size}")
-        val items = its.mapNotNull { findItem(it) }
-        deleteItems(items)
+    suspend fun tryRename(it: Node, name: String) {
     }
 
-    suspend fun tryRename(it: XFile, name: String) {
-        val item = findItem(it)
-        item ?: return logI("rename $name $item")
-        rename(item, name)
+    suspend fun tryCreate(it: Node, name: String, directory: Boolean) {
     }
 
-    suspend fun tryCreate(it: XFile, name: String, directory: Boolean) {
-        val dir = findItem(it)
-        dir ?: return logI("create $name $dir")
-        create(dir, name, directory)
-    }
 
-    // -------------------------
-
-    private suspend fun setRootsImpl(roots: List<MutableXFile>) {
-        mutex.withLock {
-            removeExtraRoots(roots.map { it.root })
-            mergeRoots(roots)
-        }
-
-        explorerStore.notifyItems()
-    }
-
-    // withLock
-    private fun removeExtraRoots(roots: List<Int>) {
-        val it = files.iterator()
-        while (it.hasNext()) {
-            val next = it.next()
-            if (!roots.contains(next.root)) {
-                if (next.isRoot) {
-                    logI("removeExtraRoots $next")
-                }
-                it.remove()
+    private suspend inline fun <T, reified R> Collection<T>.parMapMut(
+        crossinline action: (T) -> R,
+    ): MutableList<R> {
+        val arr = arrayOfNulls<R>(size)
+        val jobs = mapIndexed { i, it ->
+            scope.launch {
+                arr[i] = action(it)
             }
         }
-    }
-
-    // withLock
-    private fun mergeRoots(roots: List<MutableXFile>) {
-        if (files.isEmpty()) {
-            logI("mergeRoots just add ${roots.size}")
-            files.addAll(roots)
-        }
-        var i = -1
-        val itRoot = roots.iterator()
-        var nextRootItem = itRoot.next()
-        loop@ while (++i < files.size) {
-            val root = files[i].root
-            when {
-                root != nextRootItem.root -> {
-                    logI("mergeRoots add $nextRootItem")
-                    files.add(i, nextRootItem)
-                    if (itRoot.hasNext()) {
-                        nextRootItem = itRoot.next()
-                    }
-                }
-                !itRoot.hasNext() -> {
-                    logI("mergeRoots roots merged ${roots.size}")
-                    break@loop
-                }
-                i.inc() != files.size -> nextRootItem = itRoot.next()
-                else -> while (itRoot.hasNext()) {
-                    logI("mergeRoots finally add $nextRootItem")
-                    files.add(itRoot.next())
-                }
-            }
-        }
-    }
-
-    private fun invalidateDir(dir: MutableXFile) {
-        logI("invalidateDir $dir")
-        dir.invalidateCache()
-    }
-
-    private fun findItem(it: XFile): MutableXFile? = findItem(it.completedPath, it.root)
-
-    private fun findParentDir(it: XFile): MutableXFile? = findItem(it.completedParentPath, it.root)
-
-    private fun findItem(completedPath: String, root: Int): MutableXFile? {
-        val files = files
-        var i = 0
-        // ConcurrentModificationException
-        while (i < files.size) {
-            // files[i++] may return null
-            val file: MutableXFile? = files[i++]
-            file ?: i--
-            if (file?.root == root && file.completedPath == completedPath) {
-                return file
-            }
-        }
-        return null
-    }
-
-    private fun findOpenedDirInParentOf(dir: MutableXFile): MutableXFile? {
-        return findOpenedDirIn(dir.completedParentPath, dir.root)
-    }
-
-    private fun findOpenedDirIn(dir: MutableXFile): MutableXFile? {
-        return findOpenedDirIn(dir.completedPath, dir.root)
-    }
-
-    private fun findOpenedDirIn(completedParentPath: String, root: Int): MutableXFile? {
-        val files = files
-        var i = 0
-        // ConcurrentModificationException
-        while (i < files.size) {
-            val file = files[i++]
-            if (file.isOpened &&
-                    file.root == root &&
-                    file.completedParentPath == completedParentPath &&
-                    !file.isRoot) {
-                return file
-            }
-        }
-        return null
-    }
-
-    private fun findOpenedAnotherRoot(root: Int): MutableXFile? {
-        val files = files
-        var i = 0
-        // ConcurrentModificationException
-        while (i < files.size) {
-            val file = files[i++]
-            if (file.isRoot && file.isOpened && file.root != root) {
-                return file
-            }
-        }
-        return null
+        jobs.forEach { it.join() }
+        return MutableList(size) { i -> arr[i] as R }
     }
 
     private fun copyToybox(context: Context) {
         val variants = arrayOf(
-                Const.VALUE_TOYBOX_ARM_32,
-                Const.VALUE_TOYBOX_ARM_64,
-                Const.VALUE_TOYBOX_X86_64
+            Const.VALUE_TOYBOX_ARM_32,
+            Const.VALUE_TOYBOX_ARM_64,
+            Const.VALUE_TOYBOX_X86_64
         )
         context.filesDir.mkdirs()
 
@@ -246,472 +308,6 @@ class ExplorerService(
             output.write(bytes)
             output.close()
             file.setExecutable(true, true)
-        }
-    }
-
-    private suspend fun open(item: MutableXFile) {
-        if (!item.isDirectory) {
-            logI("open return !isDirectory $item")
-            return
-        }
-        if (!item.isCached) {
-            logI("open return !isCached $item")
-            return updateClosedDir(item)
-        }
-        logI("open $item")
-        when {
-            item == currentOpenedDir -> closeDir(item)
-            item.isOpened -> reopenDir(item)
-            else -> openDir(item)
-        }
-    }
-
-    private suspend fun updateItem(item: MutableXFile) = when {
-        item.isOpened && item == currentOpenedDir -> updateCurrentDir(item)
-        item.isOpened -> logI("updateItem return isOpened $item")
-        item.isDirectory -> updateClosedDir(item)
-        else -> updateFile(item)
-    }
-
-    private fun checkItem(item: MutableXFile, isChecked: Boolean) {
-        logI("checkItem $isChecked $item")
-        item.isChecked = isChecked
-
-        val dirFiles: List<MutableXFile> = item.children ?: listOf()
-        val isNotEmptyOpenedDir = item.isDirectory && item.isOpened && dirFiles.isNotEmpty()
-        when {
-            item.isRoot && item.isChecked -> {
-                if (item.isOpened && !uncheckAllChildren(item)) {
-                    checkChildren(item)
-                }
-                item.isChecked = false
-                explorerStore.notifyUpdate(item)
-            }
-            isNotEmptyOpenedDir && !item.isChecked -> {
-                checkChildren(item)
-                checked.remove(item)
-                explorerStore.notifyUpdate(item)
-            }
-            isNotEmptyOpenedDir && item.isChecked -> when {
-                uncheckAllChildren(item) -> {
-                    item.isChecked = false
-                    explorerStore.notifyUpdate(item)
-                }
-                else -> {
-                    uncheckParent(item)
-                    checked.add(item)
-                    explorerStore.notifyUpdate(item)
-                }
-            }
-            item.isChecked -> {
-                uncheckParent(item)
-                checked.add(item)
-            }
-            !item.isChecked -> checked.remove(item)
-        }
-
-        explorerStore.notifyChecked()
-    }
-
-    private suspend fun reopenDir(dir: MutableXFile) {
-        logI("reopenDir $dir")
-        if (dir == currentOpenedDir) {
-            closeDir(dir)
-            return
-        }
-        val childDir = findOpenedDirIn(dir)
-        if (childDir != null) {
-            logI("reopenDir anotherDir != null $childDir")
-            childDir.close()
-            childDir.clearChildren()
-            currentOpenedDir = dir
-            tryInvalidateDir(dir)
-
-            removeAllChildren(childDir)
-            explorerStore.notifyUpdate(childDir)
-            updateCurrentDir(dir)
-        }
-    }
-
-    private suspend fun openDir(dir: MutableXFile) {
-        require(dir.isDirectory) { IllegalArgumentException("Is not a directory! $dir") }
-        logI("openDir $dir")
-        val anotherDir = findOpenedDirInParentOf(dir)
-        if (anotherDir != null) {
-            logI("openDir $dir anotherDir == $anotherDir")
-            anotherDir.close()
-            anotherDir.clearChildren()
-            removeAllChildren(anotherDir)
-            explorerStore.notifyUpdate(anotherDir)
-        }
-
-        var anotherRoot = findOpenedAnotherRoot(dir.root)
-        while (anotherRoot != null) {
-            anotherRoot.close()
-            anotherRoot.clearChildren()
-            removeAllChildren(anotherRoot)
-            explorerStore.notifyUpdate(anotherRoot)
-            anotherRoot = findOpenedAnotherRoot(dir.root)
-        }
-
-        val dirFiles = mutex.withLock {
-            dir.open()
-            currentOpenedDir = dir
-            tryInvalidateDir(dir)
-
-            val dirFiles = dir.children!!
-            if (dirFiles.isNotEmpty()) {
-                val index = files.indexOf(dir)
-                files.addAll(index.inc(), dirFiles)
-            }
-            dirFiles
-        }
-        explorerStore.notifyUpdate(dir)
-        if (dirFiles.isNotEmpty()) {
-            explorerStore.notifyInsertRange(dir, dirFiles)
-        }
-        updateCurrentDir(dir)
-    }
-
-    private suspend fun closeDir(it: XFile) {
-        val dir = findItem(it)
-        if (dir == null) {
-            logI("closeDir return not found $it")
-            return
-        }
-        logI("closeDir $dir")
-        val parent = if (dir.isRoot) null else findParentDir(dir)
-        mutex.withLock {
-            dir.close()
-            currentOpenedDir = parent
-        }
-
-        dir.clearChildren()
-        removeAllChildren(dir)
-        explorerStore.notifyUpdate(dir)
-
-        if (parent != null) {
-            parent.invalidateCache()
-            updateCurrentDir(parent)
-        }
-    }
-
-    private suspend fun updateFile(file: MutableXFile) {
-        logI("updateFile $file")
-        require(!file.isDirectory) { IllegalArgumentException("Is is a directory! $file") }
-        when {
-            file.isDeleting -> Unit
-            file.updateCache(useSu) == null -> explorerStore.notifyUpdate(file)
-            file.isRoot -> Unit
-            !file.exists -> dropEntity(file)
-        }
-    }
-
-    private suspend fun updateCurrentDir(dir: MutableXFile) {
-        if (dir != currentOpenedDir) {
-            logI("updateCurrentDir return dir != currentOpenedDir $dir")
-            return
-        }
-        if (dir.isDeleting) {
-            logI("updateCurrentDir return isDeleting $dir")
-            return
-        }
-        val dirFiles = dir.children
-        val error = dir.updateCache(useSu)
-        if (!error.isNullOrEmpty()) {
-            logI("updateCurrentDir return error != null $dir\n$error")
-            if (!dir.exists) {
-                closeDir(dir)
-            }
-            return
-        }
-        logI("updateCurrentDir $dir")
-        val newFiles = dir.children!!
-
-        mutex.withLock {
-            if (!dir.isCached || !files.contains(dir)) {
-                logI("updateCurrentDir return $dir")
-                return
-            }
-            if (!dir.isOpened) {
-                logI("updateCurrentDir return !isOpened $dir")
-                return explorerStore.notifyUpdate(dir)
-            }
-            if (dir != currentOpenedDir) {
-                logI("updateCurrentDir return !isCurrentOpenedDir $dir")
-                return
-            }
-            if (dirFiles != null) {
-                files.removeAll(dirFiles)
-            }
-
-            if (newFiles.isNotEmpty()) {
-                val index = files.indexOf(dir)
-                files.addAll(index.inc(), newFiles)
-            }
-            explorerStore.notifyUpdate(dir)
-            notifyCurrentDirChanges(dir, dirFiles, newFiles)
-        }
-    }
-
-    private fun notifyCurrentDirChanges(dir: MutableXFile, dirFiles: List<XFile>?, newFiles: List<MutableXFile>) {
-        val wasNullOrEmpty = dirFiles.isNullOrEmpty()
-        val nowIsEmpty = newFiles.isEmpty()
-        when {
-            wasNullOrEmpty && !nowIsEmpty -> explorerStore.notifyInsertRange(dir, newFiles)
-            !wasNullOrEmpty && nowIsEmpty -> explorerStore.notifyRemoveRange(dirFiles!!)
-            !wasNullOrEmpty && !nowIsEmpty -> {
-                dirFiles!!
-                val news = newFiles.iterator()
-                val olds = dirFiles.iterator()
-
-                while (olds.hasNext()) {
-                    val next = olds.next()
-                    if (!newFiles.contains(next)) {
-                        explorerStore.notifyRemove(next)
-                    }
-                }
-                while (news.hasNext()) {
-                    val next = news.next()
-                    if (!dirFiles.contains(next)) {
-                        val index = newFiles.indexOf(next)
-                        val previous = if (index == 0) dir else newFiles[index.dec()]
-                        explorerStore.notifyInsert(previous, next)
-                    }
-                }
-            }
-        }
-    }
-
-    private suspend fun updateClosedDir(dir: MutableXFile) {
-        if (!dir.isDirectory) {
-            logI("updateClosedDir return !isDirectory $dir")
-        }
-        if (dir.isOpened) {
-            logI("updateClosedDir return isOpened $dir")
-            return
-        }
-        if (dir.isDeleting) {
-            logI("updateClosedDir return isDeleting $dir")
-            return
-        }
-        logI("updateClosedDir $dir")
-        val cacheWasNotActual = !dir.isCacheActual
-        val error = dir.updateCache(useSu)
-
-        if (!error.isNullOrEmpty()) {
-            logI("updateClosedDir error != null $dir\n$error")
-        }
-        when {
-            cacheWasNotActual && dir.isRoot -> explorerStore.notifyUpdate(dir)
-            dir.isRoot -> Unit
-            !dir.exists -> dropEntity(dir)
-            !error.isNullOrEmpty() -> Unit
-            else -> {
-                explorerStore.notifyUpdate(dir)
-                /*
-                нельзя не уведомлять, если файлы не изменились, потому что:
-                1 у дочерних папок isCached=true, updateCache(), isCaching=true
-                2 родительская папка закрывается, у дочерних папок clear(), files=null, isCached=false
-                3 родительская папка открывается
-                4 дочерние папки кешироваться не начинают, потому что isCaching=true
-                5 список отображает папки как isCached=false
-                6 по окончании кеширования может быть oldFiles==newFiles
-                 */
-            }
-        }
-    }
-
-    private suspend fun removeAllChildren(dir: XFile) {
-        val path = dir.completedPath
-        val root = dir.root
-        logI("removeAllChildren $path")
-        val removed = mutex.withLock {
-            val removed = ArrayList<XFile>()
-            val each = files.iterator()
-            loop@ while (each.hasNext()) {
-                val next = each.next()
-                when {
-                    !next.isRoot && next.root == root && next.completedParentPath.startsWith(path) -> {
-                        each.remove()
-                        removed.add(next)
-                    }
-                    removed.isNotEmpty() -> break@loop
-                }
-            }
-            removed
-        }
-        when (removed.isEmpty()) {
-            true -> logI("removeAllChildren not found $path")
-            false -> explorerStore.notifyRemoveRange(removed)
-        }
-    }
-
-    private suspend fun dropEntity(entity: MutableXFile) {
-        logI("dropEntity $entity")
-        entity.clear()
-        mutex.withLock {
-            files.remove(entity)
-            entity.parent?.children?.remove(entity)
-        }
-        explorerStore.notifyRemove(entity)
-    }
-
-    private fun checkChildren(dir: MutableXFile) {
-        logI("checkChildren $dir")
-        val dirFiles = dir.children!!
-        dirFiles.forEach {
-            it.isChecked = true
-            checked.add(it)
-        }
-        explorerStore.notifyUpdateRange(dirFiles)
-    }
-
-    private fun uncheckAllChildren(dir: MutableXFile): Boolean {
-        logI("uncheckChildren $dir")
-        var containedChecked = false
-        checked.filter { it.completedParentPath.startsWith(dir.completedPath) }.forEach {
-            containedChecked = true
-            it.isChecked = false
-            explorerStore.notifyUpdate(it)
-            checked.remove(it)
-        }
-
-        return containedChecked
-    }
-
-    private fun uncheckParent(item: MutableXFile) {
-        logI("uncheckParent $item")
-        checked.find {
-            item.completedParentPath.startsWith(it.completedPath)
-        }?.let { checkedParent ->
-            checkedParent.isChecked = false
-            checked.remove(checkedParent)
-            explorerStore.notifyUpdate(checkedParent)
-        }
-    }
-
-    private suspend fun deleteItems(items: List<MutableXFile>) {
-        logI("deleteItems ${items.size}")
-        items.forEach { item ->
-            if (checked.contains(item)) {
-                item.isChecked = false
-                checked.remove(item)
-                explorerStore.notifyUpdate(item)
-            }
-        }
-        explorerStore.notifyChecked()
-
-        val affectedDirs = mutableListOf<String>()
-        items.forEach { item ->
-            deleteItem(item)
-            if (affectedDirs.contains(item.completedPath)) affectedDirs.remove(item.completedPath)
-            if (!affectedDirs.contains(item.completedParentPath)) affectedDirs.add(item.completedParentPath)
-        }
-        affectedDirs.forEach { dirPath ->
-            files.find {
-                it.completedPath == dirPath
-            }?.let {
-                it.invalidateCache()
-                tryUpdateItem(it)
-            }
-        }
-    }
-
-    private suspend fun deleteItem(item: MutableXFile) {
-        if (item.isDeleting) {
-            logI("deleteItem return $item")
-            return
-        }
-        logI("deleteItem $item")
-        val error = item.delete(useSu)
-        if (error != null) {
-            logI("deleteItem error != null $item\n$error")
-        }
-        when {
-            item.isOpened -> updateCurrentDir(currentOpenedDir!!)
-            item.isDirectory -> updateClosedDir(item)
-            else -> tryUpdateItem(item)
-        }
-    }
-
-    private suspend fun rename(item: MutableXFile, name: String) {
-        logI("rename $name $item")
-        val pair = item.rename(name, useSu)
-        val error = pair.first
-        val newItem = pair.second
-        if (error != null) {
-            logI("rename error != null $item\n$error")
-            explorerStore.alerts.value = error
-        }
-        if (newItem != null) {
-            val parent = findParentDir(item)
-            if (parent == null) {
-                logI("rename return no parent $item")
-                return
-            }
-            mutex.withLock {
-                val index = files.indexOf(item)
-                if (index == UNKNOWN) {
-                    logI("rename return -1 $item")
-                    return@withLock
-                }
-                val warning = parent.replace(item, newItem)
-                if (warning != null) {
-                    logI("rename warning != null $item\n$warning")
-                }
-                files.add(index.inc(), newItem)
-                explorerStore.notifyInsert(item, newItem)
-                files.removeAt(index)
-                explorerStore.notifyRemove(item)
-            }
-            if (explorerStore.checked.remove(item)) {
-                explorerStore.notifyChecked()
-            }
-        }
-        if (error != null) {
-            when {
-                item.isOpened -> updateCurrentDir(currentOpenedDir!!)
-                item.isDirectory -> updateClosedDir(item)
-                else -> tryUpdateItem(item)
-            }
-        }
-    }
-
-    private suspend fun create(parent: MutableXFile, name: String, directory: Boolean) {
-        logI("create $directory $name $parent")
-        val item = MutableXFile.create(parent, name, directory, parent.root)
-        val error = item.create(useSu)
-        when {
-            error != null -> {
-                logI("create error != null $parent\n$error")
-                explorerStore.alerts.value = error
-                when {
-                    parent.isOpened -> updateCurrentDir(currentOpenedDir!!)
-                    parent.isDirectory -> updateClosedDir(parent)
-                    else -> tryUpdateItem(parent)
-                }
-            }
-            else -> {
-                item.updateCache(useSu, completely = true)
-                mutex.withLock {
-                    val index = files.indexOf(parent)
-                    if (index == UNKNOWN) {
-                        logI("create return -1 $parent\n$item -> $parent")
-                        return@withLock
-                    }
-                    val err = parent.add(item)
-                    if (err != null) {
-                        logI("create error != null $parent\n$err $item -> $parent")
-                        return
-                    }
-                    if (parent.isOpened) {
-                        files.add(index.inc(), item)
-                        explorerStore.notifyInsert(parent, item)
-                    }
-                    explorerStore.notifyUpdate(parent)
-                }
-            }
         }
     }
 }

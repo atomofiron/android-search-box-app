@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.ExplorerService
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 
 class ExplorerInteractor(
     private val scope: CoroutineScope,
@@ -14,19 +14,19 @@ class ExplorerInteractor(
 
     fun setRoot(path: String) {
         scope.launch(context) {
-            service.trySetRoots(path)
+            service.trySetRoots(listOf(path))
         }
     }
 
-    fun checkItem(item: XFile, isChecked: Boolean) {
+    fun checkItem(item: Node, isChecked: Boolean) {
         scope.launch(context) {
             service.tryCheckItem(item, isChecked)
         }
     }
 
-    fun openDir(dir: XFile) {
+    fun toggleDir(dir: Node) {
         scope.launch(context) {
-            service.tryOpen(dir)
+            service.tryToggle(dir)
             service.persistState()
         }
     }
@@ -37,27 +37,25 @@ class ExplorerInteractor(
         }
     }
 
-    fun updateItem(file: XFile) {
+    fun updateItem(file: Node) {
         scope.launch(context) {
-            service.tryUpdateItem(file)
+            service.tryCacheAsync(file)
         }
     }
 
-    fun invalidateItem(file: XFile) = service.tryInvalidateDir(file)
-
-    fun deleteItems(file: List<XFile>) {
+    fun deleteItems(items: List<Node>) {
         scope.launch(context) {
-            service.tryDelete(file)
+            service.tryDelete(items)
         }
     }
 
-    fun rename(item: XFile, name: String) {
+    fun rename(item: Node, name: String) {
         scope.launch(context) {
             service.tryRename(item, name)
         }
     }
 
-    fun create(dir: XFile, name: String, directory: Boolean) {
+    fun create(dir: Node, name: String, directory: Boolean) {
         scope.launch(context) {
             service.tryCreate(dir, name, directory)
         }

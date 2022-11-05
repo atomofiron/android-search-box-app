@@ -5,7 +5,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.work.FinderWorker
 import java.util.*
@@ -16,7 +16,7 @@ class FinderService(
     private val finderStore: FinderStore,
     private val preferenceStore: PreferenceStore
 ) {
-    fun search(query: String, where: List<XFile>, ignoreCase: Boolean, useRegex: Boolean, isMultiline: Boolean, forContent: Boolean) {
+    fun search(query: String, where: List<Node>, ignoreCase: Boolean, useRegex: Boolean, isMultiline: Boolean, forContent: Boolean) {
         val maxSize = preferenceStore.maxFileSizeForSearch.value
         val maxDepth = preferenceStore.maxDepthForSearch.value
         val useSu = preferenceStore.useSu.value
@@ -25,7 +25,7 @@ class FinderService(
 
         val inputData = FinderWorker.inputData(
                 query, useSu, useRegex, maxSize, ignoreCase, excludeDirs, isMultiline, forContent,
-                textFormats.split(' ').toTypedArray(), maxDepth, where.map { it.completedPath }.toTypedArray()
+                textFormats.split(' ').toTypedArray(), maxDepth, where.map { it.path }.toTypedArray()
         )
         val request = OneTimeWorkRequest.Builder(FinderWorker::class.java)
                 .setInputData(inputData)

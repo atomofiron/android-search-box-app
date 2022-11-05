@@ -3,7 +3,7 @@ package app.atomofiron.searchboxapp.screens.viewer.presenter.curtain
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import app.atomofiron.searchboxapp.databinding.CurtainTextViewerSearchBinding
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
@@ -16,7 +16,7 @@ class CurtainSearchDelegate(
     output: FinderAdapterOutput,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
-    private lateinit var xFile: XFile
+    private lateinit var xFile: Node
     private lateinit var composition: ExplorerItemComposition
 
     private val finderAdapter = FinderAdapter()
@@ -44,7 +44,7 @@ class CurtainSearchDelegate(
         return CurtainApi.ViewHolder(binding.root)
     }
 
-    fun set(items: List<FinderStateItem>, xFile: XFile, composition: ExplorerItemComposition) {
+    fun set(items: List<FinderStateItem>, xFile: Node, composition: ExplorerItemComposition) {
         finderAdapter.setItems(items)
         this.xFile = xFile
         this.composition = composition

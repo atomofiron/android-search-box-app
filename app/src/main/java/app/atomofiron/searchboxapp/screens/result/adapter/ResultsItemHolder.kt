@@ -26,7 +26,7 @@ class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
     override fun onBind(item: FinderResultItem, position: Int) {
         item as FinderResultItem.Item
         val result = item.item
-        binder.onBind(result)
+        binder.onBind(result.item)
         tvCounter.isVisible = result.count > 0
         tvCounter.text = result.count.toString()
     }

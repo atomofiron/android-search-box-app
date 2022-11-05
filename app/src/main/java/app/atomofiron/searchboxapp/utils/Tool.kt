@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.utils
 
 import android.content.Context
-import app.atomofiron.searchboxapp.model.explorer.MediaDirectories
 
 object Tool {
     fun getExternalStorageDirectory(context: Context): String? {
@@ -12,10 +11,5 @@ object Tool {
             0 -> null
             else -> absolutePath.substring(0, index)
         }
-    }
-
-    fun Context.getMediaDirectories(): MediaDirectories {
-        val storage = getExternalStorageDirectory(this) ?: Const.ROOT
-        return MediaDirectories(storage)
     }
 }

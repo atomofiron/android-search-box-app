@@ -35,7 +35,7 @@ class SearchAdapterPresenterDelegate(
             updateState(isLocal = true)
         }
         curtainChannel.flow.collectForMe(viewModel.viewModelScope) { controller ->
-            curtainDelegate.set(viewModel.searchItems.value, viewModel.xFile, viewModel.composition)
+            curtainDelegate.set(viewModel.searchItems.value, viewModel.item, viewModel.composition)
             curtainDelegate.setController(controller)
         }
     }

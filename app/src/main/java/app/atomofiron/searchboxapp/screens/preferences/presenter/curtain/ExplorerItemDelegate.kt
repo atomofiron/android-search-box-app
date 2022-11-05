@@ -7,7 +7,9 @@ import android.widget.*
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainPreferenceExplorerItemBinding
 import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
+import app.atomofiron.searchboxapp.model.explorer.NodeProperties
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
@@ -17,8 +19,12 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 class ExplorerItemDelegate(
     private val node: PreferenceNode<ExplorerItemComposition, Int>,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
-    private val dir = MutableXFile("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038",
-            "03:14", "Android", "", isDirectory = true, absolutePath = "/sdcard/Android")
+    private val dir = Node(
+        path = "/sdcard/Android/",
+        parentPath = "/sdcard/",
+        properties = NodeProperties("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038", "03:14", "Android"),
+        content = NodeContent.Directory(),
+    )
 
     private var composition = node.entity
 

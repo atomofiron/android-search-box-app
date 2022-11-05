@@ -60,14 +60,14 @@ class FinderPresenter(
         }
 
         explorerStore.current.collect(scope) {
-            val checked = explorerStore.storeChecked.value
+            val checked = explorerStore.checked.value
             if (checked.isEmpty()) {
                 scope.launch {
                     viewModel.updateTargets(it, checked)
                 }
             }
         }
-        explorerStore.storeChecked.collect(scope) {
+        explorerStore.checked.collect(scope) {
             val currentDir = explorerStore.current.value
             scope.launch {
                 viewModel.updateTargets(currentDir, it)

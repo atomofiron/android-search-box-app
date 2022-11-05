@@ -7,7 +7,7 @@ import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.logE
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
 import app.atomofiron.searchboxapp.model.textviewer.LineIndexMatches
@@ -44,7 +44,7 @@ class TextViewerService(
     private var currentTask: MutableFinderTask? = null
 
     private lateinit var path: String
-    private lateinit var xFile: MutableXFile
+    private lateinit var item: Node
     private var textOffset = 0L
     private var isEndReached = false
     private var fileSize = UNKNOWN
@@ -66,9 +66,9 @@ class TextViewerService(
         textViewerChannel.tasks.value = tasks
     }
 
-    suspend fun primarySearch(xFile: MutableXFile, params: FinderQueryParams?) {
-        this.xFile = xFile
-        path = xFile.completedPath
+    suspend fun primarySearch(item: Node, params: FinderQueryParams?) {
+        this.item = item
+        path = item.path
         primaryParams = params
         when {
             params != null -> {
@@ -106,7 +106,7 @@ class TextViewerService(
         textViewerChannel.matchesCount.value = null
 
         fileSize = getFileSize()
-        xFile.updateCache(useSu)
+        // todo item.updateCache(useSu)
         currentTask = task
 
         when (task?.params) {

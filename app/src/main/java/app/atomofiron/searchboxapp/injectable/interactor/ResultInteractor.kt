@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.ResultService
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import java.util.*
@@ -21,7 +21,7 @@ class ResultInteractor(
 
     fun copyToClipboard(finderResult: FinderResult) = resultService.copyToClipboard(finderResult)
 
-    fun deleteItems(items: List<XFile>, uuid: UUID) {
+    fun deleteItems(items: List<Node>, uuid: UUID) {
         scope.launch(context) {
             resultService.deleteItems(items, uuid)
         }

@@ -7,7 +7,8 @@ import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
@@ -67,9 +68,9 @@ class TextViewerPresenter(
         val queryParams = params.query?.let {
             FinderQueryParams(params.query, params.useRegex, params.ignoreCase)
         }
-        val xFile = MutableXFile.byPath(params.path)
-        interactor.loadFile(xFile, queryParams) {
-            viewModel.xFile = xFile
+        val item = Node(params.path, content = NodeContent.File.Other)
+        interactor.loadFile(item, queryParams) {
+            viewModel.item = item
         }
     }
 

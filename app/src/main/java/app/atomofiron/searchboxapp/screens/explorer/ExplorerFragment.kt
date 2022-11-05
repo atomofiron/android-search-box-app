@@ -72,16 +72,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun ExplorerViewModel.onViewCollect() {
-        viewCollect(mediaDirectories, collector = explorerAdapter::setMediaDirectories)
-        viewCollect(items, collector = explorerAdapter::setItems)
+        viewCollect(items, collector = explorerAdapter::submitList)
         viewCollect(itemComposition, collector = explorerAdapter::setComposition)
         viewCollect(current, collector = explorerAdapter::setCurrentDir)
-        viewCollect(notifyUpdate, collector = explorerAdapter::setItem)
-        viewCollect(notifyRemove, collector = explorerAdapter::removeItem)
-        viewCollect(notifyInsert) { explorerAdapter.insertItem(it.first, it.second) }
-        viewCollect(notifyUpdateRange, collector = explorerAdapter::notifyItems)
-        viewCollect(notifyRemoveRange, collector = explorerAdapter::removeItems)
-        viewCollect(notifyInsertRange) { explorerAdapter.insertItems(it.first, it.second) }
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(places, collector = placesAdapter::setItems)

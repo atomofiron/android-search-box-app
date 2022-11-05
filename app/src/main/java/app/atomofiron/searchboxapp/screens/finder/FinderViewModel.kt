@@ -5,7 +5,7 @@ import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModel
@@ -15,7 +15,7 @@ import javax.inject.Inject
 class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPresenter>(), FinderItemsModel by FinderItemsModelDelegate() {
     var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
         private set
-    val targets = ArrayList<XFile>()
+    val targets = ArrayList<Node>()
 
     val historyDrawerGravity = dataFlow<Int>()
     val reloadHistory = dataFlow(Unit, single = true)
@@ -39,7 +39,7 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPre
         .dependencies(DaggerInjector.appComponent)
         .build()
 
-    fun updateTargets(currentDir: XFile?, checked: List<XFile>) {
+    fun updateTargets(currentDir: Node?, checked: List<Node>) {
         targetItems.clear()
         targets.clear()
         when {

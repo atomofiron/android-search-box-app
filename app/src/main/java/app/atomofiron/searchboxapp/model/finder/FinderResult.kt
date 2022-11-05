@@ -1,42 +1,39 @@
 package app.atomofiron.searchboxapp.model.finder
 
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.utils.Const
 
 class FinderResult(
-        item: MutableXFile,
-        val count: Int = 0
-) : XFile {
+    val item: Node,
+    val count: Int = 0
+) {
 
-    private val xFile = item
+    val completedPath = ""
+    val isDirectory: Boolean = false
+    val isFile = ""
+    val mHashCode: Int = 0
 
-    override val completedPath = xFile.completedPath
-    override val isDirectory: Boolean = xFile.isDirectory
-    override val isFile = xFile.isFile
-    override val mHashCode: Int = xFile.mHashCode
+    val access: String get() = ""
+    val owner: String get() = ""
+    val group: String get() = ""
+    val size: String get() = ""
+    val date: String get() = ""
+    val time: String get() = ""
+    val name: String get() = ""
+    val suffix: String get() = ""
+    val isCached: Boolean get() = false
 
-    override val access: String get() = xFile.access
-    override val owner: String get() = xFile.owner
-    override val group: String get() = xFile.group
-    override val size: String get() = xFile.size
-    override val date: String get() = xFile.date
-    override val time: String get() = xFile.time
-    override val name: String get() = xFile.name
-    override val suffix: String get() = xFile.suffix
-    override val isCached: Boolean get() = xFile.isCached
-
-    override var isChecked: Boolean = false
-    override val isDeleting: Boolean get() = xFile.isDeleting
+    var isChecked: Boolean =false
+    val isDeleting: Boolean get() = false
 
     // does not matter
-    override val children: List<XFile>? = null
-    override val isOpened: Boolean = false
-    override val isCacheActual: Boolean = true
-    override val exists: Boolean = true
-    override val completedParentPath: String = "/"
-    override val root: Int = -1
-    override val isRoot: Boolean = false
+    val children: List<Node>? =null
+    val isOpened: Boolean =false
+    val isCacheActual: Boolean =false
+    val exists: Boolean =false
+    val completedParentPath: String = ""
+    val root: Int = 0
+    val isRoot: Boolean =false
     // does not matter
 
     fun toMarkdown(): String? {
@@ -44,11 +41,11 @@ class FinderResult(
         return String.format("[%s](%s)\n", name, completedPath.replace(" ", "\\ "))
     }
 
-    fun willBeDeleted() = xFile.willBeDeleted()
+    fun willBeDeleted() = Unit//item.setDeleting()
 
-    fun delete(su: Boolean) = xFile.delete(su)
+    fun delete(su: Boolean) = Unit//xFile.delete(su)
 
-    fun updateCache(useSu: Boolean) = xFile.updateCache(useSu, completely = true)
+    fun updateCache(useSu: Boolean) = Unit//xFile.updateCache(useSu, completely = true)
 
     override fun equals(other: Any?): Boolean {
         return when (other) {
@@ -57,7 +54,7 @@ class FinderResult(
         }
     }
 
-    override fun hashCode(): Int = xFile.hashCode()
+    override fun hashCode(): Int = item.hashCode()
 
-    override fun toString(): String = xFile.toString()
+    override fun toString(): String = item.toString()
 }
