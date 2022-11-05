@@ -6,26 +6,24 @@ import app.atomofiron.searchboxapp.utils.Explorer.parent
 import java.util.Objects
 
 
-data class Children(
+data class NodeChildren(
     val items: MutableList<Node>,
     val isOpened: Boolean = false,
 ) : List<Node> by items {
 
     override fun hashCode(): Int = Objects.hash(isOpened, items.map { it.path })
 
-    override fun equals(other: Any?): Boolean {
-        return when {
-            other !is Children -> false
-            other.isOpened != isOpened -> false
-            other.items.size != items.size -> false
-            else -> {
-                for (i in items.indices) {
-                    if (!other.items[i].areContentsTheSame(items[i])) {
-                        return false
-                    }
+    override fun equals(other: Any?): Boolean = when {
+        other !is NodeChildren -> false
+        other.isOpened != isOpened -> false
+        other.items.size != items.size -> false
+        else -> {
+            for (i in items.indices) {
+                if (!other.items[i].areContentsTheSame(items[i])) {
+                    false
                 }
-                return true
             }
+            true
         }
     }
 }
@@ -83,7 +81,7 @@ data class Node constructor(
     val parentPath: String = path.parent(),
     val uniqueId: Int = path.hashCode(),
     val root: Int = uniqueId,
-    val children: Children? = null,
+    val children: NodeChildren? = null,
 
     val properties: NodeProperties = NodeProperties(name = path.name()),
     val content: NodeContent,

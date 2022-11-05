@@ -12,6 +12,7 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSpaceDecorator.Divider
+import app.atomofiron.searchboxapp.utils.Explorer.isTheDeepest
 
 class NodeCallback : DiffUtil.ItemCallback<Node>() {
     override fun areItemsTheSame(oldItem: Node, newItem: Node): Boolean {
@@ -37,7 +38,10 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
     private var currentDir: Node? = null
     private lateinit var composition: ExplorerItemComposition
     private lateinit var headerView: ExplorerHeaderView
-    private var headerItemPosition: Int = UNDEFINED
+    private val headerItemPosition: Int get() = when (val dir = currentDir) {
+        null -> UNDEFINED
+        else -> currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
+    }
 
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
@@ -102,12 +106,8 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
 
     fun setCurrentDir(dir: Node?) {
         currentDir = dir
-        headerItemPosition = when (dir) {
-            null -> UNDEFINED
-            else -> currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
-        }
         headerView.onBind(dir)
-        shadowDecorator.onHeaderChanged(dir, headerItemPosition)
+        shadowDecorator.onHeaderChanged(dir)
     }
 
     fun setHeaderView(view: ExplorerHeaderView) {
@@ -123,7 +123,7 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         this.composition = composition
         headerView.setComposition(composition)
         backgroundDecorator.enabled = composition.visibleBg
-        notifyItemRangeChanged(0, currentList.size)
+        notifyDataSetChanged()
     }
 
     fun scrollToCurrentDir(unit: Unit = Unit) {
@@ -196,7 +196,7 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         holder.onBind(item)
         holder.setOnItemActionListener(itemActionListener)
         holder.bindComposition(composition)
-        if (position == headerItemPosition) headerView.onBind(item)
+        if (item.isTheDeepest()) headerView.onBind(item)
     }
 
     // todo deprecate

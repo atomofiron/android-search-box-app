@@ -13,6 +13,7 @@ import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
+import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Explorer
 import app.atomofiron.searchboxapp.utils.Explorer.ROOT_PARENT_PATH
@@ -27,6 +28,16 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.LinkedList
 
+
+/*
+нельзя не уведомлять, если файлы не изменились, потому что:
+1 у дочерних папок isCached=true, updateCache(), isCaching=true
+2 родительская папка закрывается, у дочерних папок clear(), files=null, isCached=false
+3 родительская папка открывается
+4 дочерние папки кешироваться не начинают, потому что isCaching=true
+5 список отображает папки как isCached=false
+6 по окончании кеширования может быть oldFiles==newFiles
+ */
 class ExplorerService(
     context: Context,
     private val assets: AssetManager,
@@ -181,6 +192,7 @@ class ExplorerService(
     }
 
     suspend fun tryToggle(item: Node) {
+        poop("tryToggle")
         withLevels {
             val levelIndex = indexOfFirst { it.parentPath == item.parentPath }
             if (levelIndex < 0) return@withLevels ActionResult.Cancel

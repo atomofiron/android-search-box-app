@@ -203,7 +203,7 @@ object Explorer {
             else -> DirectoryType.Ordinary
         }
         return copy(
-            children = Children(items, isOpened = children?.isOpened == true),
+            children = NodeChildren(items, isOpened = children?.isOpened == true),
             content = NodeContent.Directory(directoryType),
         )
     }
@@ -223,7 +223,9 @@ object Explorer {
 
     fun Node.isParentOf(other: Node): Boolean = other.parentPath == path
 
-    fun Children.clearChildren() {
+    fun Node.isTheDeepest(): Boolean = isOpened && children != null && children.find { it.isOpened } == null
+
+    fun NodeChildren.clearChildren() {
         for (i in items.indices) {
             val child = items[i]
             if (child.isCached) {

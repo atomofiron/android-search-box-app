@@ -38,10 +38,8 @@ class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : Recycl
     private var backgroundColor = 0
     private var headerCurrentColor = 0
 
-    fun onHeaderChanged(item: Node?, position: Int) {
+    fun onHeaderChanged(item: Node?) {
         headerItem = item
-        headerItemPosition = position
-        setHeaderBackground()
     }
 
     fun setHeaderView(headerView: ExplorerHeaderView) {
@@ -55,6 +53,11 @@ class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : Recycl
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         initShadow(parent.context)
         val headerItem = headerItem ?: return
+        val position = getItems().indexOfFirst { it.uniqueId == headerItem.uniqueId }
+        if (position != headerItemPosition) {
+            headerItemPosition = position
+            setHeaderBackground()
+        }
 
         val children = parent.getSortedChildren()
         bindHeader(headerItem, children)
