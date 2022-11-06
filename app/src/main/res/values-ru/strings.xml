@@ -67,7 +67,7 @@
     <string name="remove">Удалить</string>
     <string name="rename">Переименовать</string>
     <string name="no_such_file">Файла или директории не существует</string>
-    <string name="permission_denied">Отсутствует доступ</string>
+    <string name="permission_denied">Нет доступа</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="a_lot_of_errors">Много ошибок</string>
     <string name="not_allowed">Не позволено</string>

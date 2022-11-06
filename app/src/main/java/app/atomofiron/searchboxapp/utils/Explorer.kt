@@ -172,7 +172,6 @@ object Explorer {
     fun Node.sortByName(): Node {
         children?.items?.run {
             sortBy { it.name.lowercase() }
-            reverse()
             sortBy {
                 when {
                     it.isDirectory -> 0

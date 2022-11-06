@@ -12,17 +12,8 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSpaceDecorator.Divider
+import app.atomofiron.searchboxapp.screens.explorer.adapter.util.NodeCallback
 import app.atomofiron.searchboxapp.utils.Explorer.isTheDeepest
-
-class NodeCallback : DiffUtil.ItemCallback<Node>() {
-    override fun areItemsTheSame(oldItem: Node, newItem: Node): Boolean {
-        return newItem.uniqueId == oldItem.uniqueId
-    }
-
-    override fun areContentsTheSame(oldItem: Node, newItem: Node): Boolean {
-        return newItem.areContentsTheSame(oldItem)
-    }
-}
 
 class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
     companion object {

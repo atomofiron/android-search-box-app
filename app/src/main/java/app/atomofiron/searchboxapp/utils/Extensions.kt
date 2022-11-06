@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.utils
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES
@@ -11,6 +12,7 @@ import androidx.annotation.IntDef
 import androidx.core.view.ContentInfoCompat
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainPresenterParams
 
 fun String.escapeQuotes(): String = this.replace(Const.QUOTE, "\\" + Const.QUOTE)
@@ -27,4 +29,14 @@ fun BaseRouter.showCurtain(recipient: String, layoutId: Int) {
 fun Int.immutable(): Int = when {
     SDK_INT >= M -> this or PendingIntent.FLAG_IMMUTABLE
     else -> this
+}
+
+fun Resources.getString(error: NodeError): String {
+    return when (error) {
+        is NodeError.NoSuchFile -> getString(R.string.no_such_file)
+        is NodeError.PermissionDenied -> getString(R.string.permission_denied)
+        is NodeError.Unknown -> getString(R.string.unknown_error)
+        is NodeError.Multiply -> getString(R.string.a_lot_of_errors)
+        is NodeError.Message -> error.message
+    }
 }

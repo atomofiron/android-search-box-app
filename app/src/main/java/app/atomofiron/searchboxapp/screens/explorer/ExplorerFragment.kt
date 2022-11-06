@@ -1,6 +1,8 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
+import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -18,6 +20,7 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDel
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import app.atomofiron.searchboxapp.utils.getString
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -124,19 +127,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
     private fun showAlert(error: NodeError) {
         val view = view ?: return
-        Snackbar.make(view, error.getString(), Snackbar.LENGTH_LONG)
+        Snackbar.make(view, resources.getString(error), Snackbar.LENGTH_LONG)
             .setAnchorView(view)
             .setAction(R.string.allow) { presenter.onAllowStorageClick() }
             .show()
-    }
-
-    private fun NodeError.getString(): String {
-        return when (this) {
-            is NodeError.NoSuchFile -> getString(R.string.no_such_file)
-            is NodeError.PermissionDenied -> getString(R.string.permission_denied)
-            is NodeError.Unknown -> getString(R.string.unknown_error)
-            is NodeError.Multiply -> getString(R.string.a_lot_of_errors)
-            is NodeError.Message -> message
-        }
     }
 }

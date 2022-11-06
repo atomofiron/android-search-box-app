@@ -35,6 +35,7 @@ data class Node constructor(
         other.path != path -> false
         other.root != root -> false
         other.properties != properties -> false
+        other.error != error -> false
         other.isCached != isCached -> false
         other.isEmpty != isEmpty -> false
         other.isOpened != isOpened -> false

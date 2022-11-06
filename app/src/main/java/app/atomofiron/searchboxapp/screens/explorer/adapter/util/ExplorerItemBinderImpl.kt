@@ -19,6 +19,7 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Explorer.getExternalStorageDirectory
+import app.atomofiron.searchboxapp.utils.getString
 
 class ExplorerItemBinderImpl(
     private val itemView: View,
@@ -48,6 +49,7 @@ class ExplorerItemBinderImpl(
     private val tvDate = itemView.findViewById<TextView>(R.id.item_explorer_tv_date)
     private val tvSize = itemView.findViewById<TextView>(R.id.item_explorer_tv_size)
     private val cbBox = itemView.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
+    private val tvError = itemView.findViewById<TextView>(R.id.item_explorer_error_tv)
     private val psProgress = itemView.findViewById<BallsView>(R.id.item_explorer_ps)
 
     var onItemActionListener: ExplorerItemBinderActionListener? = null
@@ -113,6 +115,9 @@ class ExplorerItemBinderImpl(
             item.isFile -> item.size + BYTE_LETTER
             else -> EMPTY
         }
+        val error = item.error?.let { itemView.resources.getString(it) }
+        tvError.text = error
+        tvError.isVisible = error != null
 
         // todo cbBox.isChecked = item.isChecked
         // todo cbBox.isGone = item.isDeleting

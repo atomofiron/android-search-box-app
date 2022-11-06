@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_explorer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -26,7 +26,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingStart="@dimen/edge_size"
-        android:paddingEnd="@dimen/edge_size"
         android:paddingTop="@dimen/common_margin_nano"
         android:paddingBottom="@dimen/common_margin_nano"
         >
@@ -61,11 +60,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
+                android:layout_marginEnd="@dimen/edge_size"
                 android:textSize="12sp"
                 android:typeface="monospace"
                 android:text="0000-00-00 00:00"
                 />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/item_explorer_tv_size"
+                android:layout_width="@dimen/edge_size"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textSize="12sp"
+                android:typeface="monospace"
+                android:gravity="end"
+                android:text="000KB"
+                />
         </FrameLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/item_explorer_error_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/danger_red"
+            />
     </LinearLayout>
     <app.atomofiron.searchboxapp.custom.view.BallsView
         android:id="@+id/item_explorer_ps"
@@ -73,8 +89,9 @@
         android:layout_height="24dp"
         android:layout_gravity="top|end"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginEnd="8dp"
         android:visibility="gone"
+        app:oneBall="false"
         />
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/item_explorer_cb"
@@ -83,15 +100,5 @@
         android:layout_gravity="end"
         android:minHeight="@dimen/edge_size"
         android:gravity="top"
-        />
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/item_explorer_tv_size"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginBottom="4dp"
-        android:textSize="12sp"
-        android:typeface="monospace"
-        android:text="000KB"
         />
 </FrameLayout>
