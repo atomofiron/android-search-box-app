@@ -66,7 +66,7 @@ interface INodeProperties {
     val name: String
 }
 
-class NodeProperties(
+data class NodeProperties(
     override val access: String = "",
     override val owner: String = "",
     override val group: String = "",
@@ -79,7 +79,7 @@ class NodeProperties(
 data class Node constructor(
     val path: String,
     val parentPath: String = path.parent(),
-    val uniqueId: Int = path.hashCode(),
+    val uniqueId: Int = path.toUniqueId(),
     val root: Int = uniqueId,
     val children: NodeChildren? = null,
 
@@ -87,6 +87,9 @@ data class Node constructor(
     val content: NodeContent,
     val error: NodeError? = null,
 ) : INodeProperties by properties {
+    companion object {
+        fun String.toUniqueId(): Int = hashCode()
+    }
     val isRoot: Boolean = uniqueId == root
 
     val isDirectory: Boolean = content is NodeContent.Directory
@@ -113,10 +116,18 @@ data class Node constructor(
         else -> true
     }
 
+    override fun hashCode(): Int = uniqueId
+
     override fun equals(other: Any?): Boolean = when {
         other !is Node -> false
         !areContentsTheSame(other) -> false
         else -> other.children?.equals(children) == true
+    }
+
+    fun rename(name: String): Node {
+        val path = parentPath + name
+        val properties = properties.copy(name = name)
+        return copy(path = path, uniqueId = path.toUniqueId(), properties = properties)
     }
 }
 

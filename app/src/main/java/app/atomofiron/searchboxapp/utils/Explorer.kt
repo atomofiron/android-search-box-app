@@ -2,6 +2,8 @@ package app.atomofiron.searchboxapp.utils
 
 import android.content.Context
 import app.atomofiron.searchboxapp.model.explorer.*
+import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
+import app.atomofiron.searchboxapp.poop
 
 object Explorer {
     const val ROOT_PARENT_PATH = "root_parent_path"
@@ -9,14 +11,16 @@ object Explorer {
     private const val UNKNOWN = -1
     private const val TOTAL = "total"
     private const val SLASH = "/"
+    private const val NEW_LINE = "\n"
     private const val ROOT = SLASH
     private const val ROOT_NAME = "Root"
     private const val DIR_CHAR = 'd'
     private const val LINK_CHAR = 'l'
     private const val FILE_CHAR = '-'
-    private const val LS_NO_SUCH_FILE = "ls: %s: No such file or directory\n"
-    private const val LS_PERMISSION_DENIED = "ls: %s: Permission denied\n"
+    private const val LS_NO_SUCH_FILE = "ls: %s: No such file or directory"
+    private const val LS_PERMISSION_DENIED = "ls: %s: Permission denied"
     private const val LS_S = "ls: %s: "
+    private const val COMMAND_PATH_PREFIX = "[a-z]+: %s: "
 
     private val spaces = Regex(" +")
     private val slashes = Regex("/+")
@@ -43,7 +47,7 @@ object Explorer {
 
     fun String.parent(): String = replace(lastPart, "")
 
-    fun String.name(): String = split(slashes).lastOrNull() ?: ROOT_NAME
+    fun String.name(): String = split(slashes).findLast { it.isNotEmpty() } ?: ROOT_NAME
 
     fun completeDirPath(absolutePath: String): String = completePath(absolutePath, isDirectory = true)
 
@@ -59,6 +63,27 @@ object Explorer {
             properties = NodeProperties(name = name),
             content = content,
         )
+    }
+
+    fun create(parent: Node, name: String, directory: Boolean, useSu: Boolean): Node {
+        var targetPath = parent.path + name
+        poop("create $directory ${parent.path} + $name")
+        if (directory) {
+            targetPath = completeDirPath(targetPath)
+        }
+        val output = when {
+            directory -> Shell.exec(Shell[Shell.MKDIR].format(targetPath), useSu)
+            else -> Shell.exec(Shell[Shell.TOUCH].format(targetPath), useSu)
+        }
+        val content = when {
+            directory -> NodeContent.Directory()
+            else -> NodeContent.File.Other
+        }
+        val item = Node(path = targetPath, parentPath = parent.path, root = parent.root, content = content)
+        return when {
+            output.success -> item.cache(useSu)
+            else -> item.copy(error = output.error.toNodeError(targetPath))
+        }
     }
 
     fun asRoot(path: String): Node {
@@ -239,4 +264,35 @@ object Explorer {
     fun NodeProperties.isDirectory(): Boolean = access.firstOrNull() == DIR_CHAR
 
     fun NodeProperties.isLink(): Boolean = access.firstOrNull() == LINK_CHAR
+
+    fun Node.delete(su: Boolean): Node {
+        val output = Shell.exec(Shell[Shell.RM_RF].format(path), su)
+        return when {
+            output.success && error == null -> this
+            output.success && error != null -> copy(error = null)
+            else -> copy(error = output.error.toNodeError(path))
+        }
+    }
+
+    fun Node.rename(name: String, useSu: Boolean): Node {
+        val targetPath = parentPath + name
+        val output = Shell.exec(Shell[Shell.MV].format(path, targetPath), useSu)
+        return when {
+            output.success -> rename(name)
+            else -> copy(error = output.error.toNodeError(path))
+        }
+    }
+
+    private fun String.toNodeError(path: String): NodeError {
+        val lines = split(NEW_LINE).filter { it.isNotBlank() }
+        val first = lines.firstOrNull()
+        return when {
+            lines.size > 1 -> NodeError.Multiply
+            first.isNullOrBlank() -> NodeError.Unknown
+            path.isBlank() -> NodeError.Message(first)
+            first == LS_NO_SUCH_FILE.format(path) -> NodeError.NoSuchFile
+            first == LS_PERMISSION_DENIED.format(path) -> NodeError.PermissionDenied
+            else -> NodeError.Message(first.replace(Regex(COMMAND_PATH_PREFIX.format(path)), ""))
+        }
+    }
 }

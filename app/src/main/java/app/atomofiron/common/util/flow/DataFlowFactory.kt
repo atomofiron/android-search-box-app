@@ -47,8 +47,18 @@ fun <T> Flow<T>.collect(scope: CoroutineScope, collector: FlowCollector<T>) {
     }
 }
 
+fun <T> ChannelFlow<T>.collect(scope: CoroutineScope, action: suspend (T) -> Unit) {
+    scope.launch {
+        collect {
+            scope.launch {
+                action(it)
+            }
+        }
+    }
+}
+
 fun <T> Fragment.viewCollect(
-    flow: SharedFlow<T>,
+    flow: Flow<T>,
     immediate: Boolean = true,
     collector: FlowCollector<T>,
 ) {
@@ -62,7 +72,7 @@ fun <T> Fragment.viewCollect(
 }
 
 fun <T> Fragment.fragmentCollect(
-    flow: SharedFlow<T>,
+    flow: Flow<T>,
     immediate: Boolean = true,
     collector: FlowCollector<T>,
 ) {

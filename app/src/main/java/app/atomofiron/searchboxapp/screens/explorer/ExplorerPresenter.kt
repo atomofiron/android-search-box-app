@@ -54,7 +54,7 @@ class ExplorerPresenter(
     override fun onSubscribeData() {
         explorerStore.items.collect(scope, viewModel::onChanged)
         explorerStore.current.collect(scope, viewModel::onChanged)
-        explorerStore.alerts.collect(scope, viewModel.alerts::emit)
+        explorerStore.alerts.collect(scope, viewModel.alerts::send)
     }
 
     private fun onDockGravityChanged(gravity: Int) {

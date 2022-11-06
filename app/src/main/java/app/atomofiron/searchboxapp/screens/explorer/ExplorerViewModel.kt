@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.explorer
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
+import app.atomofiron.common.util.flow.ChannelFlow
 import app.atomofiron.common.util.flow.dataFlow
 import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.property.WeakProperty
@@ -10,6 +11,7 @@ import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 import javax.inject.Inject
@@ -28,7 +30,7 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     val itemComposition = dataFlow<ExplorerItemComposition>()
     val items = dataFlow<List<Node>>()
     val current = dataFlow<Node?>()
-    val alerts = dataFlow<String>(single = true)
+    val alerts = ChannelFlow<NodeError>()
 
     @Inject
     override lateinit var presenter: ExplorerPresenter
@@ -57,5 +59,9 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
         viewModelScope.launch {
             current.value = item
         }
+    }
+
+    fun alert(value: NodeError) {
+
     }
 }

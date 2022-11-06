@@ -12,6 +12,7 @@ import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
+import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
@@ -79,6 +80,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(places, collector = placesAdapter::setItems)
         viewCollect(scrollToCurrentDir, collector = explorerAdapter::scrollToCurrentDir)
+        viewCollect(alerts, collector = ::showAlert)
     }
 
     override fun onApplyInsets(root: View) {
@@ -118,5 +120,23 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             .setAnchorView(view)
             .setAction(R.string.allow) { presenter.onAllowStorageClick() }
             .show()
+    }
+
+    private fun showAlert(error: NodeError) {
+        val view = view ?: return
+        Snackbar.make(view, error.getString(), Snackbar.LENGTH_LONG)
+            .setAnchorView(view)
+            .setAction(R.string.allow) { presenter.onAllowStorageClick() }
+            .show()
+    }
+
+    private fun NodeError.getString(): String {
+        return when (this) {
+            is NodeError.NoSuchFile -> getString(R.string.no_such_file)
+            is NodeError.PermissionDenied -> getString(R.string.permission_denied)
+            is NodeError.Unknown -> getString(R.string.unknown_error)
+            is NodeError.Multiply -> getString(R.string.a_lot_of_errors)
+            is NodeError.Message -> message
+        }
     }
 }
