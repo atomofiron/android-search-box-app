@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.RadioGroup
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerCreateBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
@@ -29,20 +28,20 @@ class CreateDelegate(
         root.applyPaddingInsets(vertical = true)
         root.requestApplyInsets()
         explorerCreateEt.text?.clear()
-        explorerCreateEt.addTextChangedListener(ButtonState(dirFiles, explorerCreateBtn))
-        explorerCreateBtn.setOnClickListener(ButtonClick(dir, explorerCreateEt, explorerCreateRg))
-        explorerCreateBtn.isEnabled = false
+        explorerCreateEt.addTextChangedListener(ButtonState(dirFiles, explorerCreateDirBtn))
+        explorerCreateEt.addTextChangedListener(ButtonState(dirFiles, explorerCreateFileBtn))
+        explorerCreateDirBtn.setOnClickListener(ButtonClick(dir, explorerCreateEt))
+        explorerCreateFileBtn.setOnClickListener(ButtonClick(dir, explorerCreateEt))
     }
 
     private inner class ButtonClick(
         private val dir: Node,
         private val editText: EditText,
-        private val radioGroup: RadioGroup,
     ) : View.OnClickListener {
-        override fun onClick(v: View?) {
-            val directory = when (radioGroup.checkedRadioButtonId) {
-                R.id.explorer_create_dir -> true
-                R.id.explorer_create_file -> false
+        override fun onClick(view: View) {
+            val directory = when (view.id) {
+                R.id.explorer_create_dir_btn -> true
+                R.id.explorer_create_file_btn -> false
                 else -> throw Exception()
             }
             output.onCreateConfirm(dir, editText.text.toString(), directory)

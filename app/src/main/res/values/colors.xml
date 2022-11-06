@@ -49,6 +49,7 @@
 
 	<color name="primary_red">#ff781D10</color>
 	<color name="accent_red">#ffad7874</color>
+	<color name="danger_red">#ffb71c1c</color>
 	<color name="accent_yellow">#ffada874</color>
 
 	<color name="colorSurface">@color/white</color>
