@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
@@ -48,7 +47,7 @@ class ResultCurtainMenuDelegate(
         when (id) {
             R.id.menu_copy_path -> {
                 interactor.copyToClipboard(items.first() as FinderResult)
-                viewModel.alerts.value = resources.getString(R.string.copied)
+                viewModel.sendAlert(resources.getString(R.string.copied))
             }
             R.id.menu_remove -> interactor.deleteItems(items, viewModel.task.value.uuid)
         }

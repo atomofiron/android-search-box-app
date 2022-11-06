@@ -2,8 +2,6 @@ package app.atomofiron.searchboxapp.screens.viewer.presenter
 
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
-import app.atomofiron.common.util.flow.emitNow
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
@@ -44,7 +42,7 @@ class SearchAdapterPresenterDelegate(
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emitNow(value)
+    override fun onCharacterClick(value: String) = viewModel.sendInsertInQuery(value)
 
     override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
 

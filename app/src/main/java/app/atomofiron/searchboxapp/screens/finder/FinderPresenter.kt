@@ -2,8 +2,6 @@ package app.atomofiron.searchboxapp.screens.finder
 
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.emitNow
-import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -52,10 +50,8 @@ class FinderPresenter(
             viewModel.updateUniqueItem(FinderStateItem.SpecialCharactersItem(chs))
         }
         scope.launch {
-            viewModel.apply {
-                preferenceChannel.apply {
-                    reloadHistory.collect(historyImportedEvent::emit)
-                }
+            viewModel.reloadHistory.collect {
+                preferenceChannel.notifyHistoryImported()
             }
         }
 
@@ -88,5 +84,5 @@ class FinderPresenter(
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onHistoryItemClick(node: String) = viewModel.replaceQuery.emitNow(node)
+    fun onHistoryItemClick(node: String) = viewModel.replaceQuery(node)
 }

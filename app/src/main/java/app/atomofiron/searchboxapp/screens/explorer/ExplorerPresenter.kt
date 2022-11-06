@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.screens.explorer
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -90,6 +89,6 @@ class ExplorerPresenter(
 
     fun onVolumeUp(isCurrentDirVisible: Boolean) = when {
         isCurrentDirVisible -> explorerInteractor.openParent()
-        else -> viewModel.scrollToCurrentDir.invoke()
+        else -> viewModel.scrollToCurrentDir()
     }
 }

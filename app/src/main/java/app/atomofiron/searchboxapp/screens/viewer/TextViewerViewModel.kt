@@ -3,8 +3,8 @@ package app.atomofiron.searchboxapp.screens.viewer
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.dataFlow
-import app.atomofiron.common.util.flow.value
+import app.atomofiron.common.util.flow.ChannelFlow
+import app.atomofiron.common.util.flow.set
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.Node
@@ -17,6 +17,7 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModel
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModelDelegate
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragment, TextViewerPresenter>(),
@@ -44,16 +45,16 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         .dependencies(DaggerInjector.appComponent)
         .build()
 
-    val insertInQuery = dataFlow<String>(single = true)
+    val insertInQuery = ChannelFlow<String>()
 
-    val textLines = dataFlow<List<TextLine>>()
+    val textLines = MutableStateFlow<List<TextLine>>(listOf())
     /** line index -> line matches */
-    val matchesMap = dataFlow<Map<Int, List<TextLineMatch>>>()
+    val matchesMap = MutableStateFlow<Map<Int, List<TextLineMatch>>>(hashMapOf())
     /** match counter -> matches quantity */
-    val matchesCounter = dataFlow<Long?>(null)
+    val matchesCounter = MutableStateFlow<Long?>(null)
     /** line index -> line match index */
-    val matchesCursor = dataFlow<Long?>(null)
-    val loading = dataFlow(value = true)
+    val matchesCursor = MutableStateFlow<Long?>(null)
+    val loading = MutableStateFlow(true)
     lateinit var composition: ExplorerItemComposition
     lateinit var item: Node
 
@@ -88,17 +89,13 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
                         val lineIndexMatches = matches[++matchesIndex]
                         matchesCursor.value = lineIndexMatches.lineIndex.toLong().shl(32)
                     }
-                    increment -> {
-                        matchesCursor.value = lineIndex.toLong().shl(32) + matchIndex.inc().toLong()
-                    }
-                    !increment && matchIndex == 0 -> {
+                    increment -> matchesCursor.value = lineIndex.toLong().shl(32) + matchIndex.inc().toLong()
+                    matchIndex == 0 -> {
                         val lineIndexMatches = matches[--matchesIndex]
                         matchIndex = lineIndexMatches.lineMatches.size.dec()
                         matchesCursor.value = lineIndexMatches.lineIndex.toLong().shl(32) + matchIndex.toLong()
                     }
-                    !increment -> {
-                        matchesCursor.value = lineIndex.toLong().shl(32) + matchIndex.dec().toLong()
-                    }
+                    else -> matchesCursor.value = lineIndex.toLong().shl(32) + matchIndex.dec().toLong()
                 }
             }
         }
@@ -117,5 +114,9 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
         progressItems.clear()
         progressItems.addAll(items)
         updateState(isLocal = true)
+    }
+
+    fun sendInsertInQuery(value: String) {
+        insertInQuery[viewModelScope] = value
     }
 }

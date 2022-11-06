@@ -3,47 +3,32 @@ package app.atomofiron.common.util.flow
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.coroutineScope
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import java.lang.NullPointerException
 
-fun <T> dataFlow(single: Boolean = false): MutableSharedFlow<T> {
-    val replayLimit = if (single) 0 else 1
-    return MutableSharedFlow(replayLimit, extraBufferCapacity = Int.MAX_VALUE)
+fun <T> MutableStateFlow<T>.emitLast() {
+    value = value
 }
 
-fun <T> dataFlow(value: T, single: Boolean = false): MutableSharedFlow<T> {
-    val flow = dataFlow<T>(single)
-    flow.value = value
-    return flow
-}
-
-val <T> SharedFlow<T>.isInitialized: Boolean get() = replayCache.isNotEmpty()
-
-val <T> SharedFlow<T>.value: T get() = replayCache.last()
-
-var <T> MutableSharedFlow<T>.value: T
-    get() = replayCache.last()
-    set(value) {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        GlobalScope.launch(start = CoroutineStart.UNDISPATCHED) {
-            emit(value)
-        }
-    }
-
-fun <T> MutableSharedFlow<T>.emitLast() = when {
-    isInitialized -> value = value
-    else -> throw NullPointerException("The flow doesn't contains any data to emit.")
-}
-
-fun <T> MutableSharedFlow<T>.emitNow(value: T) {
+fun <T> MutableStateFlow<T>.set(value: T) {
     this.value = value
 }
 
-operator fun MutableSharedFlow<Unit>.invoke() = emitNow(Unit)
+operator fun MutableStateFlow<Unit>.invoke() = set(Unit)
 
-fun <T> Flow<T>.collect(scope: CoroutineScope, collector: FlowCollector<T>) {
+fun <T> CoroutineScope.send(channel: Channel<T>, value: T) {
+    launch {
+        channel.send(value)
+    }
+}
+
+operator fun Channel<Unit>.invoke(scope: CoroutineScope) {
+    this[scope] = Unit
+}
+
+operator fun <T> Channel<T>.set(scope: CoroutineScope, value: T) {
     scope.launch {
-        collect(collector)
+        send(value)
     }
 }
 
@@ -57,6 +42,15 @@ fun <T> ChannelFlow<T>.collect(scope: CoroutineScope, action: suspend (T) -> Uni
     }
 }
 
+fun <T> Flow<T>.collect(
+    scope: CoroutineScope,
+    collector: FlowCollector<T>,
+) {
+    scope.launch {
+        collect(collector)
+    }
+}
+
 fun <T> Fragment.viewCollect(
     flow: Flow<T>,
     immediate: Boolean = true,
@@ -67,7 +61,9 @@ fun <T> Fragment.viewCollect(
         else -> Dispatchers.Main
     }
     viewLifecycleOwner.lifecycle.coroutineScope.launch(context) {
-        flow.collect(collector)
+        flow.collect {
+            collector.emit(it)
+        }
     }
 }
 

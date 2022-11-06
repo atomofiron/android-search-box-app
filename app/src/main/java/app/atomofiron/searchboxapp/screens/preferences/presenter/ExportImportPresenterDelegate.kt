@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.screens.preferences.presenter
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
@@ -48,14 +47,14 @@ class ExportImportPresenterDelegate(
         val output = preferenceService.importHistory()
         showOutput(output, R.string.successful)
         if (output.success) {
-            preferenceChannel.historyImportedEvent.invoke()
+            preferenceChannel.onHistoryImported.invoke(viewModel.viewModelScope)
         }
     }
 
     private fun showOutput(output: Shell.Output, successMessage: Int) {
         when {
-            output.success -> viewModel.alertOutputSuccess.value = successMessage
-            else -> viewModel.alertOutputError.value = output
+            output.success -> viewModel.sendAlertOutputSuccess(successMessage)
+            else -> viewModel.sendAlertOutputError(output)
         }
     }
 }

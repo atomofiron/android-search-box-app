@@ -1,3 +1,3 @@
 package app.atomofiron.searchboxapp.model.textviewer
 
-class TextLine(val text: String)
+data class TextLine(val text: String)

@@ -8,18 +8,16 @@ import androidx.core.view.WindowInsetsControllerCompat
 import app.atomofiron.common.util.property.MutableStrongProperty
 import app.atomofiron.common.util.property.MutableWeakProperty
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
-class AppStore(
+class AppStore constructor(
     val context: Context,
+    val scope: CoroutineScope,
     resources: Resources,
 ) {
     val activityProperty = MutableWeakProperty<AppCompatActivity>(null)
     val windowProperty = MutableWeakProperty<Window>(null)
     val insetsControllerProperty = MutableStrongProperty<WindowInsetsControllerCompat?>()
     val resourcesProperty = MutableStrongProperty(resources)
-
-    val scope = CoroutineScope(Dispatchers.Default)
 
     fun onActivityCreate(activity: AppCompatActivity) {
         activityProperty.value = activity

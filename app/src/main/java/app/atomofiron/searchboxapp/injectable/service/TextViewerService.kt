@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.injectable.service
 
 import app.atomofiron.common.util.flow.emitLast
-import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
@@ -58,8 +57,8 @@ class TextViewerService(
 
     fun removeTask(task: MutableFinderTask) {
         if (task == currentTask) {
-            textViewerChannel.lineIndexMatches.value = ArrayList()
-            textViewerChannel.lineIndexMatchesMap.value = HashMap()
+            textViewerChannel.lineIndexMatches.value = listOf()
+            textViewerChannel.lineIndexMatchesMap.value = hashMapOf()
             textViewerChannel.matchesCount.value = null
         }
         tasks.remove(task)
@@ -70,12 +69,12 @@ class TextViewerService(
         this.item = item
         path = item.path
         primaryParams = params
-        when {
-            params != null -> {
+        when (params) {
+            null -> loadFile(params)
+            else -> {
                 val task = addTask(isPrimary = true, params = params)
                 loadFile(task)
             }
-            else -> loadFile(params)
         }
     }
 

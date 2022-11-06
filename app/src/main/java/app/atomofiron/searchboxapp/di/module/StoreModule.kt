@@ -6,6 +6,7 @@ import app.atomofiron.searchboxapp.injectable.store.*
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -13,7 +14,7 @@ open class StoreModule {
 
     @Provides
     @Singleton
-    open fun provideFinderStore(): FinderStore = FinderStore()
+    open fun provideFinderStore(scope: CoroutineScope): FinderStore = FinderStore(scope)
 
     @Provides
     @Singleton
@@ -33,5 +34,7 @@ open class StoreModule {
 
     @Provides
     @Singleton
-    open fun provideAppStore(context: Context): AppStore = AppStore(context, context.resources)
+    open fun provideAppStore(context: Context, scope: CoroutineScope): AppStore {
+        return AppStore(context, scope, context.resources)
+    }
 }

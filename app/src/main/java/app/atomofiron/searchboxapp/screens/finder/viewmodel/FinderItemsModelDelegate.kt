@@ -1,17 +1,16 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
-import app.atomofiron.common.util.flow.dataFlow
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.reflect.KClass
 
 class FinderItemsModelDelegate : FinderItemsModel {
-    override val uniqueItems = ArrayList<FinderStateItem>()
-    override val progressItems = ArrayList<FinderStateItem.ProgressItem>()
-    override val targetItems = ArrayList<FinderStateItem.TargetItem>()
+    override val uniqueItems = mutableListOf<FinderStateItem>()
+    override val progressItems = mutableListOf<FinderStateItem.ProgressItem>()
+    override val targetItems = mutableListOf<FinderStateItem.TargetItem>()
 
-    override val searchItems = dataFlow<List<FinderStateItem>>()
+    override val searchItems = MutableStateFlow<List<FinderStateItem>>(listOf())
 
     override fun updateState(isLocal: Boolean) {
         val items = ArrayList<FinderStateItem>()

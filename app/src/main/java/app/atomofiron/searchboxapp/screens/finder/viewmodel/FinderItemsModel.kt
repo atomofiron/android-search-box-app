@@ -1,7 +1,7 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.reflect.KClass
 
 interface FinderItemsModel {
@@ -16,7 +16,7 @@ interface FinderItemsModel {
     val progressItems: MutableList<FinderStateItem.ProgressItem>
     val targetItems: MutableList<FinderStateItem.TargetItem>
 
-    val searchItems: MutableSharedFlow<List<FinderStateItem>>
+    val searchItems: MutableStateFlow<List<FinderStateItem>>
 
     fun updateState(isLocal: Boolean = false)
     fun updateSearchQuery(value: String)

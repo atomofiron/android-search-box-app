@@ -4,8 +4,6 @@ import android.Manifest
 import android.os.Build.VERSION.SDK_INT
 import android.os.Environment
 import app.atomofiron.common.util.Android
-import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -50,7 +48,7 @@ class ExplorerItemActionListenerDelegate(
                         openItem(item)
                     }
                     .denied { _, _ ->
-                        viewModel.permissionRequiredWarning.invoke()
+                        viewModel.showPermissionRequiredWarning()
                     }
             }
             Environment.isExternalStorageManager() -> openItem(item)

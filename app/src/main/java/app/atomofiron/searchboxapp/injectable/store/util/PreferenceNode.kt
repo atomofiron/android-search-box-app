@@ -1,11 +1,10 @@
 package app.atomofiron.searchboxapp.injectable.store.util
 
 import android.content.SharedPreferences
-import app.atomofiron.common.util.flow.emitNow
-import app.atomofiron.common.util.flow.dataFlow
-import app.atomofiron.common.util.flow.value
+import app.atomofiron.common.util.flow.set
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class PreferenceNode<E, V> private constructor(
@@ -62,7 +61,7 @@ class PreferenceNode<E, V> private constructor(
     private val toValue: ((E) -> V) = getValue ?: { it as V }
     private val fromValue: ((V) -> E) = fromValue ?: { it as E }
 
-    private val flow = dataFlow(pullEntity())
+    private val flow = MutableStateFlow(pullEntity())
 
     val value: V get() = toValue(flow.value)
     val entity: E get() = flow.value
@@ -101,9 +100,9 @@ class PreferenceNode<E, V> private constructor(
         flow.value = fromValue(value)
     }
 
-    fun notify(value: E) = flow.emitNow(value)
+    fun notify(value: E) = flow.set(value)
 
-    fun notifyByOriginal(value: V) = flow.emitNow(fromValue(value))
+    fun notifyByOriginal(value: V) = flow.set(fromValue(value))
 
     fun collect(scope: CoroutineScope, collector: FlowCollector<E>) {
         scope.launch {

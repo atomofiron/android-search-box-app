@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.result.presenter
 
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node

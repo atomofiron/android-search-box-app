@@ -3,9 +3,7 @@ package app.atomofiron.searchboxapp.screens.result
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.dataFlow
-import app.atomofiron.common.util.flow.value
+import app.atomofiron.common.util.flow.*
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -16,8 +14,8 @@ import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
-import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPresenter>() {
@@ -26,12 +24,12 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPre
     val oneFileOptions = listOf(R.id.menu_copy_path, R.id.menu_remove)
     val manyFilesOptions = listOf(R.id.menu_remove)
 
-    val task = dataFlow<FinderTask>()
-    val composition = dataFlow<ExplorerItemComposition>()
-    val enableOptions = dataFlow(value = false)
-    val showOptions = dataFlow<Pair<ExplorerItemOptions, CurtainApi.Controller>>(single = true)
-    val notifyTaskHasChanged = dataFlow(Unit, single = true)
-    val alerts = dataFlow<String>(single = true)
+    val task = DeferredStateFlow<FinderTask>()
+    val composition = DeferredStateFlow<ExplorerItemComposition>()
+    val enableOptions = MutableStateFlow(false)
+    val showOptions = ChannelFlow<Pair<ExplorerItemOptions, CurtainApi.Controller>>()
+    val notifyTaskHasChanged = ChannelFlow<Unit>()
+    val alerts = ChannelFlow<String>()
 
     @Inject
     override lateinit var presenter: ResultPresenter
@@ -54,7 +52,7 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPre
 
     fun updateState(update: FinderTaskChange? = null) {
         when (update) {
-            null -> notifyTaskHasChanged.invoke()
+            null -> notifyTaskHasChanged(viewModelScope)
             is FinderTaskChange.Update -> {
                 val task = task.value
                 val newTask = update.tasks.find { it.id == task.id }
@@ -66,5 +64,9 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultPre
             is FinderTaskChange.Add -> Unit
             is FinderTaskChange.Drop -> Unit
         }
+    }
+
+    fun sendAlert(value: String) {
+        alerts[viewModelScope] = value
     }
 }

@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -196,7 +195,7 @@ class ExplorerService(
                     dropClosedLevels()
                     updateDirectoryTypes()
                     val items = renderNodes()
-                    explorerStore.items.value = items
+                    explorerStore.items.set(items)
                     updateCurrentDir()
                     items.dropJobs()
                 }

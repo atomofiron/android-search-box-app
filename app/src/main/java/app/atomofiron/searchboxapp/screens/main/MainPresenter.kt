@@ -1,8 +1,6 @@
 package app.atomofiron.searchboxapp.screens.main
 
 import androidx.lifecycle.viewModelScope
-import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -26,11 +24,11 @@ class MainPresenter(
 
     init {
         preferenceStore.appTheme.collect(scope) { theme ->
-            viewModel.setTheme.value = theme
+            viewModel.sendTheme(theme)
         }
         preferenceStore.deepBlack.collect(scope) { deepBlack ->
             val appTheme = preferenceStore.appTheme.entity
-            viewModel.setTheme.value = appTheme.copy(deepBlack)
+            viewModel.sendTheme(appTheme.copy(deepBlack))
         }
         preferenceStore.appOrientation.collect(scope) {
             viewModel.setOrientation.value = it
@@ -46,7 +44,7 @@ class MainPresenter(
 
     fun onEscClick() = when {
         router.onBack() -> Unit
-        else -> viewModel.showExitSnackbar.invoke()
+        else -> viewModel.showExitSnackbar()
     }
 
     fun onExitClick() = router.closeApp()
@@ -54,7 +52,7 @@ class MainPresenter(
     fun onBackButtonClick() = when {
         router.onBack() -> Unit
         isExitSnackbarShown -> router.closeApp()
-        else -> viewModel.showExitSnackbar.invoke()
+        else -> viewModel.showExitSnackbar()
     }
 
     fun applyTheme(isDarkTheme: Boolean) {

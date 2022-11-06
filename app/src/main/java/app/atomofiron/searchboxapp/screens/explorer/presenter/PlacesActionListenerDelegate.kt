@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace

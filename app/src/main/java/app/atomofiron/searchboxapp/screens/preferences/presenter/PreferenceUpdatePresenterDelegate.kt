@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter
 
 import android.content.Context
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
@@ -64,10 +63,10 @@ class PreferenceUpdatePresenterDelegate(
                 val output = Shell.checkSu()
                 when {
                     output.success -> Unit
-                    output.error.isNotBlank() -> viewModel.alert.value = output.error
+                    output.error.isNotBlank() -> viewModel.showAlert(output.error)
                     else -> {
                         val message = context.getString(R.string.not_allowed)
-                        viewModel.alert.value = message
+                        viewModel.showAlert(message)
                     }
                 }
                 output.success

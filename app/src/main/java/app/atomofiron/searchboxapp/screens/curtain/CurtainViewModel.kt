@@ -2,13 +2,14 @@ package app.atomofiron.searchboxapp.screens.curtain
 
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.emitNow
-import app.atomofiron.common.util.flow.dataFlow
+import app.atomofiron.common.util.flow.ChannelFlow
+import app.atomofiron.common.util.flow.DeferredStateFlow
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainPresenterParams
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, CurtainPresenter>() {
@@ -17,9 +18,9 @@ class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, Curtai
 
     var initialLayoutId = 0
         private set
-    val adapter = dataFlow<CurtainApi.Adapter<*>>()
-    val action = dataFlow<CurtainAction>(single = true)
-    val cancelable = dataFlow(value = true)
+    val adapter = DeferredStateFlow<CurtainApi.Adapter<*>>()
+    val action = ChannelFlow<CurtainAction>()
+    val cancelable = MutableStateFlow(true)
 
     private lateinit var params: CurtainPresenterParams
 
@@ -40,5 +41,7 @@ class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, Curtai
         .dependencies(DaggerInjector.appComponent)
         .build()
 
-    fun setCurtainAdapter(factory: CurtainApi.Adapter<*>) = adapter.emitNow(factory)
+    fun setCurtainAdapter(factory: CurtainApi.Adapter<*>) {
+        adapter.value = factory
+    }
 }

@@ -14,7 +14,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
@@ -120,11 +119,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onCollect() = viewModel.apply {
-        setTheme.collect(lifecycleScope, ::setTheme)
-        setOrientation.collect(lifecycleScope, ::setOrientation)
-        setJoystick.collect(lifecycleScope) {
-            binding.joystick.setComposition(it)
+    private fun onCollect() {
+        viewModel.apply {
+            setTheme.collect(lifecycleScope, ::setTheme)
+            setOrientation.collect(lifecycleScope, ::setOrientation)
+            setJoystick.collect(lifecycleScope, binding.joystick::setComposition)
         }
     }
 

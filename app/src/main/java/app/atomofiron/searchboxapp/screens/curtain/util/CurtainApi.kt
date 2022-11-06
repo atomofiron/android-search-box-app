@@ -3,6 +3,8 @@ package app.atomofiron.searchboxapp.screens.curtain.util
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import app.atomofiron.common.util.flow.Unique
+import app.atomofiron.common.util.flow.Equality
 import com.google.android.material.snackbar.Snackbar
 import java.lang.ref.WeakReference
 import java.util.*
@@ -27,7 +29,7 @@ object CurtainApi {
         fun getSnackbar(container: ViewGroup): Snackbar
     }
 
-    abstract class Adapter<H : ViewHolder> {
+    abstract class Adapter<H : ViewHolder> : Equality by Unique(Unit) {
         companion object {
             private val unused = Any()
         }

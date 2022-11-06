@@ -14,7 +14,6 @@ import com.google.android.material.color.MaterialColors
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.arch.TranslucentFragment
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
@@ -131,9 +130,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
     private fun onViewCollect() {
         viewCollect(viewModel.adapter, collector = ::onAdapterCollect)
-        viewCollect(viewModel.cancelable) { cancelable ->
-            behavior.isHideable = cancelable
-        }
+        viewCollect(viewModel.cancelable, collector = behavior::setHideable)
         viewCollect(viewModel.action, collector = ::onActionCollect)
     }
 

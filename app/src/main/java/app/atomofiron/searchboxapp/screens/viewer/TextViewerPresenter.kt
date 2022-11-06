@@ -2,7 +2,6 @@ package app.atomofiron.searchboxapp.screens.viewer
 
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.value
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor

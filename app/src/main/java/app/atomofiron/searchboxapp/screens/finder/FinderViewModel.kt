@@ -1,8 +1,12 @@
 package app.atomofiron.searchboxapp.screens.finder
 
+import android.view.Gravity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.dataFlow
+import app.atomofiron.common.util.flow.ChannelFlow
+import app.atomofiron.common.util.flow.invoke
+import app.atomofiron.common.util.flow.set
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.model.explorer.Node
@@ -10,6 +14,7 @@ import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModel
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModelDelegate
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPresenter>(), FinderItemsModel by FinderItemsModelDelegate() {
@@ -17,12 +22,12 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPre
         private set
     val targets = ArrayList<Node>()
 
-    val historyDrawerGravity = dataFlow<Int>()
-    val reloadHistory = dataFlow(Unit, single = true)
-    val insertInQuery = dataFlow<String>(single = true)
-    val replaceQuery = dataFlow<String>(single = true)
-    val snackbar = dataFlow<String>(single = true)
-    val history = dataFlow<String>(single = true)
+    val historyDrawerGravity = MutableStateFlow(Gravity.START)
+    val reloadHistory = ChannelFlow<Unit>()
+    val insertInQuery = ChannelFlow<String>()
+    val replaceQuery = ChannelFlow<String>()
+    val snackbar = ChannelFlow<String>()
+    val history = ChannelFlow<String>()
 
     @Inject
     override lateinit var presenter: FinderPresenter
@@ -94,5 +99,23 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPre
             }
         }
         updateState()
+    }
+
+    fun reloadHistory() = reloadHistory.invoke(viewModelScope)
+
+    fun insertInQuery(value: String) {
+        insertInQuery[viewModelScope] = value
+    }
+
+    fun replaceQuery(value: String) {
+        replaceQuery[viewModelScope] = value
+    }
+
+    fun showSnackbar(value: String) {
+        snackbar[viewModelScope] = value
+    }
+
+    fun addToHistory(value: String) {
+        history[viewModelScope] = value
     }
 }
