@@ -2,8 +2,7 @@ package app.atomofiron.searchboxapp.utils
 
 import android.content.Context
 import app.atomofiron.searchboxapp.model.explorer.*
-import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
-import app.atomofiron.searchboxapp.poop
+import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 
 object Explorer {
     const val ROOT_PARENT_PATH = "root_parent_path"
@@ -53,7 +52,7 @@ object Explorer {
 
     fun create(parent: Node, name: String, isDirectory: Boolean): Node {
         val content = when {
-            isDirectory -> NodeContent.Directory(DirectoryType.Ordinary)
+            isDirectory -> NodeContent.Directory(Type.Ordinary)
             else -> NodeContent.File.Other
         }
         return Node(
@@ -67,7 +66,6 @@ object Explorer {
 
     fun create(parent: Node, name: String, directory: Boolean, useSu: Boolean): Node {
         var targetPath = parent.path + name
-        poop("create $directory ${parent.path} + $name")
         if (directory) {
             targetPath = completeDirPath(targetPath)
         }
@@ -111,7 +109,7 @@ object Explorer {
     private fun parse(parentPath: String, line: String, root: Int): Node {
         val properties = parse(line)
         val content = when (properties.access[0]) {
-            DIR_CHAR -> NodeContent.Directory(DirectoryType.Ordinary)
+            DIR_CHAR -> NodeContent.Directory(Type.Ordinary)
             LINK_CHAR -> NodeContent.Link
             else -> NodeContent.File.Other
         }
@@ -140,16 +138,15 @@ object Explorer {
         }
     }*/
 
-    fun Context.getDirectoryType(path: String): DirectoryType {
-        val storage = Tool.getExternalStorageDirectory(this) ?: Const.ROOT
-        return when (path) {
-            "${storage}Android/" -> DirectoryType.Android
-            "${storage}DCIM/" -> DirectoryType.Camera
-            "${storage}Download/" -> DirectoryType.Download
-            "${storage}Movies/" -> DirectoryType.Movies
-            "${storage}Music/" -> DirectoryType.Music
-            "${storage}Pictures/" -> DirectoryType.Pictures
-            else -> DirectoryType.Ordinary
+    fun getDirectoryType(name: String): Type {
+        return when (name) {
+            "Android" -> Type.Android
+            "DCIM" -> Type.Camera
+            "Download" -> Type.Download
+            "Movies" -> Type.Movies
+            "Music" -> Type.Music
+            "Pictures" -> Type.Pictures
+            else -> Type.Ordinary
         }
     }
 
@@ -225,7 +222,7 @@ object Explorer {
         items.addAll(files)
         val directoryType = when (content) {
             is NodeContent.Directory -> content.type
-            else -> DirectoryType.Ordinary
+            else -> Type.Ordinary
         }
         return copy(
             children = NodeChildren(items, isOpened = children?.isOpened == true),

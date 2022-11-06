@@ -14,6 +14,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.model.explorer.*
+import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
@@ -176,27 +177,27 @@ class ExplorerItemBinderImpl(
             is NodeContent.Link,
             is NodeContent.File -> R.drawable.ic_file_circle
             is NodeContent.Directory -> when (content.type) {
-                DirectoryType.Android -> when {
+                Type.Android -> when {
                     isEmpty -> R.drawable.ic_explorer_folder_android_empty
                     else -> R.drawable.ic_explorer_folder_android
                 }
-                DirectoryType.Camera -> when {
+                Type.Camera -> when {
                     isEmpty -> R.drawable.ic_explorer_folder_camera_empty
                     else -> R.drawable.ic_explorer_folder_camera
                 }
-                DirectoryType.Download -> when {
+                Type.Download -> when {
                     isEmpty -> R.drawable.ic_explorer_folder_download_empty
                     else -> R.drawable.ic_explorer_folder_download
                 }
-                DirectoryType.Movies -> when {
+                Type.Movies -> when {
                     isEmpty -> R.drawable.ic_explorer_folder_movies_empty
                     else -> R.drawable.ic_explorer_folder_movies
                 }
-                DirectoryType.Music -> when {
+                Type.Music -> when {
                     isEmpty -> R.drawable.ic_explorer_folder_music_empty
                     else -> R.drawable.ic_explorer_folder_music
                 }
-                DirectoryType.Pictures -> when {
+                Type.Pictures -> when {
                     isEmpty -> R.drawable.ic_explorer_folder_pictures_empty
                     else -> R.drawable.ic_explorer_folder_pictures
                 }

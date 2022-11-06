@@ -12,6 +12,7 @@ import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.*
+import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Explorer
@@ -20,6 +21,7 @@ import app.atomofiron.searchboxapp.utils.Explorer.close
 import app.atomofiron.searchboxapp.utils.Explorer.open
 import app.atomofiron.searchboxapp.utils.Explorer.rename
 import app.atomofiron.searchboxapp.utils.Explorer.sortByName
+import app.atomofiron.searchboxapp.utils.Tool
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import java.io.File
@@ -40,6 +42,7 @@ class ExplorerService(
     private val mutexOperations = Mutex()
     private val mutexJobs = Mutex()
 
+    private val defaultStorage = Tool.getExternalStorageDirectory(context)
     private var currentOpenedDir: Node? = null
         set(value) {
             field = value
@@ -191,6 +194,7 @@ class ExplorerService(
                 is ActionResult.Cancel -> Unit
                 is ActionResult.Update -> levels.run {
                     dropClosedLevels()
+                    updateDirectoryTypes()
                     val items = renderNodes()
                     explorerStore.items.value = items
                     updateCurrentDir()
@@ -248,6 +252,21 @@ class ExplorerService(
             }
         }
         return items
+    }
+
+    private fun List<NodeLevel>.updateDirectoryTypes() {
+        defaultStorage ?: return
+        val level = find { it.parentPath == defaultStorage }
+        level ?: return
+        for (i in level.children.indices) {
+            val item = level.children[i]
+            val content = item.content as? NodeContent.Directory
+            content ?: continue
+            if (content.type != Type.Ordinary) continue
+            val type = Explorer.getDirectoryType(item.name)
+            if (type == Type.Ordinary) continue
+            level.children[i] = item.copy(content = content.copy(type = type))
+        }
     }
 
     private fun List<NodeLevel>.updateCurrentDir() {
