@@ -79,7 +79,7 @@ object Explorer {
         }
         val item = Node(path = targetPath, parentPath = parent.path, root = parent.root, content = content)
         return when {
-            output.success -> item.cache(useSu)
+            output.success -> item.cacheDir(useSu)
             else -> item.copy(error = output.error.toNodeError(targetPath))
         }
     }
@@ -93,17 +93,18 @@ object Explorer {
         )
     }
 
-    private fun parse(line: String): NodeProperties {
+    private fun parse(line: String, name: String? = null): NodeProperties {
         val parts = line.split(spaces, 8)
-        val access = parts[0]
-        val owner = parts[2]
-        val group = parts[3]
-        val size = parts[4]
-        val date = parts[5]
-        val time = parts[6]
-        val name = parts[7]
         // todo links parts[7].contains('->')
-        return NodeProperties(access, owner, group, size, date, time, name)
+        return NodeProperties(
+            access = parts[0],
+            owner = parts[2],
+            group = parts[3],
+            size = parts[4],
+            date = parts[5],
+            time = parts[6],
+            name = name ?: parts[7],
+        )
     }
 
     private fun parse(parentPath: String, line: String, root: Int): Node {
@@ -127,17 +128,6 @@ object Explorer {
         return children?.find { it.uniqueId == item.uniqueId } != null
     }
 
-    /*fun Node.update(other: Node): Node = when {
-        other === this -> this
-        else -> {
-            val content = when {
-                other.content === content -> content
-                else -> content.update(other.content)
-            }
-            other.copy(state = state, content = content)
-        }
-    }*/
-
     fun getDirectoryType(name: String): Type {
         return when (name) {
             "Android" -> Type.Android
@@ -150,17 +140,32 @@ object Explorer {
         }
     }
 
-    fun Node.cache(su: Boolean): Node {
+    fun Node.update(su: Boolean): Node {
+        val output = Shell.exec(Shell[Shell.LS_LAHLD].format(path), su)
+        val lines = output.output.split("\n").filter { it.isNotEmpty() }
+        return when {
+            output.success && lines.size == 1 -> parseNode(lines.first()).run {
+                if (isCached) this else cache(su)
+            }
+            output.success -> copy(children = null, error = NodeError.Unknown)
+            else -> copy(error = output.error.toNodeError(path))
+        }
+    }
+
+    private fun Node.cache(su: Boolean): Node {
+        return when {
+            isDirectory -> cacheDir(su)
+            else -> this // caching files
+        }
+    }
+
+    private fun Node.cacheDir(su: Boolean): Node {
         val output = Shell.exec(Shell[Shell.LS_LAHL].format(path), su)
         val lines = output.output.split("\n").filter { it.isNotEmpty() }
-        val isList = lines.size > 1 || output.output.startsWith(TOTAL)
         return when {
-            output.success && isList -> parseDir(lines)
             output.success && lines.isEmpty() -> copy(children = null, error = NodeError.Unknown)
-            output.success -> parseFile(lines.first())
-            output.error == LS_NO_SUCH_FILE.format(path) -> copy(children = null, error = NodeError.NoSuchFile)
-            output.error == LS_PERMISSION_DENIED.format(path) -> copy(children = null, error = NodeError.PermissionDenied)
-            else -> copy(children = null, error = NodeError.Message(output.error.replace(LS_S.format(path), "")))
+            output.success -> parseDir(lines)
+            else -> copy(error = output.error.toNodeError(path))
         }
     }
 
@@ -179,8 +184,8 @@ object Explorer {
         return this
     }
 
-    private fun Node.parseFile(line: String): Node {
-        val properties = parse(line)
+    private fun Node.parseNode(line: String): Node {
+        val properties = parse(line, name)
         val content = when {
             properties.isDirectory() -> when (content) {
                 is NodeContent.Directory -> content

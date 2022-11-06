@@ -16,11 +16,11 @@ import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Explorer
-import app.atomofiron.searchboxapp.utils.Explorer.cache
 import app.atomofiron.searchboxapp.utils.Explorer.close
 import app.atomofiron.searchboxapp.utils.Explorer.open
 import app.atomofiron.searchboxapp.utils.Explorer.rename
 import app.atomofiron.searchboxapp.utils.Explorer.sortByName
+import app.atomofiron.searchboxapp.utils.Explorer.update
 import app.atomofiron.searchboxapp.utils.Tool
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
@@ -74,7 +74,7 @@ class ExplorerService(
     suspend fun trySetRoots(paths: Collection<String>) {
         val roots = paths.parMapMut {
             Explorer.asRoot(it)
-                .cache(useSu)
+                .update(useSu)
                 .sortByName()
         }
         withLevels {
@@ -277,7 +277,7 @@ class ExplorerService(
 
     private suspend fun CoroutineScope.cacheSync(item: Node) {
         if (!isActive) return
-        val cached = item.cache(useSu).sortByName()
+        val cached = item.update(useSu).sortByName()
         withStates {
             when (val state = find { it.uniqueId == item.uniqueId }) {
                 null -> Unit
