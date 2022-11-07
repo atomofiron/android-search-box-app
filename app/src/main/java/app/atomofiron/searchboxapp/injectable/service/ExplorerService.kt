@@ -41,12 +41,7 @@ class ExplorerService(
     private val mutexOperations = Mutex()
     private val mutexJobs = Mutex()
 
-    private val defaultStorage = Tool.getExternalStorageDirectory(context)
-    private var currentOpenedDir: Node? = null
-        set(value) {
-            field = value
-            explorerStore.current.value = value
-        }
+    private val defaultStoragePath = Tool.getExternalStorageDirectory(context)
 
     private val items: List<Node> get() = explorerStore.items.value
     private val levels = mutableListOf<NodeLevel>()
@@ -61,13 +56,11 @@ class ExplorerService(
                 copyToybox(context)
             }
         }
-    }
-
-    fun persistState() {
-        preferences
-            .edit()
-            .putString(Const.PREF_CURRENT_DIR, currentOpenedDir?.path)
-            .apply()
+        scope.launch(Dispatchers.Default) {
+            explorerStore.current.collect {
+                preferenceStore.openedDirPath.pushByOriginal(it?.path)
+            }
+        }
     }
 
     suspend fun trySetRoots(paths: Collection<String>) {
@@ -254,8 +247,8 @@ class ExplorerService(
     }
 
     private fun List<NodeLevel>.updateDirectoryTypes() {
-        defaultStorage ?: return
-        val level = find { it.parentPath == defaultStorage }
+        val defaultStoragePath = defaultStoragePath ?: return
+        val level = find { it.parentPath == defaultStoragePath }
         level ?: return
         for (i in level.children.indices) {
             val item = level.children[i]

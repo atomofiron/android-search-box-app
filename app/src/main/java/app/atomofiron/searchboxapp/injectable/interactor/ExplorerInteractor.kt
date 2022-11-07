@@ -27,7 +27,6 @@ class ExplorerInteractor(
     fun toggleDir(dir: Node) {
         scope.launch(context) {
             service.tryToggle(dir)
-            service.persistState()
         }
     }
 
