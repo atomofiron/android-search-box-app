@@ -6,10 +6,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES
 import android.os.Build.VERSION_CODES.M
-import androidx.annotation.IntDef
-import androidx.core.view.ContentInfoCompat
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.NodeError
@@ -29,6 +26,13 @@ fun BaseRouter.showCurtain(recipient: String, layoutId: Int) {
 fun Int.immutable(): Int = when {
     SDK_INT >= M -> this or PendingIntent.FLAG_IMMUTABLE
     else -> this
+}
+
+inline fun <E> Iterable<E>.findIndexed(predicate: (E) -> Boolean): Pair<Int, E?> {
+    for ((index, item) in this.withIndex()) {
+        if (predicate(item)) return index to item
+    }
+    return -1 to null
 }
 
 fun Resources.getString(error: NodeError): String {

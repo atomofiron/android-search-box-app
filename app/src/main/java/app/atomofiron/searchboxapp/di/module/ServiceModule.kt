@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.di.module
 import android.app.NotificationManager
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.work.WorkManager
 import dagger.Module
@@ -25,10 +24,9 @@ open class ServiceModule {
         context: Context,
         assets: AssetManager,
         appStore: AppStore,
-        preferences: SharedPreferences,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
-    ): ExplorerService = ExplorerService(context, assets, appStore, preferences, explorerStore, preferenceStore)
+    ): ExplorerService = ExplorerService(context, assets, appStore, explorerStore, preferenceStore)
 
     @Provides
     @Singleton

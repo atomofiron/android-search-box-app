@@ -8,17 +8,19 @@ data class Node constructor(
     val path: String,
     val parentPath: String = path.parent(),
     val uniqueId: Int = path.toUniqueId(),
-    val root: Int = uniqueId,
+    val rootId: Int = uniqueId,
     val children: NodeChildren? = null,
 
     val properties: NodeProperties = NodeProperties(name = path.name()),
     val content: NodeContent,
+    val state: NodeState = stateStub,
     val error: NodeError? = null,
-) : INodeProperties by properties {
+) : INodeProperties by properties, INodeState by state {
     companion object {
+        private val stateStub = NodeState(0)
         private fun String.toUniqueId(): Int = hashCode()
     }
-    val isRoot: Boolean = uniqueId == root
+    val isRoot: Boolean = uniqueId == rootId
 
     val isDirectory: Boolean = content is NodeContent.Directory
     val isArchive: Boolean = content is NodeContent.File.Archive
@@ -27,14 +29,13 @@ data class Node constructor(
     val isCached: Boolean get() = children != null
     val isEmpty: Boolean get() = children?.isEmpty() == true
     val isOpened: Boolean get() = children?.isOpened == true
-    // todo checked
-    val isChecked: Boolean = false
 
     fun areContentsTheSame(other: Node): Boolean = when {
         other.uniqueId != uniqueId -> false
         other.path != path -> false
-        other.root != root -> false
+        other.rootId != rootId -> false
         other.properties != properties -> false
+        other.state != state -> false
         other.error != error -> false
         other.isCached != isCached -> false
         other.isEmpty != isEmpty -> false

@@ -9,8 +9,3 @@ class NodeLevel(
     fun getOpenedIndex(): Int = children.indexOfFirst { it.isOpened }
     fun getOpened(): Node? = getOpenedIndex().takeIf { it >= 0 }?.let { children[it] }
 }
-
-sealed class ActionResult {
-    object Cancel : ActionResult()
-    object Update : ActionResult()
-}

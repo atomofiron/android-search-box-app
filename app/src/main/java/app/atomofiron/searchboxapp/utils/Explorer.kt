@@ -56,7 +56,7 @@ object Explorer {
             else -> NodeContent.File.Other
         }
         return Node(
-            root = parent.root,
+            rootId = parent.rootId,
             path = parent.path + name,
             parentPath = parent.path,
             properties = NodeProperties(name = name),
@@ -77,7 +77,7 @@ object Explorer {
             directory -> NodeContent.Directory()
             else -> NodeContent.File.Other
         }
-        val item = Node(path = targetPath, parentPath = parent.path, root = parent.root, content = content)
+        val item = Node(path = targetPath, parentPath = parent.path, rootId = parent.rootId, content = content)
         return when {
             output.success -> item.cacheDir(useSu)
             else -> item.copy(error = output.error.toNodeError(targetPath))
@@ -116,7 +116,7 @@ object Explorer {
         }
         val asDir = content is NodeContent.Directory
         return Node(
-            root = root,
+            rootId = root,
             path = completePath(parentPath + properties.name, asDir),
             parentPath = parentPath,
             properties = properties,
@@ -185,22 +185,22 @@ object Explorer {
 
     private fun Node.parseNode(line: String): Node {
         val properties = parse(line, name)
-        val content = when {
+        val (children, content) = when {
             properties.isDirectory() -> when (content) {
-                is NodeContent.Directory -> content
-                else -> NodeContent.Directory()
+                is NodeContent.Directory -> children to content
+                else -> null to NodeContent.Directory()
             }
             properties.isLink() -> when (content) {
-                is NodeContent.Link -> content
-                else -> NodeContent.File.Other // todo file types
+                is NodeContent.Link -> children to content
+                else -> null to NodeContent.File.Other // todo file types
             }
             properties.isFile() -> when (content) {
-                is NodeContent.File -> content
-                else -> NodeContent.Link
+                is NodeContent.File -> children to content
+                else -> null to NodeContent.Link
             }
-            else -> NodeContent.Unknown
+            else -> null to NodeContent.Unknown
         }
-        return copy(children = null, properties = properties, content = content)
+        return copy(children = children, properties = properties, content = content)
     }
 
     private fun Node.parseDir(lines: List<String>): Node {
@@ -213,7 +213,7 @@ object Explorer {
                 val properties = parse(line)
                 val child = children?.find { it.name == properties.name }
                 val item = when {
-                    child == null -> parse(path, line, root)
+                    child == null -> parse(path, line, rootId)
                     child.properties == properties -> child
                     else -> child.copy(properties = properties)
                 }

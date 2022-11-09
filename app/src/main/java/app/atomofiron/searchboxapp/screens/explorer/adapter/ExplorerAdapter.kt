@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.screens.explorer.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
@@ -57,7 +56,7 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
             nextPosition >= items.size -> Divider.NO // не делаем отступ у последнего элемента
             item.isRoot && items[nextPosition].isRoot -> Divider.NO
             nextPosition == items.size && item.parentPath == currentDir?.path -> Divider.SMALL
-            item.root != items[nextPosition].root -> Divider.SMALL
+            item.rootId != items[nextPosition].rootId -> Divider.SMALL
             nextPosition != items.size && item.parentPath != items[nextPosition].parentPath -> Divider.SMALL
             else -> Divider.NO
         }
@@ -74,14 +73,14 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         when {
             item.path == currentDir.path -> Separation.NO
             item.parentPath == currentDir.path -> Separation.NO
-            item.root != currentDir.root -> Separation.NO
+            item.rootId != currentDir.rootId -> Separation.NO
             item.path == currentDir.path -> Separation.NO
             item.isOpened && item.children.isNullOrEmpty() -> Separation.NO
             item.isOpened -> Separation.TOP
             nextPosition == items.size -> Separation.NO // не рисуем под последним элементом
             item.isRoot && items[nextPosition].isRoot -> Separation.NO
             currentDir.isRoot -> Separation.NO
-            item.root != items[nextPosition].root -> Separation.BOTTOM
+            item.rootId != items[nextPosition].rootId -> Separation.BOTTOM
             item.parentPath != items[nextPosition].parentPath -> Separation.BOTTOM
             else -> Separation.NO
         }

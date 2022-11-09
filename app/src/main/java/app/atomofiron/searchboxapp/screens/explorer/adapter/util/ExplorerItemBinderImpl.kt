@@ -8,7 +8,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isInvisible
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
@@ -119,14 +119,9 @@ class ExplorerItemBinderImpl(
         tvError.text = error
         tvError.isVisible = error != null
 
-        // todo cbBox.isChecked = item.isChecked
-        // todo cbBox.isGone = item.isDeleting
-        when {
-            //item.isDeleting -> cbBox.isGone = true
-            item.isRoot && !item.isOpened -> cbBox.isInvisible = true
-            else -> cbBox.isVisible = true
-        }
-        //psProgress.isVisible = item.isDeleting
+        cbBox.isChecked = item.isChecked
+        cbBox.isGone = item.isDeleting
+        psProgress.isVisible = item.isDeleting
     }
 
     override fun setOnItemActionListener(listener: ExplorerItemActionListener?) {
