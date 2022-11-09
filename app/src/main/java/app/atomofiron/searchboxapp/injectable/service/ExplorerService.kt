@@ -72,13 +72,19 @@ class ExplorerService(
     }
 
     suspend fun tryToggle(it: Node) {
-        val item = findNode(it.uniqueId)
-        item ?: return
         withLevels {
+            var item = findNode(it.uniqueId) ?: return
+            if (item.isOpened) {
+                val nextOpened = item.children?.find { it.isOpened }
+                if (nextOpened != null) {
+                    item = nextOpened
+                }
+            }
             val (levelIndex, level) = findLevel(item.parentPath)
-            if (levelIndex < 0 || level == null) return@withLevels Result.failure()
+            if (levelIndex < 0 || level == null) return
+
             val targetIndex = level.children.indexOfFirst { it.uniqueId == item.uniqueId }
-            if (targetIndex < 0) return@withLevels Result.failure()
+            if (targetIndex < 0) return
 
             val openedIndex = level.getOpenedIndex()
             if (openedIndex >= 0 && openedIndex != targetIndex) {
@@ -89,11 +95,12 @@ class ExplorerService(
                 removeAt(lastIndex)
             }
             val target = level.children[targetIndex]
+            val children = item.children
             level.children[targetIndex] = when {
                 target.isOpened -> target.close()
-                item.children == null -> return@withLevels Result.failure()
+                children == null -> return
                 else -> {
-                    add(NodeLevel(target.path, item.children.items))
+                    add(NodeLevel(target.path, children.items))
                     target.open()
                 }
             }
@@ -108,7 +115,7 @@ class ExplorerService(
             val state = updateState(item.uniqueId) {
                 update(item.uniqueId, isCaching = true)
             }
-            if (state?.isCaching != true) return@withStates
+            if (state?.isCaching != true) return
             val job = scope.launch { cacheSync(item) }
             withJobs {
                 add(NodeJob(item.uniqueId, job))
@@ -118,7 +125,7 @@ class ExplorerService(
 
     suspend fun tryOpenParent() {
         withLevels {
-            if (levels.size <= 1) return@withLevels Result.failure()
+            if (levels.size <= 1) return
             removeLast()
             val last = levels.last()
             val index = last.getOpenedIndex()
@@ -134,7 +141,7 @@ class ExplorerService(
         withLevels {
             val (_, level) = findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
-            if (index == null || index < 0) return@withLevels Result.failure()
+            if (index == null || index < 0) return
             level.children[index] = renamed
             Result.success(this)
         }
@@ -145,9 +152,9 @@ class ExplorerService(
         withLevels {
             val (_, level) = findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == dir.uniqueId }
-            if (index == null || index < 0) return@withLevels Result.failure()
+            if (index == null || index < 0) return
             val parent = level.children[index]
-            parent.children ?: return@withLevels Result.failure()
+            parent.children ?: return
             parent.children.items.add(0, item)
             Result.success(this)
         }
@@ -314,7 +321,7 @@ class ExplorerService(
         withLevels {
             val (_, level) = findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
-            if (index == null || index < 0) return@withLevels Result.failure()
+            if (index == null || index < 0) return
             val wasOpened = level.children[index].isOpened
             level.children[index] = when (item.isOpened) {
                 wasOpened -> item
@@ -355,8 +362,6 @@ class ExplorerService(
     private fun List<NodeJob>.findJob(uniqueId: Int): Pair<Int, NodeJob?> = findIndexed { it.uniqueId == uniqueId }
 
     private fun List<NodeState>.findState(uniqueId: Int): Pair<Int, NodeState?> = findIndexed { it.uniqueId == uniqueId }
-
-    fun <T> Result.Companion.failure(): Result<T> = Result.failure(Throwable())
 
     private fun copyToybox(context: Context) {
         val variants = arrayOf(
