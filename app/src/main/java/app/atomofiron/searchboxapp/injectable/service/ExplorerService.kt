@@ -12,7 +12,6 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
-import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.Explorer.close
 import app.atomofiron.searchboxapp.utils.Explorer.open
@@ -76,9 +75,8 @@ class ExplorerService(
         val item = findNode(it.uniqueId)
         item ?: return
         withLevels {
-            val levelIndex = indexOfFirst { it.parentPath == item.parentPath }
-            if (levelIndex < 0) return@withLevels Result.failure()
-            val level = get(levelIndex)
+            val (levelIndex, level) = findLevel(item.parentPath)
+            if (levelIndex < 0 || level == null) return@withLevels Result.failure()
             val targetIndex = level.children.indexOfFirst { it.uniqueId == item.uniqueId }
             if (targetIndex < 0) return@withLevels Result.failure()
 
@@ -134,7 +132,7 @@ class ExplorerService(
         item ?: return
         val renamed = item.rename(name, useSu)
         withLevels {
-            val level = find { it.parentPath == item.parentPath }
+            val (_, level) = findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
             if (index == null || index < 0) return@withLevels Result.failure()
             level.children[index] = renamed
@@ -145,7 +143,7 @@ class ExplorerService(
     suspend fun tryCreate(dir: Node, name: String, directory: Boolean) {
         val item = Explorer.create(dir, name, directory, useSu)
         withLevels {
-            val level = find { it.parentPath == dir.parentPath }
+            val (_, level) = findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == dir.uniqueId }
             if (index == null || index < 0) return@withLevels Result.failure()
             val parent = level.children[index]
@@ -156,13 +154,11 @@ class ExplorerService(
     }
 
     suspend fun tryCheckItem(item: Node, isChecked: Boolean) {
-        poop("tryCheckItem ${item.name} isChecked $isChecked")
         withStates {
             updateState(item.uniqueId) {
                 update(item.uniqueId, isChecked = isChecked)
             }
         }
-        poop("tryCheckItem end")
     }
 
     suspend fun tryDelete(items: List<Node>) {
@@ -173,7 +169,7 @@ class ExplorerService(
             states.block()
             val iter = states.iterator()
             while (iter.hasNext()) {
-                if (iter.next().isEmpty) iter.remove().poop("DROP STATE")
+                if (iter.next().isEmpty) iter.remove()
             }
         }
     }
@@ -192,12 +188,9 @@ class ExplorerService(
                     dropClosedLevels()
                     updateDirectoryTypes()
                     val items = renderNodes()
-                    poop("withLevels ${items.count { it.isChecked }}/${items.size}")
                     explorerStore.items.set(items)
                     updateCurrentDir()
                     items.dropJobs()
-                    poop("withLevels isChecked ${flatMap { it.children }.count { it.isChecked }}")
-
                 }
             }
         }
@@ -252,21 +245,18 @@ class ExplorerService(
                 }
             }
         }
-        poop("renderNodes ${items.count { it.isChecked }}/${items.size}")
         return items
     }
 
     private fun List<NodeState>.updateStateFor(item: Node): Node {
         val state = find { it.uniqueId == item.uniqueId }
-        if (item.isChecked) poop("updateStateFor ${item.name}, state ${state?.isChecked} item ${item.isChecked}")
         state ?: return item
-        val copy = item.copy(state = state)
-        return copy
+        return item.copy(state = state)
     }
 
     private fun List<NodeLevel>.updateDirectoryTypes() {
         val defaultStoragePath = defaultStoragePath ?: return
-        val level = find { it.parentPath == defaultStoragePath }
+        val (_, level) = findLevel(defaultStoragePath)
         level ?: return
         for (i in level.children.indices) {
             val item = level.children[i]
@@ -300,13 +290,11 @@ class ExplorerService(
     ): NodeState? {
         val (index, state) = findState(uniqueId)
         val new = state.block()
-        poop("wtf $index ${state==null}, size $size")
         when {
-            state == null && new != null -> add(new).poop("add")
-            state != null && new == null -> removeAt(index).poop("removeAt")
-            state != null && new != null -> set(index, new).poop("set")
+            state == null && new != null -> add(new)
+            state != null && new == null -> removeAt(index)
+            state != null && new != null -> set(index, new)
         }
-        poop("wtf size $size")
         return new
     }
 
@@ -324,7 +312,7 @@ class ExplorerService(
 
     private suspend fun replaceItem(item: Node) {
         withLevels {
-            val level = find { it.parentPath == item.parentPath }
+            val (_, level) = findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
             if (index == null || index < 0) return@withLevels Result.failure()
             val wasOpened = level.children[index].isOpened
