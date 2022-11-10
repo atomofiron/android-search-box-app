@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.utils
 import android.content.Context
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
+import kotlinx.coroutines.Job
 
 object Explorer {
     const val ROOT_PARENT_PATH = "root_parent_path"
@@ -294,6 +295,15 @@ object Explorer {
             first == LS_NO_SUCH_FILE.format(path) -> NodeError.NoSuchFile
             first == LS_PERMISSION_DENIED.format(path) -> NodeError.PermissionDenied
             else -> NodeError.Message(first.replace(Regex(COMMAND_PATH_PREFIX.format(path)), ""))
+        }
+    }
+
+    fun NodeState?.theSame(cachingJob: Job?, isChecked: Boolean, isDeleting: Boolean): Boolean {
+        return when {
+            this?.cachingJob !== cachingJob -> false
+            (this?.isChecked ?: false) != isChecked -> false
+            (this?.isDeleting ?: false) != isDeleting -> false
+            else -> true
         }
     }
 }

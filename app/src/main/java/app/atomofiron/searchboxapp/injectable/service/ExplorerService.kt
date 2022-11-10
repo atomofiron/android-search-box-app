@@ -3,8 +3,6 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.content.Context
 import android.content.res.AssetManager
 import app.atomofiron.searchboxapp.injectable.store.AppStore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -17,9 +15,9 @@ import app.atomofiron.searchboxapp.utils.Explorer.close
 import app.atomofiron.searchboxapp.utils.Explorer.open
 import app.atomofiron.searchboxapp.utils.Explorer.rename
 import app.atomofiron.searchboxapp.utils.Explorer.sortByName
+import app.atomofiron.searchboxapp.utils.Explorer.theSame
 import app.atomofiron.searchboxapp.utils.Explorer.update
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.LinkedList
@@ -35,15 +33,12 @@ class ExplorerService(
     private val scope = appStore.scope
     private val mutexLevels = Mutex()
     private val mutexOperations = Mutex()
-    private val mutexJobs = Mutex()
 
     private val defaultStoragePath = Tool.getExternalStorageDirectory(context)
+    private val useSu: Boolean get() = preferenceStore.useSu.value
 
     private var levels = listOf<NodeLevel>()
     private val states = LinkedList<NodeState>()
-    private val jobs = LinkedList<NodeJob>()
-
-    private val useSu: Boolean get() = preferenceStore.useSu.value
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -112,14 +107,11 @@ class ExplorerService(
         val item = findNode(it.uniqueId)
         item ?: return
         withStates {
-            val state = updateState(item.uniqueId) {
-                update(item.uniqueId, isCaching = true)
-            }
-            if (state?.isCaching != true) return
             val job = scope.launch { cacheSync(item) }
-            withJobs {
-                add(NodeJob(item.uniqueId, job))
+            val state = updateState(item.uniqueId) {
+                nextState(item.uniqueId, cachingJob = job)
             }
+            if (state?.isCaching != true) job.cancel()
         }
     }
 
@@ -163,7 +155,7 @@ class ExplorerService(
     suspend fun tryCheckItem(item: Node, isChecked: Boolean) {
         withStates {
             updateState(item.uniqueId) {
-                update(item.uniqueId, isChecked = isChecked)
+                nextState(item.uniqueId, isChecked = isChecked)
             }
         }
     }
@@ -181,12 +173,6 @@ class ExplorerService(
         }
     }
 
-    private suspend inline fun withJobs(block: MutableList<NodeJob>.() -> Unit) {
-        mutexJobs.withLock {
-            jobs.block()
-        }
-    }
-
     private suspend inline fun withLevels(block: MutableList<NodeLevel>.() -> Result<List<NodeLevel>>) {
         mutexLevels.withLock {
             levels.toMutableList().block().onSuccess { levels ->
@@ -197,7 +183,7 @@ class ExplorerService(
                     val items = renderNodes()
                     explorerStore.items.set(items)
                     updateCurrentDir()
-                    items.dropJobs()
+                    items.updateStates()
                 }
             }
         }
@@ -221,15 +207,18 @@ class ExplorerService(
         }
     }
 
-    private suspend fun List<Node>.dropJobs() {
-        withJobs {
-            val iter = iterator()
-            while (iter.hasNext()) {
-                val nodeJob = iter.next()
-                val index = this@dropJobs.indexOfFirst { it.uniqueId == nodeJob.uniqueId }
+    private suspend fun List<Node>.updateStates() {
+        withStates {
+            if (this.isEmpty()) return
+            val iterator = this@withStates.listIterator()
+            while (iterator.hasNext()) {
+                val state = iterator.next()
+                if (!state.isCaching && !state.isChecked) continue
+                val index = this@updateStates.indexOfFirst { it.uniqueId == state.uniqueId }
                 if (index < 0) {
-                    nodeJob.job.cancel()
-                    iter.remove()
+                    state.cachingJob?.cancel()
+                    val next = state.nextState(state.uniqueId, cachingJob = null, isChecked = false)
+                    iterator.updateState(state, next)
                 }
             }
         }
@@ -285,13 +274,31 @@ class ExplorerService(
         val cached = item.update(useSu).sortByName()
         withStates {
             updateState(item.uniqueId) {
-                update(item.uniqueId, isCaching = false)
+                nextState(item.uniqueId, cachingJob = null)
             }
         }
         replaceItem(cached)
     }
 
-    private inline fun MutableList<NodeState>.updateState(
+    private val undefinedJob = Job()
+    private fun NodeState?.nextState(
+        uniqueId: Int,
+        isDeleting: Boolean? = null,
+        cachingJob: Job? = undefinedJob,
+        isChecked: Boolean? = null,
+    ): NodeState? {
+        val makeDeleting = isDeleting ?: this?.isDeleting ?: false
+        val withCachingJob = if (cachingJob === undefinedJob) this?.cachingJob else cachingJob
+        val makeChecked = isChecked ?: this?.isChecked ?: false
+        val new = when {
+            withCachingJob == null && !makeChecked && !makeDeleting -> null
+            theSame(withCachingJob, makeChecked, makeDeleting) -> return this
+            else -> NodeState(uniqueId, withCachingJob, makeChecked, makeDeleting)
+        }
+        return new
+    }
+
+    private fun MutableList<NodeState>.updateState(
         uniqueId: Int,
         block: NodeState?.() -> NodeState?,
     ): NodeState? {
@@ -305,15 +312,11 @@ class ExplorerService(
         return new
     }
 
-    private fun NodeState?.update(
-        uniqueId: Int,
-        isDeleting: Boolean = this?.isDeleting ?: false,
-        isCaching: Boolean = (this?.isCaching ?: false) && !isDeleting,
-        isChecked: Boolean = (this?.isChecked ?: false) && !isDeleting,
-    ): NodeState? {
-        return when {
-            !isCaching && !isChecked && !isDeleting -> null
-            else -> NodeState(uniqueId, isCaching, isChecked, isDeleting)
+    private fun MutableListIterator<NodeState>.updateState(current: NodeState?, new: NodeState?) {
+        when {
+            current == null && new != null -> add(new)
+            current != null && new == null -> remove()
+            current != null && new != null -> set(new)
         }
     }
 
