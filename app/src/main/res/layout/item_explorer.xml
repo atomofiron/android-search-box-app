@@ -13,13 +13,13 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_explorer_iv_icon"
         android:layout_width="@dimen/edge_size"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:src="@drawable/ic_explorer_folder"
         android:foregroundGravity="top"
         android:paddingStart="@dimen/common_margin"
         android:paddingTop="@dimen/common_margin_nano"
-        android:paddingBottom="@dimen/common_margin_nano"
+        android:paddingEnd="@dimen/common_margin_half"
         />
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,6 +33,7 @@
             android:id="@+id/item_explorer_tv_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/edge_size"
             android:ellipsize="end"
             android:maxLines="1"
             android:textSize="18sp"
@@ -98,7 +99,7 @@
         android:layout_width="@dimen/edge_size"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:minHeight="@dimen/edge_size"
+        android:minHeight="40dp"
         android:gravity="top"
         />
 </FrameLayout>
