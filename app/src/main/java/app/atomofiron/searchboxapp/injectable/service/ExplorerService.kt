@@ -56,7 +56,6 @@ class ExplorerService(
         withTab {
             levels.clear()
             levels.add(NodeLevel(Explorer.ROOT_PARENT_PATH, roots))
-            Result.success(this)
         }
     }
 
@@ -93,7 +92,6 @@ class ExplorerService(
                     target.open()
                 }
             }
-            Result.success(this)
         }
     }
 
@@ -116,7 +114,6 @@ class ExplorerService(
             val last = levels.last()
             val index = last.getOpenedIndex()
             last.children[index] = last.children[index].close()
-            Result.success(this)
         }
     }
 
@@ -131,7 +128,6 @@ class ExplorerService(
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
             if (index == null || index < 0) return
             level.children[index] = renamed
-            Result.success(this)
         }
     }
 
@@ -144,7 +140,6 @@ class ExplorerService(
             val parent = level.children[index]
             parent.children ?: return
             parent.children.items.add(0, item)
-            Result.success(this)
         }
     }
 
@@ -316,7 +311,6 @@ class ExplorerService(
                 wasOpened -> item
                 else -> item.copy(children = item.children?.copy(isOpened = wasOpened))
             }
-            Result.success(this)
         }
     }
 
