@@ -3,8 +3,6 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.content.Context
 import android.content.res.AssetManager
 import app.atomofiron.searchboxapp.injectable.store.AppStore
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.*
@@ -20,29 +18,25 @@ import app.atomofiron.searchboxapp.utils.Explorer.update
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
-import java.util.LinkedList
 
 class ExplorerService(
     context: Context,
     private val assets: AssetManager,
     appStore: AppStore,
     private val explorerStore: ExplorerStore,
-    private val preferenceStore: PreferenceStore
+    private val preferenceStore: PreferenceStore,
 ) {
 
     private val scope = appStore.scope
-    private val mutexLevels = Mutex()
-    private val mutexOperations = Mutex()
 
     private val defaultStoragePath = Tool.getExternalStorageDirectory(context)
     private val useSu: Boolean get() = preferenceStore.useSu.value
 
-    private var levels = listOf<NodeLevel>()
-    private val states = LinkedList<NodeState>()
+    private val tab = NodeTab()
 
     init {
         scope.launch(Dispatchers.IO) {
-            mutexLevels.withLock {
+            withTab {
                 copyToybox(context)
             }
         }
@@ -59,23 +53,23 @@ class ExplorerService(
                 .update(useSu)
                 .sortByName()
         }
-        withLevels {
-            clear()
-            add(NodeLevel(Explorer.ROOT_PARENT_PATH, roots))
+        withTab {
+            levels.clear()
+            levels.add(NodeLevel(Explorer.ROOT_PARENT_PATH, roots))
             Result.success(this)
         }
     }
 
     suspend fun tryToggle(it: Node) {
-        withLevels {
-            var item = findNode(it.uniqueId) ?: return
+        withTab {
+            var item = levels.findNode(it.uniqueId) ?: return
             if (item.isOpened) {
                 val nextOpened = item.children?.find { it.isOpened }
                 if (nextOpened != null) {
                     item = nextOpened
                 }
             }
-            val (levelIndex, level) = findLevel(item.parentPath)
+            val (levelIndex, level) = levels.findLevel(item.parentPath)
             if (levelIndex < 0 || level == null) return
 
             val targetIndex = level.children.indexOfFirst { it.uniqueId == item.uniqueId }
@@ -86,8 +80,8 @@ class ExplorerService(
                 val opened = level.children[openedIndex]
                 level.children[openedIndex] = opened.close()
             }
-            for (i in levelIndex.inc()..lastIndex) {
-                removeAt(lastIndex)
+            for (i in levelIndex.inc()..levels.lastIndex) {
+                levels.removeAt(levels.lastIndex)
             }
             val target = level.children[targetIndex]
             val children = item.children
@@ -95,7 +89,7 @@ class ExplorerService(
                 target.isOpened -> target.close()
                 children == null -> return
                 else -> {
-                    add(NodeLevel(target.path, children.items))
+                    levels.add(NodeLevel(target.path, children.items))
                     target.open()
                 }
             }
@@ -104,11 +98,11 @@ class ExplorerService(
     }
 
     suspend fun tryCacheAsync(it: Node) {
-        val item = findNode(it.uniqueId)
-        item ?: return
-        withStates {
+        withTab {
+            val item = levels.findNode(it.uniqueId)
+            item ?: return
             val job = scope.launch { cacheSync(item) }
-            val state = updateState(item.uniqueId) {
+            val state = states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = job)
             }
             if (state?.isCaching != true) job.cancel()
@@ -116,9 +110,9 @@ class ExplorerService(
     }
 
     suspend fun tryOpenParent() {
-        withLevels {
+        withTab {
             if (levels.size <= 1) return
-            removeLast()
+            levels.removeLast()
             val last = levels.last()
             val index = last.getOpenedIndex()
             last.children[index] = last.children[index].close()
@@ -127,11 +121,13 @@ class ExplorerService(
     }
 
     suspend fun tryRename(it: Node, name: String) {
-        val item = findNode(it.uniqueId)
+        val item = withTab {
+            levels.findNode(it.uniqueId)
+        }
         item ?: return
         val renamed = item.rename(name, useSu)
-        withLevels {
-            val (_, level) = findLevel(item.parentPath)
+        withTab {
+            val (_, level) = levels.findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
             if (index == null || index < 0) return
             level.children[index] = renamed
@@ -141,8 +137,8 @@ class ExplorerService(
 
     suspend fun tryCreate(dir: Node, name: String, directory: Boolean) {
         val item = Explorer.create(dir, name, directory, useSu)
-        withLevels {
-            val (_, level) = findLevel(item.parentPath)
+        withTab {
+            val (_, level) = levels.findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == dir.uniqueId }
             if (index == null || index < 0) return
             val parent = level.children[index]
@@ -153,8 +149,8 @@ class ExplorerService(
     }
 
     suspend fun tryCheckItem(item: Node, isChecked: Boolean) {
-        withStates {
-            updateState(item.uniqueId) {
+        withTab {
+            states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, isChecked = isChecked)
             }
         }
@@ -163,29 +159,23 @@ class ExplorerService(
     suspend fun tryDelete(items: List<Node>) {
     }
 
-    private suspend inline fun withStates(block: LinkedList<NodeState>.() -> Unit) {
-        mutexOperations.withLock {
-            states.block()
+    private suspend inline fun <R> withTab(block: NodeTab.() -> R): R {
+        return tab.updateTree {
+            val result = block()
+
             val iter = states.iterator()
             while (iter.hasNext()) {
                 if (iter.next().isEmpty) iter.remove()
             }
-        }
-    }
 
-    private suspend inline fun withLevels(block: MutableList<NodeLevel>.() -> Result<List<NodeLevel>>) {
-        mutexLevels.withLock {
-            levels.toMutableList().block().onSuccess { levels ->
-                this.levels = levels
-                levels.toMutableList().run {
-                    dropClosedLevels()
-                    updateDirectoryTypes()
-                    val items = renderNodes()
-                    explorerStore.items.set(items)
-                    updateCurrentDir()
-                    items.updateStates()
-                }
-            }
+            levels.dropClosedLevels()
+            updateDirectoryTypes()
+            val items = renderNodes()
+            explorerStore.items.set(items)
+            levels.updateCurrentDir()
+            updateStates(items)
+
+            result
         }
     }
 
@@ -207,38 +197,34 @@ class ExplorerService(
         }
     }
 
-    private suspend fun List<Node>.updateStates() {
-        withStates {
-            if (this.isEmpty()) return
-            val iterator = this@withStates.listIterator()
-            while (iterator.hasNext()) {
-                val state = iterator.next()
-                if (!state.isCaching && !state.isChecked) continue
-                val index = this@updateStates.indexOfFirst { it.uniqueId == state.uniqueId }
-                if (index < 0) {
-                    state.cachingJob?.cancel()
-                    val next = state.nextState(state.uniqueId, cachingJob = null, isChecked = false)
-                    iterator.updateState(state, next)
-                }
+    private fun NodeTab.updateStates(items: List<Node>) {
+        if (states.isEmpty()) return
+        val iterator = states.listIterator()
+        while (iterator.hasNext()) {
+            val state = iterator.next()
+            if (!state.isCaching && !state.isChecked) continue
+            val index = items.indexOfFirst { it.uniqueId == state.uniqueId }
+            if (index < 0) {
+                state.cachingJob?.cancel()
+                val next = state.nextState(state.uniqueId, cachingJob = null, isChecked = false)
+                iterator.updateState(state, next)
             }
         }
     }
 
-    private suspend fun List<NodeLevel>.renderNodes(): List<Node> {
-        val count = sumOf { it.count }
+    private fun NodeTab.renderNodes(): List<Node> {
+        val count = levels.sumOf { it.count }
         val items = ArrayList<Node>(count)
-        withStates {
-            for (i in levels.indices) {
-                val level = levels[i]
-                for (j in 0..level.getOpenedIndex()) {
-                    items.add(updateStateFor(level.children[j]))
-                }
+        for (i in levels.indices) {
+            val level = levels[i]
+            for (j in 0..level.getOpenedIndex()) {
+                items.add(states.updateStateFor(level.children[j]))
             }
-            for (i in levels.indices.reversed()) {
-                val level = levels[i]
-                for (j in level.getOpenedIndex().inc() until level.count) {
-                    items.add(updateStateFor(level.children[j]))
-                }
+        }
+        for (i in levels.indices.reversed()) {
+            val level = levels[i]
+            for (j in level.getOpenedIndex().inc() until level.count) {
+                items.add(states.updateStateFor(level.children[j]))
             }
         }
         return items
@@ -250,9 +236,9 @@ class ExplorerService(
         return item.copy(state = state)
     }
 
-    private fun List<NodeLevel>.updateDirectoryTypes() {
+    private fun NodeTab.updateDirectoryTypes() {
         val defaultStoragePath = defaultStoragePath ?: return
-        val (_, level) = findLevel(defaultStoragePath)
+        val (_, level) = levels.findLevel(defaultStoragePath)
         level ?: return
         for (i in level.children.indices) {
             val item = level.children[i]
@@ -272,8 +258,8 @@ class ExplorerService(
     private suspend fun CoroutineScope.cacheSync(item: Node) {
         if (!isActive) return
         val cached = item.update(useSu).sortByName()
-        withStates {
-            updateState(item.uniqueId) {
+        withTab {
+            states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
             }
         }
@@ -321,8 +307,8 @@ class ExplorerService(
     }
 
     private suspend fun replaceItem(item: Node) {
-        withLevels {
-            val (_, level) = findLevel(item.parentPath)
+        withTab {
+            val (_, level) = levels.findLevel(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
             if (index == null || index < 0) return
             val wasOpened = level.children[index].isOpened
@@ -347,14 +333,12 @@ class ExplorerService(
         return MutableList(size) { i -> arr[i] as R }
     }
 
-    private fun findNode(uniqueId: Int): Node? {
-        levels.run {
-            for (i in indices.reversed()) {
-                get(i).children.find {
-                    it.uniqueId == uniqueId
-                }?.let { item ->
-                    return item
-                }
+    private fun List<NodeLevel>.findNode(uniqueId: Int): Node? {
+        for (i in indices.reversed()) {
+            get(i).children.find {
+                it.uniqueId == uniqueId
+            }?.let { item ->
+                return item
             }
         }
         return null
@@ -362,15 +346,13 @@ class ExplorerService(
 
     private fun List<NodeLevel>.findLevel(parentPath: String): Pair<Int, NodeLevel?> = findIndexed { it.parentPath == parentPath }
 
-    private fun List<NodeJob>.findJob(uniqueId: Int): Pair<Int, NodeJob?> = findIndexed { it.uniqueId == uniqueId }
-
     private fun List<NodeState>.findState(uniqueId: Int): Pair<Int, NodeState?> = findIndexed { it.uniqueId == uniqueId }
 
     private fun copyToybox(context: Context) {
         val variants = arrayOf(
             Const.VALUE_TOYBOX_ARM_32,
             Const.VALUE_TOYBOX_ARM_64,
-            Const.VALUE_TOYBOX_X86_64
+            Const.VALUE_TOYBOX_X86_64,
         )
         context.filesDir.mkdirs()
 
