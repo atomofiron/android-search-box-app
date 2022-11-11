@@ -19,7 +19,6 @@ object Explorer {
     private const val FILE_CHAR = '-'
     private const val LS_NO_SUCH_FILE = "ls: %s: No such file or directory"
     private const val LS_PERMISSION_DENIED = "ls: %s: Permission denied"
-    private const val LS_S = "ls: %s: "
     private const val COMMAND_PATH_PREFIX = "[a-z]+: %s: "
 
     private val spaces = Regex(" +")
@@ -267,11 +266,10 @@ object Explorer {
 
     fun NodeProperties.isLink(): Boolean = access.firstOrNull() == LINK_CHAR
 
-    fun Node.delete(su: Boolean): Node {
-        val output = Shell.exec(Shell[Shell.RM_RF].format(path), su)
+    fun Node.delete(useSu: Boolean): Node? {
+        val output = Shell.exec(Shell[Shell.RM_RF].format(path), useSu)
         return when {
-            output.success && error == null -> this
-            output.success && error != null -> copy(error = null)
+            output.success -> null
             else -> copy(error = output.error.toNodeError(path))
         }
     }

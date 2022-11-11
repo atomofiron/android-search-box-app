@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.injectable.service
 
 import android.content.Context
 import android.content.res.AssetManager
+import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -10,6 +11,7 @@ import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.Explorer.close
+import app.atomofiron.searchboxapp.utils.Explorer.delete
 import app.atomofiron.searchboxapp.utils.Explorer.open
 import app.atomofiron.searchboxapp.utils.Explorer.rename
 import app.atomofiron.searchboxapp.utils.Explorer.sortByName
@@ -151,7 +153,31 @@ class ExplorerService(
         }
     }
 
-    suspend fun tryDelete(items: List<Node>) {
+    suspend fun tryDelete(its: List<Node>) {
+        withTab {
+            its.mapNotNull { item ->
+                levels.findNode(item.uniqueId)?.takeIf {
+                    val state = states.updateState(item.uniqueId) {
+                        when (this?.isDeleting) {
+                            true -> null
+                            else -> {
+                                this?.cachingJob?.cancel()
+                                nextState(item.uniqueId, cachingJob = null, isDeleting = true, isChecked = false)
+                            }
+                        }
+                    }
+                    state?.isDeleting == true
+                }
+            }
+        }.forEach { item ->
+            scope.launch {
+                val result = item.delete(useSu)
+                withTab {
+                    levels.replaceItem(item.uniqueId, item.parentPath, result)
+                    states.updateState(item.uniqueId) { null }
+                }
+            }
+        }
     }
 
     private suspend inline fun <R> withTab(block: NodeTab.() -> R): R {
@@ -169,6 +195,8 @@ class ExplorerService(
             explorerStore.items.set(items)
             levels.updateCurrentDir()
             updateStates(items)
+            val checked = items.filter { it.isChecked }
+            explorerStore.checked.set(checked)
 
             result
         }
@@ -257,8 +285,8 @@ class ExplorerService(
             states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
             }
+            levels.replaceItem(cached)
         }
-        replaceItem(cached)
     }
 
     private val undefinedJob = Job()
@@ -301,16 +329,17 @@ class ExplorerService(
         }
     }
 
-    private suspend fun replaceItem(item: Node) {
-        withTab {
-            val (_, level) = levels.findLevel(item.parentPath)
-            val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
-            if (index == null || index < 0) return
-            val wasOpened = level.children[index].isOpened
-            level.children[index] = when (item.isOpened) {
-                wasOpened -> item
-                else -> item.copy(children = item.children?.copy(isOpened = wasOpened))
-            }
+    private fun List<NodeLevel>.replaceItem(item: Node) = replaceItem(item.uniqueId, item.parentPath, item)
+
+    private fun List<NodeLevel>.replaceItem(uniqueId: Int, parentPath: String, item: Node?) {
+        val (_, level) = findLevel(parentPath)
+        val index = level?.children?.indexOfFirst { it.uniqueId == uniqueId }
+        if (index == null || index < 0) return
+        val wasOpened = level.children[index].isOpened
+        when (item?.isOpened) {
+            null -> level.children.removeAt(index)
+            wasOpened -> level.children[index] = item
+            else -> level.children[index] = item.copy(children = item.children?.copy(isOpened = wasOpened))
         }
     }
 
