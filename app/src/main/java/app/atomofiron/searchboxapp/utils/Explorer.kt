@@ -79,7 +79,7 @@ object Explorer {
         }
         val item = Node(path = targetPath, parentPath = parent.path, rootId = parent.rootId, content = content)
         return when {
-            output.success -> item.cacheDir(useSu)
+            output.success -> item.update(useSu)
             else -> item.copy(error = output.error.toNodeError(targetPath))
         }
     }

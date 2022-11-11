@@ -136,12 +136,16 @@ class ExplorerService(
     suspend fun tryCreate(dir: Node, name: String, directory: Boolean) {
         val item = Explorer.create(dir, name, directory, useSu)
         withTab {
-            val (_, level) = levels.findLevel(item.parentPath)
-            val index = level?.children?.indexOfFirst { it.uniqueId == dir.uniqueId }
-            if (index == null || index < 0) return
-            val parent = level.children[index]
-            parent.children ?: return
-            parent.children.items.add(0, item)
+            val (_, level) = levels.findLevel(dir.path)
+            level?.children ?: return
+            when {
+                item.isDirectory -> level.children.add(0, item)
+                else -> {
+                    var index = level.children.indexOfFirst { it.isFile }
+                    if (index < 0) index = level.children.size
+                    level.children.add(index, item)
+                }
+            }
         }
     }
 
