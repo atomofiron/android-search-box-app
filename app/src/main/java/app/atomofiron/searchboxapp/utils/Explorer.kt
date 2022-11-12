@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.utils
 
 import android.content.Context
+import android.util.Log
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import kotlinx.coroutines.Job
@@ -8,7 +9,6 @@ import kotlinx.coroutines.Job
 object Explorer {
     const val ROOT_PARENT_PATH = "root_parent_path"
 
-    private const val UNKNOWN = -1
     private const val TOTAL = "total"
     private const val SLASH = "/"
     private const val NEW_LINE = "\n"
@@ -20,6 +20,41 @@ object Explorer {
     private const val LS_NO_SUCH_FILE = "ls: %s: No such file or directory"
     private const val LS_PERMISSION_DENIED = "ls: %s: Permission denied"
     private const val COMMAND_PATH_PREFIX = "[a-z]+: %s: "
+
+    private const val FILE_PNG = "PNG image data"
+    private const val FILE_JPEG = "JPEG image data"
+    private const val FILE_ZIP = "Zip archive data"
+    private const val FILE_BZIP2 = "bzip2 compressed data"
+    private const val FILE_TAR = "POSIX tar archive"
+    private const val FILE_UTF8_TEXT = "UTF-8 text"
+    private const val FILE_ASCII_TEXT = "ASCII text"
+    private const val FILE_DATA = "data" // pdf mp4 mp3 ogg rar
+    private const val FILE_EMPTY = "empty"
+    private const val FILE_BOOTING = "Android bootimg" // img
+    private const val FILE_SH_SCRIPT = "/bin/sh script" // sh
+
+    private const val EXT_PNG = ".png"
+    private const val EXT_JPG = ".jpg"
+    private const val EXT_JPEG = ".jpeg"
+    private const val EXT_WEBP = ".webp"
+    private const val EXT_APK = ".apk"
+    private const val EXT_ZIP = ".zip"
+    private const val EXT_TAR = ".tar"
+    private const val EXT_BZ2 = ".bz2"
+    private const val EXT_GZ = ".gz"
+    private const val EXT_RAR = ".rar"
+    private const val EXT_TXT = ".txt"
+    private const val EXT_IMG = ".img"
+    private const val EXT_MP4 = ".mp4"
+    private const val EXT_AVI = ".mp4"
+    private const val EXT_MP3 = ".mp3"
+    private const val EXT_OGG = ".ogg"
+    private const val EXT_WAV = ".wav"
+    private const val EXT_FLAC = ".flac"
+    private const val EXT_AAC = ".aac"
+    private const val EXT_PDF = ".pdf"
+    private const val EXT_EXE = ".exe"
+    private const val EXT_XPI = ".xpi" // Mozilla extension
 
     private val spaces = Regex(" +")
     private val slashes = Regex("/+")
@@ -53,7 +88,7 @@ object Explorer {
     fun create(parent: Node, name: String, isDirectory: Boolean): Node {
         val content = when {
             isDirectory -> NodeContent.Directory(Type.Ordinary)
-            else -> NodeContent.File.Other
+            else -> NodeContent.File.Unknown
         }
         return Node(
             rootId = parent.rootId,
@@ -75,7 +110,7 @@ object Explorer {
         }
         val content = when {
             directory -> NodeContent.Directory()
-            else -> NodeContent.File.Other
+            else -> NodeContent.File.Unknown
         }
         val item = Node(path = targetPath, parentPath = parent.path, rootId = parent.rootId, content = content)
         return when {
@@ -116,7 +151,7 @@ object Explorer {
         val content = when (properties.access[0]) {
             DIR_CHAR -> NodeContent.Directory(Type.Ordinary)
             LINK_CHAR -> NodeContent.Link
-            else -> NodeContent.File.Other
+            else -> properties.name.resolveFileType()
         }
         val asDir = content is NodeContent.Directory
         return Node(
@@ -144,33 +179,56 @@ object Explorer {
         }
     }
 
-    fun Node.update(su: Boolean): Node {
-        val output = Shell.exec(Shell[Shell.LS_LAHLD].format(path), su)
+    fun Node.update(useSu: Boolean): Node {
+        val output = Shell.exec(Shell[Shell.LS_LAHLD].format(path), useSu)
         val lines = output.output.split("\n").filter { it.isNotEmpty() }
         return when {
             output.success && lines.size == 1 -> parseNode(lines.first()).run {
-                if (isCached) this else cache(su)
+                when {
+                    isCached -> this
+                    isDirectory -> cacheDir(useSu)
+                    else -> cacheFile(useSu)
+                }
             }
             output.success -> copy(children = null, error = NodeError.Unknown)
             else -> copy(error = output.error.toNodeError(path))
         }
     }
 
-    private fun Node.cache(su: Boolean): Node {
-        return when {
-            isDirectory -> cacheDir(su)
-            else -> this // caching files
-        }
-    }
-
-    private fun Node.cacheDir(su: Boolean): Node {
-        val output = Shell.exec(Shell[Shell.LS_LAHL].format(path), su)
+    private fun Node.cacheDir(useSu: Boolean): Node {
+        val output = Shell.exec(Shell[Shell.LS_LAHL].format(path), useSu)
         val lines = output.output.split("\n").filter { it.isNotEmpty() }
         return when {
             output.success && lines.isEmpty() -> copy(children = null, error = NodeError.Unknown)
             output.success -> parseDir(lines)
             else -> copy(error = output.error.toNodeError(path))
         }
+    }
+
+    private fun Node.cacheFile(useSu: Boolean): Node {
+        val output = Shell.exec(Shell[Shell.FILE_B].format(path), useSu)
+        val content =  when {
+            !output.success || output.output.isBlank() -> path.resolveFileType()
+            output.output.startsWith(FILE_PNG) -> NodeContent.File.Picture.Png()
+            output.output.startsWith(FILE_JPEG) -> NodeContent.File.Picture.Jpeg()
+            output.output.startsWith(FILE_ZIP) -> when {
+                path.endsWith(EXT_APK, ignoreCase = true) -> NodeContent.File.Apk()
+                else -> NodeContent.File.Archive.Zip()
+            }
+            output.output.startsWith(FILE_BZIP2) -> NodeContent.File.Archive.Bzip2()
+            output.output.startsWith(FILE_TAR) -> NodeContent.File.Archive.Tar()
+            output.output.startsWith(FILE_UTF8_TEXT) ||
+            output.output.startsWith(FILE_SH_SCRIPT) ||
+            output.output.startsWith(FILE_ASCII_TEXT) -> NodeContent.File.Text
+            output.output.startsWith(FILE_DATA) -> path.resolveFileType()
+            output.output.startsWith(FILE_EMPTY) -> NodeContent.File.Other
+            output.output.startsWith(FILE_BOOTING) -> NodeContent.File.DataImage
+            else -> {
+                Log.e("searchboxapp", "$path ${output.output}")
+                NodeContent.File.Other
+            }
+        }
+        return copy(content = content)
     }
 
     fun Node.sortByName(): Node {
@@ -196,11 +254,11 @@ object Explorer {
             }
             properties.isLink() -> when (content) {
                 is NodeContent.Link -> children to content
-                else -> null to NodeContent.File.Other // todo file types
+                else -> null to NodeContent.Link
             }
             properties.isFile() -> when (content) {
                 is NodeContent.File -> children to content
-                else -> null to NodeContent.Link
+                else -> null to NodeContent.File.Unknown
             }
             else -> null to NodeContent.Unknown
         }
@@ -307,5 +365,29 @@ object Explorer {
             (this?.isDeleting ?: false) != isDeleting -> false
             else -> true
         }
+    }
+
+    private fun String.resolveFileType(): NodeContent = when {
+        endsWith(EXT_PNG, ignoreCase = true) -> NodeContent.File.Picture.Png()
+        endsWith(EXT_JPG, ignoreCase = true) -> NodeContent.File.Picture.Jpeg()
+        endsWith(EXT_JPEG, ignoreCase = true) -> NodeContent.File.Picture.Jpeg()
+        endsWith(EXT_WEBP, ignoreCase = true) -> NodeContent.File.Picture.Webp()
+        endsWith(EXT_APK, ignoreCase = true) -> NodeContent.File.Apk()
+        endsWith(EXT_ZIP, ignoreCase = true) -> NodeContent.File.Archive.Zip()
+        endsWith(EXT_TAR, ignoreCase = true) -> NodeContent.File.Archive.Tar()
+        endsWith(EXT_BZ2, ignoreCase = true) -> NodeContent.File.Archive.Bzip2()
+        endsWith(EXT_GZ, ignoreCase = true) -> NodeContent.File.Archive.Gz()
+        endsWith(EXT_RAR, ignoreCase = true) -> NodeContent.File.Archive.Rar()
+        endsWith(EXT_TXT, ignoreCase = true) -> NodeContent.File.Text
+        endsWith(EXT_IMG, ignoreCase = true) -> NodeContent.File.DataImage
+        endsWith(EXT_MP4, ignoreCase = true) ||
+        endsWith(EXT_AVI, ignoreCase = true) -> NodeContent.File.Movie()
+        endsWith(EXT_MP3, ignoreCase = true) ||
+        endsWith(EXT_OGG, ignoreCase = true) ||
+        endsWith(EXT_WAV, ignoreCase = true) ||
+        endsWith(EXT_FLAC, ignoreCase = true) ||
+        endsWith(EXT_AAC, ignoreCase = true) -> NodeContent.File.Music()
+        endsWith(EXT_PDF, ignoreCase = true) -> NodeContent.File.Pdf
+        else -> NodeContent.File.Other
     }
 }

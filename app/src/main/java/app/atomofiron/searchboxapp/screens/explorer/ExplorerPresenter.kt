@@ -2,7 +2,6 @@ package app.atomofiron.searchboxapp.screens.explorer
 
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -73,7 +72,7 @@ class ExplorerPresenter(
         }
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions
-            // todo files.first().isChecked -> viewModel.manyFilesOptions
+            files.first().isChecked -> viewModel.manyFilesOptions
             files.first().isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }

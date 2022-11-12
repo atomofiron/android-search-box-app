@@ -14,7 +14,6 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.model.explorer.*
-import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
@@ -29,17 +28,6 @@ class ExplorerItemBinderImpl(
         private const val SPACE = " "
         private const val EMPTY = ""
     }
-    /*
-    16842910 enabled
-    16842912 checked
-    ColorStateList{
-        mThemeAttrs=null
-        mChangingConfigurations=0
-        mStateSpecs=[[16842910, 16842912], [16842910, -16842912], [-16842910, 16842912], [-16842910, -16842912]]
-        mColors=[-14845836, -9079435, -6381922, -6381922]
-        mDefaultColor=-14845836
-    }
-     */
 
     private lateinit var item: Node
 
@@ -112,10 +100,11 @@ class ExplorerItemBinderImpl(
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         tvSize.text = when {
-            item.isFile -> item.size + BYTE_LETTER
-            else -> EMPTY
+            !item.isFile -> EMPTY
+            item.size.isBlank() -> EMPTY
+            else -> item.size + BYTE_LETTER
         }
-        val error = item.error?.let { itemView.resources.getString(it) }
+        val error = item.error?.let { itemView.resources.getString(it, item.content) }
         tvError.text = error
         tvError.isVisible = error != null
 
@@ -174,38 +163,9 @@ class ExplorerItemBinderImpl(
     private fun Node.defineIcon(): Int {
         return when (val content = content) {
             is NodeContent.Unknown,
-            is NodeContent.Link,
-            is NodeContent.File -> R.drawable.ic_file_circle
-            is NodeContent.Directory -> when (content.type) {
-                Type.Android -> when {
-                    isEmpty -> R.drawable.ic_explorer_folder_android_empty
-                    else -> R.drawable.ic_explorer_folder_android
-                }
-                Type.Camera -> when {
-                    isEmpty -> R.drawable.ic_explorer_folder_camera_empty
-                    else -> R.drawable.ic_explorer_folder_camera
-                }
-                Type.Download -> when {
-                    isEmpty -> R.drawable.ic_explorer_folder_download_empty
-                    else -> R.drawable.ic_explorer_folder_download
-                }
-                Type.Movies -> when {
-                    isEmpty -> R.drawable.ic_explorer_folder_movies_empty
-                    else -> R.drawable.ic_explorer_folder_movies
-                }
-                Type.Music -> when {
-                    isEmpty -> R.drawable.ic_explorer_folder_music_empty
-                    else -> R.drawable.ic_explorer_folder_music
-                }
-                Type.Pictures -> when {
-                    isEmpty -> R.drawable.ic_explorer_folder_pictures_empty
-                    else -> R.drawable.ic_explorer_folder_pictures
-                }
-                else -> when {
-                    isEmpty -> R.drawable.ic_explorer_folder_empty
-                    else -> R.drawable.ic_explorer_folder
-                }
-            }
+            is NodeContent.Link -> R.drawable.ic_explorer_link
+            is NodeContent.File -> content.getIcon()
+            is NodeContent.Directory -> content.getIcon(isEmpty)
         }
     }
 

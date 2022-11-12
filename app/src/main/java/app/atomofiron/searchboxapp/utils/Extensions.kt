@@ -9,6 +9,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainPresenterParams
 
@@ -35,9 +36,13 @@ inline fun <E> Iterable<E>.findIndexed(predicate: (E) -> Boolean): Pair<Int, E?>
     return -1 to null
 }
 
-fun Resources.getString(error: NodeError): String {
+fun Resources.getString(error: NodeError, content: NodeContent? = null): String {
     return when (error) {
-        is NodeError.NoSuchFile -> getString(R.string.no_such_file)
+        is NodeError.NoSuchFile -> when (content) {
+            is NodeContent.Directory -> getString(R.string.no_such_directory)
+            is NodeContent.File -> getString(R.string.no_such_file)
+            else -> getString(R.string.no_such_file_or_directory)
+        }
         is NodeError.PermissionDenied -> getString(R.string.permission_denied)
         is NodeError.Unknown -> getString(R.string.unknown_error)
         is NodeError.Multiply -> getString(R.string.a_lot_of_errors)
