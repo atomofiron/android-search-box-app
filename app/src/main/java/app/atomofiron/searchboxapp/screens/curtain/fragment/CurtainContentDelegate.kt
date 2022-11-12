@@ -21,6 +21,7 @@ class CurtainContentDelegate(
             node.removeParent()
             binding.curtainSheet.removeAllViews()
             binding.curtainSheet.addView(holder.view)
+            binding.curtainSheet.requestApplyInsets()
         }
     }
 
