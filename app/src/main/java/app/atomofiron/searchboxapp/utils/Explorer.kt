@@ -94,16 +94,20 @@ object Explorer {
     }
 
     private fun parse(line: String, name: String? = null): NodeProperties {
-        val parts = line.split(spaces, 8)
-        // todo links parts[7].contains('->')
+        val parts = line.split(spaces, 7)
+        val last = parts.last()
+        val time = last.substring(0, 5)
+        // the name can start with spaces
+        val nodeName = name ?: last.substring(6, last.length)
+        // todo links name.contains('->')
         return NodeProperties(
             access = parts[0],
             owner = parts[2],
             group = parts[3],
             size = parts[4],
             date = parts[5],
-            time = parts[6],
-            name = name ?: parts[7],
+            time = time,
+            name = nodeName,
         )
     }
 
