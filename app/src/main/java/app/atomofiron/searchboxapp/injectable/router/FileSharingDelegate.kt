@@ -25,8 +25,10 @@ class FileSharingDelegateImpl(appStore: AppStore) : FileSharingDelegate {
     private fun Context.startForFile(action: String, item: Node) {
         val file = File(item.path)
         val contentUri = FileProvider.getUriForFile(this, BuildConfig.AUTHORITY, file)
-        val ext = MimeTypeMap.getFileExtensionFromUrl(file.name)
-        val type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: "*/*"
+        val type = item.content.mimeType ?: let {
+            val ext = MimeTypeMap.getFileExtensionFromUrl(file.name)
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+        } ?: "*/*"
         val intent = Intent(action)
         intent.putExtra(Intent.EXTRA_STREAM, contentUri)
         intent.setDataAndType(contentUri, type)

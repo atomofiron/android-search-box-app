@@ -37,6 +37,7 @@ object Explorer {
     private const val EXT_PNG = ".png"
     private const val EXT_JPG = ".jpg"
     private const val EXT_JPEG = ".jpeg"
+    private const val EXT_GIF = ".gif"
     private const val EXT_WEBP = ".webp"
     private const val EXT_APK = ".apk"
     private const val EXT_ZIP = ".zip"
@@ -47,7 +48,7 @@ object Explorer {
     private const val EXT_TXT = ".txt"
     private const val EXT_IMG = ".img"
     private const val EXT_MP4 = ".mp4"
-    private const val EXT_AVI = ".mp4"
+    private const val EXT_AVI = ".avi"
     private const val EXT_MP3 = ".mp3"
     private const val EXT_OGG = ".ogg"
     private const val EXT_WAV = ".wav"
@@ -372,8 +373,9 @@ object Explorer {
 
     private fun String.resolveFileType(): NodeContent = when {
         endsWith(EXT_PNG, ignoreCase = true) -> NodeContent.File.Picture.Png()
-        endsWith(EXT_JPG, ignoreCase = true) -> NodeContent.File.Picture.Jpeg()
+        endsWith(EXT_JPG, ignoreCase = true) ||
         endsWith(EXT_JPEG, ignoreCase = true) -> NodeContent.File.Picture.Jpeg()
+        endsWith(EXT_GIF, ignoreCase = true) -> NodeContent.File.Picture.Gif()
         endsWith(EXT_WEBP, ignoreCase = true) -> NodeContent.File.Picture.Webp()
         endsWith(EXT_APK, ignoreCase = true) -> NodeContent.File.Apk()
         endsWith(EXT_ZIP, ignoreCase = true) -> NodeContent.File.Archive.Zip()
