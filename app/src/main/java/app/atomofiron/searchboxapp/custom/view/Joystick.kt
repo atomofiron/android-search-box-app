@@ -35,7 +35,7 @@ class Joystick @JvmOverloads constructor(
     private var brightness = 0f
     private val glowAnimator = ValueAnimator.ofFloat(0f, (Math.PI / 2).toFloat())
 
-    private lateinit var composition: JoystickComposition
+    private var composition: JoystickComposition? = null
     private lateinit var bitmap: Bitmap
 
     init {
@@ -60,7 +60,8 @@ class Joystick @JvmOverloads constructor(
         }
     }
 
-    fun setComposition(composition: JoystickComposition = this.composition) {
+    fun setComposition(composition: JoystickComposition? = this.composition) {
+        composition ?: return
         this.composition = composition
         val isDark = context.findBooleanByAttr(R.attr.isDarkTheme)
 

@@ -16,6 +16,7 @@ class PreferenceFragmentDelegate(
     private val viewModel: PreferenceViewModel,
     private val updateOutput: PreferenceUpdateOutput,
     private val clickOutput: PreferenceClickOutput,
+    private val preferenceDataStore: PreferenceDataStore,
 ) : Preference.OnPreferenceChangeListener {
     companion object {
         private const val DOES_NOT_MATTER = true
@@ -30,6 +31,8 @@ class PreferenceFragmentDelegate(
     fun onUpdateScreen(screen: PreferenceScreen) {
         for (i in 0 until screen.preferenceCount) {
             var preference = screen.getPreference(i)
+            preference.preferenceDataStore = preferenceDataStore
+            preference.preferenceManager.preferenceDataStore = preferenceDataStore
             when (preference) {
                 is PreferenceScreen -> onUpdateScreen(preference)
                 is PreferenceCategory -> {

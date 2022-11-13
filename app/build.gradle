@@ -82,6 +82,7 @@ ext {
     work = "2.7.1"
     play_core = "1.10.3"
     play_core_ktx = "1.8.1"
+    datastore = "1.1.0-alpha01"
 }
 
 dependencies {
@@ -121,4 +122,5 @@ dependencies {
     implementation "com.google.android.play:core-ktx:$play_core_ktx"
 
     implementation "com.github.atomofiron:android-window-insets-compat:1.1.0"
+    implementation "androidx.datastore:datastore-preferences:$datastore"
 }

@@ -37,4 +37,10 @@ open class StoreModule {
     open fun provideAppStore(context: Context, scope: CoroutineScope): AppStore {
         return AppStore(context, scope, context.resources)
     }
+
+    @Provides
+    @Singleton
+    open fun providePreferencesStore(context: Context, scope: CoroutineScope): PreferencesStore {
+        return PreferencesStore(context, scope)
+    }
 }

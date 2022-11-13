@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.preferences
 
 import android.content.Context
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceDataStore
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import dagger.BindsInstance
@@ -10,7 +11,10 @@ import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.injectable.store.PreferencesStore
+import app.atomofiron.searchboxapp.screens.preferences.fragment.LegacyPreferenceDataStore
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceUpdateOutput
 import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPresenterDelegate
@@ -111,6 +115,12 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun router(fragment: WeakProperty<Fragment>): PreferenceRouter = PreferenceRouter(fragment)
+
+    @Provides
+    @PreferenceScope
+    fun preferenceDataStore(preferences: PreferencesStore, appStore: AppStore): PreferenceDataStore {
+        return LegacyPreferenceDataStore(preferences, appStore.scope)
+    }
 }
 
 interface PreferenceDependencies {
@@ -119,4 +129,6 @@ interface PreferenceDependencies {
     fun context(): Context
     fun curtainChannel(): CurtainChannel
     fun appWatcherProxy(): AppWatcherProxy
+    fun preferencesStore(): PreferencesStore
+    fun appStore(): AppStore
 }

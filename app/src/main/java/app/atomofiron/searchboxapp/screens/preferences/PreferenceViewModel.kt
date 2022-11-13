@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
+import androidx.preference.PreferenceDataStore
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.ChannelFlow
 import app.atomofiron.common.util.flow.set
@@ -21,6 +22,8 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
 
     @Inject
     lateinit var preferenceStore: PreferenceStore
+    @Inject
+    lateinit var preferenceDataStore: PreferenceDataStore
     @SuppressLint("StaticFieldLeak")
     @Inject
     lateinit var appContext: Context

@@ -31,8 +31,10 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initViewModel(this, PreferenceViewModel::class, savedInstanceState)
 
-        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter, presenter)
+        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter, presenter, viewModel.preferenceDataStore)
         setPreferencesFromResource(R.xml.preferences, rootKey)
+
+        preferenceScreen.preferenceDataStore
 
         val deepBlack = findPreference<Preference>(Const.PREF_DEEP_BLACK)!!
         viewModel.showDeepBlack.collect(lifecycleScope) {
