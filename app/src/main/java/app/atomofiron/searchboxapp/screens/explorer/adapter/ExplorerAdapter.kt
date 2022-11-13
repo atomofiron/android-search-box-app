@@ -189,10 +189,6 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         if (item.isTheDeepest()) headerView.onBind(item)
     }
 
-    // todo deprecate
-    fun setItem(item: Node) {
-    }
-
     override fun onViewAttachedToWindow(holder: ExplorerHolder) {
         super.onViewAttachedToWindow(holder)
         if (holder.bindingAdapterPosition > 0) {

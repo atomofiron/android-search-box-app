@@ -13,6 +13,7 @@ import app.atomofiron.searchboxapp.model.textviewer.LineIndexMatches
 import app.atomofiron.searchboxapp.model.textviewer.TextLine
 import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
 import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.Explorer.update
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
 
@@ -105,7 +106,7 @@ class TextViewerService(
         textViewerChannel.matchesCount.value = null
 
         fileSize = getFileSize()
-        // todo item.updateCache(useSu)
+        item.update(useSu)
         currentTask = task
 
         when (task?.params) {
