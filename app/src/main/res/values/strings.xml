@@ -66,6 +66,7 @@
     <string name="click_back_to_exit">Click Back to close the App</string>
     <string name="remove">Remove</string>
     <string name="rename">Rename</string>
+    <string name="open_with">Open with</string>
     <string name="no_such_file">No such file</string>
     <string name="no_such_directory">No such directory</string>
     <string name="no_such_file_or_directory">No such file or directory</string>

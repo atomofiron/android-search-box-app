@@ -7,6 +7,7 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.custom.view.menu.MenuAdapter
+import app.atomofiron.searchboxapp.custom.view.menu.MenuImpl
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 
 class MenuView : RecyclerView {
@@ -22,7 +23,10 @@ class MenuView : RecyclerView {
         adapter = menuAdapter
     }
 
-    fun inflateMenu(menuResId: Int) = MenuInflater(context).inflate(menuResId, menuAdapter.menu)
+    fun inflateMenu(menuResId: Int): MenuImpl {
+        MenuInflater(context).inflate(menuResId, menuAdapter.menu)
+        return menuAdapter.menu
+    }
 
     fun setMenuListener(listener: MenuListener) {
         menuAdapter.menuListener = listener

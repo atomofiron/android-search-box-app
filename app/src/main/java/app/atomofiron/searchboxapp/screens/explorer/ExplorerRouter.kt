@@ -9,12 +9,16 @@ import app.atomofiron.common.util.permission.PermissionDelegate
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.android.Intents
+import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegate
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.finder.FinderFragment
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.utils.Util
 
-class ExplorerRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
+class ExplorerRouter(
+    property: WeakProperty<Fragment>,
+    fileSharingDelegate: FileSharingDelegate,
+) : BaseRouter(property), FileSharingDelegate by fileSharingDelegate {
 
     override val currentDestinationId = R.id.rootFragment
 

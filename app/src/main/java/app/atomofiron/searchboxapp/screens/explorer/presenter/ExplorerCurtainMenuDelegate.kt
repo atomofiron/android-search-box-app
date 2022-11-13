@@ -72,6 +72,8 @@ class ExplorerCurtainMenuDelegate(
             R.id.menu_create -> controller?.showNext(CREATE)
             R.id.menu_rename -> controller?.showNext(RENAME)
             R.id.menu_remove -> onRemoveConfirm(items)
+            R.id.menu_share -> router.shareWith(items.first())
+            R.id.menu_open_with -> router.openWith(items.first())
         }
     }
 

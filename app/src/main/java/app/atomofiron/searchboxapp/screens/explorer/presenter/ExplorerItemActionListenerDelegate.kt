@@ -30,7 +30,6 @@ class ExplorerItemActionListenerDelegate(
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions
             files.first().isRoot -> viewModel.rootOptions
-            files.first().isChecked -> viewModel.manyFilesOptions
             files.first().isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }

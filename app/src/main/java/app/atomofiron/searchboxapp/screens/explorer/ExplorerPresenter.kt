@@ -65,14 +65,15 @@ class ExplorerPresenter(
 
     fun onOptionsOptionSelected() {
         val current = explorerStore.current.value
+        val checked = explorerStore.checked.value
         val files = when {
-            explorerStore.checked.value.isNotEmpty() -> ArrayList(explorerStore.checked.value)
+            checked.isNotEmpty() -> ArrayList(checked)
             current != null -> listOf(current)
             else -> return
         }
         val ids = when {
             files.size > 1 -> viewModel.manyFilesOptions
-            files.first().isChecked -> viewModel.manyFilesOptions
+            files.first().isRoot -> viewModel.rootOptions
             files.first().isDirectory -> viewModel.directoryOptions
             else -> viewModel.oneFileOptions
         }

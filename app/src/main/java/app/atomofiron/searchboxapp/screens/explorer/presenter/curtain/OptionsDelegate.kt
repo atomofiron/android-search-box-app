@@ -4,9 +4,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.view.menu.MenuImpl
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerOptionsBinding
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
@@ -22,7 +22,8 @@ class OptionsDelegate(
     fun getView(options: ExplorerItemOptions, inflater: LayoutInflater, container: ViewGroup): View {
         val binding = CurtainExplorerOptionsBinding.inflate(inflater, container, false)
         binding.menuView.run {
-            inflateMenu(menuId)
+            val menu = inflateMenu(menuId)
+            menu.hideExtra(options.ids)
             setMenuListener(output)
             markAsDangerous(R.id.menu_remove)
         }
@@ -65,6 +66,15 @@ class OptionsDelegate(
                     string.append(context.resources.getQuantityString(R.plurals.x_files, files, files))
                 }
                 explorerMenuTvTitle.text = string.toString()
+            }
+        }
+    }
+
+    private fun MenuImpl.hideExtra(ids: List<Int>) {
+        val iter = iterator()
+        while (iter.hasNext()) {
+            if (!ids.contains(iter.next().itemId)) {
+                iter.remove()
             }
         }
     }

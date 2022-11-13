@@ -11,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
+import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegateImpl
 import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -117,7 +118,9 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun router(fragment: WeakProperty<Fragment>): ExplorerRouter = ExplorerRouter(fragment)
+    fun router(fragment: WeakProperty<Fragment>, appStore: AppStore): ExplorerRouter {
+        return ExplorerRouter(fragment, FileSharingDelegateImpl(appStore))
+    }
 }
 
 interface ExplorerDependencies {
