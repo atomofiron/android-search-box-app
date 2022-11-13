@@ -11,7 +11,6 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceManager
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.hideKeyboard
@@ -19,12 +18,16 @@ import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
 import app.atomofiron.searchboxapp.utils.Const
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 import javax.inject.Inject
@@ -44,22 +47,35 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     @Inject
     lateinit var presenter: MainPresenter
+    @Inject
+    lateinit var preferenceStore: PreferenceStore
     private var theme: AppTheme? = null
     private val isDarkTheme: Boolean get() = isDarkTheme()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(getAppTheme())
         super.onCreate(savedInstanceState)
 
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel.inject(this)
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            // todo avoid using flow.replayCache.first() in SharedFlowProperty
+            preferenceStore.specialCharacters.first()
+            preferenceStore.excludeDirs.first()
+            preferenceStore.useSu.first()
+            val theme = preferenceStore.appTheme.first()
+            setTheme(theme)
+            onCreateView(savedInstanceState)
+        }
+    }
+
+    private fun onCreateView(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.root.insetsProxying()
         binding.navHostFragment.insetsProxying()
         binding.joystick.applyMarginInsets(bottom = true)
-
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.inject(this)
         presenter.onActivityCreate(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -92,13 +108,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun onIntent(intent: Intent?) {
         presenter.onIntent(intent ?: return)
-    }
-
-    private fun getAppTheme(): AppTheme {
-        val sp = PreferenceManager.getDefaultSharedPreferences(this)
-        val name = sp.getString(Const.PREF_APP_THEME, null)
-        val deepBlack = sp.getBoolean(Const.PREF_DEEP_BLACK, false)
-        return AppTheme.fromString(name, deepBlack)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {

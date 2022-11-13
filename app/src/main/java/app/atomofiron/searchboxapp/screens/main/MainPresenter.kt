@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.screens.main
 
 import androidx.lifecycle.viewModelScope
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -27,7 +28,7 @@ class MainPresenter(
             viewModel.sendTheme(theme)
         }
         preferenceStore.deepBlack.collect(scope) { deepBlack ->
-            val appTheme = preferenceStore.appTheme.entity
+            val appTheme = preferenceStore.appTheme.value
             viewModel.sendTheme(appTheme.copy(deepBlack))
         }
         preferenceStore.appOrientation.collect(scope) {

@@ -82,7 +82,7 @@ class ExplorerPresenter(
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.pushByEntity(gravity)
+    fun onDockGravityChange(gravity: Int) = preferenceStore { setDockGravity(gravity) }
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 

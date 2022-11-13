@@ -12,6 +12,7 @@ class FinderItemsModelDelegate : FinderItemsModel {
 
     override val searchItems = MutableStateFlow<List<FinderStateItem>>(listOf())
 
+    // todo add state machine
     override fun updateState(isLocal: Boolean) {
         val items = ArrayList<FinderStateItem>()
         items.addAll(uniqueItems)

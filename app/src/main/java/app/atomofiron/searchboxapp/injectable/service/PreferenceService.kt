@@ -5,11 +5,11 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.utils.Shell
 
 class PreferenceService(
-        val context: Context,
-        val preferenceStore: PreferenceStore
+    val context: Context,
+    val preferenceStore: PreferenceStore,
 ) {
     private val packageName = context.packageName
-    private val toybox: String get() = preferenceStore.toyboxVariant.entity.toyboxPath
+    private val toybox: String get() = preferenceStore.toyboxVariant.value.toyboxPath
     private val internalPath = context.applicationInfo.dataDir
     private val externalPath: String get() = context.getExternalFilesDir(null)!!.absolutePath
 

@@ -10,18 +10,12 @@ import app.atomofiron.common.util.flow.ChannelFlow
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.model.preference.JoystickComposition
-import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.Shell
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragment, PreferencePresenter>() {
 
-    @Inject
-    lateinit var preferenceStore: PreferenceStore
     @Inject
     lateinit var preferenceDataStore: PreferenceDataStore
     @SuppressLint("StaticFieldLeak")
@@ -32,10 +26,8 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
     val alertOutputSuccess = ChannelFlow<Int>()
     val alertOutputError = ChannelFlow<Shell.Output>()
     val showDeepBlack = MutableStateFlow(false)
+    // todo zip and share the backup
     val isExportImportAvailable: Boolean get() = appContext.getExternalFilesDir(null) != null
-    val explorerItemComposition: ExplorerItemComposition get() = preferenceStore.explorerItemComposition.entity
-    val joystickComposition: JoystickComposition get() = preferenceStore.joystickComposition.entity
-    val toyboxVariant: ToyboxVariant get() = preferenceStore.toyboxVariant.entity
 
     @Inject
     override lateinit var presenter: PreferencePresenter
@@ -51,8 +43,6 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
         .bind(fragmentProperty)
         .dependencies(DaggerInjector.appComponent)
         .build()
-
-    fun getCurrentValue(key: String): Any? = preferenceStore.getCurrentValue(key)
 
     fun showAlert(value: String) {
         alert[viewModelScope] = value

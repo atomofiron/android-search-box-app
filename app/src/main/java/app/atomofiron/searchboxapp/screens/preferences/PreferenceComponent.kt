@@ -13,13 +13,10 @@ import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.injectable.store.PreferencesStore
 import app.atomofiron.searchboxapp.screens.preferences.fragment.LegacyPreferenceDataStore
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
-import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceUpdateOutput
 import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceClickPresenterDelegate
-import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceUpdatePresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportDelegate
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import javax.inject.Scope
@@ -50,14 +47,6 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun preferenceUpdatePresenterDelegate(
-        context: Context, viewModel: PreferenceViewModel, preferenceStore: PreferenceStore
-    ): PreferenceUpdateOutput {
-        return PreferenceUpdatePresenterDelegate(context, viewModel, preferenceStore)
-    }
-
-    @Provides
-    @PreferenceScope
     fun exportImportPresenterDelegate(
         context: Context,
         viewModel: PreferenceViewModel,
@@ -76,7 +65,6 @@ class PreferenceModule {
         exportImportDelegate: ExportImportDelegate.ExportImportOutput,
         preferenceStore: PreferenceStore,
         curtainChannel: CurtainChannel,
-        appWatcher: AppWatcherProxy,
     ): PreferenceClickOutput {
         return PreferenceClickPresenterDelegate(
             viewModel,
@@ -84,7 +72,6 @@ class PreferenceModule {
             exportImportDelegate,
             preferenceStore,
             curtainChannel,
-            appWatcher,
         )
     }
 
@@ -94,15 +81,17 @@ class PreferenceModule {
         viewModel: PreferenceViewModel,
         router: PreferenceRouter,
         exportImportDelegate: ExportImportDelegate.ExportImportOutput,
-        preferenceUpdateDelegate: PreferenceUpdateOutput,
         preferenceClickOutput: PreferenceClickOutput,
+        preferenceStore: PreferenceStore,
+        appStore: AppStore,
     ): PreferencePresenter {
         return PreferencePresenter(
             viewModel,
             router,
             exportImportDelegate,
-            preferenceUpdateDelegate,
             preferenceClickOutput,
+            preferenceStore,
+            appStore,
         )
     }
 
@@ -118,8 +107,12 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun preferenceDataStore(preferences: PreferencesStore, appStore: AppStore): PreferenceDataStore {
-        return LegacyPreferenceDataStore(preferences, appStore.scope)
+    fun preferenceDataStore(
+        preferences: PreferenceStore,
+        appStore: AppStore,
+        watcher: AppWatcherProxy,
+    ): PreferenceDataStore {
+        return LegacyPreferenceDataStore(preferences, appStore.scope, watcher)
     }
 }
 
@@ -129,6 +122,5 @@ interface PreferenceDependencies {
     fun context(): Context
     fun curtainChannel(): CurtainChannel
     fun appWatcherProxy(): AppWatcherProxy
-    fun preferencesStore(): PreferencesStore
     fun appStore(): AppStore
 }

@@ -1,26 +1,22 @@
 package app.atomofiron.searchboxapp.screens.preferences.fragment
 
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.Q
 import androidx.preference.*
-import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.preference.TextFieldPreference
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceFragment
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.Util
+import app.atomofiron.searchboxapp.utils.PreferenceKeys
+import app.atomofiron.searchboxapp.utils.Util.toHumanReadable
 
 class PreferenceFragmentDelegate(
     private val fragment: PreferenceFragment,
     private val viewModel: PreferenceViewModel,
-    private val updateOutput: PreferenceUpdateOutput,
     private val clickOutput: PreferenceClickOutput,
-    private val preferenceDataStore: PreferenceDataStore,
-) : Preference.OnPreferenceChangeListener {
-    companion object {
-        private const val DOES_NOT_MATTER = true
-    }
+) : Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     private val resources get() = fragment.resources
 
@@ -28,172 +24,77 @@ class PreferenceFragmentDelegate(
         return onUpdatePreference(preference, newValue)
     }
 
-    fun onUpdateScreen(screen: PreferenceScreen) {
-        for (i in 0 until screen.preferenceCount) {
-            var preference = screen.getPreference(i)
-            preference.preferenceDataStore = preferenceDataStore
-            preference.preferenceManager.preferenceDataStore = preferenceDataStore
-            when (preference) {
-                is PreferenceScreen -> onUpdateScreen(preference)
-                is PreferenceCategory -> {
-                    val preferenceCategory = preference
-                    if (!BuildConfig.DEBUG && preferenceCategory.key == Const.PREF_CATEGORY_DEBUG) {
-                        preferenceCategory.isVisible = false
-                    } else {
-                        for (j in 0 until preferenceCategory.preferenceCount) {
-                            preference = preferenceCategory.getPreference(j)
-                            preference.onPreferenceChangeListener = this
-                            onUpdatePreference(preference, null)
-                        }
-                    }
+    fun onCreatePreference(preference: Preference) {
+        setPreferenceListeners(preference)
+        when (preference) {
+            is PreferenceGroup -> {
+                for (i in 0 until preference.preferenceCount) {
+                    onCreatePreference(preference[i])
                 }
-                is Preference -> {
-                    preference.onPreferenceChangeListener = this
-                    onUpdatePreference(preference, null)
+            }
+        }
+    }
+
+    private fun setPreferenceListeners(preference: Preference) {
+        preference.onPreferenceChangeListener = this
+        preference.onPreferenceClickListener = this
+
+        when (preference.key) {
+            PreferenceKeys.KEY_SPECIAL_CHARACTERS.name -> {
+                preference as TextFieldPreference
+                preference.setFilter {
+                    it.replace(Regex("[ ]+"), Const.SPACE).trim()
                 }
             }
         }
     }
 
     private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
-        return when (val key = preference.key) {
-            Const.PREF_ABOUT -> {
-                preference.setOnPreferenceClickListener {
-                    clickOutput.onAboutClick()
-                    true
-                }
-                DOES_NOT_MATTER
-            }
-            Const.PREF_STORAGE_PATH -> {
-                if (newValue is String && newValue.isBlank()) {
+        when (val key = preference.key) {
+            PreferenceKeys.KEY_STORAGE_PATH.name -> {
+                if (newValue !is String || newValue.isBlank()) {
                     return false
                 }
-                preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
-                if (newValue is String) {
-                    updateOutput.onPreferenceUpdate(key, newValue)
-                }
-                true
+                preference.updateStringSummary(newValue as String?)
             }
-            Const.PREF_TEXT_FORMATS -> {
-                preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
-                if (newValue is String) {
-                    updateOutput.onPreferenceUpdate(key, newValue)
-                }
-                DOES_NOT_MATTER
-            }
-            Const.PREF_SPECIAL_CHARACTERS -> {
-                preference.summary = newValue as? String ?: viewModel.getCurrentValue(key) as String
-                when (newValue) {
-                    is String -> updateOutput.onPreferenceUpdate(key, newValue)
-                    else -> {
-                        preference as TextFieldPreference
-                        preference.setFilter {
-                            it.replace(Regex("[ ]+"), Const.SPACE).trim()
-                        }
-                    }
-                }
-                DOES_NOT_MATTER
-            }
-            Const.PREF_APP_THEME -> {
-                var name = newValue as? String ?: viewModel.getCurrentValue(key) as String
+            PreferenceKeys.KEY_TEXT_FORMATS.name -> preference.updateStringSummary(newValue as String?)
+            PreferenceKeys.KEY_SPECIAL_CHARACTERS.name -> preference.updateStringSummary(newValue as String?)
+            PreferenceKeys.KEY_APP_THEME.name -> {
+                var name = newValue?.toString() ?: preference.preferenceDataStore?.getString(key, null)
                 name = AppTheme.fromString(name).name
                 val index = resources.getStringArray(R.array.theme_val).indexOf(name)
                 preference.summary = resources.getStringArray(R.array.theme_var)[index]
-                if (newValue is String) {
-                    updateOutput.onPreferenceUpdate(key, newValue)
-                }
-                DOES_NOT_MATTER
             }
-            Const.PREF_DEEP_BLACK -> {
-                if (newValue !is Boolean) return DOES_NOT_MATTER
-                updateOutput.onPreferenceUpdate(key, newValue)
-            }
-            Const.PREF_APP_ORIENTATION -> {
-                val i = (newValue as? String ?: viewModel.getCurrentValue(key) as String).toInt()
+            PreferenceKeys.KEY_APP_ORIENTATION.name -> {
+                val i = (newValue?.toString() ?: preference.preferenceDataStore?.getString(key, null))?.toInt() ?: 0
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
-                if (newValue is String) {
-                    updateOutput.onPreferenceUpdate(key, newValue)
-                }
-                DOES_NOT_MATTER
             }
-            Const.PREF_USE_SU -> {
-                newValue ?: return DOES_NOT_MATTER
-                when (newValue) {
-                    is Boolean -> updateOutput.onPreferenceUpdate(key, newValue)
-                    else -> DOES_NOT_MATTER
-                }
-            }
-            Const.PREF_MAX_SIZE -> {
-                when (newValue) {
-                    !is Int -> return DOES_NOT_MATTER
-                    else -> updateOutput.onPreferenceUpdate(preference.key, newValue)
-                }
-                onUpdateMaxSize(preference, newValue)
-                return DOES_NOT_MATTER
-            }
-            Const.PREF_EXPORT_IMPORT -> {
-                preference.isEnabled = viewModel.isExportImportAvailable
-                preference.setOnPreferenceClickListener {
-                    clickOutput.onExportImportClick()
-                    true
-                }
-                DOES_NOT_MATTER
-            }
-            Const.PREF_EXPLORER_ITEM -> {
-                preference.setOnPreferenceClickListener {
-                    clickOutput.onExplorerItemClick()
-                    true
-                }
-                DOES_NOT_MATTER
-            }
-            Const.PREF_MAX_DEPTH -> {
-                newValue ?: return DOES_NOT_MATTER
-                updateOutput.onPreferenceUpdate(key, newValue as Int)
-                DOES_NOT_MATTER
-            }
-            Const.PREF_EXCLUDE_DIRS -> {
-                newValue ?: return DOES_NOT_MATTER
-                updateOutput.onPreferenceUpdate(key, newValue as Boolean)
-                DOES_NOT_MATTER
-            }
-            Const.PREF_JOYSTICK -> {
-                preference.setOnPreferenceClickListener {
-                    clickOutput.onJoystickClick()
-                    true
-                }
-                DOES_NOT_MATTER
-            }
-            Const.PREF_TOYBOX -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    preference.isVisible = false
-                } else {
-                    preference.setOnPreferenceClickListener {
-                        clickOutput.onToyboxClick()
-                        true
-                    }
-                }
-                DOES_NOT_MATTER
-            }
-            Const.PREF_LEAK_CANARY -> {
-                preference as SwitchPreferenceCompat
-                preference.isChecked = viewModel.getCurrentValue(preference.key) as Boolean
-                preference.setOnPreferenceClickListener {
-                    it as SwitchPreferenceCompat
-                    clickOutput.onLeakCanaryClick(it.isChecked)
-                    true
-                }
-                DOES_NOT_MATTER
-            }
-            else -> throw Exception("Unknown preference ($key)!")
+            PreferenceKeys.KEY_MAX_SIZE.name -> preference.updateMaxSize(newValue)
+            PreferenceKeys.PREF_EXPORT_IMPORT -> preference.isEnabled = viewModel.isExportImportAvailable
+            PreferenceKeys.KEY_TOYBOX.name -> preference.isVisible = SDK_INT < Q
+        }
+        return true
+    }
+
+    private fun Preference.updateMaxSize(newValue: Any?) {
+        if (newValue is Long) {
+            val suffixes = resources.getStringArray(R.array.size_suffix_arr)
+            summary = newValue.toHumanReadable(suffixes)
         }
     }
 
-    private fun onUpdateMaxSize(preference: Preference, newValue: Any?) {
-        val maxSize = newValue ?: viewModel.getCurrentValue(preference.key)
-        if (fragment.view != null) {
-            val intValue = maxSize as Int
-            val suffixes = resources.getStringArray(R.array.size_suffix_arr)
-            preference.summary = Util.intToHumanReadable(intValue, suffixes)
+    private fun Preference.updateStringSummary(newValue: String?) {
+        summary = newValue ?: preferenceDataStore?.getString(key, null)
+    }
+
+    override fun onPreferenceClick(preference: Preference): Boolean {
+        when (preference.key) {
+            PreferenceKeys.PREF_ABOUT -> clickOutput.onAboutClick()
+            PreferenceKeys.PREF_EXPORT_IMPORT -> clickOutput.onExportImportClick()
+            PreferenceKeys.KEY_EXPLORER_ITEM.name -> clickOutput.onExplorerItemClick()
+            PreferenceKeys.KEY_JOYSTICK.name -> clickOutput.onJoystickClick()
+            PreferenceKeys.KEY_TOYBOX.name -> clickOutput.onToyboxClick()
         }
+        return true
     }
 }

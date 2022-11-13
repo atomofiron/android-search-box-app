@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
-import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import app.atomofiron.searchboxapp.utils.Shell
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
@@ -31,20 +31,15 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initViewModel(this, PreferenceViewModel::class, savedInstanceState)
 
-        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter, presenter, viewModel.preferenceDataStore)
+        preferenceManager.preferenceDataStore = viewModel.preferenceDataStore
+        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter)
         setPreferencesFromResource(R.xml.preferences, rootKey)
+        preferenceDelegate.onCreatePreference(preferenceScreen)
 
-        preferenceScreen.preferenceDataStore
-
-        val deepBlack = findPreference<Preference>(Const.PREF_DEEP_BLACK)!!
+        val deepBlack = findPreference<Preference>(PreferenceKeys.KEY_DEEP_BLACK.name)!!
         viewModel.showDeepBlack.collect(lifecycleScope) {
             deepBlack.isVisible = it
         }
-    }
-
-    override fun onCreateAdapter(preferenceScreen: PreferenceScreen): RecyclerView.Adapter<*> {
-        preferenceDelegate.onUpdateScreen(preferenceScreen)
-        return super.onCreateAdapter(preferenceScreen)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

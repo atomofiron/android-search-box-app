@@ -18,7 +18,7 @@ class ExplorerRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
 
     override val currentDestinationId = R.id.rootFragment
 
-    val permissions = PermissionDelegate.create(activityProperty)
+    val permissions = PermissionDelegate.create(activityProperty, property)
 
     fun showFinder() {
         fragment {

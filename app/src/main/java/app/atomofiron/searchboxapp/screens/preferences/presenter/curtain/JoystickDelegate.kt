@@ -9,15 +9,15 @@ import android.widget.TextView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.preference.JoystickComposition
 import app.atomofiron.searchboxapp.databinding.CurtainPreferenceJoystickBinding
-import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class JoystickDelegate(
-    private val joystickNode: PreferenceNode<JoystickComposition, Int>,
+    private val preferenceStore: PreferenceStore,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
-    private var entity: JoystickComposition = joystickNode.entity
+    private var entity: JoystickComposition = preferenceStore.joystickComposition.value
 
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
         val binding = CurtainPreferenceJoystickBinding.inflate(inflater, container, false)
@@ -55,12 +55,12 @@ class JoystickDelegate(
                 else -> throw Exception()
             }
             tvTitle.text = entity.text()
-            joystickNode.notify(entity)
+            preferenceStore { setJoystickComposition(entity) }
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
 
-        override fun onStopTrackingTouch(seekBar: SeekBar?) = joystickNode.pushByEntity(entity)
+        override fun onStopTrackingTouch(seekBar: SeekBar?) = preferenceStore { setJoystickComposition(entity) }
 
         override fun onClick(view: View) {
             view as CompoundButton
@@ -69,7 +69,7 @@ class JoystickDelegate(
                 R.id.preference_inv_highlight -> entity.copy(invGlowing = view.isChecked)
                 else -> throw Exception()
             }
-            joystickNode.pushByEntity(entity)
+            preferenceStore { setJoystickComposition(entity) }
         }
     }
 }

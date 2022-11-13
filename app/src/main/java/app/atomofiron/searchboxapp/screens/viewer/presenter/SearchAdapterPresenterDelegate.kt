@@ -26,7 +26,7 @@ class SearchAdapterPresenterDelegate(
     init {
         viewModel.run {
             uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
-            val characters = preferenceStore.specialCharacters.entity
+            val characters = preferenceStore.specialCharacters.value
             uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
             uniqueItems.add(FinderStateItem.ConfigItem(isLocal = true))
             uniqueItems.add(FinderStateItem.TestItem())

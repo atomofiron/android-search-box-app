@@ -25,7 +25,7 @@ open class ServiceModule {
         assets: AssetManager,
         appStore: AppStore,
         explorerStore: ExplorerStore,
-        preferenceStore: PreferencesStore,
+        preferenceStore: PreferenceStore,
     ): ExplorerService = ExplorerService(context, assets, appStore, explorerStore, preferenceStore)
 
     @Provides

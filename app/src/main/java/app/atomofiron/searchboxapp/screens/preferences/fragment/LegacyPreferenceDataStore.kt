@@ -3,27 +3,32 @@ package app.atomofiron.searchboxapp.screens.preferences.fragment
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.preference.PreferenceDataStore
-import app.atomofiron.searchboxapp.injectable.store.PreferencesStore
-import app.atomofiron.searchboxapp.poop
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
+import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import kotlinx.coroutines.*
 
 class LegacyPreferenceDataStore(
-    preferencesStore: PreferencesStore,
+    preferenceStore: PreferenceStore,
     private val scope: CoroutineScope,
-) : PreferenceDataStore(), DataStore<Preferences> by preferencesStore {
+    private val watcher: AppWatcherProxy,
+) : PreferenceDataStore(), DataStore<Preferences> by preferenceStore {
 
-    private var preferences: Preferences = preferencesStore.initialPreferences
+    private var preferences: Preferences = preferenceStore.initialPreferences
 
     init {
         launchImmediately {
-            preferencesStore.data.collect {
+            preferenceStore.data.collect {
                 preferences = it
             }
         }
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return preferences[booleanPreferencesKey(key)] ?: defValue
+        return when (key) {
+            PreferenceKeys.PREF_LEAK_CANARY -> watcher.isEnabled
+            else -> preferences[booleanPreferencesKey(key)] ?: defValue
+        }
     }
 
     override fun getInt(key: String, defValue: Int): Int {
@@ -39,7 +44,6 @@ class LegacyPreferenceDataStore(
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        poop("getString $key ${preferences[stringPreferencesKey(key)]}")
         return preferences[stringPreferencesKey(key)] ?: defValue
     }
 
@@ -48,9 +52,12 @@ class LegacyPreferenceDataStore(
     }
 
     override fun putBoolean(key: String, value: Boolean) {
-        launchImmediately {
-            edit {
-                it[booleanPreferencesKey(key)] = value
+        when (key) {
+            PreferenceKeys.PREF_LEAK_CANARY -> watcher.isEnabled = value
+            else -> launchImmediately {
+                edit {
+                    it[booleanPreferencesKey(key)] = value
+                }
             }
         }
     }
@@ -80,7 +87,6 @@ class LegacyPreferenceDataStore(
     }
 
     override fun putString(key: String, value: String?) {
-        poop("getString $key $value")
         val pKey = stringPreferencesKey(key)
         launchImmediately {
             edit {

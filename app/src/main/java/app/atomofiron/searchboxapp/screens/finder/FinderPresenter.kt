@@ -27,7 +27,7 @@ class FinderPresenter(
 
     init {
         uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
-        val characters = preferenceStore.specialCharacters.entity
+        val characters = preferenceStore.specialCharacters.value
         uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
         uniqueItems.add(FinderStateItem.TestItem())
 
@@ -35,24 +35,23 @@ class FinderPresenter(
             progressItems.add(FinderStateItem.ProgressItem(it))
         }
 
-        val excludeDirs = preferenceStore.excludeDirs.value
-        viewModel.setExcludeDirsValue(excludeDirs)
-        viewModel.updateState()
         onSubscribeData()
         viewModel.switchConfigItemVisibility()
     }
 
     override fun onSubscribeData() {
+        preferenceStore.excludeDirs.collect(scope) { excludeDirs ->
+            viewModel.setExcludeDirsValue(excludeDirs)
+            viewModel.updateState()
+        }
         preferenceStore.dockGravity.collect(scope) { gravity ->
             viewModel.historyDrawerGravity.value = gravity
         }
         preferenceStore.specialCharacters.collect(scope) { chs ->
             viewModel.updateUniqueItem(FinderStateItem.SpecialCharactersItem(chs))
         }
-        scope.launch {
-            viewModel.reloadHistory.collect {
-                preferenceChannel.notifyHistoryImported()
-            }
+        viewModel.reloadHistory.collect(scope) {
+            preferenceChannel.notifyHistoryImported()
         }
 
         explorerStore.current.collect(scope) {
@@ -76,7 +75,7 @@ class FinderPresenter(
         }
     }
 
-    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.pushByEntity(gravity)
+    fun onDockGravityChange(gravity: Int) = preferenceStore { setDockGravity(gravity) }
 
     fun onExplorerOptionSelected() = router.showExplorer()
 

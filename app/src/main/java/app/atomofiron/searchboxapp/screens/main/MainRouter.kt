@@ -14,7 +14,7 @@ class MainRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(
 
     private val fragmentManager: FragmentManager? get() = activity?.supportFragmentManager
         ?.fragments
-        ?.first()
+        ?.firstOrNull()
         ?.let {
             it as CustomNavHostFragment
         }?.childFragmentManager

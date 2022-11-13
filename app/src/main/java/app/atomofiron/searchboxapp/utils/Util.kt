@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import java.util.*
+import kotlin.math.max
 
 object Util {
     @JvmStatic
@@ -14,13 +15,12 @@ object Util {
     }
 
     fun isTextFile(path: String, extra: Array<String>): Boolean {
-        var path = path
-        path = getFormat(path)
-        if (path.isEmpty()) return false
-        when (path) {
+        val ext = getFormat(path)
+        if (ext.isEmpty()) return false
+        when (ext) {
             "txt", "java", "xml", "html", "htm", "smali", "log", "js", "css", "json", "kt" -> return true
         }
-        for (s in extra) if (path == s) return true
+        for (s in extra) if (ext == s) return true
         return false
     }
 
@@ -35,19 +35,16 @@ object Util {
         }
     }
 
-    fun getFormat(path: String): String {
-        var path = path
+    private fun getFormat(path: String): String {
         var index = path.lastIndexOf('/')
-        if (index == -1) {
-            if (path.lastIndexOf('.') == -1) return path
-        } else path = path.substring(index)
-        index = path.lastIndexOf('.')
-        return if (index == -1) "" else path.substring(index + 1).toLowerCase()
+        index = max(0, index)
+        index = path.lastIndexOf('.', index)
+        return path.substring(index.inc()).lowercase()
     }
 
-    fun intToHumanReadable(bytes: Int, suffixes: Array<String?>): String {
+    fun Number.toHumanReadable(suffixes: Array<String?>): String {
         var order = 0
-        var byteCount = bytes.toFloat()
+        var byteCount = toDouble()
         while (byteCount >= 970) {
             byteCount /= 1024f
             order++

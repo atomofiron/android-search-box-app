@@ -5,15 +5,20 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import app.atomofiron.common.util.property.WeakProperty
 
 class PermissionDelegate private constructor(
     activityProperty: WeakProperty<FragmentActivity>,
+    fragmentProperty: WeakProperty<Fragment>,
 ) : PermissionDelegateApi {
     companion object {
-        fun create(activityProperty: WeakProperty<FragmentActivity>): PermissionDelegateApi {
-            return PermissionDelegate(activityProperty)
+        fun create(
+            activityProperty: WeakProperty<FragmentActivity>,
+            fragmentProperty: WeakProperty<Fragment>,
+        ): PermissionDelegateApi {
+            return PermissionDelegate(activityProperty, fragmentProperty)
         }
     }
 
@@ -23,6 +28,7 @@ class PermissionDelegate private constructor(
     }
 
     private val activity by activityProperty
+    private val fragment by fragmentProperty
 
     private val requestedPermissions = mutableListOf<String>()
     private val permissionStatuses = mutableListOf<Status>()
@@ -30,7 +36,7 @@ class PermissionDelegate private constructor(
     private val grantedCallbacks = mutableMapOf<String, List<PermissionCallback>>()
     private val deniedCallbacks = mutableMapOf<String, List<PermissionCallback>>()
 
-    private val contract = activityProperty.value!!.registerForActivityResult(
+    private val contract = fragment!!.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
         ::onPermissionRequestResult,
     )

@@ -62,7 +62,7 @@ class TextViewerPresenter(
                 viewModel.setTasks(it)
             }
         }
-        viewModel.composition = preferenceStore.explorerItemComposition.entity
+        viewModel.composition = preferenceStore.explorerItemComposition.value
 
         val queryParams = params.query?.let {
             FinderQueryParams(params.query, params.useRegex, params.ignoreCase)

@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
@@ -124,7 +123,6 @@ class ExplorerModule {
 interface ExplorerDependencies {
     fun context(): Context
     fun assetManager(): AssetManager
-    fun sharedPreferences(): SharedPreferences
     fun explorerService(): ExplorerService
     fun explorerStore(): ExplorerStore
     fun preferenceStore(): PreferenceStore

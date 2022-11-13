@@ -18,7 +18,7 @@ import app.atomofiron.searchboxapp.utils.escapeQuotes
 
 class TextViewerService(
     private val textViewerChannel: TextViewerChannel,
-    private val preferenceStore: PreferenceStore
+    private val preferenceStore: PreferenceStore,
 ) {
     companion object {
         private const val UNKNOWN = -1L

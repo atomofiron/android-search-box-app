@@ -6,18 +6,17 @@ import android.view.ViewGroup
 import android.widget.*
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainPreferenceExplorerItemBinding
-import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.explorer.NodeProperties
-import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
 import app.atomofiron.searchboxapp.utils.Const
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class ExplorerItemDelegate(
-    private val node: PreferenceNode<ExplorerItemComposition, Int>,
+    private val preferenceStore: PreferenceStore
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
     private val dir = Node(
         path = "/sdcard/Android/",
@@ -26,7 +25,7 @@ class ExplorerItemDelegate(
         content = NodeContent.Directory(),
     )
 
-    private var composition = node.entity
+    private var composition = preferenceStore.explorerItemComposition.value
 
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
         val binding = CurtainPreferenceExplorerItemBinding.inflate(inflater, container, false)
@@ -85,7 +84,7 @@ class ExplorerItemDelegate(
             }
             holder.bindComposition(composition)
             holder.setGreyBackgroundColor(composition.visibleBg)
-            node.pushByOriginal(composition.flags)
+            preferenceStore { setExplorerItemComposition(composition) }
         }
     }
 }

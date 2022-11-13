@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.preferences.presenter
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel

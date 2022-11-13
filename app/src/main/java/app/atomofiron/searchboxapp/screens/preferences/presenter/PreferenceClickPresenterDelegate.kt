@@ -10,7 +10,6 @@ import app.atomofiron.searchboxapp.screens.preferences.PreferenceRouter
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.*
-import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.showCurtain
 
 class PreferenceClickPresenterDelegate(
@@ -19,7 +18,6 @@ class PreferenceClickPresenterDelegate(
     private val exportImportDelegate: ExportImportDelegate.ExportImportOutput,
     private val preferenceStore: PreferenceStore,
     curtainChannel: CurtainChannel,
-    private val appWatcher: AppWatcherProxy,
 ) : Recipient, PreferenceClickOutput {
 
     init {
@@ -28,17 +26,13 @@ class PreferenceClickPresenterDelegate(
             val adapter: CurtainApi.Adapter<*> = when (controller.requestId) {
                 R.layout.curtain_about -> AboutDelegate()
                 R.layout.curtain_preference_export_import -> ExportImportDelegate(exportImportDelegate)
-                R.layout.curtain_preference_explorer_item -> ExplorerItemDelegate(preferenceStore.explorerItemComposition)
-                R.layout.curtain_preference_joystick -> JoystickDelegate(preferenceStore.joystickComposition)
-                R.layout.curtain_preference_toybox -> ToyboxDelegate(preferenceStore.toyboxVariant)
+                R.layout.curtain_preference_explorer_item -> ExplorerItemDelegate(preferenceStore)
+                R.layout.curtain_preference_joystick -> JoystickDelegate(preferenceStore)
+                R.layout.curtain_preference_toybox -> ToyboxDelegate(preferenceStore)
                 else -> return@collectForMe
             }
             adapter.setController(controller)
         }
-    }
-
-    override fun onLeakCanaryClick(isChecked: Boolean) {
-        appWatcher.isEnabled = isChecked
     }
 
     override fun onAboutClick() = router.showCurtain(recipient, R.layout.curtain_about)

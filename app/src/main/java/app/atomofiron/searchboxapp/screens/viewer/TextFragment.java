@@ -53,7 +53,7 @@ public class TextFragment extends Fragment implements View.OnClickListener {
 		view.findViewById(R.id.fab_prev).setOnClickListener(this);
 		view.findViewById(R.id.fab_next).setOnClickListener(this);
 		//((NestedScrollView)findViewById(R.id.scroll_text)).setOnScrollChangeListener(listener);
-		final RFile file = new RFile(result.path, Util.sp(getContext()).getBoolean(Const.PREF_USE_SU, false));
+		final RFile file = new RFile(result.path, Util.sp(getContext()).getBoolean(PreferenceKeys.KEY_USE_SU, false));
 
 		if (file.canRead())
 			new Thread(new Runnable() {

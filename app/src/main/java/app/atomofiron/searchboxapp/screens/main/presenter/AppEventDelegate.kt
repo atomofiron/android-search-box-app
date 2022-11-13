@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.main.presenter
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.preference.AppTheme
@@ -21,6 +22,7 @@ class AppEventDelegate(
 ) : AppEventDelegateApi {
 
     private val init = Job()
+    private var theme: AppTheme? = null
 
     init {
         scope.launch(Dispatchers.Default) {
@@ -33,10 +35,9 @@ class AppEventDelegate(
     }
 
     private fun CoroutineScope.init() {
-        preferenceStore.deepBlack.collect(this) {
-            val theme = preferenceStore.appTheme.entity
-            if (theme is AppTheme.Dark && (theme.deepBlack xor it)) {
-                preferenceStore.appTheme.pushByEntity(AppTheme.Dark(deepBlack = it))
+        preferenceStore.appTheme.collect(this) { theme ->
+            if (theme != this@AppEventDelegate.theme) {
+                preferenceStore.setAppTheme(theme)
             }
         }
         init.complete()

@@ -18,7 +18,7 @@ class ResultItemActionDelegate(
     private val preferenceStore: PreferenceStore,
 ) : ResultItemActionListener {
     override fun onItemClick(item: Node) {
-        val textFormats = preferenceStore.textFormats.entity
+        val textFormats = preferenceStore.textFormats.value
         if (item.isFile && Util.isTextFile(item.path, textFormats)) {
             val params = viewModel.task.value.params
             router.openFile(item.path, params)

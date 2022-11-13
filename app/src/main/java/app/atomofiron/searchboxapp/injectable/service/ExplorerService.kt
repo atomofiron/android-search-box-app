@@ -5,7 +5,7 @@ import android.content.res.AssetManager
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
-import app.atomofiron.searchboxapp.injectable.store.PreferencesStore
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
@@ -18,7 +18,6 @@ import app.atomofiron.searchboxapp.utils.Explorer.sortByName
 import app.atomofiron.searchboxapp.utils.Explorer.theSame
 import app.atomofiron.searchboxapp.utils.Explorer.update
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.first
 import java.io.File
 import java.io.FileOutputStream
 
@@ -27,13 +26,13 @@ class ExplorerService(
     private val assets: AssetManager,
     appStore: AppStore,
     private val explorerStore: ExplorerStore,
-    private val preferencesStore: PreferencesStore,
+    private val preferenceStore: PreferenceStore,
 ) {
 
     private val scope = appStore.scope
 
     private val defaultStoragePath = Tool.getExternalStorageDirectory(context)
-    private val useSu: Boolean get() = preferencesStore.useSu.value
+    private val useSu: Boolean get() = preferenceStore.useSu.value
 
     private val tab = NodeTab()
 
@@ -45,17 +44,12 @@ class ExplorerService(
         }
         scope.launch(Dispatchers.Default) {
             explorerStore.current.collect {
-                preferencesStore.setOpenedDirPath(it?.path)
+                preferenceStore.setOpenedDirPath(it?.path)
             }
         }
     }
 
-    private suspend fun waitForUseSu() {
-        preferencesStore.useSu.first()
-    }
-
     suspend fun trySetRoots(paths: Collection<String>) {
-        waitForUseSu()
         val roots = paths.parMapMut {
             Explorer.asRoot(it)
                 .update(useSu)
