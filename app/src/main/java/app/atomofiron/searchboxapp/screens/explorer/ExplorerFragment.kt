@@ -1,8 +1,6 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import android.content.Context
 import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View

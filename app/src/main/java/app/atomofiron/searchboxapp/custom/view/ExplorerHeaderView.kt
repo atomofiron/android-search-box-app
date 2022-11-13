@@ -42,9 +42,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
         when (val item = item) {
             null -> isGone = true
             else -> {
-                if (!isVisible) {
-                    isVisible = true
-                }
+                if (!isVisible) isVisible = true
                 binder.onBind(item)
                 binder.bindComposition(composition)
             }

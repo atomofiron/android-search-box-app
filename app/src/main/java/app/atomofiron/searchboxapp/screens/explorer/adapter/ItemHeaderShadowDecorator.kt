@@ -36,7 +36,6 @@ class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : Recycl
 
     private var backgroundGrey = 0
     private var backgroundColor = 0
-    private var headerCurrentColor = 0
 
     fun onHeaderChanged(item: Node?) {
         headerItem = item
@@ -45,6 +44,7 @@ class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : Recycl
     fun setHeaderView(headerView: ExplorerHeaderView) {
         this.headerView = headerView
         initShadow(headerView.context)
+        setHeaderBackground()
         backgroundColor = headerView.context.findColorByAttr(R.attr.colorBackground)
         backgroundGrey = ContextCompat.getColor(headerView.context, R.color.item_explorer_background)
         backgroundGrey = ColorUtils.compositeColors(backgroundGrey, backgroundColor)
@@ -97,10 +97,7 @@ class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : Recycl
             0 -> backgroundGrey
             else -> backgroundColor
         }
-        if (color != headerCurrentColor) {
-            headerCurrentColor = color
-            headerView.setBackgroundColor(color)
-        }
+        headerView.setBackgroundColor(color)
     }
 
     private fun drawShadows(children: Map<Int, View>, canvas: Canvas, parent: RecyclerView) {

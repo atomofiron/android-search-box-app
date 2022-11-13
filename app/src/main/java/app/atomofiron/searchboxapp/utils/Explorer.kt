@@ -24,6 +24,7 @@ object Explorer {
     private const val FILE_PNG = "PNG image data"
     private const val FILE_JPEG = "JPEG image data"
     private const val FILE_ZIP = "Zip archive data"
+    private const val FILE_GZIP = "gzip compressed data"
     private const val FILE_BZIP2 = "bzip2 compressed data"
     private const val FILE_TAR = "POSIX tar archive"
     private const val FILE_UTF8_TEXT = "UTF-8 text"
@@ -163,6 +164,7 @@ object Explorer {
         )
     }
 
+    // todo java.util.ConcurrentModificationException
     fun Node.hasChild(item: Node): Boolean {
         return children?.find { it.uniqueId == item.uniqueId } != null
     }
@@ -216,6 +218,7 @@ object Explorer {
                 else -> NodeContent.File.Archive.Zip()
             }
             output.output.startsWith(FILE_BZIP2) -> NodeContent.File.Archive.Bzip2()
+            output.output.startsWith(FILE_GZIP) -> NodeContent.File.Archive.Gz()
             output.output.startsWith(FILE_TAR) -> NodeContent.File.Archive.Tar()
             output.output.startsWith(FILE_UTF8_TEXT) ||
             output.output.startsWith(FILE_SH_SCRIPT) ||
