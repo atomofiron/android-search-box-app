@@ -48,6 +48,7 @@ object Explorer {
     private const val EXT_TXT = ".txt"
     private const val EXT_IMG = ".img"
     private const val EXT_MP4 = ".mp4"
+    private const val EXT_3GP = ".3gp"
     private const val EXT_AVI = ".avi"
     private const val EXT_MP3 = ".mp3"
     private const val EXT_OGG = ".ogg"
@@ -386,6 +387,7 @@ object Explorer {
         endsWith(EXT_TXT, ignoreCase = true) -> NodeContent.File.Text
         endsWith(EXT_IMG, ignoreCase = true) -> NodeContent.File.DataImage
         endsWith(EXT_MP4, ignoreCase = true) ||
+        endsWith(EXT_3GP, ignoreCase = true) ||
         endsWith(EXT_AVI, ignoreCase = true) -> NodeContent.File.Movie()
         endsWith(EXT_MP3, ignoreCase = true) ||
         endsWith(EXT_OGG, ignoreCase = true) ||

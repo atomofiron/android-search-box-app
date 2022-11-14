@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.injectable.service
 
 import android.content.Context
 import android.content.res.AssetManager
+import android.net.Uri
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -17,6 +18,7 @@ import app.atomofiron.searchboxapp.utils.Explorer.rename
 import app.atomofiron.searchboxapp.utils.Explorer.sortByName
 import app.atomofiron.searchboxapp.utils.Explorer.theSame
 import app.atomofiron.searchboxapp.utils.Explorer.update
+import app.atomofiron.searchboxapp.utils.Tool.writeTo
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
@@ -24,7 +26,7 @@ import java.io.FileOutputStream
 class ExplorerService(
     context: Context,
     private val assets: AssetManager,
-    appStore: AppStore,
+    private val appStore: AppStore,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
 ) {
@@ -182,6 +184,15 @@ class ExplorerService(
                 }
             }
         }
+    }
+
+    suspend fun tryReceive(where: Node, uri: Uri) {
+        val inputStream = appStore.context.contentResolver.openInputStream(uri)
+        inputStream ?: return
+        val outputStream = FileOutputStream(File(""))
+        val success = inputStream.writeTo(outputStream)
+        inputStream.close()
+        outputStream.close()
     }
 
     private suspend inline fun <R> withTab(block: NodeTab.() -> R): R {

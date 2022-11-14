@@ -1,8 +1,8 @@
 package app.atomofiron.searchboxapp.injectable.channel
 
-import kotlinx.coroutines.channels.BroadcastChannel
+import android.net.Uri
 import kotlinx.coroutines.channels.Channel
 
-object MainChannel {
-    val channel = BroadcastChannel<Int>(Channel.BUFFERED)
+class MainChannel {
+    val fileToReceive = Channel<Uri>()
 }

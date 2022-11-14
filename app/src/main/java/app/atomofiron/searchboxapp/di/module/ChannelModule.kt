@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.di.module
 
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
+import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
@@ -24,4 +25,8 @@ open class ChannelModule {
     @Provides
     @Singleton
     open fun provideCurtainChannel(appStore: AppStore): CurtainChannel = CurtainChannel(appStore.scope)
+
+    @Provides
+    @Singleton
+    open fun provideMainChannel(): MainChannel = MainChannel()
 }
