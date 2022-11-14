@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.main
 
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.util.flow.collect
+import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -17,8 +18,9 @@ class MainPresenter(
     private val windowService: WindowService,
     appStore: AppStore,
     preferenceStore: PreferenceStore,
+    mainChannel: MainChannel,
 ) : SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput,
-    AppEventDelegateApi by AppEventDelegate(viewModel.viewModelScope, appStore, preferenceStore)
+    AppEventDelegateApi by AppEventDelegate(viewModel.viewModelScope, appStore, preferenceStore, mainChannel)
 {
     override var isExitSnackbarShown: Boolean = false
     private val scope = viewModel.viewModelScope
