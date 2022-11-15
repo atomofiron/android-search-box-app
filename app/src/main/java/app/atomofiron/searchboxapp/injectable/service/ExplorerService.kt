@@ -65,7 +65,8 @@ class ExplorerService(
 
     suspend fun tryToggle(it: Node) {
         withTab {
-            var item = levels.findNode(it.uniqueId) ?: return
+            var item = levels.findNode(it.uniqueId)
+            if (item?.isChecked != true) return
             if (item.isOpened) {
                 val nextOpened = item.children?.find { it.isOpened }
                 if (nextOpened != null) {
