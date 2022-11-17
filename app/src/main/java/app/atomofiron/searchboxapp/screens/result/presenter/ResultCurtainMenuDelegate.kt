@@ -2,7 +2,6 @@ package app.atomofiron.searchboxapp.screens.result.presenter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.R
@@ -15,11 +14,13 @@ import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
-import app.atomofiron.searchboxapp.screens.result.ResultViewModel
+import app.atomofiron.searchboxapp.screens.result.ResultViewState
 import app.atomofiron.searchboxapp.utils.showCurtain
+import kotlinx.coroutines.CoroutineScope
 
 class ResultCurtainMenuDelegate(
-    private val viewModel: ResultViewModel,
+    private val scope: CoroutineScope,
+    private val viewState: ResultViewState,
     private val router: ResultRouter,
     private val interactor: ResultInteractor,
     appStore: AppStore,
@@ -31,7 +32,7 @@ class ResultCurtainMenuDelegate(
     override var data: ExplorerItemOptions? = null
 
     init {
-        curtainChannel.flow.filterForMe().collect(viewModel.viewModelScope, ::setController)
+        curtainChannel.flow.filterForMe().collect(scope, ::setController)
     }
 
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder? {
@@ -47,9 +48,9 @@ class ResultCurtainMenuDelegate(
         when (id) {
             R.id.menu_copy_path -> {
                 interactor.copyToClipboard(items.first() as FinderResult)
-                viewModel.sendAlert(resources.getString(R.string.copied))
+                viewState.sendAlert(resources.getString(R.string.copied))
             }
-            R.id.menu_remove -> interactor.deleteItems(items, viewModel.task.value.uuid)
+            R.id.menu_remove -> interactor.deleteItems(items, viewState.task.value.uuid)
         }
     }
 

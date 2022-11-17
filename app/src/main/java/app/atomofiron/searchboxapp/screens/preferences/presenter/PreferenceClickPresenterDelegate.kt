@@ -1,19 +1,18 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter
 
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceRouter
-import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.*
 import app.atomofiron.searchboxapp.utils.showCurtain
+import kotlinx.coroutines.CoroutineScope
 
 class PreferenceClickPresenterDelegate(
-    viewModel: PreferenceViewModel,
+    scope: CoroutineScope,
     private val router: PreferenceRouter,
     private val exportImportDelegate: ExportImportDelegate.ExportImportOutput,
     private val preferenceStore: PreferenceStore,
@@ -21,7 +20,7 @@ class PreferenceClickPresenterDelegate(
 ) : Recipient, PreferenceClickOutput {
 
     init {
-        curtainChannel.flow.collectForMe(viewModel.viewModelScope) { controller ->
+        curtainChannel.flow.collectForMe(scope) { controller ->
             controller ?: return@collectForMe
             val adapter: CurtainApi.Adapter<*> = when (controller.requestId) {
                 R.layout.curtain_about -> AboutDelegate()

@@ -18,7 +18,7 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
-    BaseFragment<TextViewerFragment, TextViewerViewModel, TextViewerPresenter> by BaseFragmentImpl()
+    BaseFragment<TextViewerFragment, TextViewerViewState, TextViewerPresenter> by BaseFragmentImpl()
 {
     companion object {
         const val KEY_PATH = "KEY_PATH"
@@ -57,7 +57,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             }
             false
         }
-        viewModel.onViewCollect()
+        viewState.onViewCollect()
         onApplyInsets(view)
     }
 
@@ -66,7 +66,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         binding.bottomAppBar.updateElevation()
     }
 
-    override fun TextViewerViewModel.onViewCollect() {
+    override fun TextViewerViewState.onViewCollect() {
         viewCollect(loading, collector = ::setLoading)
         viewCollect(textLines, collector = viewerAdapter::setItems)
         viewCollect(matchesMap, collector = viewerAdapter::setMatches)
@@ -83,7 +83,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     private fun setLoading(visible: Boolean) {
         binding.ballsView.isInvisible = !visible
-        onMatchCounterChanged(viewModel.matchesCounter.value)
+        onMatchCounterChanged(viewState.matchesCounter.value)
     }
 
     @SuppressLint("RestrictedApi")
@@ -98,7 +98,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
                 "$index / $count"
             }
         }
-        val loading = viewModel.loading.value
+        val loading = viewState.loading.value
         binding.bottomBar.menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index!! > 1
         binding.bottomBar.menu.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
     }

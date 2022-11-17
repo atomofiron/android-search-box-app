@@ -4,23 +4,23 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import app.atomofiron.common.util.property.MutableWeakProperty
-import app.atomofiron.common.util.property.WeakProperty
 
-abstract class BaseViewModel<D : Any, V : Fragment, P : BasePresenter<*,*>> : ViewModel() {
-    private val fragmentProperty = MutableWeakProperty<Fragment>()
+abstract class BaseViewModel<D : Any, V : Fragment, S : Any, P : BasePresenter<*,*>> : ViewModel() {
+
+    protected val fragmentProperty = MutableWeakProperty<Fragment>()
 
     abstract val presenter: P
-    protected lateinit var component: D
-        private set
+    abstract val viewState: S
+    private lateinit var componentRef: D
 
-    open fun inject(view: V) {
-        fragmentProperty.value = view
-        if (!::component.isInitialized) {
-            component = createComponent(fragmentProperty)
+    open fun setFragment(fragment: V) {
+        fragmentProperty.value = fragment
+        if (!::componentRef.isInitialized) {
+            componentRef = component(fragment)
         }
     }
 
-    abstract fun createComponent(fragmentProperty: WeakProperty<Fragment>): D
+    abstract fun component(fragment: V): D
 
     open fun onSaveState(state: Bundle) = Unit
 

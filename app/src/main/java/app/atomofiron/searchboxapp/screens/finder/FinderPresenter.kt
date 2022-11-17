@@ -10,20 +10,22 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.presenter.FinderAdapterPresenterDelegate
+import kotlinx.coroutines.CoroutineScope
 
 class FinderPresenter(
-    viewModel: FinderViewModel,
+    scope: CoroutineScope,
+    private val viewState: FinderViewState,
     router: FinderRouter,
     private val finderAdapterDelegate: FinderAdapterPresenterDelegate,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
     private val finderStore: FinderStore,
     private val preferenceChannel: PreferenceChannel
-) : BasePresenter<FinderViewModel, FinderRouter>(viewModel, router = router),
+) : BasePresenter<FinderViewModel, FinderRouter>(scope, router),
         FinderAdapterOutput by finderAdapterDelegate
 {
-    private val uniqueItems: MutableList<FinderStateItem> get() = viewModel.uniqueItems
-    private val progressItems: MutableList<FinderStateItem.ProgressItem> get() = viewModel.progressItems
+    private val uniqueItems: MutableList<FinderStateItem> get() = viewState.uniqueItems
+    private val progressItems: MutableList<FinderStateItem.ProgressItem> get() = viewState.progressItems
 
     init {
         uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
@@ -36,21 +38,21 @@ class FinderPresenter(
         }
 
         onSubscribeData()
-        viewModel.switchConfigItemVisibility()
+        viewState.switchConfigItemVisibility()
     }
 
     override fun onSubscribeData() {
         preferenceStore.excludeDirs.collect(scope) { excludeDirs ->
-            viewModel.setExcludeDirsValue(excludeDirs)
-            viewModel.updateState()
+            viewState.setExcludeDirsValue(excludeDirs)
+            viewState.updateState()
         }
         preferenceStore.dockGravity.collect(scope) { gravity ->
-            viewModel.historyDrawerGravity.value = gravity
+            viewState.historyDrawerGravity.value = gravity
         }
         preferenceStore.specialCharacters.collect(scope) { chs ->
-            viewModel.updateUniqueItem(FinderStateItem.SpecialCharactersItem(chs))
+            viewState.updateUniqueItem(FinderStateItem.SpecialCharactersItem(chs))
         }
-        viewModel.reloadHistory.collect(scope) {
+        viewState.reloadHistory.collect(scope) {
             preferenceChannel.notifyHistoryImported()
         }
 
@@ -58,19 +60,19 @@ class FinderPresenter(
             val checked = explorerStore.checked.value
             if (checked.isEmpty()) {
                 scope.launch {
-                    viewModel.updateTargets(it, checked)
+                    viewState.updateTargets(it, checked)
                 }
             }
         }
         explorerStore.checked.collect(scope) {
             val currentDir = explorerStore.current.value
             scope.launch {
-                viewModel.updateTargets(currentDir, it)
+                viewState.updateTargets(currentDir, it)
             }
         }
         finderStore.notifications.collect(scope) {
             scope.launch {
-                viewModel.onFinderTaskUpdate(it)
+                viewState.onFinderTaskUpdate(it)
             }
         }
     }
@@ -79,9 +81,9 @@ class FinderPresenter(
 
     fun onExplorerOptionSelected() = router.showExplorer()
 
-    fun onConfigOptionSelected() = viewModel.switchConfigItemVisibility()
+    fun onConfigOptionSelected() = viewState.switchConfigItemVisibility()
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onHistoryItemClick(node: String) = viewModel.replaceQuery(node)
+    fun onHistoryItemClick(node: String) = viewState.replaceQuery(node)
 }

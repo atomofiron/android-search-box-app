@@ -2,21 +2,21 @@ package app.atomofiron.searchboxapp.screens.finder.presenter
 
 import app.atomofiron.searchboxapp.injectable.interactor.FinderInteractor
 import app.atomofiron.searchboxapp.screens.finder.FinderRouter
-import app.atomofiron.searchboxapp.screens.finder.FinderViewModel
+import app.atomofiron.searchboxapp.screens.finder.FinderViewState
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
 class FinderAdapterPresenterDelegate(
-    private val viewModel: FinderViewModel,
+    private val viewState: FinderViewState,
     private val router: FinderRouter,
     private val interactor: FinderInteractor
 ) : FinderAdapterOutput {
 
-    override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
+    override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewState.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.insertInQuery(value)
+    override fun onCharacterClick(value: String) = viewState.insertInQuery(value)
 
-    override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
+    override fun onSearchChange(value: String) = viewState.updateSearchQuery(value)
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
         router.showResult(item.finderTask.id)
@@ -34,11 +34,11 @@ class FinderAdapterPresenterDelegate(
     }
 
     override fun onSearchClick(value: String) {
-        if (viewModel.targets.isEmpty()) {
+        if (viewState.targets.isEmpty()) {
             return
         }
-        viewModel.addToHistory(value)
-        val config = viewModel.configItem ?: viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
-        interactor.search(value, viewModel.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
+        viewState.addToHistory(value)
+        val config = viewState.configItem ?: viewState.getUniqueItem(FinderStateItem.ConfigItem::class)
+        interactor.search(value, viewState.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
     }
 }

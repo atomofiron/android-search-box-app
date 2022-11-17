@@ -29,8 +29,6 @@ interface TextViewerComponent {
         @BindsInstance
         fun bind(params: TextViewerParams): Builder
         @BindsInstance
-        fun bind(viewModel: TextViewerViewModel): Builder
-        @BindsInstance
         fun bind(activity: WeakProperty<Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
@@ -48,7 +46,8 @@ class TextViewerModule {
     @TextViewerScope
     fun presenter(
         params: TextViewerParams,
-        viewModel: TextViewerViewModel,
+        scope: CoroutineScope,
+        viewState: TextViewerViewState,
         router: TextViewerRouter,
         searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
         textViewerInteractor: TextViewerInteractor,
@@ -57,7 +56,8 @@ class TextViewerModule {
     ): TextViewerPresenter {
         return TextViewerPresenter(
             params,
-            viewModel,
+            scope,
+            viewState,
             router,
             searchAdapterPresenterDelegate,
             textViewerInteractor,
@@ -69,13 +69,14 @@ class TextViewerModule {
     @Provides
     @TextViewerScope
     fun searchOutputDelegate(
-        viewModel: TextViewerViewModel,
+        scope: CoroutineScope,
+        viewState: TextViewerViewState,
         router: TextViewerRouter,
         interactor: TextViewerInteractor,
         preferenceStore: PreferenceStore,
         curtainChannel: CurtainChannel,
     ): SearchAdapterPresenterDelegate {
-        return SearchAdapterPresenterDelegate(viewModel, router, interactor, preferenceStore, curtainChannel)
+        return SearchAdapterPresenterDelegate(scope, viewState, router, interactor, preferenceStore, curtainChannel)
     }
 
     @Provides
@@ -99,6 +100,10 @@ class TextViewerModule {
     @Provides
     @TextViewerScope
     fun router(fragment: WeakProperty<Fragment>): TextViewerRouter = TextViewerRouter(fragment)
+
+    @Provides
+    @TextViewerScope
+    fun viewerViewState(scope: CoroutineScope): TextViewerViewState = TextViewerViewState(scope)
 }
 
 interface TextViewerDependencies {

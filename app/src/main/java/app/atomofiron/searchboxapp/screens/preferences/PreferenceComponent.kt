@@ -19,6 +19,7 @@ import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPre
 import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceClickPresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportDelegate
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Scope
 
 @Scope
@@ -32,7 +33,7 @@ interface PreferenceComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: PreferenceViewModel): Builder
+        fun bind(scope: CoroutineScope): Builder
         @BindsInstance
         fun bind(fragment: WeakProperty<Fragment>): Builder
         fun dependencies(dependencies: PreferenceDependencies): Builder
@@ -48,26 +49,26 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun exportImportPresenterDelegate(
-        context: Context,
-        viewModel: PreferenceViewModel,
+        scope: CoroutineScope,
+        viewState: PreferenceViewState,
         preferenceService: PreferenceService,
         preferenceStore: PreferenceStore,
         preferenceChannel: PreferenceChannel,
     ): ExportImportDelegate.ExportImportOutput {
-        return ExportImportPresenterDelegate(context, viewModel, preferenceService, preferenceStore, preferenceChannel)
+        return ExportImportPresenterDelegate(scope, viewState, preferenceService, preferenceStore, preferenceChannel)
     }
 
     @Provides
     @PreferenceScope
     fun preferenceClickPresenterDelegate(
-        viewModel: PreferenceViewModel,
+        scope: CoroutineScope,
         router: PreferenceRouter,
         exportImportDelegate: ExportImportDelegate.ExportImportOutput,
         preferenceStore: PreferenceStore,
         curtainChannel: CurtainChannel,
     ): PreferenceClickOutput {
         return PreferenceClickPresenterDelegate(
-            viewModel,
+            scope,
             router,
             exportImportDelegate,
             preferenceStore,
@@ -78,7 +79,8 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun presenter(
-        viewModel: PreferenceViewModel,
+        scope: CoroutineScope,
+        viewState: PreferenceViewState,
         router: PreferenceRouter,
         exportImportDelegate: ExportImportDelegate.ExportImportOutput,
         preferenceClickOutput: PreferenceClickOutput,
@@ -86,7 +88,8 @@ class PreferenceModule {
         appStore: AppStore,
     ): PreferencePresenter {
         return PreferencePresenter(
-            viewModel,
+            scope,
+            viewState,
             router,
             exportImportDelegate,
             preferenceClickOutput,
@@ -104,6 +107,10 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun router(fragment: WeakProperty<Fragment>): PreferenceRouter = PreferenceRouter(fragment)
+
+    @Provides
+    @PreferenceScope
+    fun viewState(scope: CoroutineScope): PreferenceViewState = PreferenceViewState(scope)
 
     @Provides
     @PreferenceScope

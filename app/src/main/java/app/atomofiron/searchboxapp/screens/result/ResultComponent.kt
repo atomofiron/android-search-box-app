@@ -31,9 +31,7 @@ interface ResultComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: ResultViewModel): Builder
-        @BindsInstance
-        fun bind(activity: WeakProperty<Fragment>): Builder
+        fun bind(fragment: WeakProperty<Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
@@ -42,7 +40,7 @@ interface ResultComponent {
         fun build(): ResultComponent
     }
 
-    fun inject(target: ResultViewModel)
+    fun inject(target: ResultViewState)
 }
 
 @Module
@@ -52,7 +50,8 @@ class ResultModule {
     @ResultScope
     fun presenter(
         params: ResultPresenterParams,
-        viewModel: ResultViewModel,
+        scope: CoroutineScope,
+        viewState: ResultViewState,
         resultStore: ResultStore,
         finderStore: FinderStore,
         preferenceStore: PreferenceStore,
@@ -65,7 +64,8 @@ class ResultModule {
     ): ResultPresenter {
         return ResultPresenter(
             params,
-            viewModel,
+            scope,
+            viewState,
             resultStore,
             finderStore,
             preferenceStore,
@@ -81,7 +81,7 @@ class ResultModule {
     @Provides
     @ResultScope
     fun resultItemActionDelegate(
-        viewModel: ResultViewModel,
+        viewModel: ResultViewState,
         router: ResultRouter,
         menuListenerDelegate: ResultCurtainMenuDelegate,
         interactor: ResultInteractor,
@@ -93,13 +93,14 @@ class ResultModule {
     @Provides
     @ResultScope
     fun menuListenerDelegate(
-        viewModel: ResultViewModel,
+        scope: CoroutineScope,
+        viewState: ResultViewState,
         router: ResultRouter,
         interactor: ResultInteractor,
         appStore: AppStore,
         curtainChannel: CurtainChannel,
     ): ResultCurtainMenuDelegate {
-        return ResultCurtainMenuDelegate(viewModel, router, interactor, appStore, curtainChannel)
+        return ResultCurtainMenuDelegate(scope, viewState, router, interactor, appStore, curtainChannel)
     }
 
     @Provides
@@ -111,6 +112,13 @@ class ResultModule {
     @Provides
     @ResultScope
     fun router(fragment: WeakProperty<Fragment>): ResultRouter = ResultRouter(fragment)
+
+    @Provides
+    @ResultScope
+    fun viewState(
+        params: ResultPresenterParams,
+        scope: CoroutineScope,
+    ): ResultViewState = ResultViewState(params, scope)
 }
 
 interface ResultDependencies {

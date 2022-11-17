@@ -17,7 +17,6 @@ class FinderStore(
 
     fun add(item: MutableFinderTask) {
         mutableTasks.add(item)
-        scope.send(notifications, FinderTaskChange.Add(item))
         notifications[scope] = FinderTaskChange.Add(item)
     }
 

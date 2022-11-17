@@ -5,7 +5,7 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.reflect.KClass
 
-class FinderItemsModelDelegate : FinderItemsModel {
+class FinderItemsStateDelegate : FinderItemsState {
     override val uniqueItems = mutableListOf<FinderStateItem>()
     override val progressItems = mutableListOf<FinderStateItem.ProgressItem>()
     override val targetItems = mutableListOf<FinderStateItem.TargetItem>()

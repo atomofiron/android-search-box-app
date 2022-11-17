@@ -5,13 +5,13 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
-import app.atomofiron.searchboxapp.screens.result.ResultViewModel
+import app.atomofiron.searchboxapp.screens.result.ResultViewState
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
 import app.atomofiron.searchboxapp.utils.Util
 
 class ResultItemActionDelegate(
-    private val viewModel: ResultViewModel,
+    private val viewModel: ResultViewState,
     private val router: ResultRouter,
     private val curtainM: ResultCurtainMenuDelegate,
     private val interactor: ResultInteractor,

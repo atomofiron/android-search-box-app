@@ -12,10 +12,10 @@ import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 
 class CurtainPresenter(
     private val params: CurtainPresenterParams,
-    viewModel: CurtainViewModel,
+    private val viewState: CurtainViewState,
     router: CurtainRouter,
     private val curtainChannel: CurtainChannel,
-) : BasePresenter<CurtainViewModel, CurtainRouter>(viewModel, router = router), CurtainApi.Controller {
+) : BasePresenter<CurtainViewModel, CurtainRouter>(viewState.scope, router), CurtainApi.Controller {
     private var adapter: CurtainApi.Adapter<*>? = null
 
     override val requestFrom: String = params.recipient
@@ -33,22 +33,22 @@ class CurtainPresenter(
     }
 
     override fun setAdapter(adapter: CurtainApi.Adapter<*>) {
-        viewModel.setCurtainAdapter(adapter)
+        viewState.setCurtainAdapter(adapter)
         this.adapter?.clear()
         this.adapter = adapter
     }
 
     override fun showNext(layoutId: Int) {
-        viewModel.action[scope] = CurtainAction.ShowNext(layoutId)
+        viewState.action[scope] = CurtainAction.ShowNext(layoutId)
     }
 
     override fun showPrev() {
-        viewModel.action[scope] = CurtainAction.ShowPrev
+        viewState.action[scope] = CurtainAction.ShowPrev
     }
 
     override fun close(immediately: Boolean) = when {
         immediately -> router.navigateBack()
-        else -> viewModel.action[scope] = CurtainAction.Hide
+        else -> viewState.action[scope] = CurtainAction.Hide
     }
 
     override fun showSnackbar(string: String, duration: Int) = showSnackbar {
@@ -60,13 +60,13 @@ class CurtainPresenter(
     }
 
     override fun showSnackbar(provider: CurtainApi.SnackbarProvider) {
-        viewModel.action[scope] = CurtainAction.ShowSnackbar(provider)
+        viewState.action[scope] = CurtainAction.ShowSnackbar(provider)
     }
 
-    override fun setCancelable(value: Boolean) = viewModel.cancelable.set(value)
+    override fun setCancelable(value: Boolean) = viewState.cancelable.set(value)
 
     fun onShown() {
-        viewModel.adapter.valueOrNull ?: router.navigateBack()
+        viewState.adapter.valueOrNull ?: router.navigateBack()
     }
 
     fun onHidden() = router.navigateBack()

@@ -4,7 +4,7 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.reflect.KClass
 
-interface FinderItemsModel {
+interface FinderItemsState {
     /* 1 search/replace
      * characters
      * config (optional for finder screen)

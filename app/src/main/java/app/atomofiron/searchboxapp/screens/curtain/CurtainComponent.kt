@@ -8,6 +8,7 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainPresenterParams
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Scope
 
 @Scope
@@ -21,7 +22,7 @@ interface CurtainComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: CurtainViewModel): Builder
+        fun bind(scope: CoroutineScope): Builder
         @BindsInstance
         fun bind(fragment: WeakProperty<Fragment>): Builder
         @BindsInstance
@@ -40,16 +41,23 @@ class CurtainModule {
     @CurtainScope
     fun presenter(
         params: CurtainPresenterParams,
-        viewModel: CurtainViewModel,
+        viewState: CurtainViewState,
         router: CurtainRouter,
         channel: CurtainChannel,
     ): CurtainPresenter {
-        return CurtainPresenter(params, viewModel, router, channel)
+        return CurtainPresenter(params, viewState, router, channel)
     }
 
     @Provides
     @CurtainScope
     fun router(fragment: WeakProperty<Fragment>): CurtainRouter = CurtainRouter(fragment)
+
+    @Provides
+    @CurtainScope
+    fun viewState(
+        params: CurtainPresenterParams,
+        scope: CoroutineScope,
+    ): CurtainViewState = CurtainViewState(params, scope)
 }
 
 interface CurtainDependencies {

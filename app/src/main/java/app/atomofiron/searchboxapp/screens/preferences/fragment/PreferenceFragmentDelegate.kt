@@ -7,14 +7,14 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.preference.TextFieldPreference
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceFragment
-import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
+import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewState
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import app.atomofiron.searchboxapp.utils.Util.toHumanReadable
 
 class PreferenceFragmentDelegate(
     private val fragment: PreferenceFragment,
-    private val viewModel: PreferenceViewModel,
+    private val viewState: PreferenceViewState,
     private val clickOutput: PreferenceClickOutput,
 ) : Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
@@ -73,7 +73,7 @@ class PreferenceFragmentDelegate(
                     preference.summary = value.toHumanReadable(suffixes)
                 }
             }
-            PreferenceKeys.PREF_EXPORT_IMPORT -> preference.isEnabled = viewModel.isExportImportAvailable
+            PreferenceKeys.PREF_EXPORT_IMPORT -> preference.isEnabled = viewState.isExportImportAvailable
             PreferenceKeys.KeyToybox.name -> preference.isVisible = SDK_INT < Q
         }
         return true

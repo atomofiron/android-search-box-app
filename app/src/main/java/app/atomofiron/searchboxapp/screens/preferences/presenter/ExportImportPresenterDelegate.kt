@@ -1,7 +1,5 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter
 
-import android.content.Context
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.searchboxapp.R
@@ -9,23 +7,22 @@ import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.preference.AppTheme
-import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewModel
+import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewState
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportDelegate
-import app.atomofiron.searchboxapp.utils.Explorer
 import app.atomofiron.searchboxapp.utils.Shell
+import kotlinx.coroutines.CoroutineScope
 
 class ExportImportPresenterDelegate(
-    context: Context,
-    private val viewModel: PreferenceViewModel,
+    private val scope: CoroutineScope,
+    private val viewState: PreferenceViewState,
     private val preferenceService: PreferenceService,
     private val preferenceStore: PreferenceStore,
     private val preferenceChannel: PreferenceChannel,
 ) : ExportImportDelegate.ExportImportOutput {
-    override val externalPath = Explorer.completeDirPath(context.getExternalFilesDir(null)!!.absolutePath)
 
     init {
-        preferenceStore.appTheme.collect(viewModel.viewModelScope) {
-            viewModel.showDeepBlack.value = it !is AppTheme.Light
+        preferenceStore.appTheme.collect(scope) {
+            viewState.showDeepBlack.value = it !is AppTheme.Light
         }
     }
 
@@ -48,14 +45,14 @@ class ExportImportPresenterDelegate(
         val output = preferenceService.importHistory()
         showOutput(output, R.string.successful)
         if (output.success) {
-            preferenceChannel.onHistoryImported.invoke(viewModel.viewModelScope)
+            preferenceChannel.onHistoryImported.invoke(scope)
         }
     }
 
     private fun showOutput(output: Shell.Output, successMessage: Int) {
         when {
-            output.success -> viewModel.sendAlertOutputSuccess(successMessage)
-            else -> viewModel.sendAlertOutputError(output)
+            output.success -> viewState.sendAlertOutputSuccess(successMessage)
+            else -> viewState.sendAlertOutputError(output)
         }
     }
 }

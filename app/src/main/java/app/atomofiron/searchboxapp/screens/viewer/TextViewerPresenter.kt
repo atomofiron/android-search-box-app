@@ -14,16 +14,18 @@ import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.viewer.presenter.SearchAdapterPresenterDelegate
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
+import kotlinx.coroutines.CoroutineScope
 
 class TextViewerPresenter(
     params: TextViewerParams,
-    viewModel: TextViewerViewModel,
+    scope: CoroutineScope,
+    private val viewState: TextViewerViewState,
     router: TextViewerRouter,
     private val searchDelegate: SearchAdapterPresenterDelegate,
     private val interactor: TextViewerInteractor,
     preferenceStore: PreferenceStore,
     textViewerChannel: TextViewerChannel
-) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router = router),
+) : BasePresenter<TextViewerViewModel, TextViewerRouter>(scope, router),
     TextViewerAdapter.TextViewerListener,
     FinderAdapterOutput by searchDelegate
 {
@@ -33,43 +35,43 @@ class TextViewerPresenter(
     init {
         textViewerChannel.textFromFile.collect(scope) {
             scope.launch {
-                viewModel.textLines.value = it
+                viewState.textLines.value = it
             }
         }
         textViewerChannel.lineIndexMatches.collect(scope) {
-            viewModel.lineIndexMatches = it
+            viewState.lineIndexMatches = it
         }
         textViewerChannel.lineIndexMatchesMap.collect(scope) {
             scope.launch {
                 lineIndexMatchesMap = it
-                viewModel.matchesMap.value = it
+                viewState.matchesMap.value = it
             }
         }
         textViewerChannel.matchesCount.collect(scope) {
             scope.launch {
                 matchesCount = it
-                viewModel.matchesCounter.value = matchesCount?.toLong()
-                viewModel.matchesCursor.value = null
+                viewState.matchesCounter.value = matchesCount?.toLong()
+                viewState.matchesCursor.value = null
             }
         }
         textViewerChannel.textFromFileLoading.collect(scope) {
             scope.launch {
-                viewModel.loading.value = it
+                viewState.loading.value = it
             }
         }
         textViewerChannel.tasks.collect(scope) {
             scope.launch {
-                viewModel.setTasks(it)
+                viewState.setTasks(it)
             }
         }
-        viewModel.composition = preferenceStore.explorerItemComposition.value
+        viewState.composition = preferenceStore.explorerItemComposition.value
 
         val queryParams = params.query?.let {
             FinderQueryParams(params.query, params.useRegex, params.ignoreCase)
         }
         val item = Node(params.path, content = NodeContent.File.Other)
         interactor.loadFile(item, queryParams) {
-            viewModel.item = item
+            viewState.item = item
         }
     }
 
@@ -79,17 +81,17 @@ class TextViewerPresenter(
 
     fun onSearchClick() = searchDelegate.show()
 
-    fun onPreviousClick() = viewModel.changeCursor(increment = false)
+    fun onPreviousClick() = viewState.changeCursor(increment = false)
 
     fun onNextClick() {
-        val success = viewModel.changeCursor(increment = true)
+        val success = viewState.changeCursor(increment = true)
         if (!success) {
-            interactor.loadFileUpToLine(viewModel.currentLineIndexCursor) {
+            interactor.loadFileUpToLine(viewState.currentLineIndexCursor) {
                 scope.launch {
-                    viewModel.changeCursor(increment = true)
+                    viewState.changeCursor(increment = true)
                 }
             }
-            viewModel.loading.value = true
+            viewState.loading.value = true
         }
     }
 }

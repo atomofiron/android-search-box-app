@@ -9,11 +9,9 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.Insets
 import androidx.core.view.*
 import androidx.fragment.app.DialogFragment
+import app.atomofiron.common.arch.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.color.MaterialColors
-import app.atomofiron.common.arch.BaseFragment
-import app.atomofiron.common.arch.BaseFragmentImpl
-import app.atomofiron.common.arch.TranslucentFragment
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
@@ -30,7 +28,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
-    BaseFragment<CurtainFragment, CurtainViewModel, CurtainPresenter> by BaseFragmentImpl(),
+    BaseFragment<CurtainFragment, CurtainViewState, CurtainPresenter> by BaseFragmentImpl(),
     TranslucentFragment {
     companion object {
         private const val SAVED_STACK = "SAVED_STACK"
@@ -51,7 +49,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         initViewModel(this, CurtainViewModel::class, savedInstanceState)
 
         when (savedInstanceState) {
-            null -> stack.add(CurtainNode(viewModel.initialLayoutId, view = null, isCancelable = true))
+            null -> stack.add(CurtainNode(viewState.initialLayoutId, view = null, isCancelable = true))
             else -> savedInstanceState.getIntArray(SAVED_STACK)?.let { ids ->
                 val restored = ids.map { CurtainNode(layoutId = it, view = null, isCancelable = true) }
                 stack.addAll(restored)
@@ -95,7 +93,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
     override fun onBack(): Boolean {
         when {
-            !viewModel.cancelable.value -> Unit
+            !viewState.cancelable.value -> Unit
             !contentDelegate.showPrev() -> hide()
         }
         return true
@@ -109,7 +107,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
     }
 
     private fun tryHide() {
-        if (viewModel.cancelable.value) {
+        if (viewState.cancelable.value) {
             hide()
         }
     }
@@ -129,9 +127,9 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
     }
 
     private fun onViewCollect() {
-        viewCollect(viewModel.adapter, collector = ::onAdapterCollect)
-        viewCollect(viewModel.cancelable, collector = behavior::setHideable)
-        viewCollect(viewModel.action, collector = ::onActionCollect)
+        viewCollect(viewState.adapter, collector = ::onAdapterCollect)
+        viewCollect(viewState.cancelable, collector = behavior::setHideable)
+        viewCollect(viewState.action, collector = ::onActionCollect)
     }
 
     private fun onAdapterCollect(adapter: CurtainApi.Adapter<*>) {

@@ -24,20 +24,20 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class PreferenceFragment : PreferenceFragmentCompat(),
-    BaseFragment<PreferenceFragment, PreferenceViewModel, PreferencePresenter> by BaseFragmentImpl()
+    BaseFragment<PreferenceFragment, PreferenceViewState, PreferencePresenter> by BaseFragmentImpl()
 {
     private lateinit var preferenceDelegate: PreferenceFragmentDelegate
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initViewModel(this, PreferenceViewModel::class, savedInstanceState)
 
-        preferenceManager.preferenceDataStore = viewModel.preferenceDataStore
-        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter)
+        preferenceManager.preferenceDataStore = viewState.preferenceDataStore
+        preferenceDelegate = PreferenceFragmentDelegate(this, viewState, presenter)
         setPreferencesFromResource(R.xml.preferences, rootKey)
         preferenceDelegate.onCreatePreference(preferenceScreen)
 
         val deepBlack = findPreference<Preference>(PreferenceKeys.KeyDeepBlack.name)!!
-        viewModel.showDeepBlack.collect(lifecycleScope) {
+        viewState.showDeepBlack.collect(lifecycleScope) {
             deepBlack.isVisible = it
         }
     }
@@ -56,7 +56,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         view.insetsProxying()
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
-        viewModel.onViewCollect()
+        viewState.onViewCollect()
         onApplyInsets(view)
     }
 
@@ -69,7 +69,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         return recyclerView
     }
 
-    override fun PreferenceViewModel.onViewCollect() {
+    override fun PreferenceViewState.onViewCollect() {
         viewCollect(alert, collector = ::showAlert)
         viewCollect(alertOutputSuccess, collector = ::showOutputSuccess)
         viewCollect(alertOutputError, collector = ::showOutputError)

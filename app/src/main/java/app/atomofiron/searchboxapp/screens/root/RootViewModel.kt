@@ -1,25 +1,23 @@
 package app.atomofiron.searchboxapp.screens.root
 
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import javax.inject.Inject
 
-class RootViewModel : BaseViewModel<RootComponent, RootFragment, RootPresenter>() {
+class RootViewModel : BaseViewModel<RootComponent, RootFragment, RootViewState, RootPresenter>() {
 
     @Inject
     override lateinit var presenter: RootPresenter
+    @Inject
+    override lateinit var viewState: RootViewState
 
-    override fun inject(view: RootFragment) {
-        super.inject(view)
-        component.inject(this)
-    }
-
-    override fun createComponent(fragmentProperty: WeakProperty<Fragment>) = DaggerRootComponent
+    override fun component(fragment: RootFragment) = DaggerRootComponent
         .builder()
-        .bind(this)
+        .bind(viewModelScope)
         .bind(fragmentProperty)
         .dependencies(DaggerInjector.appComponent)
-        .build()
+        .build().apply {
+            inject(this@RootViewModel)
+        }
 }

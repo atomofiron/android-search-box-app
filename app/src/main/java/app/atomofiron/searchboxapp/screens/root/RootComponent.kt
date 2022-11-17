@@ -7,6 +7,7 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Scope
 
 @Scope
@@ -20,7 +21,7 @@ interface RootComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: RootViewModel): Builder
+        fun bind(scope: CoroutineScope): Builder
         @BindsInstance
         fun bind(activity: WeakProperty<Fragment>): Builder
         fun dependencies(dependencies: RootDependencies): Builder
@@ -36,17 +37,20 @@ class RootModule {
     @Provides
     @RootScope
     fun presenter(
-        viewModel: RootViewModel,
+        scope: CoroutineScope,
         router: RootRouter,
         preferenceStore: PreferenceStore,
     ): RootPresenter {
-        return RootPresenter(viewModel, router, preferenceStore)
+        return RootPresenter(scope, router, preferenceStore)
     }
-
 
     @Provides
     @RootScope
     fun router(fragment: WeakProperty<Fragment>): RootRouter = RootRouter(fragment)
+
+    @Provides
+    @RootScope
+    fun viewState(): RootViewState = RootViewState()
 }
 
 interface RootDependencies {

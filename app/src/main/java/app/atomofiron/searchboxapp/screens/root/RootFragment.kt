@@ -9,7 +9,7 @@ import app.atomofiron.searchboxapp.R
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class RootFragment : Fragment(R.layout.fragment_root),
-    BaseFragment<RootFragment, RootViewModel, RootPresenter> by BaseFragmentImpl()
+    BaseFragment<RootFragment, RootViewState, RootPresenter> by BaseFragmentImpl()
 {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

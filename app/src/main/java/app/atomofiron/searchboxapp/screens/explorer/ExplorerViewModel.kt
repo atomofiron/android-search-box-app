@@ -1,11 +1,11 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
 import androidx.lifecycle.viewModelScope
-import app.atomofiron.common.arch.BaseViewModel2
+import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import javax.inject.Inject
 
-class ExplorerViewModel : BaseViewModel2<ExplorerComponent, ExplorerFragment, ExplorerViewState, ExplorerPresenter>() {
+class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, ExplorerViewState, ExplorerPresenter>() {
 
     @Inject
     override lateinit var viewState: ExplorerViewState
@@ -14,7 +14,12 @@ class ExplorerViewModel : BaseViewModel2<ExplorerComponent, ExplorerFragment, Ex
     @Inject
     lateinit var router: ExplorerRouter
 
-    override val component = DaggerExplorerComponent
+    override fun setFragment(fragment: ExplorerFragment) {
+        super.setFragment(fragment)
+        router.permissions.registerForActivityResult(fragment)
+    }
+
+    override fun component(fragment: ExplorerFragment) = DaggerExplorerComponent
         .builder()
         .bind(fragmentProperty)
         .bind(viewModelScope)
@@ -22,9 +27,4 @@ class ExplorerViewModel : BaseViewModel2<ExplorerComponent, ExplorerFragment, Ex
         .build().apply {
             inject(this@ExplorerViewModel)
         }
-
-    override fun setFragment(view: ExplorerFragment) {
-        super.setFragment(view)
-        router.permissions.registerForActivityResult(view)
-    }
 }

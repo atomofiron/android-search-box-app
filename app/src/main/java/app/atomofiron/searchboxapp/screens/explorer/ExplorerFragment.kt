@@ -6,8 +6,8 @@ import android.view.KeyEvent
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import app.atomofiron.common.arch.BaseFragment2
-import app.atomofiron.common.arch.BaseFragment2Impl
+import app.atomofiron.common.arch.BaseFragment
+import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
@@ -23,7 +23,7 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class ExplorerFragment : Fragment(R.layout.fragment_explorer),
-    BaseFragment2<ExplorerFragment, ExplorerViewState, ExplorerPresenter> by BaseFragment2Impl(),
+    BaseFragment<ExplorerFragment, ExplorerViewState, ExplorerPresenter> by BaseFragmentImpl(),
     KeyCodeConsumer
 {
     private lateinit var binding: FragmentExplorerBinding

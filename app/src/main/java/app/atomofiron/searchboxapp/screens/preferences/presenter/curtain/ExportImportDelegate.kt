@@ -28,7 +28,7 @@ class ExportImportDelegate(
             leiBtn.setText(id)
         }
         leiBtn.setOnClickListener { onButtonClick() }
-        leiTvPath.text = output.externalPath
+        // todo share leiTvPath.text = output.externalPath
     }
 
     private fun CurtainPreferenceExportImportBinding.onButtonClick() {
@@ -49,7 +49,6 @@ class ExportImportDelegate(
     }
 
     interface ExportImportOutput {
-        val externalPath: String
         fun exportPreferences()
         fun exportHistory()
         fun importPreferences()

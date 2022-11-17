@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.viewer.presenter
 
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
@@ -9,12 +8,14 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerRouter
-import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewModel
+import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState
 import app.atomofiron.searchboxapp.screens.viewer.presenter.curtain.CurtainSearchDelegate
 import app.atomofiron.searchboxapp.utils.showCurtain
+import kotlinx.coroutines.CoroutineScope
 
 class SearchAdapterPresenterDelegate(
-    private val viewModel: TextViewerViewModel,
+    private val scope: CoroutineScope,
+    private val viewState: TextViewerViewState,
     private val router: TextViewerRouter,
     private val interactor: TextViewerInteractor,
     preferenceStore: PreferenceStore,
@@ -24,7 +25,7 @@ class SearchAdapterPresenterDelegate(
     private val curtainDelegate = CurtainSearchDelegate(this)
 
     init {
-        viewModel.run {
+        viewState.run {
             uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
             val characters = preferenceStore.specialCharacters.value
             uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
@@ -32,22 +33,22 @@ class SearchAdapterPresenterDelegate(
             uniqueItems.add(FinderStateItem.TestItem())
             updateState(isLocal = true)
         }
-        curtainChannel.flow.collectForMe(viewModel.viewModelScope) { controller ->
-            curtainDelegate.set(viewModel.searchItems.value, viewModel.item, viewModel.composition)
+        curtainChannel.flow.collectForMe(scope) { controller ->
+            curtainDelegate.set(viewState.searchItems.value, viewState.item, viewState.composition)
             curtainDelegate.setController(controller)
         }
     }
 
     fun show() = router.showCurtain(recipient, R.layout.curtain_text_viewer_search)
 
-    override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
+    override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewState.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.sendInsertInQuery(value)
+    override fun onCharacterClick(value: String) = viewState.sendInsertInQuery(value)
 
-    override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
+    override fun onSearchChange(value: String) = viewState.updateSearchQuery(value)
 
     override fun onSearchClick(value: String) {
-        val config = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
+        val config = viewState.getUniqueItem(FinderStateItem.ConfigItem::class)
         interactor.search(value, config.ignoreCase, config.useRegex)
         curtainDelegate.controller?.close()
     }

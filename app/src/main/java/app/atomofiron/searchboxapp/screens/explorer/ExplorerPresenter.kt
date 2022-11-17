@@ -27,7 +27,7 @@ class ExplorerPresenter(
     itemListener: ExplorerItemActionListenerDelegate,
     placesListener: PlacesActionListenerDelegate,
     private val curtainMenuDelegate: ExplorerCurtainMenuDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(scope = scope, router =  router),
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(scope, router),
     ExplorerItemActionListener by itemListener,
     PlacesAdapter.ItemActionListener by placesListener {
 

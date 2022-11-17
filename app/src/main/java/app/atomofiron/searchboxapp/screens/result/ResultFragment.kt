@@ -24,7 +24,7 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class ResultFragment : Fragment(R.layout.fragment_result),
-    BaseFragment<ResultFragment, ResultViewModel, ResultPresenter> by BaseFragmentImpl()
+    BaseFragment<ResultFragment, ResultViewState, ResultPresenter> by BaseFragmentImpl()
 {
 
     private lateinit var binding: FragmentResultBinding
@@ -57,7 +57,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
-        viewModel.onViewCollect()
+        viewState.onViewCollect()
         onApplyInsets(view)
     }
 
@@ -70,7 +70,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         return false
     }
 
-    override fun ResultViewModel.onViewCollect() {
+    override fun ResultViewState.onViewCollect() {
         viewCollect(composition, collector = ::onCompositionChange)
         viewCollect(task, collector = ::onTaskChange)
         viewCollect(enableOptions, collector = ::enableOptions)

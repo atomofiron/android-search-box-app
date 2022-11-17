@@ -13,6 +13,7 @@ import app.atomofiron.searchboxapp.injectable.service.FinderService
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.finder.presenter.FinderAdapterPresenterDelegate
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Scope
 
 @Scope
@@ -26,7 +27,7 @@ interface FinderComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewMode: FinderViewModel): Builder
+        fun bind(scope: CoroutineScope): Builder
         @BindsInstance
         fun bind(fragment: WeakProperty<Fragment>): Builder
         fun dependencies(dependencies: FinderDependencies): Builder
@@ -41,22 +42,35 @@ class FinderModule {
     @Provides
     @FinderScope
     fun presenter(
-            viewModel: FinderViewModel,
-            router: FinderRouter,
-            finderAdapterDelegate: FinderAdapterPresenterDelegate,
-            finderStore: FinderStore,
-            explorerStore: ExplorerStore,
-            preferenceStore: PreferenceStore,
-            preferenceChannel: PreferenceChannel
+        scope: CoroutineScope,
+        viewState: FinderViewState,
+        router: FinderRouter,
+        finderAdapterDelegate: FinderAdapterPresenterDelegate,
+        finderStore: FinderStore,
+        explorerStore: ExplorerStore,
+        preferenceStore: PreferenceStore,
+        preferenceChannel: PreferenceChannel
     ): FinderPresenter {
-        return FinderPresenter(viewModel, router, finderAdapterDelegate, explorerStore,
-                preferenceStore, finderStore, preferenceChannel)
+        return FinderPresenter(
+            scope,
+            viewState,
+            router,
+            finderAdapterDelegate,
+            explorerStore,
+            preferenceStore,
+            finderStore,
+            preferenceChannel,
+        )
     }
 
     @Provides
     @FinderScope
-    fun finderAdapterOutput(viewModel: FinderViewModel, router: FinderRouter, interactor: FinderInteractor): FinderAdapterPresenterDelegate {
-        return FinderAdapterPresenterDelegate(viewModel, router, interactor)
+    fun finderAdapterOutput(
+        viewState: FinderViewState,
+        router: FinderRouter,
+        interactor: FinderInteractor,
+    ): FinderAdapterPresenterDelegate {
+        return FinderAdapterPresenterDelegate(viewState, router, interactor)
     }
 
     @Provides
@@ -68,6 +82,10 @@ class FinderModule {
     fun interactor(finderService: FinderService): FinderInteractor {
         return FinderInteractor(finderService)
     }
+
+    @Provides
+    @FinderScope
+    fun viewState(scope: CoroutineScope): FinderViewState = FinderViewState(scope)
 }
 
 interface FinderDependencies {

@@ -22,7 +22,7 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class FinderFragment : Fragment(R.layout.fragment_finder),
-    BaseFragment<FinderFragment, FinderViewModel, FinderPresenter> by BaseFragmentImpl()
+    BaseFragment<FinderFragment, FinderViewState, FinderPresenter> by BaseFragmentImpl()
 {
 
     private lateinit var binding: FragmentFinderBinding
@@ -71,7 +71,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             recyclerView.adapter = historyAdapter
         }
 
-        viewModel.onViewCollect()
+        viewState.onViewCollect()
         onApplyInsets(view)
     }
 
@@ -86,7 +86,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         }
     }
 
-    override fun FinderViewModel.onViewCollect() {
+    override fun FinderViewState.onViewCollect() {
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(reloadHistory, collector = historyAdapter::reload)
         viewCollect(history, collector = historyAdapter::add)

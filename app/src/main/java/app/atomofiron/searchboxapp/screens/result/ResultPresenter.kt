@@ -18,12 +18,14 @@ import app.atomofiron.searchboxapp.screens.result.presenter.ResultCurtainMenuDel
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultItemActionDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 import app.atomofiron.searchboxapp.utils.Const
+import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ResultPresenter(
     params: ResultPresenterParams,
-    viewModel: ResultViewModel,
+    scope: CoroutineScope,
+    private val viewState: ResultViewState,
     private val resultStore: ResultStore,
     private val finderStore: FinderStore,
     private val preferenceStore: PreferenceStore,
@@ -33,7 +35,7 @@ class ResultPresenter(
     appStore: AppStore,
     itemActionDelegate: ResultItemActionDelegate,
     private val curtainMenuDelegate: ResultCurtainMenuDelegate
-) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router = router),
+) : BasePresenter<ResultViewModel, ResultRouter>(scope, router),
     ResultItemActionListener by itemActionDelegate {
     companion object {
         private const val UNDEFINED = -1L
@@ -50,7 +52,7 @@ class ResultPresenter(
             logE("No task found!")
             router.navigateBack()
         } else {
-            viewModel.task.value = task.copyTask()
+            viewState.task.value = task.copyTask()
         }
     }
 
@@ -58,33 +60,33 @@ class ResultPresenter(
         finderStore.notifications.collect(scope) { update ->
             if (taskId != UNDEFINED) {
                 scope.launch {
-                    viewModel.updateState(update)
+                    viewState.updateState(update)
                 }
             }
         }
         preferenceStore.explorerItemComposition.collect(scope) {
-            viewModel.composition.value = it
+            viewState.composition.value = it
         }
         resultStore.itemsShellBeDeleted.collect(scope) {
             scope.launch {
-                viewModel.updateState()
+                viewState.updateState()
             }
         }
     }
 
-    fun onStopClick() = interactor.stop(viewModel.task.value.uuid)
+    fun onStopClick() = interactor.stop(viewState.task.value.uuid)
 
-    fun onOptionsClick() = viewModel.run {
-        val ids = when (viewModel.checked.size) {
-            1 -> viewModel.oneFileOptions
-            else -> viewModel.manyFilesOptions
+    fun onOptionsClick() = viewState.run {
+        val ids = when (viewState.checked.size) {
+            1 -> viewState.oneFileOptions
+            else -> viewState.manyFilesOptions
         }
-        val options = ExplorerItemOptions(ids, viewModel.checked, viewModel.composition.value)
+        val options = ExplorerItemOptions(ids, viewState.checked, viewState.composition.value)
         curtainMenuDelegate.showOptions(options)
     }
 
     fun onExportClick() {
-        val task = viewModel.task.value
+        val task = viewState.task.value
 
         val data = StringBuilder()
         for (result in task.results) {
@@ -95,7 +97,7 @@ class ResultPresenter(
         val title = "search_$date.md.txt";
 
         if (!router.shareFile(title, data.toString())) {
-            viewModel.sendAlert(resources.getString(R.string.no_activity))
+            viewState.sendAlert(resources.getString(R.string.no_activity))
         }
     }
 

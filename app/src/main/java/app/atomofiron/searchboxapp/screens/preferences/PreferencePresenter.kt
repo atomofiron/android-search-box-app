@@ -1,23 +1,24 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportDelegate
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
 import app.atomofiron.searchboxapp.utils.Shell
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
 
 class PreferencePresenter(
-    viewModel: PreferenceViewModel,
+    scope: CoroutineScope,
+    private val viewState: PreferenceViewState,
     router: PreferenceRouter,
     exportImportDelegate: ExportImportDelegate.ExportImportOutput,
     preferenceClickOutput: PreferenceClickOutput,
     private val preferenceStore: PreferenceStore,
     private val appStore: AppStore,
-) : BasePresenter<PreferenceViewModel, PreferenceRouter>(viewModel, router = router),
+) : BasePresenter<PreferenceViewModel, PreferenceRouter>(scope, router),
     ExportImportDelegate.ExportImportOutput by exportImportDelegate,
     PreferenceClickOutput by preferenceClickOutput
 {
@@ -29,10 +30,8 @@ class PreferencePresenter(
     }
 
     override fun onSubscribeData() {
-        viewModel.viewModelScope.launch {
-            preferenceStore.useSu.collect {
-                if (it) onUseSuEnabled()
-            }
+        preferenceStore.useSu.collect(scope) {
+            if (it) onUseSuEnabled()
         }
     }
 
@@ -44,7 +43,7 @@ class PreferencePresenter(
                 output.error.isNotBlank() -> output.error
                 else -> resources.getString(R.string.not_allowed)
             }
-            viewModel.showAlert(message)
+            viewState.showAlert(message)
         }
     }
 }
