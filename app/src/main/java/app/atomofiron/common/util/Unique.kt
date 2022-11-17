@@ -1,4 +1,4 @@
-package app.atomofiron.common.util.flow
+package app.atomofiron.common.util
 
 import java.util.Objects
 

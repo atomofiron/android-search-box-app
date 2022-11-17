@@ -22,7 +22,7 @@ class ExplorerRouter(
 
     override val currentDestinationId = R.id.rootFragment
 
-    val permissions = PermissionDelegate.create(activityProperty, property)
+    val permissions = PermissionDelegate.create(activityProperty)
 
     fun showFinder() {
         fragment {
@@ -37,10 +37,7 @@ class ExplorerRouter(
             val arguments = TextViewerParams.arguments(item.path)
             navigate(R.id.textViewerFragment, arguments)
         } else {
-            activity {
-                val intent = Intent(Intent.ACTION_VIEW)
-
-            }
+            openWith(item)
         }
     }
 

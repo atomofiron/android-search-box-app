@@ -1,26 +1,26 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
+import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewState
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 
 class PlacesActionListenerDelegate(
-    private val viewModel: ExplorerViewModel
+    private val viewState: ExplorerViewState,
 ) : PlacesAdapter.ItemActionListener {
 
     override fun onItemClick(item: XPlace) {
-        viewModel.places.value = viewModel.places.value.plusElement(XPlace.AnotherPlace("${Math.random()}"))
+        viewState.places.value = viewState.places.value.plusElement(XPlace.AnotherPlace("${Math.random()}"))
     }
 
     override fun onItemActionClick(item: XPlace) {
         when (item) {
-            is XPlace.InternalStorage -> viewModel.places.value = viewModel.places.value.map {
+            is XPlace.InternalStorage -> viewState.places.value = viewState.places.value.map {
                 if (it == item) XPlace.InternalStorage(item.title, !item.visible) else it
             }
-            is XPlace.ExternalStorage -> viewModel.places.value = viewModel.places.value.map {
+            is XPlace.ExternalStorage -> viewState.places.value = viewState.places.value.map {
                 if (it == item) XPlace.ExternalStorage(item.title, !item.visible) else it
             }
-            is XPlace.AnotherPlace -> viewModel.places.value = viewModel.places.value.filter { it != item }
+            is XPlace.AnotherPlace -> viewState.places.value = viewState.places.value.filter { it != item }
             is XPlace.StoragePlace -> Unit
         }
     }

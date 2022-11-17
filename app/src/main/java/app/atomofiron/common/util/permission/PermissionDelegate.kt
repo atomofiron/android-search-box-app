@@ -3,22 +3,17 @@ package app.atomofiron.common.util.permission
 import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import app.atomofiron.common.util.property.WeakProperty
 
 class PermissionDelegate private constructor(
     activityProperty: WeakProperty<FragmentActivity>,
-    fragmentProperty: WeakProperty<Fragment>,
 ) : PermissionDelegateApi {
     companion object {
-        fun create(
-            activityProperty: WeakProperty<FragmentActivity>,
-            fragmentProperty: WeakProperty<Fragment>,
-        ): PermissionDelegateApi {
-            return PermissionDelegate(activityProperty, fragmentProperty)
+        fun create(activityProperty: WeakProperty<FragmentActivity>): PermissionDelegateApi {
+            return PermissionDelegate(activityProperty)
         }
     }
 
@@ -28,7 +23,6 @@ class PermissionDelegate private constructor(
     }
 
     private val activity by activityProperty
-    private val fragment by fragmentProperty
 
     private val requestedPermissions = mutableListOf<String>()
     private val permissionStatuses = mutableListOf<Status>()
@@ -36,10 +30,7 @@ class PermissionDelegate private constructor(
     private val grantedCallbacks = mutableMapOf<String, List<PermissionCallback>>()
     private val deniedCallbacks = mutableMapOf<String, List<PermissionCallback>>()
 
-    private val contract = fragment!!.registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-        ::onPermissionRequestResult,
-    )
+    private var contract: ActivityResultLauncher<Array<String>>? = null
 
     override fun check(vararg permissions: String): PermissionDelegateApi {
         if (SDK_INT < M) return this
@@ -55,6 +46,7 @@ class PermissionDelegate private constructor(
 
     override fun request(vararg permissions: String): PermissionDelegateApi {
         if (SDK_INT < M) return this
+        val contract = contract ?: return this
         val notGranted = activity?.filterNotGranted(*permissions)
         requestedPermissions.clear()
         requestedPermissions.addAll(permissions)
@@ -64,7 +56,7 @@ class PermissionDelegate private constructor(
         return this
     }
 
-    private fun onPermissionRequestResult(result: Map<String, Boolean>) {
+    override fun onActivityResult(result: Map<String, Boolean>) {
         requestedPermissions.removeAll(result.keys)
         result.entries.forEach { entry ->
             when {

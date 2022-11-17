@@ -17,7 +17,7 @@ class PreferencePresenter(
     preferenceClickOutput: PreferenceClickOutput,
     private val preferenceStore: PreferenceStore,
     private val appStore: AppStore,
-) : BasePresenter<PreferenceViewModel, PreferenceRouter>(viewModel, router),
+) : BasePresenter<PreferenceViewModel, PreferenceRouter>(viewModel, router = router),
     ExportImportDelegate.ExportImportOutput by exportImportDelegate,
     PreferenceClickOutput by preferenceClickOutput
 {

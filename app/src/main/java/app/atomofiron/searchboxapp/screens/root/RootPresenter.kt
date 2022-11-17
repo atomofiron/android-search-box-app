@@ -7,7 +7,7 @@ class RootPresenter(
     viewModel: RootViewModel,
     router: RootRouter,
     preferenceStore: PreferenceStore,
-) : BasePresenter<RootViewModel, RootRouter>(viewModel, router) {
+) : BasePresenter<RootViewModel, RootRouter>(viewModel, router = router) {
 
     override fun onSubscribeData() = Unit
 

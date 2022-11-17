@@ -52,14 +52,14 @@ class FinderWorker(
         private const val KEY_MAX_DEPTH = "KEY_MAX_DEPTH"
         private const val KEY_WHERE_PATHS = "KEY_WHERE_PATHS"
 
-        fun inputData(query: String, useSu: Boolean, useRegex: Boolean, maxSize: Long,
+        fun inputData(query: String, useSu: Boolean, useRegex: Boolean, maxSize: Int,
                       ignoreCase: Boolean, excludeDirs: Boolean, isMultiline: Boolean,
                       forContent: Boolean, textFormats: Array<String>, maxDepth: Int, where: Array<String>): Data {
             val builder = Data.Builder()
                     .putString(KEY_QUERY, query)
                     .putBoolean(KEY_USE_SU, useSu)
                     .putBoolean(KEY_USE_REGEX, useRegex)
-                    .putLong(KEY_MAX_SIZE, maxSize)
+                    .putInt(KEY_MAX_SIZE, maxSize)
                     .putBoolean(KEY_CASE_INSENSITIVE, ignoreCase)
                     .putBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
                     .putBoolean(KEY_MULTILINE, isMultiline)

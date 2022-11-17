@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onCreateView(savedInstanceState: Bundle?) {
+        // todo Caused by: java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

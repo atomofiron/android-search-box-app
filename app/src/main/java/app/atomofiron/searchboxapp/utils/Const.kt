@@ -11,7 +11,7 @@ object Const {
 
     const val DEFAULT_TEXT_FORMATS = "txt java xml html htm smali log js css json kt md mkd markdown cm ad adoc"
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
-    const val DEFAULT_MAX_SIZE = 10485760L
+    const val DEFAULT_MAX_SIZE = 10485760
     const val DEFAULT_MAX_DEPTH = 1024
     const val DEFAULT_EXPLORER_ITEM = 251
     const val DEFAULT_JOYSTICK = 16732754 // 0ff5252

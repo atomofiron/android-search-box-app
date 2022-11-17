@@ -6,6 +6,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.appcompat.app.AppCompatActivity
 import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -62,7 +63,7 @@ class AppEventDelegate(
                 }
                 // todo alerts
                 uri ?: return
-                mainChannel.fileToReceive.trySend(uri)
+                mainChannel.fileToReceive[scope] = uri
             }
         }
     }

@@ -2,8 +2,8 @@ package app.atomofiron.searchboxapp.screens.explorer.presenter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
@@ -13,20 +13,22 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
+import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewState
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.CreateDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.RenameDelegate
 import app.atomofiron.searchboxapp.utils.Explorer.isParentOf
 import app.atomofiron.searchboxapp.utils.showCurtain
+import kotlinx.coroutines.CoroutineScope
 
 class ExplorerCurtainMenuDelegate(
-    private val viewModel: ExplorerViewModel,
+    private val scope: CoroutineScope,
+    private val viewState: ExplorerViewState,
     private val router: ExplorerRouter,
     private val explorerStore: ExplorerStore,
     private val explorerInteractor: ExplorerInteractor,
     curtainChannel: CurtainChannel,
-) : Recipient, CurtainApi.Adapter<CurtainApi.ViewHolder>(), MenuListener {
+) : CurtainApi.Adapter<CurtainApi.ViewHolder>(), Recipient, MenuListener {
     private companion object {
         const val OPTIONS = 111
         const val CREATE = 222
@@ -40,7 +42,7 @@ class ExplorerCurtainMenuDelegate(
     override var data: ExplorerItemOptions? = null
 
     init {
-        curtainChannel.flow.collectForMe(viewModel.viewModelScope, ::setController)
+        curtainChannel.flow.collectForMe(scope, ::setController)
     }
 
     fun showOptions(options: ExplorerItemOptions) {
@@ -98,6 +100,6 @@ class ExplorerCurtainMenuDelegate(
             .find { it.isParentOf(item) }
             ?.children?.map { it.name }
         dirFiles ?: return null
-        return RenameDelegate.RenameData(viewModel.itemComposition.value, item, dirFiles)
+        return RenameDelegate.RenameData(viewState.itemComposition.value, item, dirFiles)
     }
 }

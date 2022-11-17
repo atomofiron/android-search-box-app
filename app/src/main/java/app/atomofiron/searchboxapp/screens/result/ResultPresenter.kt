@@ -33,7 +33,7 @@ class ResultPresenter(
     appStore: AppStore,
     itemActionDelegate: ResultItemActionDelegate,
     private val curtainMenuDelegate: ResultCurtainMenuDelegate
-) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router),
+) : BasePresenter<ResultViewModel, ResultRouter>(viewModel, router = router),
     ResultItemActionListener by itemActionDelegate {
     companion object {
         private const val UNDEFINED = -1L

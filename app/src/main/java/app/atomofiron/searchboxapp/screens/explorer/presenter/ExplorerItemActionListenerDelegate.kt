@@ -10,11 +10,11 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
+import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewState
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 
 class ExplorerItemActionListenerDelegate(
-    private val viewModel: ExplorerViewModel,
+    private val viewState: ExplorerViewState,
     private val menuListenerDelegate: ExplorerCurtainMenuDelegate,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
@@ -28,12 +28,12 @@ class ExplorerItemActionListenerDelegate(
             else -> listOf(item)
         }
         val ids = when {
-            files.size > 1 -> viewModel.manyFilesOptions
-            files.first().isRoot -> viewModel.rootOptions
-            files.first().isDirectory -> viewModel.directoryOptions
-            else -> viewModel.oneFileOptions
+            files.size > 1 -> viewState.manyFilesOptions
+            files.first().isRoot -> viewState.rootOptions
+            files.first().isDirectory -> viewState.directoryOptions
+            else -> viewState.oneFileOptions
         }
-        val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
+        val options = ExplorerItemOptions(ids, files, viewState.itemComposition.value)
         menuListenerDelegate.showOptions(options)
     }
 
@@ -47,7 +47,7 @@ class ExplorerItemActionListenerDelegate(
                         openItem(item)
                     }
                     .denied { _, _ ->
-                        viewModel.showPermissionRequiredWarning()
+                        viewState.showPermissionRequiredWarning()
                     }
             }
             Environment.isExternalStorageManager() -> openItem(item)

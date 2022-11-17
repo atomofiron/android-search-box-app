@@ -10,21 +10,22 @@ import app.atomofiron.common.util.flow.SharedFlowProperty
 import app.atomofiron.common.util.flow.asProperty
 import app.atomofiron.searchboxapp.model.preference.*
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_APP_ORIENTATION
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_APP_THEME
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_DEEP_BLACK
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_DOCK_GRAVITY
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_EXCLUDE_DIRS
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_EXPLORER_ITEM
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_JOYSTICK
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_MAX_DEPTH
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_MAX_SIZE
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_OPENED_DIR_PATH
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_SPECIAL_CHARACTERS
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_STORAGE_PATH
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_TEXT_FORMATS
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_TOYBOX
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KEY_USE_SU
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyAppOrientation
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyAppTheme
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyDeepBlack
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyDockGravity
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyExcludeDirs
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyExplorerItem
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyJoystick
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyMaxDepth
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyMaxSize
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyOpenedDirPath
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeySpecialCharacters
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyStoragePath
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyTextFormats
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyToybox
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyUseSu
+import app.atomofiron.searchboxapp.utils.Tool
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -41,12 +42,12 @@ class PreferenceStore(
     private val scope: CoroutineScope,
 ) : DataStore<Preferences> by context.dataStore {
 
-    lateinit var initialPreferences: Preferences
+    lateinit var preferences: Preferences
 
     init {
         scope.launch {
             data.collect {
-                initialPreferences = it
+                preferences = it
             }
         }
     }
@@ -57,128 +58,152 @@ class PreferenceStore(
         }
     }
 
-    val useSu = getFlow(KEY_USE_SU, false)
+    val useSu = getFlow(KeyUseSu)
 
     suspend fun setUseSu(value: Boolean) {
-        edit { it[KEY_USE_SU] = value }
+        edit { it[KeyUseSu] = value }
     }
 
-    val storagePath = getFlow(KEY_STORAGE_PATH, Const.ROOT)
+    val storagePath = getFlow(KeyStoragePath)
 
     suspend fun setStoragePath(value: String) {
-        edit { it[KEY_STORAGE_PATH] = value }
+        edit { it[KeyStoragePath] = value }
     }
 
-    val openedDirPath = getFlow(KEY_OPENED_DIR_PATH, "")
+    val openedDirPath = getFlow(KeyOpenedDirPath)
 
     suspend fun setOpenedDirPath(value: String?) {
         edit {
             when (value) {
-                null -> it.remove(KEY_OPENED_DIR_PATH)
-                else -> it[KEY_OPENED_DIR_PATH] = value
+                null -> it.remove(KeyOpenedDirPath)
+                else -> it[KeyOpenedDirPath] = value
             }
         }
     }
 
-    val dockGravity = getFlow(KEY_DOCK_GRAVITY, Gravity.START)
+    val dockGravity = getFlow(KeyDockGravity)
 
     suspend fun setDockGravity(value: Int) {
-        edit { it[KEY_DOCK_GRAVITY] = value }
+        edit { it[KeyDockGravity] = value }
     }
 
-    val specialCharacters = getFlow(KEY_SPECIAL_CHARACTERS, Const.DEFAULT_SPECIAL_CHARACTERS) {
+    val specialCharacters = getFlow(KeySpecialCharacters) {
         it.split(" ").toTypedArray()
     }
 
     suspend fun setSpecialCharacters(value: Array<String>) {
-        edit { it[KEY_SPECIAL_CHARACTERS] = value.joinToString(separator = " ") }
+        edit { it[KeySpecialCharacters] = value.joinToString(separator = " ") }
     }
 
-    val excludeDirs = getFlow(KEY_EXCLUDE_DIRS, false)
+    val excludeDirs = getFlow(KeyExcludeDirs)
 
     suspend fun setExcludeDirs(value: Boolean) {
-        edit { it[KEY_EXCLUDE_DIRS] = value }
+        edit { it[KeyExcludeDirs] = value }
     }
 
-    val textFormats = getFlow(KEY_TEXT_FORMATS, Const.DEFAULT_TEXT_FORMATS) {
+    val textFormats = getFlow(KeyTextFormats) {
         it.split(" ").toTypedArray()
     }
 
     suspend fun setTextFormats(value: Array<String>) {
-        edit { it[KEY_TEXT_FORMATS] = value.joinToString(separator = " ") }
+        edit { it[KeyTextFormats] = value.joinToString(separator = " ") }
     }
 
-    val maxFileSizeForSearch = getFlow(KEY_MAX_SIZE, Const.DEFAULT_MAX_SIZE)
+    val maxFileSizeForSearch = getFlow(KeyMaxSize)
 
-    suspend fun setMaxFileSizeForSearch(value: Long) {
-        edit { it[KEY_MAX_SIZE] = value }
+    suspend fun setMaxFileSizeForSearch(value: Int) {
+        edit { it[KeyMaxSize] = value }
     }
 
-    val maxDepthForSearch = getFlow(KEY_MAX_DEPTH, Const.DEFAULT_MAX_DEPTH)
+    val maxDepthForSearch = getFlow(KeyMaxDepth)
 
     suspend fun setMaxDepthForSearch(value: Int) {
-        edit { it[KEY_MAX_DEPTH] = value }
+        edit { it[KeyMaxDepth] = value }
     }
 
-    val deepBlack = getFlow(KEY_DEEP_BLACK, false)
+    val deepBlack = getFlow(KeyDeepBlack)
 
     suspend fun setDeepBlack(value: Boolean) {
-        edit { it[KEY_DEEP_BLACK] = value }
+        edit { it[KeyDeepBlack] = value }
     }
 
-    private val appThemeMode = getFlow(KEY_APP_THEME, AppTheme.defaultName())
+    private val appThemeMode = getFlow(KeyAppTheme)
 
     val appTheme = data.map {
-        val appThemeMode = it[KEY_APP_THEME] ?: AppTheme.defaultName()
-        val deepBlack = it[KEY_DEEP_BLACK] ?: false
+        val appThemeMode = it[KeyAppTheme] ?: AppTheme.defaultName()
+        val deepBlack = it[KeyDeepBlack] ?: false
         AppTheme.fromString(appThemeMode, deepBlack)
     }.shareInOne(scope).asProperty()
 
     suspend fun setAppTheme(value: AppTheme) {
-        edit { it[KEY_APP_THEME] = value.name }
+        edit { it[KeyAppTheme] = value.name }
     }
 
-    val appOrientation = getFlow(KEY_APP_ORIENTATION, AppOrientation.UNDEFINED.ordinal.toString()) {
+    val appOrientation = getFlow(KeyAppOrientation) {
         AppOrientation.values()[it.toInt()]
     }
 
     suspend fun setAppOrientation(value: AppOrientation) {
-        edit { it[KEY_APP_ORIENTATION] = value.ordinal.toString() }
+        edit { it[KeyAppOrientation] = value.ordinal.toString() }
     }
 
-    val explorerItemComposition = getFlow(KEY_EXPLORER_ITEM, Const.DEFAULT_EXPLORER_ITEM) {
+    val explorerItemComposition = getFlow(KeyExplorerItem) {
         ExplorerItemComposition(it)
     }
 
     suspend fun setExplorerItemComposition(value: ExplorerItemComposition) {
-        edit { it[KEY_EXPLORER_ITEM] = value.flags }
+        edit { it[KeyExplorerItem] = value.flags }
     }
 
-    val joystickComposition = getFlow(KEY_JOYSTICK, Const.DEFAULT_JOYSTICK) {
+    val joystickComposition = getFlow(KeyJoystick) {
         JoystickComposition(it)
     }
 
     suspend fun setJoystickComposition(value: JoystickComposition) {
-        edit { it[KEY_JOYSTICK] = value.data }
+        edit { it[KeyJoystick] = value.data }
     }
 
-    val toyboxVariant = getFlow(KEY_TOYBOX, setOf(Const.VALUE_TOYBOX_CUSTOM, Const.DEFAULT_TOYBOX_PATH)) {
+    val toyboxVariant = getFlow(KeyToybox) {
         ToyboxVariant.fromSet(context, it)
     }
 
     suspend fun setToyboxVariant(value: Set<String>) {
-        edit { it[KEY_TOYBOX] = value }
+        edit { it[KeyToybox] = value }
     }
 
-    private fun <V> getFlow(key: Preferences.Key<V>, default: V): SharedFlowProperty<V> {
-        return data.map { it[key] ?: default }.shareInOne(scope).asProperty()
+    private fun <V> getFlow(key: Preferences.Key<V>): SharedFlowProperty<V> {
+        return data.map { it[key] ?: key.default() }.shareInOne(scope).asProperty()
     }
 
-    private fun <V,E> getFlow(key: Preferences.Key<V>, default: V, transformation: (V) -> E): SharedFlowProperty<E> {
-        return data.map { (it[key] ?: default).let(transformation) }.shareInOne(scope).asProperty()
+    private fun <V,E> getFlow(key: Preferences.Key<V>, transformation: (V) -> E): SharedFlowProperty<E> {
+        return data.map { (it[key] ?: key.default()).let(transformation) }.shareInOne(scope).asProperty()
     }
 
     private fun <T> Flow<T>.shareInOne(scope: CoroutineScope): SharedFlow<T> {
-        return distinctUntilChanged().shareIn(scope, SharingStarted.Lazily, replay = 1)
+        return distinctUntilChanged().shareIn(scope, SharingStarted.Eagerly, replay = 1)
+    }
+
+    fun <T> getOrDefault(key: Preferences.Key<T>): T = preferences[key] ?: key.default()
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> Preferences.Key<T>.default(): T {
+        return when (this) {
+            KeyStoragePath -> Tool.getExternalStorageDirectory(context) as T
+            KeyOpenedDirPath -> "" as T
+            KeyDockGravity -> Gravity.START as T
+            KeySpecialCharacters -> Const.DEFAULT_SPECIAL_CHARACTERS as T
+            KeyTextFormats -> Const.DEFAULT_TEXT_FORMATS as T
+            KeyAppOrientation -> AppOrientation.UNDEFINED.ordinal.toString() as T
+            KeyAppTheme -> AppTheme.defaultName() as T
+            KeyDeepBlack -> false as T
+            KeyMaxSize -> Const.DEFAULT_MAX_SIZE as T
+            KeyMaxDepth -> Const.DEFAULT_MAX_DEPTH as T
+            KeyExcludeDirs -> false as T
+            KeyUseSu -> false as T
+            KeyExplorerItem -> Const.DEFAULT_EXPLORER_ITEM as T
+            KeyJoystick -> Const.DEFAULT_JOYSTICK as T
+            KeyToybox -> setOf(Const.VALUE_TOYBOX_CUSTOM, Const.DEFAULT_TOYBOX_PATH) as T
+            else -> null as T
+        }
     }
 }

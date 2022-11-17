@@ -23,7 +23,7 @@ class TextViewerPresenter(
     private val interactor: TextViewerInteractor,
     preferenceStore: PreferenceStore,
     textViewerChannel: TextViewerChannel
-) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router),
+) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router = router),
     TextViewerAdapter.TextViewerListener,
     FinderAdapterOutput by searchDelegate
 {

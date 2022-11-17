@@ -3,8 +3,8 @@ package app.atomofiron.searchboxapp.screens.curtain.util
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import app.atomofiron.common.util.flow.Unique
-import app.atomofiron.common.util.flow.Equality
+import app.atomofiron.common.util.Unique
+import app.atomofiron.common.util.Equality
 import com.google.android.material.snackbar.Snackbar
 import java.lang.ref.WeakReference
 import java.util.*

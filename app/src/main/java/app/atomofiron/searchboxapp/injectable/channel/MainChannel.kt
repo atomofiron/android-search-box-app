@@ -1,8 +1,8 @@
 package app.atomofiron.searchboxapp.injectable.channel
 
 import android.net.Uri
-import kotlinx.coroutines.channels.Channel
+import app.atomofiron.common.util.flow.EventFlow
 
 class MainChannel {
-    val fileToReceive = Channel<Uri>()
+    val fileToReceive = EventFlow<Uri>()
 }

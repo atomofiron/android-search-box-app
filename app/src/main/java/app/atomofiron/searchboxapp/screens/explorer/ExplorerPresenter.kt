@@ -14,9 +14,11 @@ import app.atomofiron.searchboxapp.screens.explorer.places.XPlaceType
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
+import kotlinx.coroutines.CoroutineScope
 
 class ExplorerPresenter(
-    viewModel: ExplorerViewModel,
+    scope: CoroutineScope,
+    private val viewState: ExplorerViewState,
     router: ExplorerRouter,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
@@ -25,7 +27,7 @@ class ExplorerPresenter(
     itemListener: ExplorerItemActionListenerDelegate,
     placesListener: PlacesActionListenerDelegate,
     private val curtainMenuDelegate: ExplorerCurtainMenuDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router,),
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(scope = scope, router =  router),
     ExplorerItemActionListener by itemListener,
     PlacesAdapter.ItemActionListener by placesListener {
 
@@ -33,9 +35,11 @@ class ExplorerPresenter(
 
     init {
         preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
-        preferenceStore.storagePath.collect(scope, ::onStoragePathChanged)
+        preferenceStore.storagePath.collect(scope) { path ->
+            explorerInteractor.setRoot(path)
+        }
         preferenceStore.explorerItemComposition.collect(scope) {
-            viewModel.itemComposition.value = it
+            viewState.itemComposition.value = it
         }
 
         val items = ArrayList<XPlace>()
@@ -44,22 +48,14 @@ class ExplorerPresenter(
         items.add(XPlace.AnotherPlace("Another Place 0"))
         items.add(XPlace.AnotherPlace("Another Place 1"))
         items.add(XPlace.AnotherPlace("Another Place 2"))
-        viewModel.places.value = items
-
-        onSubscribeData()
+        viewState.places.value = items
     }
 
-    override fun onSubscribeData() {
-        explorerStore.items.collect(scope, viewModel::onChanged)
-        explorerStore.current.collect(scope, viewModel::onChanged)
-        explorerStore.alerts.collect(scope, viewModel.alerts::send)
-    }
+    override fun onSubscribeData() = Unit
 
     private fun onDockGravityChanged(gravity: Int) {
-        viewModel.historyDrawerGravity.value = gravity
+        viewState.historyDrawerGravity.value = gravity
     }
-
-    private fun onStoragePathChanged(path: String) = explorerInteractor.setRoot(path)
 
     fun onSearchOptionSelected() = router.showFinder()
 
@@ -72,12 +68,12 @@ class ExplorerPresenter(
             else -> return
         }
         val ids = when {
-            files.size > 1 -> viewModel.manyFilesOptions
-            files.first().isRoot -> viewModel.rootOptions
-            files.first().isDirectory -> viewModel.directoryOptions
-            else -> viewModel.oneFileOptions
+            files.size > 1 -> viewState.manyFilesOptions
+            files.first().isRoot -> viewState.rootOptions
+            files.first().isDirectory -> viewState.directoryOptions
+            else -> viewState.oneFileOptions
         }
-        val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
+        val options = ExplorerItemOptions(ids, files, viewState.itemComposition.value)
         curtainMenuDelegate.showOptions(options)
     }
 
@@ -89,6 +85,6 @@ class ExplorerPresenter(
 
     fun onVolumeUp(isCurrentDirVisible: Boolean) = when {
         isCurrentDirVisible -> explorerInteractor.openParent()
-        else -> viewModel.scrollToCurrentDir()
+        else -> viewState.scrollToCurrentDir()
     }
 }

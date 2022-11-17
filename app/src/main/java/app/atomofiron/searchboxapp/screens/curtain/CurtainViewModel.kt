@@ -1,9 +1,11 @@
 package app.atomofiron.searchboxapp.screens.curtain
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
 import app.atomofiron.common.util.flow.ChannelFlow
-import app.atomofiron.common.util.flow.DeferredStateFlow
+import app.atomofiron.common.util.flow.DataFlow
+import app.atomofiron.common.util.flow.set
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
@@ -18,7 +20,7 @@ class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, Curtai
 
     var initialLayoutId = 0
         private set
-    val adapter = DeferredStateFlow<CurtainApi.Adapter<*>>()
+    val adapter = DataFlow<CurtainApi.Adapter<*>>()
     val action = ChannelFlow<CurtainAction>()
     val cancelable = MutableStateFlow(true)
 
@@ -42,6 +44,6 @@ class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, Curtai
         .build()
 
     fun setCurtainAdapter(factory: CurtainApi.Adapter<*>) {
-        adapter.value = factory
+        adapter[viewModelScope] = factory
     }
 }

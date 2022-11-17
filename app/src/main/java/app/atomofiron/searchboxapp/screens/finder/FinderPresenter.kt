@@ -19,7 +19,7 @@ class FinderPresenter(
     private val preferenceStore: PreferenceStore,
     private val finderStore: FinderStore,
     private val preferenceChannel: PreferenceChannel
-) : BasePresenter<FinderViewModel, FinderRouter>(viewModel, router),
+) : BasePresenter<FinderViewModel, FinderRouter>(viewModel, router = router),
         FinderAdapterOutput by finderAdapterDelegate
 {
     private val uniqueItems: MutableList<FinderStateItem> get() = viewModel.uniqueItems

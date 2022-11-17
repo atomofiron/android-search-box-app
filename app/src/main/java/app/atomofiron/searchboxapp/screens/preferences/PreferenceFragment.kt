@@ -36,7 +36,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         setPreferencesFromResource(R.xml.preferences, rootKey)
         preferenceDelegate.onCreatePreference(preferenceScreen)
 
-        val deepBlack = findPreference<Preference>(PreferenceKeys.KEY_DEEP_BLACK.name)!!
+        val deepBlack = findPreference<Preference>(PreferenceKeys.KeyDeepBlack.name)!!
         viewModel.showDeepBlack.collect(lifecycleScope) {
             deepBlack.isVisible = it
         }

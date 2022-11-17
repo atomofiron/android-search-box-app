@@ -32,8 +32,6 @@ interface ExplorerComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: ExplorerViewModel): Builder
-        @BindsInstance
         fun bind(fragment: WeakProperty<Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
@@ -49,7 +47,7 @@ class ExplorerModule {
     @Provides
     @ExplorerScope
     fun itemListener(
-        viewModel: ExplorerViewModel,
+        viewState: ExplorerViewState,
         menuListenerDelegate: ExplorerCurtainMenuDelegate,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
@@ -57,7 +55,7 @@ class ExplorerModule {
         explorerInteractor: ExplorerInteractor,
     ): ExplorerItemActionListenerDelegate {
         return ExplorerItemActionListenerDelegate(
-            viewModel,
+            viewState,
             menuListenerDelegate,
             explorerStore,
             preferenceStore,
@@ -68,26 +66,28 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun placesListener(viewModel: ExplorerViewModel): PlacesActionListenerDelegate {
-        return PlacesActionListenerDelegate(viewModel)
+    fun placesListener(viewState: ExplorerViewState): PlacesActionListenerDelegate {
+        return PlacesActionListenerDelegate(viewState)
     }
 
     @Provides
     @ExplorerScope
     fun menuListener(
-        viewModel: ExplorerViewModel,
+        scope: CoroutineScope,
+        viewState: ExplorerViewState,
         router: ExplorerRouter,
         explorerStore: ExplorerStore,
         explorerInteractor: ExplorerInteractor,
         curtainChannel: CurtainChannel,
     ): ExplorerCurtainMenuDelegate {
-        return ExplorerCurtainMenuDelegate(viewModel, router, explorerStore, explorerInteractor, curtainChannel)
+        return ExplorerCurtainMenuDelegate(scope, viewState, router, explorerStore, explorerInteractor, curtainChannel)
     }
 
     @Provides
     @ExplorerScope
     fun presenter(
-        viewModel: ExplorerViewModel,
+        scope: CoroutineScope,
+        viewState: ExplorerViewState,
         router: ExplorerRouter,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
@@ -98,7 +98,8 @@ class ExplorerModule {
         curtainMenuDelegate: ExplorerCurtainMenuDelegate,
     ): ExplorerPresenter {
         return ExplorerPresenter(
-            viewModel,
+            scope,
+            viewState,
             router,
             explorerStore,
             preferenceStore,
@@ -120,6 +121,12 @@ class ExplorerModule {
     @ExplorerScope
     fun router(fragment: WeakProperty<Fragment>, appStore: AppStore): ExplorerRouter {
         return ExplorerRouter(fragment, FileSharingDelegateImpl(appStore))
+    }
+
+    @Provides
+    @ExplorerScope
+    fun viewState(scope: CoroutineScope, explorerStore: ExplorerStore): ExplorerViewState {
+        return ExplorerViewState(scope, explorerStore)
     }
 }
 

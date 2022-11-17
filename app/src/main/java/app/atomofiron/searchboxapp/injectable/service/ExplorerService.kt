@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.content.Context
 import android.content.res.AssetManager
 import android.net.Uri
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -44,10 +45,11 @@ class ExplorerService(
                 copyToybox(context)
             }
         }
-        scope.launch(Dispatchers.Default) {
-            explorerStore.current.collect {
-                preferenceStore.setOpenedDirPath(it?.path)
-            }
+        explorerStore.current.collect(scope) {
+            preferenceStore.setOpenedDirPath(it?.path)
+        }
+        preferenceStore.toyboxVariant.collect(scope) {
+            Shell.toyboxPath = it.toyboxPath
         }
     }
 
@@ -66,7 +68,7 @@ class ExplorerService(
     suspend fun tryToggle(it: Node) {
         withTab {
             var item = levels.findNode(it.uniqueId)
-            if (item?.isChecked != true) return
+            if (item?.isCached != true) return
             if (item.isOpened) {
                 val nextOpened = item.children?.find { it.isOpened }
                 if (nextOpened != null) {
@@ -208,7 +210,7 @@ class ExplorerService(
             levels.dropClosedLevels()
             updateDirectoryTypes()
             val items = renderNodes()
-            explorerStore.items.set(items)
+            explorerStore.items.emit(items)
             levels.updateCurrentDir()
             updateStates(items)
             val checked = items.filter { it.isChecked }

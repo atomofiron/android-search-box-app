@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.curtain
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.set
+import app.atomofiron.common.util.flow.valueOrNull
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.channel.CurtainResponse
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
@@ -14,7 +15,7 @@ class CurtainPresenter(
     viewModel: CurtainViewModel,
     router: CurtainRouter,
     private val curtainChannel: CurtainChannel,
-) : BasePresenter<CurtainViewModel, CurtainRouter>(viewModel, router), CurtainApi.Controller {
+) : BasePresenter<CurtainViewModel, CurtainRouter>(viewModel, router = router), CurtainApi.Controller {
     private var adapter: CurtainApi.Adapter<*>? = null
 
     override val requestFrom: String = params.recipient

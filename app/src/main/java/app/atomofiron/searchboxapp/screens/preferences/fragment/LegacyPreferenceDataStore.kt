@@ -9,46 +9,36 @@ import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import kotlinx.coroutines.*
 
 class LegacyPreferenceDataStore(
-    preferenceStore: PreferenceStore,
+    private val preferenceStore: PreferenceStore,
     private val scope: CoroutineScope,
     private val watcher: AppWatcherProxy,
 ) : PreferenceDataStore(), DataStore<Preferences> by preferenceStore {
 
-    private var preferences: Preferences = preferenceStore.initialPreferences
-
-    init {
-        launchImmediately {
-            preferenceStore.data.collect {
-                preferences = it
-            }
-        }
-    }
-
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
         return when (key) {
             PreferenceKeys.PREF_LEAK_CANARY -> watcher.isEnabled
-            else -> preferences[booleanPreferencesKey(key)] ?: defValue
+            else -> preferenceStore.getOrDefault(booleanPreferencesKey(key))
         }
     }
 
     override fun getInt(key: String, defValue: Int): Int {
-        return preferences[intPreferencesKey(key)] ?: defValue
+        return preferenceStore.getOrDefault(intPreferencesKey(key))
     }
 
     override fun getFloat(key: String, defValue: Float): Float {
-        return preferences[floatPreferencesKey(key)] ?: defValue
+        return preferenceStore.getOrDefault(floatPreferencesKey(key))
     }
 
     override fun getLong(key: String, defValue: Long): Long {
-        return preferences[longPreferencesKey(key)] ?: defValue
+        return preferenceStore.getOrDefault(longPreferencesKey(key))
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return preferences[stringPreferencesKey(key)] ?: defValue
+        return preferenceStore.getOrDefault(stringPreferencesKey(key))
     }
 
     override fun getStringSet(key: String, defValues: Set<String>?): Set<String>? {
-        return preferences[stringSetPreferencesKey(key)] ?: defValues
+        return preferenceStore.getOrDefault(stringSetPreferencesKey(key))
     }
 
     override fun putBoolean(key: String, value: Boolean) {

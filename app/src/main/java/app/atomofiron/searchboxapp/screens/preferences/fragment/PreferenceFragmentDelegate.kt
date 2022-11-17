@@ -21,7 +21,7 @@ class PreferenceFragmentDelegate(
     private val resources get() = fragment.resources
 
     override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
-        return onUpdatePreference(preference, newValue)
+        return updatePreference(preference, newValue)
     }
 
     fun onCreatePreference(preference: Preference) {
@@ -32,6 +32,7 @@ class PreferenceFragmentDelegate(
                     onCreatePreference(preference[i])
                 }
             }
+            else -> updatePreference(preference)
         }
     }
 
@@ -40,7 +41,7 @@ class PreferenceFragmentDelegate(
         preference.onPreferenceClickListener = this
 
         when (preference.key) {
-            PreferenceKeys.KEY_SPECIAL_CHARACTERS.name -> {
+            PreferenceKeys.KeySpecialCharacters.name -> {
                 preference as TextFieldPreference
                 preference.setFilter {
                     it.replace(Regex("[ ]+"), Const.SPACE).trim()
@@ -49,41 +50,36 @@ class PreferenceFragmentDelegate(
         }
     }
 
-    private fun onUpdatePreference(preference: Preference, newValue: Any?): Boolean {
+    private fun updatePreference(preference: Preference, newValue: Any? = null): Boolean {
         when (val key = preference.key) {
-            PreferenceKeys.KEY_STORAGE_PATH.name -> {
-                if (newValue !is String || newValue.isBlank()) {
-                    return false
-                }
-                preference.updateStringSummary(newValue as String?)
-            }
-            PreferenceKeys.KEY_TEXT_FORMATS.name -> preference.updateStringSummary(newValue as String?)
-            PreferenceKeys.KEY_SPECIAL_CHARACTERS.name -> preference.updateStringSummary(newValue as String?)
-            PreferenceKeys.KEY_APP_THEME.name -> {
+            PreferenceKeys.KeyStoragePath.name -> preference.updateStringSummary(newValue as String?)
+            PreferenceKeys.KeyTextFormats.name -> preference.updateStringSummary(newValue as String?)
+            PreferenceKeys.KeySpecialCharacters.name -> preference.updateStringSummary(newValue as String?)
+            PreferenceKeys.KeyAppTheme.name -> {
                 var name = newValue?.toString() ?: preference.preferenceDataStore?.getString(key, null)
                 name = AppTheme.fromString(name).name
                 val index = resources.getStringArray(R.array.theme_val).indexOf(name)
                 preference.summary = resources.getStringArray(R.array.theme_var)[index]
             }
-            PreferenceKeys.KEY_APP_ORIENTATION.name -> {
+            PreferenceKeys.KeyAppOrientation.name -> {
                 val i = (newValue?.toString() ?: preference.preferenceDataStore?.getString(key, null))?.toInt() ?: 0
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
             }
-            PreferenceKeys.KEY_MAX_SIZE.name -> preference.updateMaxSize(newValue)
+            PreferenceKeys.KeyMaxSize.name -> {
+                val suffixes = resources.getStringArray(R.array.size_suffix_arr)
+                var value = newValue as? Number ?: preference.preferenceDataStore?.getInt(key, -1)
+                value = value?.toInt()
+                if (value != null && value >= 0) {
+                    preference.summary = value.toHumanReadable(suffixes)
+                }
+            }
             PreferenceKeys.PREF_EXPORT_IMPORT -> preference.isEnabled = viewModel.isExportImportAvailable
-            PreferenceKeys.KEY_TOYBOX.name -> preference.isVisible = SDK_INT < Q
+            PreferenceKeys.KeyToybox.name -> preference.isVisible = SDK_INT < Q
         }
         return true
     }
 
-    private fun Preference.updateMaxSize(newValue: Any?) {
-        if (newValue is Long) {
-            val suffixes = resources.getStringArray(R.array.size_suffix_arr)
-            summary = newValue.toHumanReadable(suffixes)
-        }
-    }
-
-    private fun Preference.updateStringSummary(newValue: String?) {
+    private fun Preference.updateStringSummary(newValue: String? = null) {
         summary = newValue ?: preferenceDataStore?.getString(key, null)
     }
 
@@ -91,9 +87,9 @@ class PreferenceFragmentDelegate(
         when (preference.key) {
             PreferenceKeys.PREF_ABOUT -> clickOutput.onAboutClick()
             PreferenceKeys.PREF_EXPORT_IMPORT -> clickOutput.onExportImportClick()
-            PreferenceKeys.KEY_EXPLORER_ITEM.name -> clickOutput.onExplorerItemClick()
-            PreferenceKeys.KEY_JOYSTICK.name -> clickOutput.onJoystickClick()
-            PreferenceKeys.KEY_TOYBOX.name -> clickOutput.onToyboxClick()
+            PreferenceKeys.KeyExplorerItem.name -> clickOutput.onExplorerItemClick()
+            PreferenceKeys.KeyJoystick.name -> clickOutput.onJoystickClick()
+            PreferenceKeys.KeyToybox.name -> clickOutput.onToyboxClick()
         }
         return true
     }

@@ -25,4 +25,6 @@ class DeferredStateFlow<T>(value: T? = null) : StateFlow<T> {
             }
         }
     }
+
+    private data class Nullable<T>(val value: T?)
 }

@@ -10,7 +10,6 @@ import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmen
 import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegate
 import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegateApi
 import app.atomofiron.searchboxapp.screens.main.util.tasks.XTask
-import app.atomofiron.searchboxapp.utils.Shell
 
 class MainPresenter(
     private val viewModel: MainViewModel,
@@ -38,9 +37,6 @@ class MainPresenter(
         }
         preferenceStore.joystickComposition.collect(scope) {
             viewModel.setJoystick.value = it
-        }
-        preferenceStore.toyboxVariant.collect(scope) {
-            Shell.toyboxPath = it.toyboxPath
         }
         viewModel.tasks.value = Array(16) { XTask() }.toList()
     }
