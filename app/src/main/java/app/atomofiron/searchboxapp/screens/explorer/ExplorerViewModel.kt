@@ -1,7 +1,5 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel2
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -27,9 +25,6 @@ class ExplorerViewModel : BaseViewModel2<ExplorerComponent, ExplorerFragment, Ex
 
     override fun setFragment(view: ExplorerFragment) {
         super.setFragment(view)
-        view.registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions(),
-            router.permissions,
-        )
+        router.permissions.registerForActivityResult(view)
     }
 }

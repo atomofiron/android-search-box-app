@@ -4,7 +4,9 @@ import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import app.atomofiron.common.util.property.WeakProperty
 
@@ -12,6 +14,8 @@ class PermissionDelegate private constructor(
     activityProperty: WeakProperty<FragmentActivity>,
 ) : PermissionDelegateApi {
     companion object {
+        private val contract = ActivityResultContracts.RequestMultiplePermissions()
+
         fun create(activityProperty: WeakProperty<FragmentActivity>): PermissionDelegateApi {
             return PermissionDelegate(activityProperty)
         }
@@ -30,7 +34,11 @@ class PermissionDelegate private constructor(
     private val grantedCallbacks = mutableMapOf<String, List<PermissionCallback>>()
     private val deniedCallbacks = mutableMapOf<String, List<PermissionCallback>>()
 
-    private var contract: ActivityResultLauncher<Array<String>>? = null
+    private var contractLauncher: ActivityResultLauncher<Array<String>>? = null
+
+    override fun registerForActivityResult(fragment: Fragment) {
+        contractLauncher = fragment.registerForActivityResult(contract, this)
+    }
 
     override fun check(vararg permissions: String): PermissionDelegateApi {
         if (SDK_INT < M) return this
@@ -46,7 +54,7 @@ class PermissionDelegate private constructor(
 
     override fun request(vararg permissions: String): PermissionDelegateApi {
         if (SDK_INT < M) return this
-        val contract = contract ?: return this
+        val contract = contractLauncher ?: return this
         val notGranted = activity?.filterNotGranted(*permissions)
         requestedPermissions.clear()
         requestedPermissions.addAll(permissions)

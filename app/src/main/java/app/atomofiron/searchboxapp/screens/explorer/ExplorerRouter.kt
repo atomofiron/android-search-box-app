@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseRouter
