@@ -31,6 +31,7 @@ class ExplorerViewState(
     val itemComposition = DeferredStateFlow<ExplorerItemComposition>()
     val items: SharedFlow<List<Node>> = explorerStore.items
     val current: StateFlow<Node?> = explorerStore.current
+    val actions: Flow<NodeAction> = explorerStore.actions
     val alerts: Flow<NodeError> = explorerStore.alerts
 
     fun showPermissionRequiredWarning() {

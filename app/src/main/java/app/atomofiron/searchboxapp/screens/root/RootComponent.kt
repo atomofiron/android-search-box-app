@@ -23,7 +23,7 @@ interface RootComponent {
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
-        fun bind(activity: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         fun dependencies(dependencies: RootDependencies): Builder
         fun build(): RootComponent
     }
@@ -46,7 +46,7 @@ class RootModule {
 
     @Provides
     @RootScope
-    fun router(fragment: WeakProperty<Fragment>): RootRouter = RootRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): RootRouter = RootRouter(fragment)
 
     @Provides
     @RootScope

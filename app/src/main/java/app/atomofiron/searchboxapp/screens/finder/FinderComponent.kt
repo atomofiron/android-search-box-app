@@ -29,7 +29,7 @@ interface FinderComponent {
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
-        fun bind(fragment: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         fun dependencies(dependencies: FinderDependencies): Builder
         fun build(): FinderComponent
     }
@@ -75,7 +75,7 @@ class FinderModule {
 
     @Provides
     @FinderScope
-    fun router(fragment: WeakProperty<Fragment>) = FinderRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>) = FinderRouter(fragment)
 
     @Provides
     @FinderScope

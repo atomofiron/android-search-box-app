@@ -12,13 +12,13 @@ import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 
 abstract class BaseRouter(
-    fragmentProperty: WeakProperty<Fragment>,
-    protected val activityProperty: WeakProperty<FragmentActivity> = activityProperty(fragmentProperty),
+    fragmentProperty: WeakProperty<out Fragment>,
+    protected val activityProperty: WeakProperty<out FragmentActivity> = activityProperty(fragmentProperty),
 ) {
     companion object {
         const val RECIPIENT = "RECIPIENT"
 
-        private fun activityProperty(fragmentProperty: WeakProperty<Fragment>): WeakProperty<FragmentActivity> {
+        private fun activityProperty(fragmentProperty: WeakProperty<out Fragment>): WeakProperty<out FragmentActivity> {
             val activityProperty = MutableWeakProperty<FragmentActivity>()
             fragmentProperty.observe { fragment ->
                 activityProperty.value = fragment?.activity
@@ -46,7 +46,7 @@ abstract class BaseRouter(
 
     protected abstract val currentDestinationId: Int
 
-    constructor(activityProperty: WeakProperty<FragmentActivity>) : this(WeakProperty(), activityProperty)
+    constructor(activityProperty: WeakProperty<out FragmentActivity>) : this(WeakProperty(), activityProperty)
 
     protected open val isCurrentDestination: Boolean
         get() = navigation {

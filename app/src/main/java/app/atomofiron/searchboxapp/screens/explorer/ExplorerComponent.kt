@@ -32,7 +32,7 @@ interface ExplorerComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(fragment: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: ExplorerDependencies): Builder
@@ -119,7 +119,7 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun router(fragment: WeakProperty<Fragment>, appStore: AppStore): ExplorerRouter {
+    fun router(fragment: WeakProperty<out Fragment>, appStore: AppStore): ExplorerRouter {
         return ExplorerRouter(fragment, FileSharingDelegateImpl(appStore))
     }
 

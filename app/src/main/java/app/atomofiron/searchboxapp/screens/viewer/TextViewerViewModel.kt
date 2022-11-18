@@ -16,14 +16,16 @@ class TextViewerViewModel : BaseViewModel<TextViewerComponent, TextViewerFragmen
     @Inject
     override lateinit var viewState: TextViewerViewState
 
-    override fun component(fragment: TextViewerFragment): TextViewerComponent {
-        val params = TextViewerParams.params(fragment.requireArguments())
+    override fun component(view: TextViewerFragment): TextViewerComponent {
+        val params = TextViewerParams.params(view.requireArguments())
         return DaggerTextViewerComponent
             .builder()
-            .bind(fragmentProperty)
+            .bind(viewProperty)
             .bind(viewModelScope)
             .bind(params)
             .dependencies(DaggerInjector.appComponent)
-            .build()
+            .build().apply {
+                inject(this@TextViewerViewModel)
+            }
     }
 }

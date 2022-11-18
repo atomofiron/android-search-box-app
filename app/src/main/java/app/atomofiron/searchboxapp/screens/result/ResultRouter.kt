@@ -9,7 +9,7 @@ import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.utils.Const
 
-class ResultRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
+class ResultRouter(property: WeakProperty<out Fragment>) : BaseRouter(property) {
 
     override val currentDestinationId = R.id.resultFragment
 

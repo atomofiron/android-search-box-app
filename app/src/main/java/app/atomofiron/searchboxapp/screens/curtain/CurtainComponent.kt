@@ -24,7 +24,7 @@ interface CurtainComponent {
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
-        fun bind(fragment: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         @BindsInstance
         fun bind(params: CurtainPresenterParams): Builder
         fun dependencies(dependencies: CurtainDependencies): Builder
@@ -50,7 +50,7 @@ class CurtainModule {
 
     @Provides
     @CurtainScope
-    fun router(fragment: WeakProperty<Fragment>): CurtainRouter = CurtainRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): CurtainRouter = CurtainRouter(fragment)
 
     @Provides
     @CurtainScope

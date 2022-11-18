@@ -7,7 +7,7 @@ import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.util.navigation.CustomNavHostFragment
 import app.atomofiron.common.util.property.WeakProperty
 
-class MainRouter(activityProperty: WeakProperty<FragmentActivity>) : BaseRouter(activityProperty) {
+class MainRouter(activityProperty: WeakProperty<out FragmentActivity>) : BaseRouter(activityProperty) {
 
     override val currentDestinationId = 0
     override val isCurrentDestination: Boolean = true

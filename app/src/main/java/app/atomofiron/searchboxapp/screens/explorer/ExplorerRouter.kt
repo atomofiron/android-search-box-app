@@ -15,7 +15,7 @@ import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.utils.Util
 
 class ExplorerRouter(
-    property: WeakProperty<Fragment>,
+    property: WeakProperty<out Fragment>,
     fileSharingDelegate: FileSharingDelegate,
 ) : BaseRouter(property), FileSharingDelegate by fileSharingDelegate {
 

@@ -35,7 +35,7 @@ interface PreferenceComponent {
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
-        fun bind(fragment: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         fun dependencies(dependencies: PreferenceDependencies): Builder
         fun build(): PreferenceComponent
     }
@@ -106,7 +106,7 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun router(fragment: WeakProperty<Fragment>): PreferenceRouter = PreferenceRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): PreferenceRouter = PreferenceRouter(fragment)
 
     @Provides
     @PreferenceScope

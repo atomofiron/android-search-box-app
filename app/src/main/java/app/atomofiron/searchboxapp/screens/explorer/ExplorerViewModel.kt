@@ -14,14 +14,14 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     @Inject
     lateinit var router: ExplorerRouter
 
-    override fun setFragment(fragment: ExplorerFragment) {
-        super.setFragment(fragment)
-        router.permissions.registerForActivityResult(fragment)
+    override fun setView(view: ExplorerFragment) {
+        super.setView(view)
+        router.permissions.registerForActivityResult(view)
     }
 
-    override fun component(fragment: ExplorerFragment) = DaggerExplorerComponent
+    override fun component(view: ExplorerFragment) = DaggerExplorerComponent
         .builder()
-        .bind(fragmentProperty)
+        .bind(viewProperty)
         .bind(viewModelScope)
         .dependencies(DaggerInjector.appComponent)
         .build().apply {

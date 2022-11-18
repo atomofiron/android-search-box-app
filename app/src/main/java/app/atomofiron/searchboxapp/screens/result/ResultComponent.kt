@@ -31,7 +31,7 @@ interface ResultComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(fragment: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
@@ -40,7 +40,7 @@ interface ResultComponent {
         fun build(): ResultComponent
     }
 
-    fun inject(target: ResultViewState)
+    fun inject(target: ResultViewModel)
 }
 
 @Module
@@ -111,7 +111,7 @@ class ResultModule {
 
     @Provides
     @ResultScope
-    fun router(fragment: WeakProperty<Fragment>): ResultRouter = ResultRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): ResultRouter = ResultRouter(fragment)
 
     @Provides
     @ResultScope

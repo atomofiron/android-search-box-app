@@ -7,7 +7,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerFragment
 import app.atomofiron.searchboxapp.screens.finder.FinderFragment
 
-class RootRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
+class RootRouter(property: WeakProperty<out Fragment>) : BaseRouter(property) {
 
     override val currentDestinationId = R.id.rootFragment
 

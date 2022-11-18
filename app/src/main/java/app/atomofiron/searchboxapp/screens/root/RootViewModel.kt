@@ -12,10 +12,10 @@ class RootViewModel : BaseViewModel<RootComponent, RootFragment, RootViewState, 
     @Inject
     override lateinit var viewState: RootViewState
 
-    override fun component(fragment: RootFragment) = DaggerRootComponent
+    override fun component(view: RootFragment) = DaggerRootComponent
         .builder()
         .bind(viewModelScope)
-        .bind(fragmentProperty)
+        .bind(viewProperty)
         .dependencies(DaggerInjector.appComponent)
         .build().apply {
             inject(this@RootViewModel)

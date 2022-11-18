@@ -29,7 +29,7 @@ interface TextViewerComponent {
         @BindsInstance
         fun bind(params: TextViewerParams): Builder
         @BindsInstance
-        fun bind(activity: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: TextViewerDependencies): Builder
@@ -99,7 +99,7 @@ class TextViewerModule {
 
     @Provides
     @TextViewerScope
-    fun router(fragment: WeakProperty<Fragment>): TextViewerRouter = TextViewerRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): TextViewerRouter = TextViewerRouter(fragment)
 
     @Provides
     @TextViewerScope

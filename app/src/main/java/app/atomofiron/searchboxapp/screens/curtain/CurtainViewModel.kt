@@ -12,14 +12,16 @@ class CurtainViewModel : BaseViewModel<CurtainComponent, CurtainFragment, Curtai
     @Inject
     override lateinit var viewState: CurtainViewState
 
-    override fun component(fragment: CurtainFragment): CurtainComponent {
-        val params = CurtainPresenterParams.params(fragment.requireArguments())
+    override fun component(view: CurtainFragment): CurtainComponent {
+        val params = CurtainPresenterParams.params(view.requireArguments())
         return DaggerCurtainComponent
             .builder()
             .bind(viewModelScope)
-            .bind(fragmentProperty)
+            .bind(viewProperty)
             .bind(params)
             .dependencies(DaggerInjector.appComponent)
-            .build()
+            .build().apply {
+                inject(this@CurtainViewModel)
+            }
     }
 }

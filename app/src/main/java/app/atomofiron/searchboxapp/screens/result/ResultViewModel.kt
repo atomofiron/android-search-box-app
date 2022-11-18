@@ -13,14 +13,16 @@ class ResultViewModel : BaseViewModel<ResultComponent, ResultFragment, ResultVie
     @Inject
     override lateinit var viewState: ResultViewState
 
-    override fun component(fragment: ResultFragment): ResultComponent {
-        val params = ResultPresenterParams.params(fragment.requireArguments())
+    override fun component(view: ResultFragment): ResultComponent {
+        val params = ResultPresenterParams.params(view.requireArguments())
         return DaggerResultComponent
             .builder()
-            .bind(fragmentProperty)
+            .bind(viewProperty)
             .bind(viewModelScope)
             .bind(params)
             .dependencies(DaggerInjector.appComponent)
-            .build()
+            .build().apply {
+                inject(this@ResultViewModel)
+            }
     }
 }

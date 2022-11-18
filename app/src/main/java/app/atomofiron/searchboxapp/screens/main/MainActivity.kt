@@ -24,7 +24,6 @@ import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
-import app.atomofiron.searchboxapp.utils.Const
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -44,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             .addCallback(SnackbarCallbackFragmentDelegate(presenter))
     }
 
-    private lateinit var viewModel: MainViewModel
+    private lateinit var viewState: MainViewState
     @Inject
     lateinit var presenter: MainPresenter
     @Inject
@@ -55,8 +54,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.inject(this)
+        val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel.setView(this)
+        presenter = viewModel.presenter
+        viewState = viewModel.viewState
 
         lifecycleScope.launch(Dispatchers.Main) {
             // todo avoid using flow.replayCache.first() in SharedFlowProperty
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding.joystick.setOnClickListener { onEscClick() }
 
-        viewModel.showExitSnackbar.collect(lifecycleScope) {
+        viewState.showExitSnackbar.collect(lifecycleScope) {
             sbExit.show()
         }
         if (savedInstanceState == null) onIntent(intent)
@@ -98,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
         presenter.updateLightNavigationBar(isDarkTheme)
         presenter.updateLightStatusBar(isDarkTheme)
-        setOrientation(viewModel.setOrientation.value)
+        setOrientation(viewState.setOrientation.value)
         onCollect()
     }
 
@@ -130,7 +131,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onCollect() {
-        viewModel.apply {
+        viewState.apply {
             setTheme.collect(lifecycleScope, ::setTheme)
             setOrientation.collect(lifecycleScope, ::setOrientation)
             setJoystick.collect(lifecycleScope, binding.joystick::setComposition)

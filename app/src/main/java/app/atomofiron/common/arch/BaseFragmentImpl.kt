@@ -12,7 +12,7 @@ class BaseFragmentImpl<F : Fragment, S : Any, P : BasePresenter<*,*>> : BaseFrag
 
     override fun initViewModel(fragment: F, viewModelClass: KClass<out BaseViewModel<*,F,S,P>>, state: Bundle?) {
         val viewModel = ViewModelProvider(fragment)[viewModelClass.java]
-        viewModel.setFragment(fragment)
+        viewModel.setView(fragment)
         presenter = viewModel.presenter
         viewState = viewModel.viewState
         if (state != null) viewModel.onRestoreState(state)

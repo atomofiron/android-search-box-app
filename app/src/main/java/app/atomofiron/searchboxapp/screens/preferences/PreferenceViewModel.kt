@@ -12,10 +12,12 @@ class PreferenceViewModel : BaseViewModel<PreferenceComponent, PreferenceFragmen
     @Inject
     override lateinit var viewState: PreferenceViewState
 
-    override fun component(fragment: PreferenceFragment) = DaggerPreferenceComponent
+    override fun component(view: PreferenceFragment) = DaggerPreferenceComponent
         .builder()
         .bind(viewModelScope)
-        .bind(fragmentProperty)
+        .bind(viewProperty)
         .dependencies(DaggerInjector.appComponent)
-        .build()
+        .build().apply {
+            inject(this@PreferenceViewModel)
+        }
 }

@@ -12,10 +12,10 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderVie
     @Inject
     override lateinit var viewState: FinderViewState
 
-    override fun component(fragment: FinderFragment) = DaggerFinderComponent
+    override fun component(view: FinderFragment) = DaggerFinderComponent
         .builder()
         .bind(viewModelScope)
-        .bind(fragmentProperty)
+        .bind(viewProperty)
         .dependencies(DaggerInjector.appComponent)
         .build().apply {
             inject(this@FinderViewModel)

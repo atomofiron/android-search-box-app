@@ -24,11 +24,9 @@ interface MainComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: MainViewModel): Builder
-        @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
-        fun bind(viewModel: WeakProperty<FragmentActivity>): Builder
+        fun bind(view: WeakProperty<out FragmentActivity>): Builder
         fun dependencies(dependencies: MainDependencies): Builder
         fun build(): MainComponent
     }
@@ -43,19 +41,24 @@ class MainModule {
     @Provides
     @MainScope
     fun presenter(
-        viewModel: MainViewModel,
+        scope: CoroutineScope,
+        viewState: MainViewState,
         router: MainRouter,
         windowService: WindowService,
         appStore: AppStore,
         preferenceStore: PreferenceStore,
         mainChannel: MainChannel,
     ): MainPresenter {
-        return MainPresenter(viewModel, router, windowService, appStore, preferenceStore, mainChannel)
+        return MainPresenter(scope, viewState, router, windowService, appStore, preferenceStore, mainChannel)
     }
 
     @Provides
     @MainScope
-    fun router(activity: WeakProperty<FragmentActivity>): MainRouter = MainRouter(activity)
+    fun router(activity: WeakProperty<out FragmentActivity>): MainRouter = MainRouter(activity)
+
+    @Provides
+    @MainScope
+    fun viewState(scope: CoroutineScope): MainViewState = MainViewState(scope)
 }
 
 interface MainDependencies {
