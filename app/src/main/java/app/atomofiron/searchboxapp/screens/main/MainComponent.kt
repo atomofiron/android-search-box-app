@@ -32,7 +32,6 @@ interface MainComponent {
     }
 
     fun inject(target: MainViewModel)
-    fun inject(target: MainActivity)
 }
 
 @Module
@@ -58,7 +57,7 @@ class MainModule {
 
     @Provides
     @MainScope
-    fun viewState(scope: CoroutineScope): MainViewState = MainViewState(scope)
+    fun viewState(scope: CoroutineScope, preferenceStore: PreferenceStore): MainViewState = MainViewState(scope, preferenceStore)
 }
 
 interface MainDependencies {

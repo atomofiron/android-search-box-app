@@ -1,22 +1,19 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.preference.PreferenceDataStore
 import app.atomofiron.common.util.flow.ChannelFlow
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.utils.Shell
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import javax.inject.Inject
 
-class PreferenceViewState(private val scope: CoroutineScope) {
+class PreferenceViewState(
+    private val scope: CoroutineScope,
+    val preferenceDataStore: PreferenceDataStore,
+) {
 
-    @Inject
-    lateinit var preferenceDataStore: PreferenceDataStore
     @SuppressLint("StaticFieldLeak")
-    @Inject
-    lateinit var appContext: Context
 
     val alert = ChannelFlow<String>()
     val alertOutputSuccess = ChannelFlow<Int>()

@@ -18,7 +18,6 @@ import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,10 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var viewState: MainViewState
-    @Inject
-    lateinit var presenter: MainPresenter
-    @Inject
-    lateinit var preferenceStore: PreferenceStore
+    private lateinit var presenter: MainPresenter
     private var theme: AppTheme? = null
     private val isDarkTheme: Boolean get() = isDarkTheme()
 
@@ -61,10 +56,12 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.Main) {
             // todo avoid using flow.replayCache.first() in SharedFlowProperty
-            preferenceStore.specialCharacters.first()
-            preferenceStore.excludeDirs.first()
-            preferenceStore.useSu.first()
-            val theme = preferenceStore.appTheme.first()
+            val theme = viewState.run {
+                preferenceStore.specialCharacters.first()
+                preferenceStore.excludeDirs.first()
+                preferenceStore.useSu.first()
+                preferenceStore.appTheme.first()
+            }
             setTheme(theme)
             onCreateView(savedInstanceState)
         }

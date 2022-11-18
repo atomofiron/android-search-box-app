@@ -110,7 +110,10 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun viewState(scope: CoroutineScope): PreferenceViewState = PreferenceViewState(scope)
+    fun viewState(
+        scope: CoroutineScope,
+        preferenceDataStore: PreferenceDataStore,
+    ): PreferenceViewState = PreferenceViewState(scope, preferenceDataStore)
 
     @Provides
     @PreferenceScope

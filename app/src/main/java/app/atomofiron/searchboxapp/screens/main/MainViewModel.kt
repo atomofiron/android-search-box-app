@@ -17,5 +17,7 @@ class MainViewModel : BaseViewModel<MainComponent, MainActivity, MainViewState, 
         .bind(viewProperty)
         .bind(viewModelScope)
         .dependencies(DaggerInjector.appComponent)
-        .build()
+        .build().apply {
+            inject(this@MainViewModel)
+        }
 }

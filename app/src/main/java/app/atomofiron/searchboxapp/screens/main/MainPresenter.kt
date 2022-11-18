@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.main
 
 import app.atomofiron.common.arch.BasePresenter
-import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
@@ -29,21 +28,7 @@ class MainPresenter(
         viewState.tasks.value = Array(16) { XTask() }.toList()
     }
 
-    override fun onSubscribeData() {
-        preferenceStore.appTheme.collect(scope) { theme ->
-            viewState.sendTheme(theme)
-        }
-        preferenceStore.deepBlack.collect(scope) { deepBlack ->
-            val appTheme = preferenceStore.appTheme.value
-            viewState.sendTheme(appTheme.copy(deepBlack))
-        }
-        preferenceStore.appOrientation.collect(scope) {
-            viewState.setOrientation.value = it
-        }
-        preferenceStore.joystickComposition.collect(scope) {
-            viewState.setJoystick.value = it
-        }
-    }
+    override fun onSubscribeData() = Unit
 
     fun onEscClick() = when {
         router.onBack() -> Unit
