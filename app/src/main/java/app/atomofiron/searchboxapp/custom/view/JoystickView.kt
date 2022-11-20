@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.custom.view
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -11,22 +12,26 @@ import androidx.core.graphics.ColorUtils
 import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.preference.JoystickComposition
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
-class Joystick @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+class JoystickView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
 ) : View(context, attrs, defStyleAttr) {
     companion object {
         private const val GLOW_DURATION = 256L
         private const val BLUR_RADIUS_DP = 4f
     }
-    private val circle = ContextCompat.getDrawable(context, R.drawable.ic_joystick)!!
     private val icon = ContextCompat.getDrawable(context, R.drawable.ic_esc)!!
     private val iconSize = resources.getDimensionPixelSize(R.dimen.icon_size)
+    private val padding = resources.getDimensionPixelSize(R.dimen.padding_middle)
 
     private val paintBlur = Paint()
     private val glowingPaint = Paint()
+    private val paint = Paint()
 
     private var trackTouchEvent = false
 
@@ -36,26 +41,28 @@ class Joystick @JvmOverloads constructor(
     private val glowAnimator = ValueAnimator.ofFloat(0f, (Math.PI / 2).toFloat())
 
     private var composition: JoystickComposition? = null
-    private lateinit var bitmap: Bitmap
+    private var bitmap: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8)
 
     init {
+        paint.isAntiAlias = true
         glowAnimator.duration = GLOW_DURATION
         glowAnimator.addUpdateListener { animator ->
             val value = animator.animatedValue as Float
-            brightness = 1f - Math.sin(value.toDouble()).toFloat()
+            brightness = 1f - sin(value.toDouble()).toFloat()
             invalidate()
         }
     }
 
-    private fun initBitmap() {
-        val width = measuredWidth
-        val currentBitmap = if (::bitmap.isInitialized) bitmap else null
+    @SuppressLint("DrawAllocation")
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        val size = min(right - left, bottom - top)
         when {
-            width == 0 -> return
-            currentBitmap?.width == width -> Unit
+            size == 0 -> return
+            bitmap.width == size -> Unit
             else -> {
-                currentBitmap?.recycle()
-                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                bitmap.recycle()
+                bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
             }
         }
     }
@@ -66,7 +73,7 @@ class Joystick @JvmOverloads constructor(
         val isDark = context.findBooleanByAttr(R.attr.isDarkTheme)
 
         val circleColor = composition.color(isDark)
-        circle.colorFilter = PorterDuffColorFilter(circleColor, PorterDuff.Mode.SRC_IN)
+        paint.color = circleColor
         glowingPaint.color = composition.glow(isDark)
 
         val limit = if (isDark) 0.4 else 0.6
@@ -79,6 +86,7 @@ class Joystick @JvmOverloads constructor(
         invalidate()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -98,7 +106,8 @@ class Joystick @JvmOverloads constructor(
                     }
                 }
             }
-            MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
                 if (trackTouchEvent) {
                     glowAnimator.start()
                 }
@@ -110,31 +119,31 @@ class Joystick @JvmOverloads constructor(
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 
-        initBitmap()
-
-        val width = measuredWidth
-        val height = measuredHeight
+        val width = bitmap.width
+        val height = bitmap.width
+        val cx = (width / 2).toFloat()
+        val cy = (height / 2).toFloat()
+        val blurRadius = maxBlurRadius * brightness
+        val radius = min(width, height) / 2 - blurRadius / 2 - padding
 
         if (brightness != 0f) {
             val mCanvas = Canvas(bitmap)
             mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-            circle.setBounds(0, 0, width, height)
-            circle.draw(mCanvas)
-            paintBlur.maskFilter = BlurMaskFilter(maxBlurRadius * brightness, BlurMaskFilter.Blur.NORMAL)
+            mCanvas.drawCircle(cx, cy, radius, paint)
+            paintBlur.maskFilter = BlurMaskFilter(blurRadius, BlurMaskFilter.Blur.NORMAL)
             val glowing = bitmap.extractAlpha(paintBlur, IntArray(2))
             val left = (width - glowing.width).toFloat() / 2
             val top = (height - glowing.height).toFloat() / 2
             canvas.drawBitmap(glowing, left, top, glowingPaint)
         }
-        val offset = (density * brightness).toInt()
-        circle.setBounds(offset, offset, width - offset, height - offset)
-        circle.draw(canvas)
+        canvas.drawCircle(cx, cy, radius, paint)
 
-        val radius = iconSize / 2
-        val left = width / 2 - radius + offset
-        val top = height / 2 - radius + offset
-        val right = width / 2 + radius - offset
-        val bottom = height / 2 + radius - offset
+        val offset = blurRadius / 2
+        val half = iconSize / 2
+        val left = (cx - half + offset).roundToInt()
+        val top = (cy - half + offset).roundToInt()
+        val right = (cx + half - offset).roundToInt()
+        val bottom = (cy + half - offset).roundToInt()
         icon.setBounds(left, top, right, bottom)
         icon.draw(canvas)
     }
