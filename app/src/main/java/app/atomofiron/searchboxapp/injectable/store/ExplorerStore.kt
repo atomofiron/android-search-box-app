@@ -12,4 +12,5 @@ class ExplorerStore {
     val current = MutableStateFlow<Node?>(null)
     val checked = MutableStateFlow<List<Node>>(listOf())
     val alerts = EventFlow<NodeError>()
+    val actions = EventFlow<NodeAction>()
 }

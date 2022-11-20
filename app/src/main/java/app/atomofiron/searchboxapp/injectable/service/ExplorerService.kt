@@ -151,6 +151,7 @@ class ExplorerService(
                     level.children.add(index, item)
                 }
             }
+            explorerStore.actions.emit(NodeAction.Inserted(item.uniqueId))
         }
     }
 
@@ -184,6 +185,10 @@ class ExplorerService(
                 withTab {
                     levels.replaceItem(item.uniqueId, item.parentPath, result)
                     states.updateState(item.uniqueId) { null }
+                    when (result) {
+                        null -> explorerStore.actions.emit(NodeAction.Removed(item.uniqueId))
+                        else -> explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
+                    }
                 }
             }
         }
@@ -298,12 +303,16 @@ class ExplorerService(
 
     private suspend fun CoroutineScope.cacheSync(item: Node) {
         if (!isActive) return
+        val wasCached = item.isCached
         val cached = item.update(useSu).sortByName()
         withTab {
             states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
             }
             levels.replaceItem(cached)
+            if (wasCached && !item.areContentsTheSame(cached)) {
+                explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
+            }
         }
     }
 

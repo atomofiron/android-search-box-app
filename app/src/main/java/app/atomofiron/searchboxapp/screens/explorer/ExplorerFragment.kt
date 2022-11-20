@@ -74,6 +74,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun ExplorerViewState.onViewCollect() {
+        viewCollect(actions, collector = explorerAdapter::onAction)
         viewCollect(items, collector = explorerAdapter::submitList)
         viewCollect(itemComposition, collector = explorerAdapter::setComposition)
         viewCollect(current, collector = explorerAdapter::setCurrentDir)
