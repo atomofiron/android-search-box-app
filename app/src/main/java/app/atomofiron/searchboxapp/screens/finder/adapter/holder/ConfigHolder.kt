@@ -7,6 +7,7 @@ import android.widget.CompoundButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
@@ -14,7 +15,7 @@ class ConfigHolder(
     parent: ViewGroup,
     id: Int,
     private val listener: OnActionListener
-) : CardViewHolder(parent, id) {
+) : GeneralHolder<FinderStateItem>(parent, id) {
     private val llConfig = itemView.findViewById<LinearLayoutCompat>(R.id.item_ll_config)
     private val cbCaseSense = itemView.findViewById<CheckBox>(R.id.config_cb_case_sense)
     private val cbUseRegexp = itemView.findViewById<CheckBox>(R.id.config_cb_use_regexp)

@@ -10,4 +10,13 @@
     <style name="BottomNavigationStyle.Amoled" parent="@style/Widget.Material3.BottomNavigationView">
         <item name="android:background">@color/black</item>
     </style>
+
+    <style name="OutlinedButtonStyle" parent="@style/Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">?colorSurfaceVariant</item>
+    </style>
+
+    <style name="InputOutlinedDenseStyle" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/bg_edit_text_outlined</item>
+    </style>
+
 </resources>

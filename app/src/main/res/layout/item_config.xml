@@ -3,14 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/common_margin_half"
     android:orientation="vertical"
-    android:layout_margin="@dimen/common_margin_half"
     >
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/item_ll_config"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingHorizontal="18dp"
+        android:paddingBottom="@dimen/common_margin_half"
         >
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/config_cb_case_sense"
@@ -58,6 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/common_margin"
         >
         <com.google.android.material.button.MaterialButton
             android:id="@+id/item_config_history"
@@ -65,16 +68,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="@dimen/common_margin"
-            android:text="History"
-            style="@style/Widget.Material3.Button.TextButton"
+            android:text="@string/history"
+            style="?materialButtonOutlinedStyle"
             />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/item_config_visibility"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Config"
-            style="@style/Widget.Material3.Button.TextButton"
+            android:text="@string/options"
+            style="?materialButtonOutlinedStyle"
             />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>

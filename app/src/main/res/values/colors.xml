@@ -19,6 +19,8 @@
 	<color name="day_night_bone">@color/grey_light</color>
 	<color name="day_night_overlay">@color/overlay_black</color>
 
+	<color name="night_stroke_color">#55777777</color>
+
 	<!-- -->
 
 	<color name="status_bar">@color/black</color>
@@ -52,6 +54,7 @@
 	<color name="danger_red">#ffb71c1c</color>
 	<color name="accent_yellow">#ffada874</color>
 
+	<!--todo try remove-->
 	<color name="colorSurface">@color/white</color>
 	<color name="colorOnSurface">@color/black</color>
 
