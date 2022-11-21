@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.animation.AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR
 import com.google.android.material.animation.AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR
 
-open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads constructor(
+open class FixedHideBottomViewOnScrollBehavior @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null
-) : CoordinatorLayout.Behavior<V>(context, attrs) {
+) : CoordinatorLayout.Behavior<View>(context, attrs) {
     companion object {
         protected const val ENTER_ANIMATION_DURATION = 225L
         protected const val EXIT_ANIMATION_DURATION = 175L
@@ -32,7 +32,7 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
     private var currentAnimator: ViewPropertyAnimator? = null
     private var animatorListener = AnimatorListenerAdapterImpl()
 
-    override fun onLayoutChild(parent: CoordinatorLayout, child: V, layoutDirection: Int): Boolean {
+    override fun onLayoutChild(parent: CoordinatorLayout, child: View, layoutDirection: Int): Boolean {
         val paramsCompat = child.layoutParams as MarginLayoutParams
         height = child.measuredHeight + paramsCompat.bottomMargin
         return super.onLayoutChild(parent, child, layoutDirection)
@@ -40,7 +40,7 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
 
     override fun onStartNestedScroll(
             coordinatorLayout: CoordinatorLayout,
-            child: V,
+            child: View,
             directTargetChild: View,
             target: View,
             nestedScrollAxes: Int,
@@ -51,7 +51,7 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
     @Suppress("NAME_SHADOWING")
     override fun onNestedScroll(
         coordinatorLayout: CoordinatorLayout,
-        child: V,
+        child: View,
         target: View,
         dxConsumed: Int,
         dyConsumed: Int,
@@ -82,7 +82,7 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
      * Perform an animation that will slide the child
      * from it's current position to be totally on the screen.
      */
-    private fun slideStart(child: V) {
+    private fun slideStart(child: View) {
         if (currentState == STATE_SCROLLED_START) {
             return
         }
@@ -98,7 +98,7 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
      * Perform an animation that will slide the child
      * from it's current position to be totally off the screen.
      */
-    private fun slideOff(child: V) {
+    private fun slideOff(child: View) {
         if (currentState == STATE_SCROLLED_OFF) {
             return
         }
@@ -111,7 +111,7 @@ open class FixedHideBottomViewOnScrollBehavior <V : View> @JvmOverloads construc
         animateChildTo(child, targetY, EXIT_ANIMATION_DURATION, FAST_OUT_LINEAR_IN_INTERPOLATOR)
     }
 
-    private fun animateChildTo(child: V, targetY: Int, duration: Long, interpolator: TimeInterpolator) {
+    private fun animateChildTo(child: View, targetY: Int, duration: Long, interpolator: TimeInterpolator) {
         currentAnimator = child
                 .animate()
                 .translationY(targetY.toFloat())

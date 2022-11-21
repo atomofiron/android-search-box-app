@@ -14,11 +14,11 @@ import androidx.work.WorkManager
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.getMarketIntent
 import app.atomofiron.searchboxapp.utils.immutable
 import app.atomofiron.searchboxapp.work.NotificationWorker
+import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
 import javax.inject.Inject
@@ -30,6 +30,8 @@ class App : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+
+        DynamicColors.applyToActivitiesIfAvailable(this)
 
         DaggerInjector.init(this)
         DaggerInjector.appComponent.inject(this)

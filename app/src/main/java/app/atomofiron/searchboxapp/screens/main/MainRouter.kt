@@ -23,16 +23,9 @@ class MainRouter(activityProperty: WeakProperty<out FragmentActivity>) : BaseRou
 
     val lastVisibleFragment get() = fragments.findLastVisibleFragment()
 
-    fun reattachFragments() {
-        fragmentManager?.run {
-            beginTransaction().run {
-                fragments.forEach { detach(it) }
-                commit()
-            }
-            beginTransaction().run {
-                fragments.forEach { attach(it) }
-                commit()
-            }
+    fun recreateActivity() {
+        activity {
+            recreate()
         }
     }
 

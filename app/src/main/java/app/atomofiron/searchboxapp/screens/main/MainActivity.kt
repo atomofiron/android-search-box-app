@@ -6,13 +6,17 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.valueOrNull
 import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
@@ -43,7 +47,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewState: MainViewState
     private lateinit var presenter: MainPresenter
-    private var theme: AppTheme? = null
     private val isDarkTheme: Boolean get() = isDarkTheme()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,16 +56,29 @@ class MainActivity : AppCompatActivity() {
         viewModel.setView(this)
         presenter = viewModel.presenter
         viewState = viewModel.viewState
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = presenter.onBackButtonClick()
+        })
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            // todo avoid using flow.replayCache.first() in SharedFlowProperty
-            val theme = viewState.run {
-                preferenceStore.specialCharacters.first()
-                preferenceStore.excludeDirs.first()
-                preferenceStore.useSu.first()
-                preferenceStore.appTheme.first()
+        resolveTheme(savedInstanceState)
+    }
+
+    private fun resolveTheme(savedInstanceState: Bundle?) {
+        val currentTheme = viewState.preferenceStore.appTheme.valueOrNull
+        if (currentTheme == null) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                // todo avoid using flow.replayCache.first() in SharedFlowProperty
+                val theme = viewState.run {
+                    preferenceStore.specialCharacters.first()
+                    preferenceStore.excludeDirs.first()
+                    preferenceStore.useSu.first()
+                    preferenceStore.appTheme.first()
+                }
+                setTheme(theme)
+                onCreateView(savedInstanceState)
             }
-            setTheme(theme)
+        } else {
+            setTheme(currentTheme)
             onCreateView(savedInstanceState)
         }
     }
@@ -136,20 +152,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTheme(theme: AppTheme) {
-        when {
-            theme == this.theme -> return
-            theme is AppTheme.System && theme.deepBlack -> setTheme(R.style.AppTheme_Amoled)
-            theme is AppTheme.System -> setTheme(R.style.AppTheme)
-            theme is AppTheme.Light -> setTheme(R.style.AppTheme_Light)
-            theme is AppTheme.Dark && theme.deepBlack -> setTheme(R.style.AppTheme_Black)
-            theme is AppTheme.Dark -> setTheme(R.style.AppTheme_Dark)
+        // todo theme.deepBlack
+        val mode = when(theme) {
+            is AppTheme.System -> MODE_NIGHT_FOLLOW_SYSTEM
+            is AppTheme.Light -> MODE_NIGHT_NO
+            is AppTheme.Dark -> MODE_NIGHT_YES
         }
-        window.decorView.setBackgroundColor(findColorByAttr(R.attr.colorBackground))
-        this.theme = theme
-        if (::presenter.isInitialized) presenter.applyTheme(isDarkTheme)
+        setDefaultNightMode(mode)
+        when (theme.deepBlack) {
+            findBooleanByAttr(R.attr.isBlackDeep) -> Unit
+            true -> setTheme(R.style.CompatTheme_Amoled)
+            false -> setTheme(R.style.CompatTheme)
+        }
+        if (::presenter.isInitialized) presenter.onThemeApplied(isDarkTheme)
     }
-
-    override fun onBackPressed() = presenter.onBackButtonClick()
 
     private fun onEscClick() {
         val viewWithFocus = binding.root.findFocus() as? EditText

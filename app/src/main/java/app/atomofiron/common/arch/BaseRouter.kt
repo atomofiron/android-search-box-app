@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.*
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import app.atomofiron.common.util.property.MutableWeakProperty
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
@@ -67,7 +69,8 @@ abstract class BaseRouter(
 
     fun <T> navigation(action: NavController.() -> T): T? {
         return activity?.run {
-            Navigation.findNavController(this, R.id.nav_host_fragment).run(action)
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            navHostFragment.findNavController().run(action)
         }
     }
 

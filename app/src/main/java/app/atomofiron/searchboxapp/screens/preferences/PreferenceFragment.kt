@@ -70,7 +70,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     }
 
     override fun PreferenceViewState.onViewCollect() {
-        viewCollect(alert, collector = ::showAlert)
+        viewCollect(alert, collector = ::onAlert)
         viewCollect(alertOutputSuccess, collector = ::showOutputSuccess)
         viewCollect(alertOutputError, collector = ::showOutputError)
     }
@@ -88,7 +88,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         }
     }
 
-    private fun showAlert(message: String) {
+    private fun onAlert(message: String) {
         val view = view ?: return
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
             .setAnchorView(anchorView)

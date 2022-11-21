@@ -7,8 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/common_margin"
     app:cardCornerRadius="@dimen/common_half_size"
-    app:cardBackgroundColor="?attr/colorCardBackground"
-    app:cardElevation="2dp"
+    app:cardElevation="4dp"
     >
     <app.atomofiron.searchboxapp.custom.view.RegexInputField
         android:id="@+id/item_find_rt_find"

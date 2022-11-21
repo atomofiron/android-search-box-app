@@ -10,8 +10,8 @@
         android:id="@+id/coordinator"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		tools:openDrawer="start">
-
+		tools:openDrawer="start"
+		>
 		<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/recycler_view"
 			android:layout_width="match_parent"
@@ -19,33 +19,23 @@
 			android:maxWidth="@dimen/card_max_width"
 			android:paddingBottom="@dimen/joystick_size"
 			/>
-
-		<app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
-            android:id="@+id/bottom_app_bar"
+		<app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:navigationBar="false"
+			/>
+		<com.google.android.material.bottomnavigation.BottomNavigationView
+			android:id="@+id/bottom_bar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"
-			android:background="?colorBackground"
-			>
-			<com.google.android.material.bottomnavigation.BottomNavigationView
-				android:id="@+id/bottom_bar"
-				android:layout_width="match_parent"
-				android:layout_height="@dimen/bottom_tab_bar_height"
-				android:background="?colorBackground"
-				app:menu="@menu/nav_finder"
-				app:itemRippleColor="?colorRipple"
-				app:itemTextColor="?android:textColorPrimary"
-				app:itemIconTint="?android:textColorPrimary"
-				app:labelVisibilityMode="labeled"
-				app:elevation="0dp"
-				/>
-		</app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
-
+			app:menu="@menu/nav_finder"
+			app:itemTextColor="?android:textColorPrimary"
+			app:itemIconTint="?android:textColorPrimary"
+			app:labelVisibilityMode="labeled"
+			app:layout_behavior="app.atomofiron.searchboxapp.custom.view.FixedHideBottomViewOnScrollBehavior"
+			/>
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
-	<app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		/>
 	<app.atomofiron.searchboxapp.custom.view.VerticalDockView
 		android:id="@+id/vertical_dock"
 		android:layout_width="wrap_content"

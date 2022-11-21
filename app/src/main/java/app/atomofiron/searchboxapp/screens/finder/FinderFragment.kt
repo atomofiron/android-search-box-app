@@ -56,6 +56,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         }
 
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_history -> binding.verticalDock.open()
@@ -90,17 +91,17 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(reloadHistory, collector = historyAdapter::reload)
         viewCollect(history, collector = historyAdapter::add)
-        viewCollect(insertInQuery, collector = ::insertInQuery)
+        viewCollect(insertInQuery, collector = ::onInsertInQuery)
         viewCollect(searchItems, collector = ::onStateChange)
-        viewCollect(replaceQuery, collector = ::replaceQuery)
-        viewCollect(snackbar, collector = ::showSnackbar)
+        viewCollect(replaceQuery, collector = ::onReplaceQuery)
+        viewCollect(snackbar, collector = ::onShowSnackbar)
     }
 
     override fun onApplyInsets(root: View) {
         root.insetsProxying()
         binding.coordinator.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.applyPaddingInsets(bottom = true)
+        binding.bottomBar.applyPaddingInsets(bottom = true)
     }
 
     override fun onBack(): Boolean {
@@ -111,18 +112,18 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
 
     private fun onStateChange(state: List<FinderStateItem>) = finderAdapter.setItems(state)
 
-    private fun replaceQuery(value: String) {
+    private fun onReplaceQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)?.setText(value)
     }
 
-    private fun showSnackbar(value: String) {
+    private fun onShowSnackbar(value: String) {
         val view = view ?: return
         Snackbar.make(view, value, Snackbar.LENGTH_SHORT)
                 .setAnchorView(anchorView)
                 .show()
     }
 
-    private fun insertInQuery(value: String) {
+    private fun onInsertInQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)
                 ?.takeIf { it.isFocused }
                 ?.apply {

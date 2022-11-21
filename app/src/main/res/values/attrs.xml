@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <attr name="isDarkTheme" format="boolean" />
+    <attr name="isBlackDeep" format="boolean" />
     <attr name="colorBackground" format="color" />
     <attr name="colorContent" format="color" />
-    <attr name="colorSecondary" format="color" />
     <attr name="colorFieldBackground" format="color" />
-    <attr name="colorCardBackground" format="color" tools:override="true" />
     <attr name="colorPositive" format="color" />
     <attr name="colorNegative" format="color" />
     <attr name="colorRipple" format="color" />
@@ -15,7 +14,6 @@
 
     <attr name="colorPrimaryLite" format="color" />
     <attr name="colorShadow" format="color" />
-    <attr name="cardViewStyle" format="color" />
 
     <declare-styleable name="BottomMenuBar">
         <attr name="menu" format="reference" />

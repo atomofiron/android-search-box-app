@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.result
 
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.util.flow.*
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.logI

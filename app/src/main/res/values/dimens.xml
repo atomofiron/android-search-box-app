@@ -19,13 +19,12 @@
 
 	<dimen name="padding_micro">2dp</dimen>
 	<dimen name="padding_mini">4dp</dimen>
-	<dimen name="padding_middle">8dp</dimen>
+	<dimen name="padding_middle">12dp</dimen>
 	<dimen name="padding_large">12dp</dimen>
 	<dimen name="padding_xlarge">16dp</dimen>
 	<dimen name="padding_xxlarge">32dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
-    <dimen name="bottom_tab_bar_height">56dp</dimen>
-    <dimen name="bottom_second_bar_margin">72dp</dimen>
+    <dimen name="bottom_tab_bar_height">80dp</dimen>
     <dimen name="card_max_width">512dp</dimen>
     <dimen name="joystick_size">@dimen/bottom_tab_bar_height</dimen>
     <dimen name="item_explorer_file_size">36dp</dimen>
@@ -34,7 +33,6 @@
 	<dimen name="item_dir_separation_size">3.5dp</dimen>
 	<dimen name="curtain_title_margin">52dp</dimen>
 	<dimen name="curtain_title_size">20sp</dimen>
-    <dimen name="bottom_bar_elevation">8dp</dimen>
     <dimen name="background_span_corner_radius">4dp</dimen>
 
 

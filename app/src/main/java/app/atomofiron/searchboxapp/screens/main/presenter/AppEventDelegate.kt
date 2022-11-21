@@ -11,6 +11,7 @@ import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.preference.AppTheme
+import app.atomofiron.searchboxapp.screens.main.MainRouter
 import kotlinx.coroutines.*
 
 interface AppEventDelegateApi {
@@ -22,31 +23,16 @@ interface AppEventDelegateApi {
 
 class AppEventDelegate(
     private val scope: CoroutineScope,
+    private val router: MainRouter,
     private val appStore: AppStore,
     private val preferenceStore: PreferenceStore,
     private val mainChannel: MainChannel,
 ) : AppEventDelegateApi {
 
-    private val init = Job()
-    private var theme: AppTheme? = null
+    private var currentTheme: AppTheme? = null
 
     init {
-        scope.launch(Dispatchers.Default) {
-            runCatching {
-                init()
-            }.onFailure {
-                // track the fail
-            }
-        }
-    }
-
-    private fun CoroutineScope.init() {
-        preferenceStore.appTheme.collect(this) { theme ->
-            if (theme != this@AppEventDelegate.theme) {
-                preferenceStore.setAppTheme(theme)
-            }
-        }
-        init.complete()
+        preferenceStore.appTheme.collect(scope, ::onThemeApplied)
     }
 
     override fun onActivityCreate(activity: AppCompatActivity) {
@@ -73,4 +59,11 @@ class AppEventDelegate(
     }
 
     override fun onActivityFinish() = Unit// todo appUpdateService.tryCompleteUpdate(forced = false)
+
+    private fun onThemeApplied(theme: AppTheme) {
+        if (currentTheme != null && theme != currentTheme) {
+            router.recreateActivity()
+        }
+        currentTheme = theme
+    }
 }

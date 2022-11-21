@@ -52,6 +52,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.recyclerView.adapter = explorerAdapter
 
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_places -> binding.verticalDock.open()
@@ -91,7 +92,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.verticalDock.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
         binding.explorerHeader.applyPaddingInsets(start = true, top = true, end = true)
-        binding.bottomAppBar.applyPaddingInsets(start = true, bottom = true, end = true)
+        binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
     }
 
     override fun onBack(): Boolean {

@@ -15,24 +15,21 @@
         android:paddingBottom="@dimen/joystick_size"
         />
 
-    <app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
+    <FrameLayout
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="?colorBackground"
+        app:layout_behavior="app.atomofiron.searchboxapp.custom.view.FixedHideBottomViewOnScrollBehavior"
         >
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/bottom_tab_bar_height"
-            android:background="?colorBackground"
+            android:layout_height="wrap_content"
             app:menu="@menu/nav_result"
-            app:itemRippleColor="?colorRipple"
             app:itemTextColor="?android:textColorPrimary"
             app:itemIconTint="?android:textColorPrimary"
             app:labelVisibilityMode="labeled"
-            app:elevation="0dp"
             />
         <LinearLayout
             android:id="@+id/status_ll"
@@ -74,7 +71,7 @@
                 android:layout_weight="4"
                 />
         </LinearLayout>
-    </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
+    </FrameLayout>
 
     <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
         android:layout_width="match_parent"

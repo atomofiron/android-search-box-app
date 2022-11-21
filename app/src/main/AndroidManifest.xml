@@ -13,8 +13,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme.Dark"
+        android:supportsRtl="false"
+        android:theme="@style/CompatTheme"
         android:windowSoftInputMode="adjustResize"
         android:requestLegacyExternalStorage="true"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
@@ -25,7 +25,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="unspecified"
             android:exported="true"
-            android:theme="@style/AppTheme.Dark">
+            android:theme="@style/CompatTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

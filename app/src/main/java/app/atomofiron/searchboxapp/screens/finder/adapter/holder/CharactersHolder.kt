@@ -13,14 +13,14 @@ class CharactersHolder(
     id: Int,
     private val listener: OnActionListener
 ) : GeneralHolder<FinderStateItem>(parent, id), View.OnClickListener {
-    private var bindedItem: FinderStateItem.SpecialCharactersItem? = null
+    private var currentItem: FinderStateItem.SpecialCharactersItem? = null
 
     override fun onBind(item: FinderStateItem, position: Int) {
-        if (bindedItem == item) {
+        if (currentItem == item) {
             return
         }
         item as FinderStateItem.SpecialCharactersItem
-        bindedItem = item
+        currentItem = item
         val itemView = itemView
         itemView as ViewGroup
         itemView.removeAllViews()

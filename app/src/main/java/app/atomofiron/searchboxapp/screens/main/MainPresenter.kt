@@ -20,7 +20,7 @@ class MainPresenter(
     private val preferenceStore: PreferenceStore,
     mainChannel: MainChannel,
 ) : BasePresenter<MainViewModel, MainRouter>(scope, router), SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput,
-    AppEventDelegateApi by AppEventDelegate(scope, appStore, preferenceStore, mainChannel)
+    AppEventDelegateApi by AppEventDelegate(scope, router, appStore, preferenceStore, mainChannel)
 {
     override var isExitSnackbarShown: Boolean = false
 
@@ -43,8 +43,7 @@ class MainPresenter(
         else -> viewState.showExitSnackbar()
     }
 
-    fun applyTheme(isDarkTheme: Boolean) {
-        router.reattachFragments()
+    fun onThemeApplied(isDarkTheme: Boolean) {
         updateLightStatusBar(isDarkTheme)
         updateLightNavigationBar(isDarkTheme)
     }

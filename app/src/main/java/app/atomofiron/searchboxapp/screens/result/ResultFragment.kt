@@ -56,6 +56,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         }
         binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
         viewState.onViewCollect()
         onApplyInsets(view)
@@ -80,7 +81,8 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     override fun onApplyInsets(root: View) {
         root.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.applyPaddingInsets(bottom = true)
+        binding.bottomAppBar.insetsProxying()
+        binding.bottomBar.applyPaddingInsets(bottom = true)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

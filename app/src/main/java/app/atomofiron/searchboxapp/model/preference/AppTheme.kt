@@ -24,7 +24,8 @@ sealed class AppTheme(
     override fun equals(other: Any?) = when {
         other == null -> false
         other !is AppTheme -> false
-        other::class != this::class -> false
+        other.name != name -> false
+        other is Light -> true
         else -> other.deepBlack == deepBlack
     }
 

@@ -69,6 +69,7 @@
 	<color name="overlay_colored">#7f1B302E</color>
 	<color name="grey_middle">#ff787878</color>
 	<color name="grey_middle_lite">#aa787878</color>
+	<color name="grey_middle_translucent">#55787878</color>
 	<color name="grey_dark">#ff333333</color>
 	<color name="grey_dark_21">#ff212121</color>
 	<color name="grey_dark_13">#ff131313</color>

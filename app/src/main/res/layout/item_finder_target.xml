@@ -6,12 +6,14 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:layout_margin="@dimen/common_margin_half">
+    android:layout_margin="@dimen/common_margin_half"
+    >
 
     <ImageView
         android:id="@+id/item_iv_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
         android:src="@drawable/ic_file"
         />
     <TextView

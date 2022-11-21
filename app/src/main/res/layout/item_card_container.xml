@@ -11,6 +11,5 @@
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardBackgroundColor="?attr/colorCardBackground"
-    app:cardElevation="2dp"
+    app:cardElevation="4dp"
     />

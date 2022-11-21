@@ -49,6 +49,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
         binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_search -> presenter.onSearchClick()
@@ -59,11 +60,6 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
         viewState.onViewCollect()
         onApplyInsets(view)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        binding.bottomAppBar.updateElevation()
     }
 
     override fun TextViewerViewState.onViewCollect() {
@@ -78,7 +74,8 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     override fun onApplyInsets(root: View) {
         root.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.applyPaddingInsets(bottom = true)
+        binding.bottomAppBar.insetsProxying()
+        binding.bottomBar.applyPaddingInsets(bottom = true)
     }
 
     private fun setLoading(visible: Boolean) {
