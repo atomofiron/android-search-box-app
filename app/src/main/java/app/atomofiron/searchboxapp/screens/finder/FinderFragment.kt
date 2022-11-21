@@ -59,9 +59,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.menu_history -> binding.verticalDock.open()
                 R.id.menu_explorer -> presenter.onExplorerOptionSelected()
-                R.id.menu_options -> presenter.onConfigOptionSelected()
                 R.id.menu_settings -> presenter.onSettingsOptionSelected()
             }
             false
@@ -95,6 +93,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         viewCollect(searchItems, collector = ::onStateChange)
         viewCollect(replaceQuery, collector = ::onReplaceQuery)
         viewCollect(snackbar, collector = ::onShowSnackbar)
+        viewCollect(showHistory) { binding.verticalDock.open() }
     }
 
     override fun onApplyInsets(root: View) {

@@ -2,11 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="app.atomofiron.searchboxapp.MainActivity">
     <item
-        android:id="@+id/menu_places"
-        android:title=""
-        android:enabled="false"
-        />
-    <item
         android:id="@+id/menu_search"
         android:title="@string/search"
         android:icon="@drawable/ic_search"
@@ -14,11 +9,6 @@
     <item
         android:title=""
         android:enabled="false"
-        />
-    <item
-        android:id="@+id/menu_options"
-        android:title="@string/options"
-        android:icon="@drawable/ic_options"
         />
     <item
         android:id="@+id/menu_settings"

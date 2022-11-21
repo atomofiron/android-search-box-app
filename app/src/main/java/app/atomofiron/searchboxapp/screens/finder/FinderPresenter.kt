@@ -31,6 +31,7 @@ class FinderPresenter(
         uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
         val characters = preferenceStore.specialCharacters.value
         uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
+        uniqueItems.add(FinderStateItem.ConfigItem())
         uniqueItems.add(FinderStateItem.TestItem())
 
         finderStore.tasks.forEach {

@@ -4,6 +4,7 @@
 	<dimen name="infinity">999dp</dimen>
 	<dimen name="fab_margin">16dp</dimen>
 	<dimen name="corner_radius">16dp</dimen>
+	<dimen name="common_margin_large">24dp</dimen>
 	<dimen name="common_margin">16dp</dimen>
 	<dimen name="common_margin_half">8dp</dimen>
 	<dimen name="common_margin_nano">4dp</dimen>

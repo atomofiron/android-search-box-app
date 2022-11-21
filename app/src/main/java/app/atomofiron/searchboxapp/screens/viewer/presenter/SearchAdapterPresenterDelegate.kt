@@ -43,6 +43,10 @@ class SearchAdapterPresenterDelegate(
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewState.updateConfig(item)
 
+    override fun onConfigVisibilityClick() = Unit
+
+    override fun onHistoryClick() = Unit
+
     override fun onCharacterClick(value: String) = viewState.sendInsertInQuery(value)
 
     override fun onSearchChange(value: String) = viewState.updateSearchQuery(value)

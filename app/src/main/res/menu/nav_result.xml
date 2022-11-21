@@ -2,22 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="app.atomofiron.searchboxapp.MainActivity">
     <item
-        android:title=""
-        android:enabled="false"
-        />
-    <item
         android:id="@+id/menu_stop"
         android:title="@string/stop"
         android:icon="@drawable/ic_circle_stop"
         />
     <item
         android:title=""
-        android:enabled="false"
-        />
-    <item
-        android:id="@+id/menu_options"
-        android:title="@string/options"
-        android:icon="@drawable/ic_options"
         android:enabled="false"
         />
     <item

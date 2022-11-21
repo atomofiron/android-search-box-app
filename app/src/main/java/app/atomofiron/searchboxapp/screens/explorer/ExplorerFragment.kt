@@ -55,9 +55,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.menu_places -> binding.verticalDock.open()
                 R.id.menu_search -> presenter.onSearchOptionSelected()
-                R.id.menu_options -> presenter.onOptionsOptionSelected()
                 R.id.menu_settings -> presenter.onSettingsOptionSelected()
             }
             false

@@ -14,6 +14,10 @@ class FinderAdapterPresenterDelegate(
 
     override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewState.updateConfig(item)
 
+    override fun onConfigVisibilityClick() = viewState.switchConfigItemVisibility()
+
+    override fun onHistoryClick() = viewState.showHistory()
+
     override fun onCharacterClick(value: String) = viewState.insertInQuery(value)
 
     override fun onSearchChange(value: String) = viewState.updateSearchQuery(value)
@@ -38,7 +42,7 @@ class FinderAdapterPresenterDelegate(
             return
         }
         viewState.addToHistory(value)
-        val config = viewState.configItem ?: viewState.getUniqueItem(FinderStateItem.ConfigItem::class)
+        val config = viewState.getConfigItem()
         interactor.search(value, viewState.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
     }
 }

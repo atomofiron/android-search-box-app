@@ -1,50 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_ll_config"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="@dimen/common_margin_half">
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/config_cb_case_sense"
+    android:layout_margin="@dimen/common_margin_half"
+    >
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/item_ll_config"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/case_sens"
-        android:ellipsize="none"
-        android:singleLine="true"
-        android:checked="true"
-        />
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/config_cb_use_regexp"
+        android:orientation="vertical"
+        >
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/config_cb_case_sense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/case_sens"
+            android:ellipsize="none"
+            android:singleLine="true"
+            android:checked="true"
+            />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/config_cb_use_regexp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/use_regular_expression"
+            android:ellipsize="none"
+            android:singleLine="true"
+            />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/config_cb_in_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search_in_the_content"
+            android:ellipsize="none"
+            android:singleLine="true"
+            />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/config_cb_exclude_dirs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_exclude_dirs"
+            android:singleLine="true"
+            />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/config_cb_replace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enable_replace"
+            android:ellipsize="none"
+            android:singleLine="true"
+            android:visibility="gone"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/use_regular_expression"
-        android:ellipsize="none"
-        android:singleLine="true"
-        />
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/config_cb_in_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/search_in_the_content"
-        android:ellipsize="none"
-        android:singleLine="true"
-        />
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/config_cb_exclude_dirs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/pref_exclude_dirs"
-        android:singleLine="true"
-        />
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/config_cb_replace"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/enable_replace"
-        android:ellipsize="none"
-        android:singleLine="true"
-        android:visibility="gone"
-        />
-</LinearLayout>
+        android:orientation="horizontal"
+        >
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/item_config_history"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/common_margin"
+            android:text="History"
+            style="@style/Widget.Material3.Button.TextButton"
+            />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/item_config_visibility"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Config"
+            style="@style/Widget.Material3.Button.TextButton"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

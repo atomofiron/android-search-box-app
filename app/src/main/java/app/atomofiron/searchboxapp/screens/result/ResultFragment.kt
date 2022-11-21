@@ -65,7 +65,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     private fun onBottomMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_stop -> presenter.onStopClick()
-            R.id.menu_options -> presenter.onOptionsClick()
             R.id.menu_export -> presenter.onExportClick()
         }
         return false
@@ -127,9 +126,10 @@ class ResultFragment : Fragment(R.layout.fragment_result),
 
     @SuppressLint("RestrictedApi")
     private fun enableOptions(enable: Boolean) {
-        val item = binding.bottomBar.menu.findItem(R.id.menu_options)
+        // todo resolve
+        /*val item = binding.bottomBar.menu.findItem(R.id.menu_options)
         if (item.isEnabled != enable) {
             item.isEnabled = enable
-        }
+        }*/
     }
 }

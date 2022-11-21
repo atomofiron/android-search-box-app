@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.finder
 
 import android.view.Gravity
 import app.atomofiron.common.util.flow.ChannelFlow
+import app.atomofiron.common.util.flow.EventFlow
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.model.explorer.Node
@@ -15,8 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class FinderViewState(
     private val scope: CoroutineScope,
 ) : FinderItemsState by FinderItemsStateDelegate() {
-    var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
-        private set
     val targets = ArrayList<Node>()
 
     val historyDrawerGravity = MutableStateFlow(Gravity.START)
@@ -25,6 +24,7 @@ class FinderViewState(
     val replaceQuery = ChannelFlow<String>()
     val snackbar = ChannelFlow<String>()
     val history = ChannelFlow<String>()
+    val showHistory = EventFlow<Unit>()
 
     fun updateTargets(currentDir: Node?, checked: List<Node>) {
         targetItems.clear()
@@ -63,24 +63,15 @@ class FinderViewState(
     }
 
     fun setExcludeDirsValue(excludeDirs: Boolean) {
-        configItem = configItem?.copy(excludeDirs = excludeDirs)
+        updateConfig {
+            copy(excludeDirs = excludeDirs)
+        }
     }
 
     fun switchConfigItemVisibility() {
-        when (val configItem = configItem) {
-            null -> {
-                val item = getUniqueItem(FinderStateItem.ConfigItem::class)
-                this.configItem = item
-                val index = uniqueItems.indexOf(item)
-                uniqueItems.removeAt(index)
-            }
-            else -> {
-                val index = uniqueItems.indexOf(getUniqueItem(FinderStateItem.TestItem::class))
-                uniqueItems.add(index, configItem)
-                this.configItem = null
-            }
+        updateConfig {
+            copy(isCollapsed = !isCollapsed)
         }
-        updateState()
     }
 
     fun reloadHistory() = reloadHistory.invoke(scope)
@@ -99,5 +90,18 @@ class FinderViewState(
 
     fun addToHistory(value: String) {
         history[scope] = value
+    }
+
+    fun showHistory() = showHistory.invoke(scope)
+
+    fun getConfigItem(): FinderStateItem.ConfigItem {
+        return getUniqueItem(FinderStateItem.ConfigItem::class)
+    }
+
+    private inline fun updateConfig(action: FinderStateItem.ConfigItem.() -> FinderStateItem.ConfigItem) {
+        val index = uniqueItems.indexOf(getConfigItem())
+        val item = uniqueItems[index] as FinderStateItem.ConfigItem
+        uniqueItems[index] = item.action()
+        updateState()
     }
 }

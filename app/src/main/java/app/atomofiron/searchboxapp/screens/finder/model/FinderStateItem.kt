@@ -29,6 +29,7 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
       val excludeDirs: Boolean = false,
       val replaceEnabled: Boolean = false,
       val isLocal: Boolean = false,
+      val isCollapsed: Boolean = false,
     ) : FinderStateItem(CONFIG_ID, R.layout.item_config)
 
     data class TestItem(
