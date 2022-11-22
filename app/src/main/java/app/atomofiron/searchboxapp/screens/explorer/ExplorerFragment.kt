@@ -15,6 +15,7 @@ import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
+import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
@@ -50,6 +51,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = explorerAdapter
+        binding.recyclerView.addOnItemTouchListener(SwipeMarkerDelegate(resources))
 
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
