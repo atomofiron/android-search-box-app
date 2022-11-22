@@ -13,6 +13,7 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemBackgroundDecorator.Companion.getExplorerItemBackground
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.getSortedChildren
 import app.atomofiron.searchboxapp.utils.Explorer.hasChild
 import kotlin.math.min
@@ -46,7 +47,7 @@ class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : Recycl
         initShadow(headerView.context)
         setHeaderBackground()
         backgroundColor = headerView.context.findColorByAttr(R.attr.colorBackground)
-        backgroundGrey = ContextCompat.getColor(headerView.context, R.color.item_explorer_background)
+        backgroundGrey = headerView.context.getExplorerItemBackground()
         backgroundGrey = ColorUtils.compositeColors(backgroundGrey, backgroundColor)
     }
 

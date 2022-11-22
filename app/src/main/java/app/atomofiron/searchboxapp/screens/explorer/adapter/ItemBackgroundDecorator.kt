@@ -1,15 +1,23 @@
 package app.atomofiron.searchboxapp.screens.explorer.adapter
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.getSortedChildren
 
 class ItemBackgroundDecorator(
     val atFirst: Boolean = true,
 ) : RecyclerView.ItemDecoration() {
+    companion object {
+        fun Context.getExplorerItemBackground(): Int {
+            val colorSurface = findColorByAttr(R.attr.colorSurfaceVariant)
+            return ColorUtils.setAlphaComponent(colorSurface, Byte.MAX_VALUE.toInt())
+        }
+    }
 
     private val paint = Paint()
     private var colorDefined = false
@@ -20,7 +28,7 @@ class ItemBackgroundDecorator(
 
         if (!colorDefined) {
             colorDefined = true
-            paint.color = ContextCompat.getColor(parent.context, R.color.item_explorer_background)
+            paint.color = parent.context.getExplorerItemBackground()
         }
 
         if (!enabled) return

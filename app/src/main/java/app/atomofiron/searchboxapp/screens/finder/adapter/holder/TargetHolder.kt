@@ -3,10 +3,11 @@ package app.atomofiron.searchboxapp.screens.finder.adapter.holder
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
-class TargetHolder(parent: ViewGroup, id: Int) : CardViewHolder(parent, id) {
+class TargetHolder(parent: ViewGroup, id: Int) : GeneralHolder<FinderStateItem>(parent, id) {
     private val ivIcon = itemView.findViewById<ImageView>(R.id.item_iv_icon)
     private val tvTitle = itemView.findViewById<TextView>(R.id.item_tv_title)
 
