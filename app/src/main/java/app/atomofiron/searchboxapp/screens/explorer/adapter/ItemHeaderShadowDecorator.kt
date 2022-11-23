@@ -76,9 +76,11 @@ class ItemHeaderShadowDecorator(private val getItems: () -> List<Node>) : Recycl
         val firstVisiblePosition = children.keys.first()
         val notChildPosition = children.keys.find { it > headerItemPosition && !headerItem.hasChild(items[it]) } ?: UNDEFINED
         val childPosition = children.keys.find { headerItem.hasChild(items[it]) } ?: UNDEFINED
+        val headerItemTop = headerItemView?.top ?: 0
         val top = when {
             headerItem.children.isNullOrEmpty() -> -headerHeight
-            (headerItemView?.top ?: 0) >= topEdge -> -headerHeight
+            headerItemTop > topEdge -> -headerHeight
+            headerItemTop == topEdge -> 0
             notChildPosition > childPosition -> {
                 val bottom = children[notChildPosition.dec()]?.bottom ?: 0
                 min(0, bottom - headerHeight)

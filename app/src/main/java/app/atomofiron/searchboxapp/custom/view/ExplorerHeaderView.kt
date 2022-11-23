@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.Node
@@ -39,13 +38,10 @@ class ExplorerHeaderView @JvmOverloads constructor(
     }
 
     private fun bind() {
-        when (val item = item) {
-            null -> isGone = true
-            else -> {
-                if (!isVisible) isVisible = true
-                binder.onBind(item)
-                binder.bindComposition(composition)
-            }
+        item?.let {
+            if (!isVisible) isVisible = true
+            binder.onBind(it)
+            binder.bindComposition(composition)
         }
     }
 }
