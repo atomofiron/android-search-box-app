@@ -16,6 +16,7 @@ import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHeaderDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
@@ -33,6 +34,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
+    private lateinit var headerDelegate: ExplorerHeaderDelegate
 
     private lateinit var headerViewOutputDelegate: HeaderViewOutputDelegate
 
@@ -70,8 +72,8 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             onGravityChangeListener = presenter::onDockGravityChange
             recyclerView.adapter = placesAdapter
         }
+        headerDelegate = ExplorerHeaderDelegate(binding.recyclerView, binding.explorerHeader, explorerAdapter)
 
-        explorerAdapter.setHeaderView(binding.explorerHeader)
         binding.explorerHeader.setOnItemActionListener(headerViewOutputDelegate)
         viewState.onViewCollect()
         onApplyInsets(view)
@@ -88,8 +90,14 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     override fun ExplorerViewState.onViewCollect() {
         viewCollect(actions, collector = explorerAdapter::onAction)
         viewCollect(items, collector = explorerAdapter::submitList)
-        viewCollect(itemComposition, collector = explorerAdapter::setComposition)
-        viewCollect(current, collector = explorerAdapter::setCurrentDir)
+        viewCollect(current) {
+            explorerAdapter.setCurrentDir(it)
+            headerDelegate.setCurrentDir(it)
+        }
+        viewCollect(itemComposition) {
+            explorerAdapter.setComposition(it)
+            headerDelegate.setComposition(it)
+        }
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(places, collector = placesAdapter::setItems)

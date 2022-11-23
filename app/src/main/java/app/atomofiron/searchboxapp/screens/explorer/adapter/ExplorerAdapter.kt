@@ -6,14 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSeparationDecorator.Separation
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemSpaceDecorator.Divider
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.NodeCallback
-import app.atomofiron.searchboxapp.utils.Explorer.isTheDeepest
 import java.util.LinkedList
 
 class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
@@ -29,7 +27,6 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
 
     private var currentDir: Node? = null
     private lateinit var composition: ExplorerItemComposition
-    private lateinit var headerView: ExplorerHeaderView
     private val headerItemPosition: Int get() = when (val dir = currentDir) {
         null -> UNDEFINED
         else -> currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
@@ -37,6 +34,10 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
 
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
+
+    init {
+        setHasStableIds(true)
+    }
 
     private fun getFirstChild(): View? {
         val recyclerView = recyclerView ?: return null
@@ -98,22 +99,10 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
 
     fun setCurrentDir(dir: Node?) {
         currentDir = dir
-        headerView.onBind(dir)
-        shadowDecorator.onHeaderChanged(dir)
-    }
-
-    fun setHeaderView(view: ExplorerHeaderView) {
-        headerView = view
-        if (::composition.isInitialized) {
-            view.setComposition(composition)
-        }
-        view.onBind(currentDir)
-        shadowDecorator.setHeaderView(view)
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
         this.composition = composition
-        headerView.setComposition(composition)
         backgroundDecorator.enabled = composition.visibleBg
         notifyDataSetChanged()
     }
@@ -188,7 +177,6 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         holder.onBind(item)
         holder.setOnItemActionListener(itemActionListener)
         holder.bindComposition(composition)
-        if (item.isTheDeepest()) headerView.onBind(item)
     }
 
     override fun onViewAttachedToWindow(holder: ExplorerHolder) {
