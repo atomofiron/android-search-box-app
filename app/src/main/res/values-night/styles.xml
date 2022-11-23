@@ -11,6 +11,10 @@
         <item name="android:background">@color/black</item>
     </style>
 
+    <style name="NavigationRailStyle.Amoled" parent="@style/Widget.Material3.NavigationRailView">
+        <item name="android:background">@color/black</item>
+    </style>
+
     <style name="OutlinedButtonStyle" parent="@style/Widget.Material3.Button.OutlinedButton">
         <item name="strokeColor">?colorSurfaceVariant</item>
     </style>

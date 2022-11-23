@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.finder
 
 import android.content.Context
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -14,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentFinderBinding
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
@@ -57,12 +59,13 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
 
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
-        binding.bottomBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_explorer -> presenter.onExplorerOptionSelected()
-                R.id.menu_settings -> presenter.onSettingsOptionSelected()
-            }
-            false
+        binding.bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
+        binding.navigationRail.menu.removeItem(R.id.stub)
+        binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
+        binding.navigationRail.isItemActiveIndicatorEnabled = false
+
+        binding.run {
+            OrientationLayoutDelegate(coordinator, recyclerView, bottomBar, navigationRail)
         }
 
         binding.verticalDock.run {
@@ -72,6 +75,14 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
 
         viewState.onViewCollect()
         onApplyInsets(view)
+    }
+
+    private fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_explorer -> presenter.onExplorerOptionSelected()
+            R.id.menu_settings -> presenter.onSettingsOptionSelected()
+        }
+        return false
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -98,9 +109,10 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
 
     override fun onApplyInsets(root: View) {
         root.insetsProxying()
-        binding.coordinator.insetsProxying()
+        // binding.coordinator is already in OrientationLayoutDelegate
         binding.recyclerView.applyPaddingInsets()
-        binding.bottomBar.applyPaddingInsets(bottom = true)
+        binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
+        binding.navigationRail.applyPaddingInsets()
     }
 
     override fun onBack(): Boolean {

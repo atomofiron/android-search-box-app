@@ -15,7 +15,6 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="@dimen/joystick_size"
             android:overScrollMode="never"
             />
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -28,6 +27,17 @@
             app:itemIconTint="?android:textColorPrimary"
             app:labelVisibilityMode="labeled"
             app:layout_behavior="app.atomofiron.searchboxapp.custom.view.FixedHideBottomViewOnScrollBehavior"
+            />
+        <com.google.android.material.navigationrail.NavigationRailView
+            android:id="@+id/navigation_rail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:menu="@menu/nav_explorer"
+            app:labelVisibilityMode="unlabeled"
+            app:itemTextColor="?android:textColorPrimary"
+            app:itemIconTint="?android:textColorPrimary"
+            app:elevation="3dp"
             />
         <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
             android:layout_width="match_parent"

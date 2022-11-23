@@ -25,9 +25,9 @@
 	<dimen name="padding_xlarge">16dp</dimen>
 	<dimen name="padding_xxlarge">32dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
-    <dimen name="bottom_tab_bar_height">80dp</dimen>
+    <dimen name="navigation_view_size">80dp</dimen>
     <dimen name="card_max_width">512dp</dimen>
-    <dimen name="joystick_size">@dimen/bottom_tab_bar_height</dimen>
+    <dimen name="joystick_size">@dimen/navigation_view_size</dimen>
     <dimen name="item_explorer_file_size">36dp</dimen>
     <dimen name="edge_size">48dp</dimen>
     <dimen name="item_dir_shadow_size">6dp</dimen>

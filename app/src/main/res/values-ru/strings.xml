@@ -91,6 +91,8 @@
     <string name="pref_explorer_item">Файл / Директория</string>
     <string name="pref_joystick">Цвет кнопки ESC</string>
     <string name="create">Создать</string>
+    <string name="owner">Владелец</string>
+    <string name="group">Группа</string>
     <string name="empty_check_box">Пустой чек бокс</string>
     <string name="item_explorer_background">Чередующийся фон</string>
     <string name="create_a_new">Создать</string>

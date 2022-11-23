@@ -21,6 +21,7 @@ import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.syncOrientation
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
@@ -88,13 +89,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.insetsProxying()
-        binding.navHostFragment.insetsProxying()
-        binding.joystick.applyMarginInsets(bottom = true)
+        applyInsets()
+
         presenter.onActivityCreate(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding.joystick.setOnClickListener { onEscClick() }
+        binding.joystick.syncOrientation(binding.root)
 
         viewState.showExitSnackbar.collect(lifecycleScope) {
             sbExit.show()
@@ -114,6 +115,12 @@ class MainActivity : AppCompatActivity() {
         presenter.updateLightStatusBar(isDarkTheme)
         setOrientation(viewState.setOrientation.value)
         onCollect()
+    }
+
+    private fun applyInsets() {
+        binding.root.insetsProxying()
+        binding.navHostFragment.insetsProxying()
+        binding.joystick.applyMarginInsets()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -152,7 +159,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTheme(theme: AppTheme) {
-        // todo theme.deepBlack
         val mode = when(theme) {
             is AppTheme.System -> MODE_NIGHT_FOLLOW_SYSTEM
             is AppTheme.Light -> MODE_NIGHT_NO

@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingBottom="@dimen/bottom_tab_bar_height"
+        android:paddingBottom="@dimen/navigation_view_size"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:reverseLayout="true"
         />

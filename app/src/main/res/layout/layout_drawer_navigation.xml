@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:id="@+id/drawer_rv"
         android:paddingTop="36dp"
-        android:paddingBottom="@dimen/bottom_tab_bar_height"
+        android:paddingBottom="@dimen/navigation_view_size"
         android:clipToPadding="false"
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

@@ -1,8 +1,10 @@
 package app.atomofiron.searchboxapp
 
 import android.content.Context
+import android.content.res.Resources
 import android.content.res.TypedArray
 import android.util.AttributeSet
+import android.util.LayoutDirection
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
@@ -40,3 +42,8 @@ inline fun Context.obtainStyledAttributes(
     action(styled)
     styled.recycle()
 }
+
+fun View.isRtl(): Boolean = resources.isRtl()
+
+fun Resources.isRtl(): Boolean = configuration.layoutDirection == LayoutDirection.RTL
+

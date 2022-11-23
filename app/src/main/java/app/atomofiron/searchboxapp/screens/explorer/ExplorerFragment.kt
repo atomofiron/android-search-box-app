@@ -3,23 +3,25 @@ package app.atomofiron.searchboxapp.screens.explorer
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
-import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.getString
+import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -55,12 +57,13 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
-        binding.bottomBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_search -> presenter.onSearchOptionSelected()
-                R.id.menu_settings -> presenter.onSettingsOptionSelected()
-            }
-            false
+        binding.bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
+        binding.navigationRail.menu.removeItem(R.id.stub)
+        binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
+        binding.navigationRail.isItemActiveIndicatorEnabled = false
+
+        binding.run {
+            OrientationLayoutDelegate(coordinator, recyclerView, bottomBar, navigationRail, explorerHeader)
         }
 
         binding.verticalDock.run {
@@ -72,6 +75,14 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.explorerHeader.setOnItemActionListener(headerViewOutputDelegate)
         viewState.onViewCollect()
         onApplyInsets(view)
+    }
+
+    private fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_search -> presenter.onSearchOptionSelected()
+            R.id.menu_settings -> presenter.onSettingsOptionSelected()
+        }
+        return false
     }
 
     override fun ExplorerViewState.onViewCollect() {
@@ -88,11 +99,12 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
     override fun onApplyInsets(root: View) {
         root.insetsProxying()
-        binding.coordinator.insetsProxying()
+        // binding.coordinator is already in OrientationLayoutDelegate
         binding.verticalDock.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
-        binding.explorerHeader.applyPaddingInsets(start = true, top = true, end = true)
+        binding.explorerHeader.applyPaddingInsets()
         binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
+        binding.navigationRail.applyPaddingInsets()
     }
 
     override fun onBack(): Boolean {
