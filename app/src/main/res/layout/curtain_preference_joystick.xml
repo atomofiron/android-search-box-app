@@ -65,4 +65,13 @@
             android:paddingEnd="@dimen/padding_xlarge"
             />
     </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/preference_btn_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/by_default"
+        style="?materialButtonOutlinedStyle"
+        />
 </LinearLayout>

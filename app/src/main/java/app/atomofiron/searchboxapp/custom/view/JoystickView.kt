@@ -10,6 +10,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import app.atomofiron.common.util.findBooleanByAttr
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.preference.JoystickComposition
 import kotlin.math.min
@@ -71,10 +72,17 @@ class JoystickView @JvmOverloads constructor(
         composition ?: return
         this.composition = composition
         val isDark = context.findBooleanByAttr(R.attr.isDarkTheme)
+        val colorPrimary = context.findColorByAttr(R.attr.colorPrimary)
 
-        val circleColor = composition.color(isDark)
+        val circleColor = when {
+            composition.overrideTheme -> composition.color(isDark)
+            else -> colorPrimary
+        }
         paint.color = circleColor
-        glowingPaint.color = composition.glow(isDark)
+        glowingPaint.color = when {
+            composition.overrideTheme -> composition.glow(isDark)
+            else -> composition.glow(isDark, colorPrimary)
+        }
 
         val limit = if (isDark) 0.4 else 0.6
         val isCircleLight = ColorUtils.calculateLuminance(circleColor) > limit

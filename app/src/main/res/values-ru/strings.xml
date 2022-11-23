@@ -118,6 +118,7 @@
     <string name="channel_name_updates">Обновления</string>
     <string name="tip">В Проводнике укажите где искать</string>
     <string name="search_here">Ищем здесь:</string>
+    <string name="by_default">Цвет по умолчанию</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>

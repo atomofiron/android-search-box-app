@@ -18,7 +18,7 @@ import com.google.android.material.navigationrail.NavigationRailView
 @SuppressLint("PrivateResource")
 class OrientationLayoutDelegate(
     private val parent: ViewGroup,
-    private val recyclerView: RecyclerView,
+    private val recyclerView: RecyclerView? = null,
     private val bottomView: BottomNavigationView? = null,
     private val railView: NavigationRailView? = null,
     private val headerView: ExplorerHeaderView? = null,
@@ -58,7 +58,7 @@ class OrientationLayoutDelegate(
         headerView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets.getHeaderViewInsets())
         }
-        recyclerView.run {
+        recyclerView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets.getRecyclerViewInsets())
         }
         railView?.run {
