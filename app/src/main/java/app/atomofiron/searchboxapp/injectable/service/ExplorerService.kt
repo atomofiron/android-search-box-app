@@ -111,6 +111,7 @@ class ExplorerService(
                 nextState(item.uniqueId, cachingJob = job)
             }
             if (state?.isCaching != true) job.cancel()
+            return
         }
     }
 
@@ -303,16 +304,13 @@ class ExplorerService(
 
     private suspend fun CoroutineScope.cacheSync(item: Node) {
         if (!isActive) return
-        val wasCached = item.isCached
         val cached = item.update(useSu).sortByName()
         withTab {
             states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
             }
-            levels.replaceItem(cached)
-            if (wasCached && !item.areContentsTheSame(cached)) {
-                explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
-            }
+            if (!levels.replaceItem(cached)) return
+            explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
         }
     }
 
@@ -358,16 +356,19 @@ class ExplorerService(
 
     private fun List<NodeLevel>.replaceItem(item: Node) = replaceItem(item.uniqueId, item.parentPath, item)
 
-    private fun List<NodeLevel>.replaceItem(uniqueId: Int, parentPath: String, item: Node?) {
+    private fun List<NodeLevel>.replaceItem(uniqueId: Int, parentPath: String, item: Node?): Boolean {
         val (_, level) = findLevel(parentPath)
         val index = level?.children?.indexOfFirst { it.uniqueId == uniqueId }
-        if (index == null || index < 0) return
-        val wasOpened = level.children[index].isOpened
+        if (index == null || index < 0) return false
+        val prev = level.children[index]
+        val wasOpened = prev.isOpened
+        if (prev.areContentsTheSame(item)) return false
         when (item?.isOpened) {
             null -> level.children.removeAt(index)
             wasOpened -> level.children[index] = item
             else -> level.children[index] = item.copy(children = item.children?.copy(isOpened = wasOpened))
         }
+        return true
     }
 
     private suspend inline fun <T, reified R> Collection<T>.parMapMut(

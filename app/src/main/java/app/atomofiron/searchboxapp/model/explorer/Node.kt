@@ -30,7 +30,8 @@ data class Node constructor(
     val isEmpty: Boolean get() = children?.isEmpty() == true
     val isOpened: Boolean get() = children?.isOpened == true
 
-    fun areContentsTheSame(other: Node): Boolean = when {
+    fun areContentsTheSame(other: Node?): Boolean = when {
+        other == null -> false
         other.uniqueId != uniqueId -> false
         other.path != path -> false
         other.rootId != rootId -> false
