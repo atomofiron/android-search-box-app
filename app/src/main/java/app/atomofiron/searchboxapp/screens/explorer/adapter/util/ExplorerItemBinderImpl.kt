@@ -54,9 +54,10 @@ class ExplorerItemBinderImpl(
         onItemActionListener?.onItemLongClick(item)
         true
     }
-    private var onCheckListener: ((View) -> Unit) = { view ->
-        view as CheckBox
-        onItemActionListener?.onItemCheck(item, view.isChecked)
+    private var onCheckListener: ((View, Boolean) -> Unit) = { _, checked ->
+        if (checked != item.isChecked) {
+            onItemActionListener?.onItemCheck(item, checked)
+        }
     }
     init {
         if (cbBox.buttonTintList == null) {
@@ -87,7 +88,7 @@ class ExplorerItemBinderImpl(
 
         itemView.setOnClickListener(onClickListener)
         itemView.setOnLongClickListener(onLongClickListener)
-        cbBox.setOnClickListener(onCheckListener)
+        cbBox.setOnCheckedChangeListener(onCheckListener)
 
         ivIcon.setImageResource(item.defineIcon())
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED

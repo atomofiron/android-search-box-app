@@ -12,7 +12,6 @@ class SwipeMarkerDelegate(resources: Resources) : RecyclerView.OnItemTouchListen
     private val allowedAria = resources.getDimensionPixelSize(R.dimen.edge_size)
     private var downChild: View? = null
     private var allowed = false
-    private var count = 0
     private var makeChecked: Boolean? = null
 
     override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
@@ -24,19 +23,17 @@ class SwipeMarkerDelegate(resources: Resources) : RecyclerView.OnItemTouchListen
             downChild = rv.findChildViewUnder(e.x, e.y)
             val end = rv.width - rv.paddingEnd
             allowed = e.x.toInt() in (end - allowedAria)..end
-            count = 0
             makeChecked = null
         }
-        count++
-        return allowed && count > 3
+        return allowed
     }
 
     override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
         downChild?.let { child ->
+            downChild = null
             val checkbox = child.getCheckBox()
             makeChecked = !checkbox.isChecked
-            checkbox.performClick()
-            downChild = null
+            checkbox.isChecked = !checkbox.isChecked
         }
         val child = rv.findChildViewUnder(e.x, e.y)
         child ?: return
@@ -45,7 +42,7 @@ class SwipeMarkerDelegate(resources: Resources) : RecyclerView.OnItemTouchListen
             makeChecked = !checkbox.isChecked
         }
         if (makeChecked != checkbox.isChecked) {
-            checkbox.performClick()
+            checkbox.isChecked = !checkbox.isChecked
         }
     }
 
