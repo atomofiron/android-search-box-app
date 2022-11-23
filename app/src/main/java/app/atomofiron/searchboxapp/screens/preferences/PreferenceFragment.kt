@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
@@ -17,11 +16,11 @@ import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
 import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import app.atomofiron.searchboxapp.utils.Shell
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class PreferenceFragment : PreferenceFragmentCompat(),
     BaseFragment<PreferenceFragment, PreferenceViewState, PreferencePresenter> by BaseFragmentImpl()
@@ -53,18 +52,17 @@ class PreferenceFragment : PreferenceFragmentCompat(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.insetsProxying()
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView.applyPaddingInsets()
+        OrientationLayoutDelegate(view as ViewGroup, recyclerView)
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         viewState.onViewCollect()
-        onApplyInsets(view)
     }
 
     override fun onCreateRecyclerView(inflater: LayoutInflater, parent: ViewGroup, savedInstanceState: Bundle?): RecyclerView {
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         recyclerView.clipToPadding = false
-        val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)
-        recyclerView.updatePadding(bottom = padding)
         recyclerView.applyPaddingInsets()
         return recyclerView
     }
@@ -73,10 +71,6 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         viewCollect(alert, collector = ::onAlert)
         viewCollect(alertOutputSuccess, collector = ::showOutputSuccess)
         viewCollect(alertOutputError, collector = ::showOutputError)
-    }
-
-    override fun onApplyInsets(root: View) {
-        root.insetsProxying()
     }
 
     private fun PreferenceGroup.fixIcons() {

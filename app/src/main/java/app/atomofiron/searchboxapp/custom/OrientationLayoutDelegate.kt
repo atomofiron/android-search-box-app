@@ -5,7 +5,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.*
 import androidx.core.view.WindowInsetsCompat.Type
@@ -18,10 +17,10 @@ import com.google.android.material.navigationrail.NavigationRailView
 
 @SuppressLint("PrivateResource")
 class OrientationLayoutDelegate(
-    private val parent: CoordinatorLayout,
+    private val parent: ViewGroup,
     private val recyclerView: RecyclerView,
-    private val bottomView: BottomNavigationView,
-    private val railView: NavigationRailView,
+    private val bottomView: BottomNavigationView? = null,
+    private val railView: NavigationRailView? = null,
     private val headerView: ExplorerHeaderView? = null,
 ) : OnApplyWindowInsetsListener {
     enum class Side {
@@ -39,7 +38,6 @@ class OrientationLayoutDelegate(
         ViewCompat.setOnApplyWindowInsetsListener(parent, this)
         parent.setSideListener {
             val side = if (it) Side.Bottom else Side.Right
-            //if (side == this.side) return@setSideListener
             this.side = side
             if (side == Side.Bottom) showBottom() else showRail()
             parent.requestApplyInsets()
@@ -50,24 +48,33 @@ class OrientationLayoutDelegate(
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
             val individual = when {
-                child === headerView -> insets.getHeaderViewInsets()
-                child === recyclerView -> insets.getRecyclerViewInsets()
-                child === railView -> insets.getRailViewInsets()
+                child === headerView -> continue
+                child === recyclerView -> continue
+                child === railView -> continue
                 else -> insets
             }
             ViewCompat.dispatchApplyWindowInsets(child, individual)
+        }
+        headerView?.run {
+            ViewCompat.dispatchApplyWindowInsets(this, insets.getHeaderViewInsets())
+        }
+        recyclerView.run {
+            ViewCompat.dispatchApplyWindowInsets(this, insets.getRecyclerViewInsets())
+        }
+        railView?.run {
+            ViewCompat.dispatchApplyWindowInsets(this, insets.getRailViewInsets())
         }
         return WindowInsetsCompat.CONSUMED
     }
 
     private fun showRail() {
-        bottomView.isVisible = false
-        railView.isVisible = true
+        bottomView?.isVisible = false
+        railView?.isVisible = true
     }
 
     private fun showBottom() {
-        bottomView.isVisible = true
-        railView.isVisible = false
+        bottomView?.isVisible = true
+        railView?.isVisible = false
     }
 
     private fun WindowInsetsCompat.getRecyclerViewInsets(): WindowInsetsCompat {
