@@ -155,9 +155,13 @@ class OrientationLayoutDelegate(
         fun JoystickView.syncOrientation(root: FrameLayout) {
             root.setSideListener { bottom ->
                 updateLayoutParams<FrameLayout.LayoutParams> {
-                    gravity = when {
+                    val flags = when {
                         bottom -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
                         else -> Gravity.END or Gravity.TOP
+                    }
+                    when (gravity and flags) {
+                        flags -> return@setSideListener
+                        else -> gravity = flags
                     }
                 }
             }
