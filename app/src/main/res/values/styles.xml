@@ -12,15 +12,12 @@
 
 		<item name="colorContent">@color/day_night_content</item>
 		<item name="colorPositive">@color/day_night_positive</item>
-		<item name="colorControlHighlight" tools:ignore="PrivateResource">@color/mtrl_btn_text_btn_ripple_color</item>
-		<item name="colorRipple">@color/mtrl_btn_text_btn_ripple_color</item>
 
 		<item name="colorBackground">?colorSurface</item>
 		<item name="colorFieldBackground">@color/day_night_background</item>
 		<item name="colorFieldDivider">@color/day_night_field_divider</item>
 		<item name="colorBone">@color/day_night_bone</item>
 		<item name="colorOverlay">@color/overlay_black</item>
-		<item name="colorShadow">@color/day_night_shadow</item>
 
 		<item name="android:statusBarColor">@color/status_bar</item>
 		<item name="android:navigationBarColor">@color/navigation_bar</item>
@@ -31,6 +28,8 @@
 		<item name="materialCardViewStyle">@style/CardViewStyle</item>
 		<item name="materialButtonOutlinedStyle">@style/OutlinedButtonStyle</item>
 		<item name="textInputOutlinedDenseStyle">@style/InputOutlinedDenseStyle</item>
+
+		<item name="colorControlHighlight" tools:ignore="PrivateResource">@color/mtrl_btn_text_btn_ripple_color</item>
 	</style>
 
 	<style name="AppTheme.Amoled" parent="@style/AppTheme">
@@ -46,20 +45,12 @@
 
 	<style name="AppTheme.Legacy" parent="@style/AppTheme">
 		<item name="colorPrimary">@color/day_night_primary</item>
-		<item name="colorOnPrimary">@color/primary_light</item>
 		<item name="colorAccent">@color/day_night_primary</item>
-		<item name="colorPrimaryDark">@color/day_night_primary</item>
-		<item name="colorPrimaryLite">@color/day_night_primary_lite</item>
-		<item name="colorRipple">@color/day_night_ripple</item>
 	</style>
 
 	<style name="AppTheme.Amoled.Legacy" parent="@style/AppTheme.Amoled">
 		<item name="colorPrimary">@color/day_night_primary</item>
-		<item name="colorOnPrimary">@color/primary_light</item>
 		<item name="colorAccent">@color/day_night_primary</item>
-		<item name="colorPrimaryDark">@color/day_night_primary</item>
-		<item name="colorPrimaryLite">@color/day_night_primary_lite</item>
-		<item name="colorRipple">@color/day_night_ripple</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.Material3.Dark" />

@@ -7,13 +7,9 @@
     <attr name="colorFieldBackground" format="color" />
     <attr name="colorPositive" format="color" />
     <attr name="colorNegative" format="color" />
-    <attr name="colorRipple" format="color" />
     <attr name="colorFieldDivider" format="color" />
     <attr name="colorBone" format="color" />
     <attr name="colorOverlay" format="color" />
-
-    <attr name="colorPrimaryLite" format="color" />
-    <attr name="colorShadow" format="color" />
 
     <declare-styleable name="BottomMenuBar">
         <attr name="menu" format="reference" />
