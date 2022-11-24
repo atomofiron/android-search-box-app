@@ -2,11 +2,7 @@ package app.atomofiron.searchboxapp
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.content.res.Resources
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.RippleDrawable
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -14,7 +10,6 @@ import android.util.TypedValue
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -87,21 +82,6 @@ fun Context.findResIdsByAttr(@AttrRes vararg attrs: Int): IntArray {
     array.recycle()
 
     return values
-}
-
-fun Context.rippleColor(): Int {
-    val primary = getColorByAttr(R.attr.colorPrimary)
-    return ColorUtils.setAlphaComponent(primary, Byte.MAX_VALUE.toInt())
-}
-
-fun Context.rippleDrawable(contentDrawable: Drawable? = null): RippleDrawable {
-    val rippleColor = ColorStateList.valueOf(rippleColor())
-    return RippleDrawable(rippleColor, contentDrawable, null)
-}
-
-fun Context.rippleDrawable(backgroundColor: Int = 0): RippleDrawable {
-    val contentDrawable = if (backgroundColor == 0) null else ColorDrawable(backgroundColor)
-    return rippleDrawable(contentDrawable)
 }
 
 fun Context.getColorByAttr(@AttrRes attr: Int): Int = ContextCompat.getColor(this, findResIdByAttr(attr))

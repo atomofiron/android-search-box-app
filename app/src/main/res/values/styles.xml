@@ -12,6 +12,8 @@
 
 		<item name="colorContent">@color/day_night_content</item>
 		<item name="colorPositive">@color/day_night_positive</item>
+		<item name="colorControlHighlight" tools:ignore="PrivateResource">@color/mtrl_btn_text_btn_ripple_color</item>
+		<item name="colorRipple">@color/mtrl_btn_text_btn_ripple_color</item>
 
 		<item name="colorBackground">?colorSurface</item>
 		<item name="colorFieldBackground">@color/day_night_background</item>

@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.custom.view
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
@@ -19,14 +18,10 @@ class ExplorerHeaderView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
-
-    private val colorDrawable = ColorDrawable(0)
-
     init {
         LayoutInflater.from(context).inflate(R.layout.item_explorer, this)
         clipToPadding = false
         getChildAt(0).background = null
-        background = context.rippleDrawable(colorDrawable)
     }
 
     private val binder = ExplorerItemBinderImpl(this)
@@ -35,6 +30,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
     private var mBottom = 0
     private var insetColor = 0
     private val paint = Paint()
+    private var backgroundColor = 0
 
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {
         binder.onItemActionListener = listener
@@ -72,7 +68,10 @@ class ExplorerHeaderView @JvmOverloads constructor(
     }
 
     override fun draw(canvas: Canvas) {
+        canvas.drawColor(backgroundColor)
+
         super.draw(canvas)
+
         if (paddingTop > 0 && insetColor != 0 && top < 0 && top > -height) {
             paint.style = Paint.Style.FILL
             paint.color = insetColor
@@ -83,6 +82,6 @@ class ExplorerHeaderView @JvmOverloads constructor(
 
     override fun setBackgroundColor(color: Int) {
         insetColor = ColorUtils.setAlphaComponent(color, Byte.MAX_VALUE.toInt())
-        colorDrawable.color = color
+        backgroundColor = color
     }
 }
