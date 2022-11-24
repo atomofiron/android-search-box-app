@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewState: MainViewState
     private lateinit var presenter: MainPresenter
-    private val isDarkTheme: Boolean get() = isDarkTheme()
+    private var suspendStartJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                     preferenceStore.appTheme.first()
                 }
                 updateTheme(theme)
+                suspendStartJob?.join()
                 onCreateView(savedInstanceState)
             }
         } else {
@@ -153,6 +154,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        suspendStartJob = Job()
+        super.onSaveInstanceState(outState, outPersistentState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        suspendStartJob?.cancel()
+    }
+
     private fun onCollect() {
         viewState.apply {
             setTheme.collect(lifecycleScope, ::updateTheme)
@@ -168,9 +179,7 @@ class MainActivity : AppCompatActivity() {
             true -> setTheme(R.style.CompatTheme_Amoled)
             false -> setTheme(R.style.CompatTheme)
         }
-        if (::presenter.isInitialized) {
-            presenter.onThemeApplied(isDarkTheme())
-        }
+        presenter.onThemeApplied(isDarkTheme())
     }
 
     private fun onEscClick() {
