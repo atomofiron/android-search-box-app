@@ -36,9 +36,7 @@ class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
             val position = parent.getChildLayoutPosition(child)
 
             if (position % 2 == 0) {
-                child.run {
-                    canvas.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), paint)
-                }
+                canvas.drawRect(0f, child.top.toFloat(), parent.width.toFloat(), child.bottom.toFloat(), paint)
             }
         }
     }

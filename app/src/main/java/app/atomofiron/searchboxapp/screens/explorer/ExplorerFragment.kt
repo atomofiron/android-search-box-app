@@ -108,7 +108,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         root.insetsProxying()
         // binding.coordinator is already in OrientationLayoutDelegate
         binding.verticalDock.insetsProxying()
-        binding.recyclerView.applyPaddingInsets(top = true, bottom = true, withProxying = true)
+        binding.recyclerView.applyPaddingInsets()
         binding.explorerHeader.applyPaddingInsets()
         binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
         binding.navigationRail.applyPaddingInsets()

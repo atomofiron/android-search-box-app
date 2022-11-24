@@ -24,7 +24,6 @@ class ItemBorderDecorator(
     private val paint = Paint()
     private var grey = 0
     private var accent = 0
-    private var background = 0
     private val rect = RectF()
     private var cornerRadius = 0f
     private var strokeWidth = 0f
@@ -46,7 +45,6 @@ class ItemBorderDecorator(
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         grey = parent.context.findColorByAttr(R.attr.colorOutline)
         accent = parent.context.findColorByAttr(R.attr.colorTertiary)
-        background = parent.context.findColorByAttr(R.attr.colorBackground)
         cornerRadius = view.resources.getDimension(R.dimen.explorer_border_corner_radius)
         strokeWidth = view.resources.getDimension(R.dimen.explorer_border_width)
         strokeOffset = floor(strokeWidth / 2f)
@@ -68,52 +66,58 @@ class ItemBorderDecorator(
         first ?: return
         var index = parent.getChildViewHolder(first).bindingAdapterPosition
         val lastIndex = index + parent.childCount.dec()
-        var boxRect: RectF? = null
+        var frameRect: RectF? = null
+        paint.color = grey
         for (child in parent) {
-            val left = child.paddingLeft + strokeOffset
-            val right = parent.width - (child.paddingRight + strokeOffset)
+            var left = parent.paddingLeft + strokeOffset
+            var right = parent.width - (parent.paddingRight + strokeOffset)
             val prev = adapter.currentList.getOrNull(index.dec())
             val item = adapter.currentList[index]
             val next = adapter.currentList.getOrNull(index.inc())
             val nextParentPath = next?.parentPath ?: ""
-            if (item.isOpened && item.isEmpty) {
-                val top = child.bottom + levelSpace / 2 + strokeOffset
-                var bottom = child.bottom + levelSpace * 1.5f - strokeOffset
-                bottom = max(top, bottom)
-                rect.set(left + innerPadding / 2, top, right - innerPadding / 2, bottom)
-                boxRect = rect
-            } else if (item.parentPath == currentDir?.path) {
-                rect.left = left
-                rect.right = right
-                if (item.parentPath != prev?.parentPath) {
-                    rect.top = child.top - levelSpace / 2
+            val childBottomEdge = child.bottom + levelSpace / 2
+            when {
+                item.isOpened && item.isEmpty -> {
+                    left += innerPadding / 2
+                    right -= innerPadding / 2
+                    val top = childBottomEdge + strokeOffset
+                    var bottom =childBottomEdge + levelSpace - strokeOffset
+                    bottom = max(top, bottom)
+                    rect.set(left, top, right, bottom)
+                    frameRect = rect
                 }
-                if (item.parentPath != next?.parentPath || index == lastIndex) {
-                    rect.bottom = child.bottom + levelSpace / 2
+                item.parentPath == currentDir?.path -> {
+                    rect.left = left
+                    rect.right = right
+                    if (item.parentPath != prev?.parentPath) {
+                        rect.top = child.top - levelSpace / 2
+                    }
+                    if (item.parentPath != next?.parentPath || index == lastIndex) {
+                        rect.bottom = childBottomEdge
+                    }
+                    frameRect = rect
                 }
-                boxRect = rect
-            } else if (item.isOpened && item.uniqueId == currentDir?.uniqueId) {
-            } else if (!item.isOpened && item.isRoot) {
-            } else if (item.parentPath != nextParentPath) {
-                paint.color = grey
-                canvas.drawLine(left + innerPadding, child.bottom + levelSpace / 2, right - innerPadding, child.bottom + levelSpace / 2, paint)
+                item.isOpened && item.uniqueId == currentDir?.uniqueId -> Unit
+                !item.isOpened && item.isRoot -> Unit
+                item.parentPath != nextParentPath -> {
+                    left += innerPadding
+                    right -= innerPadding
+                    canvas.drawLine(left, childBottomEdge, right, childBottomEdge, paint)
+                }
             }
             index++
         }
-        boxRect?.let {
+        frameRect?.let {
             val minTop = ExplorerHeaderDelegate.getHeaderBottom(parent, headerView, adapter, currentDir) + strokeOffset
-            boxRect.top = max(boxRect.top, minTop)
-            boxRect.bottom = min(boxRect.bottom, parent.height - parent.paddingBottom - strokeOffset)
-            val boxHeight = boxRect.height()
+            frameRect.top = max(frameRect.top, minTop)
+            frameRect.bottom = min(frameRect.bottom, parent.height - parent.paddingBottom - strokeOffset)
+            val boxHeight = frameRect.height()
             if (boxHeight > 0) {
-                val alpha = (255 * min(1f, max(0f, boxHeight / (levelSpace / 2)))).toInt()
-                paint.color = background
-                paint.strokeWidth = strokeWidth * 2
-                canvas.drawRoundRect(boxRect.left - strokeWidth, boxRect.top - strokeWidth, boxRect.right + strokeWidth, boxRect.bottom + strokeWidth, cornerRadius, cornerRadius, paint)
-
+                val alpha = (255 * (boxHeight / (levelSpace / 2)).coerceIn(0f, 1f)).toInt()
                 paint.strokeWidth = strokeWidth
+                paint.style = Paint.Style.STROKE
                 paint.color = ColorUtils.setAlphaComponent(accent, alpha)
-                canvas.drawRoundRect(boxRect, cornerRadius, cornerRadius, paint)
+                canvas.drawRoundRect(frameRect, cornerRadius, cornerRadius, paint)
             }
         }
     }
