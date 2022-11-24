@@ -20,8 +20,9 @@ class ExplorerHeaderView @JvmOverloads constructor(
     }
 
     private val binder = ExplorerItemBinderImpl(getChildAt(0))
-    lateinit var composition: ExplorerItemComposition; private set
+    private var composition: ExplorerItemComposition? = null
     private var item: Node? = null
+    private var mBottom = 0
 
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {
         binder.onItemActionListener = listener
@@ -29,19 +30,32 @@ class ExplorerHeaderView @JvmOverloads constructor(
 
     fun setComposition(composition: ExplorerItemComposition) {
         this.composition = composition
-        bind()
+        tryBind()
     }
 
-    fun onBind(item: Node? = this.item) {
+    fun bind(item: Node?) {
         this.item = item
-        bind()
+        tryBind()
     }
 
-    private fun bind() {
-        item?.let {
-            if (!isVisible) isVisible = true
-            binder.onBind(it)
-            binder.bindComposition(composition)
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        if (bottom != mBottom) {
+            move(mBottom)
         }
+    }
+
+    fun move(bottom: Int) {
+        mBottom = bottom
+        this.top = bottom - measuredHeight
+        this.bottom = bottom
+    }
+
+    private fun tryBind() {
+        val composition = composition ?: return
+        val item = item ?: return
+        if (!isVisible) isVisible = true
+        binder.onBind(item)
+        binder.bindComposition(composition)
     }
 }

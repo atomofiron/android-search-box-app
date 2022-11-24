@@ -1,14 +1,14 @@
-package app.atomofiron.searchboxapp.screens.explorer.adapter
+package app.atomofiron.searchboxapp.screens.explorer.fragment
 
 import android.view.View
 import androidx.core.graphics.ColorUtils
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemBackgroundDecorator.Companion.getExplorerItemBackground
 import java.util.LinkedList
 import kotlin.math.max
@@ -19,6 +19,34 @@ class ExplorerHeaderDelegate(
     private val headerView: ExplorerHeaderView,
     private val adapter: ExplorerAdapter,
 ) : RecyclerView.OnScrollListener() {
+    companion object {
+        fun getHeaderBottom(recyclerView: RecyclerView, headerView: ExplorerHeaderView, adapter: ExplorerAdapter, currentDir: Node?): Int {
+            val headerHeight = headerView.measuredHeight
+            currentDir ?: return 0
+            if (currentDir.isEmpty) return 0
+            val topChildren = LinkedList<View>()
+            for (i in 0 until recyclerView.childCount) {
+                val child = recyclerView.getChildAt(i)
+                if (child.top > headerHeight) break
+                topChildren.add(child)
+            }
+            if (topChildren.isEmpty()) return 0
+            val topItems = topChildren.map {
+                val holder = recyclerView.getChildViewHolder(it)
+                adapter.currentList[holder.bindingAdapterPosition]
+            }
+            var bottom = 0
+            topItems.forEachIndexed { i, it ->
+                val view = topChildren[i]
+                when {
+                    it.parentPath == currentDir.path -> bottom = view.bottom
+                    it.path != currentDir.path -> Unit
+                    view.bottom <= headerHeight -> bottom = max(headerHeight, view.bottom)
+                }
+            }
+            return min(headerHeight, bottom)
+        }
+    }
 
     private var currentDir: Node? = null
     private var currentIndex = -1
@@ -63,43 +91,14 @@ class ExplorerHeaderDelegate(
         }
         headerView.setComposition(composition)
         headerView.setBackgroundColor(color)
-        headerView.onBind(currentDir)
+        headerView.bind(currentDir)
     }
 
     private fun updateVisibility() {
-        val top = getTop()
-        if (!headerView.isVisible) headerView.isVisible = true
-        headerView.top = top
-        headerView.bottom = top + headerView.measuredHeight
-    }
-
-    private fun getTop(): Int {
-        val headerHeight = headerView.measuredHeight
-        val outside = -headerHeight
-        composition ?: return outside
-        val currentDir = currentDir ?: return outside
-        if (currentDir.isEmpty) return outside
-        if (currentIndex == -1) return outside
-        val topChildren = LinkedList<View>()
-        for (i in 0 until recyclerView.childCount) {
-            val child = recyclerView.getChildAt(i)
-            if (child.top > headerHeight) break
-            topChildren.add(child)
+        val bottom = when {
+            currentIndex < 0 -> 0
+            else -> getHeaderBottom(recyclerView, headerView, adapter, currentDir)
         }
-        if (topChildren.isEmpty()) return outside
-        val topItems = topChildren.map {
-            val holder = recyclerView.getChildViewHolder(it)
-            adapter.currentList[holder.bindingAdapterPosition]
-        }
-        var bottom = 0
-        topItems.forEachIndexed { i, it ->
-            val view = topChildren[i]
-            when {
-                it.parentPath == currentDir.path -> bottom = view.bottom
-                it.path != currentDir.path -> Unit
-                view.bottom <= headerHeight -> bottom = max(headerHeight, view.bottom)
-            }
-        }
-        return min(headerHeight, bottom) - headerHeight
+        headerView.move(bottom)
     }
 }

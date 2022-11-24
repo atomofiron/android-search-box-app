@@ -22,7 +22,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
     private lateinit var composition: ExplorerItemComposition
 
     private val gravityDecorator = ItemGravityDecorator()
-    private val backgroundDecorator = ItemBackgroundDecorator(atFirst = false)
+    private val backgroundDecorator = ItemBackgroundDecorator()
 
     private val header = FinderResultItem.Header(0, 0)
 

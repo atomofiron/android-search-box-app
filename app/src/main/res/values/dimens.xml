@@ -59,6 +59,9 @@
 	<dimen name="toolbar_height">56dp</dimen>
 	<dimen name="toolbar_field_height">48dp</dimen>
 	<dimen name="stroke_width">1dp</dimen>
+	<dimen name="explorer_border_width">8dp</dimen>
+	<dimen name="explorer_border_corner_radius">16dp</dimen>
+	<dimen name="explorer_level_space">32dp</dimen>
 	<dimen name="clickable_elevation">4dp</dimen>
 	<dimen name="today_list_margin_top">38dp</dimen>
 	<dimen name="today_peek_height">102dp</dimen>

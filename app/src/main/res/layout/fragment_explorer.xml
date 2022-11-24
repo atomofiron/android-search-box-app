@@ -26,7 +26,6 @@
             app:itemTextColor="?android:textColorPrimary"
             app:itemIconTint="?android:textColorPrimary"
             app:labelVisibilityMode="labeled"
-            app:layout_behavior="app.atomofiron.searchboxapp.custom.view.FixedHideBottomViewOnScrollBehavior"
             />
         <com.google.android.material.navigationrail.NavigationRailView
             android:id="@+id/navigation_rail"
@@ -47,8 +46,7 @@
             android:id="@+id/explorer_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="-999dp"
+            android:visibility="invisible"
             />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <app.atomofiron.searchboxapp.custom.view.VerticalDockView

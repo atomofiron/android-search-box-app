@@ -13,10 +13,10 @@ import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
-import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHeaderDelegate
+import app.atomofiron.searchboxapp.screens.explorer.adapter.*
+import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerHeaderDelegate
+import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
@@ -34,9 +34,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
     private val explorerAdapter = ExplorerAdapter()
     private val placesAdapter = PlacesAdapter()
-    private lateinit var headerDelegate: ExplorerHeaderDelegate
 
-    private lateinit var headerViewOutputDelegate: HeaderViewOutputDelegate
+    private lateinit var listDelegate: ExplorerListDelegate
+    private lateinit var headerDelegate: ExplorerHeaderDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +44,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         explorerAdapter.itemActionListener = presenter
         placesAdapter.itemActionListener = presenter
-
-        headerViewOutputDelegate = HeaderViewOutputDelegate(explorerAdapter, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,9 +70,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             onGravityChangeListener = presenter::onDockGravityChange
             recyclerView.adapter = placesAdapter
         }
+        listDelegate = ExplorerListDelegate(binding.recyclerView, explorerAdapter, binding.explorerHeader, presenter)
         headerDelegate = ExplorerHeaderDelegate(binding.recyclerView, binding.explorerHeader, explorerAdapter)
 
-        binding.explorerHeader.setOnItemActionListener(headerViewOutputDelegate)
         viewState.onViewCollect()
         onApplyInsets(view)
     }
@@ -91,17 +89,18 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(actions, collector = explorerAdapter::onAction)
         viewCollect(items, collector = explorerAdapter::submitList)
         viewCollect(current) {
-            explorerAdapter.setCurrentDir(it)
+            listDelegate.setCurrentDir(it)
             headerDelegate.setCurrentDir(it)
         }
         viewCollect(itemComposition) {
-            explorerAdapter.setComposition(it)
+            listDelegate.setComposition(it)
             headerDelegate.setComposition(it)
+            explorerAdapter.setComposition(it)
         }
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(places, collector = placesAdapter::setItems)
-        viewCollect(scrollToCurrentDir, collector = explorerAdapter::scrollToCurrentDir)
+        viewCollect(scrollToCurrentDir, collector = listDelegate::scrollToCurrentDir)
         viewCollect(alerts, collector = ::showAlert)
     }
 
@@ -109,7 +108,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         root.insetsProxying()
         // binding.coordinator is already in OrientationLayoutDelegate
         binding.verticalDock.insetsProxying()
-        binding.recyclerView.applyPaddingInsets()
+        binding.recyclerView.applyPaddingInsets(top = true, bottom = true, withProxying = true)
         binding.explorerHeader.applyPaddingInsets()
         binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
         binding.navigationRail.applyPaddingInsets()
@@ -127,7 +126,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         !isVisible -> false
         keyCode != KeyEvent.KEYCODE_VOLUME_UP -> false
         else -> {
-            presenter.onVolumeUp(explorerAdapter.isCurrentDirVisible())
+            presenter.onVolumeUp(listDelegate.isCurrentDirVisible())
             true
         }
     }
