@@ -4,7 +4,7 @@
 
     <style name="CardViewStyle.Amoled" parent="@style/Widget.Material3.CardView.Outlined">
         <item name="cardBackgroundColor">?colorBackground</item>
-        <item name="strokeColor">@color/grey_middle_translucent</item>
+        <item name="strokeColor">?colorSurfaceVariant</item>
     </style>
 
     <style name="BottomNavigationStyle.Amoled" parent="@style/Widget.Material3.BottomNavigationView">

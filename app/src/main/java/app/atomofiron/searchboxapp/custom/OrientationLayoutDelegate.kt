@@ -80,6 +80,7 @@ class OrientationLayoutDelegate(
     private fun WindowInsetsCompat.getRecyclerViewInsets(): WindowInsetsCompat {
         return WindowInsetsCompat.Builder(this)
             .setInsets(insetsType, getInsets(insetsType).editForRecyclerView())
+            .setInsets(Type.ime(), getInsets(Type.ime()).editForRecyclerView())
             .build()
     }
 
