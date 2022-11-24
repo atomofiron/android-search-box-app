@@ -19,8 +19,8 @@ open class TextField @JvmOverloads constructor(
     init {
         hideKeyboardOnDetached = false
         addTextChangedListener(this)
-        imeOptions = EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or EditorInfo.IME_ACTION_DONE
-        inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        imeOptions = imeOptions or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or EditorInfo.IME_ACTION_DONE
+        inputType = inputType or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_NUMBER_FLAG_DECIMAL
         isSingleLine = true
         isLongClickable = false
         setHintTextColor(0)
