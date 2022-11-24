@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.main
 import android.app.Service
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -21,6 +22,7 @@ import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.android.App
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.syncOrientation
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
@@ -29,6 +31,7 @@ import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmen
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
@@ -75,11 +78,11 @@ class MainActivity : AppCompatActivity() {
                     preferenceStore.useSu.first()
                     preferenceStore.appTheme.first()
                 }
-                setTheme(theme)
+                updateTheme(theme)
                 onCreateView(savedInstanceState)
             }
         } else {
-            setTheme(currentTheme)
+            updateTheme(currentTheme)
             onCreateView(savedInstanceState)
         }
     }
@@ -104,15 +107,15 @@ class MainActivity : AppCompatActivity() {
 
         val manager = getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
         val onBackStackChangedListener: () -> Unit = {
-            presenter.updateLightStatusBar(isDarkTheme)
+            presenter.updateLightStatusBar(isDarkTheme())
             manager.hideSoftInputFromWindow(binding.root.windowToken, 0)
         }
         val childFragmentManager = supportFragmentManager.fragments.first().childFragmentManager
         childFragmentManager.addOnBackStackChangedListener(onBackStackChangedListener)
         supportFragmentManager.addOnBackStackChangedListener(onBackStackChangedListener)
 
-        presenter.updateLightNavigationBar(isDarkTheme)
-        presenter.updateLightStatusBar(isDarkTheme)
+        presenter.updateLightNavigationBar(isDarkTheme())
+        presenter.updateLightStatusBar(isDarkTheme())
         setOrientation(viewState.setOrientation.value)
         onCollect()
     }
@@ -152,25 +155,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun onCollect() {
         viewState.apply {
-            setTheme.collect(lifecycleScope, ::setTheme)
+            setTheme.collect(lifecycleScope, ::updateTheme)
             setOrientation.collect(lifecycleScope, ::setOrientation)
             setJoystick.collect(lifecycleScope, binding.joystick::setComposition)
         }
     }
 
-    private fun setTheme(theme: AppTheme) {
-        val mode = when(theme) {
-            is AppTheme.System -> MODE_NIGHT_FOLLOW_SYSTEM
-            is AppTheme.Light -> MODE_NIGHT_NO
-            is AppTheme.Dark -> MODE_NIGHT_YES
-        }
-        setDefaultNightMode(mode)
+    private fun updateTheme(theme: AppTheme) {
+        App.instance.setTheme(theme)
         when (theme.deepBlack) {
             findBooleanByAttr(R.attr.isBlackDeep) -> Unit
             true -> setTheme(R.style.CompatTheme_Amoled)
             false -> setTheme(R.style.CompatTheme)
         }
-        if (::presenter.isInitialized) presenter.onThemeApplied(isDarkTheme)
+        if (::presenter.isInitialized) {
+            presenter.onThemeApplied(isDarkTheme())
+        }
     }
 
     private fun onEscClick() {
