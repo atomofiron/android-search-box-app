@@ -54,10 +54,14 @@ class RootRouter(
             if (childFragmentManager.fragments.isEmpty()) {
                 val explorer = ExplorerFragment()
                 val finder = FinderFragment()
+                val (home, second) = when {
+                    isHomeFragment(explorer) -> explorer to finder
+                    else -> finder to explorer
+                }
                 childFragmentManager.beginTransaction()
-                    .add(R.id.main_fl_root, explorer)
-                    .add(R.id.main_fl_root, finder)
-                    .hide(if (isHomeFragment(explorer)) finder else explorer)
+                    .add(R.id.main_fl_root, home)
+                    .add(R.id.main_fl_root, second)
+                    .hide(second)
                     .commit()
             }
         }

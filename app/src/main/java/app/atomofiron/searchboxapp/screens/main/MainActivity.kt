@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
         Snackbar.make(binding.root, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.joystick)
+            .setAnchorView(binding.root.findViewById(R.id.bottom_bar))
             .setAction(R.string.exit) { presenter.onExitClick() }
             .addCallback(SnackbarCallbackFragmentDelegate(presenter))
     }
