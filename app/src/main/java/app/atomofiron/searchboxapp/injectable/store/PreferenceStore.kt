@@ -16,6 +16,7 @@ import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyDeepBlack
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyDockGravity
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyExcludeDirs
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyExplorerItem
+import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyHomeScreen
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyJoystick
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyMaxDepth
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyMaxSize
@@ -147,6 +148,14 @@ class PreferenceStore(
         edit { it[KeyAppOrientation] = value.ordinal.toString() }
     }
 
+    val homeScreen = getFlow(KeyHomeScreen) {
+        HomeScreen.values()[it.toInt()]
+    }
+
+    suspend fun setHomeScreen(value: HomeScreen) {
+        edit { it[KeyHomeScreen] = value.ordinal.toString() }
+    }
+
     val explorerItemComposition = getFlow(KeyExplorerItem) {
         ExplorerItemComposition(it)
     }
@@ -203,6 +212,7 @@ class PreferenceStore(
             KeyExplorerItem -> Const.DEFAULT_EXPLORER_ITEM as T
             KeyJoystick -> Const.DEFAULT_JOYSTICK as T
             KeyToybox -> setOf(Const.VALUE_TOYBOX_CUSTOM, Const.DEFAULT_TOYBOX_PATH) as T
+            KeyHomeScreen -> HomeScreen.Search.ordinal.toString() as T
             else -> null as T
         }
     }

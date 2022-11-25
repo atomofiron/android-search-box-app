@@ -10,6 +10,7 @@ object PreferenceKeys {
     val KeySpecialCharacters = stringPreferencesKey("pref_special_characters")
     val KeyTextFormats = stringPreferencesKey("pref_text_formats")
     val KeyAppOrientation = stringPreferencesKey("pref_app_orientation")
+    val KeyHomeScreen = stringPreferencesKey("pref_home_screen")
     val KeyAppTheme = stringPreferencesKey("pref_app_theme")
     val KeyDeepBlack = booleanPreferencesKey("pref_deep_black")
     // it was long but DataStore make it int
