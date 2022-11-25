@@ -10,11 +10,13 @@ fun NodeContent.File.getIcon(): Int = when (this) {
     is NodeContent.File.Movie -> R.drawable.ic_explorer_movie
     is NodeContent.File.Apk -> R.drawable.ic_explorer_apk
     is NodeContent.File.Archive -> R.drawable.ic_explorer_archive_file
+    is NodeContent.File.Text.Script -> R.drawable.ic_explorer_script
     is NodeContent.File.Text -> R.drawable.ic_explorer_text
     is NodeContent.File.Pdf -> R.drawable.ic_explorer_pdf
-    is NodeContent.File.DataImage -> R.drawable.ic_explorer_link
+    is NodeContent.File.DataImage -> R.drawable.ic_explorer_dt
+    is NodeContent.File.DB -> R.drawable.ic_explorer_db
     is NodeContent.File.Other -> R.drawable.ic_file_circle
-    else -> R.drawable.ic_file_circle
+    is NodeContent.File.Unknown -> R.drawable.ic_file_circle
 }
 
 fun NodeContent.Directory.getIcon(isEmpty: Boolean): Int = when (type) {

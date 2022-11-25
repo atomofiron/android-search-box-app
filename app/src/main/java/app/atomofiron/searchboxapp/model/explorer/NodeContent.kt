@@ -38,8 +38,12 @@ sealed class NodeContent(val mimeType: String? = null) {
             class Tar(children: List<Node>? = null) : Archive("application/x-tar", children)
             class Rar(children: List<Node>? = null) : Archive("application/vnd.rar", children)
         }
-        object Text : File("text/plain")
+        sealed class Text : File("text/plain") {
+            object Plain : Text()
+            object Script : Text()
+        }
         object Pdf : File("application/pdf")
+        object DB : File()
         object DataImage : File()
         object Other : File()
         object Unknown : File()

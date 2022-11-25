@@ -33,6 +33,7 @@ object Explorer {
     private const val FILE_EMPTY = "empty"
     private const val FILE_BOOTING = "Android bootimg" // img
     private const val FILE_SH_SCRIPT = "/bin/sh script" // sh
+    private const val FILE_OGG = "Ogg data, opus audio" // oga
 
     private const val EXT_PNG = ".png"
     private const val EXT_JPG = ".jpg"
@@ -46,6 +47,8 @@ object Explorer {
     private const val EXT_GZ = ".gz"
     private const val EXT_RAR = ".rar"
     private const val EXT_TXT = ".txt"
+    private const val EXT_HTML = ".html"
+    private const val EXT_SH = ".sh"
     private const val EXT_IMG = ".img"
     private const val EXT_MP4 = ".mp4"
     private const val EXT_3GP = ".3gp"
@@ -55,6 +58,7 @@ object Explorer {
     private const val EXT_WAV = ".wav"
     private const val EXT_FLAC = ".flac"
     private const val EXT_AAC = ".aac"
+    private const val EXT_OGA = ".oga"
     private const val EXT_PDF = ".pdf"
     private const val EXT_EXE = ".exe"
     private const val EXT_XPI = ".xpi" // Mozilla extension
@@ -222,12 +226,13 @@ object Explorer {
             output.output.startsWith(FILE_BZIP2) -> NodeContent.File.Archive.Bzip2()
             output.output.startsWith(FILE_GZIP) -> NodeContent.File.Archive.Gz()
             output.output.startsWith(FILE_TAR) -> NodeContent.File.Archive.Tar()
+            output.output.startsWith(FILE_SH_SCRIPT) -> NodeContent.File.Text.Script
             output.output.startsWith(FILE_UTF8_TEXT) ||
-            output.output.startsWith(FILE_SH_SCRIPT) ||
-            output.output.startsWith(FILE_ASCII_TEXT) -> NodeContent.File.Text
+            output.output.startsWith(FILE_ASCII_TEXT) -> NodeContent.File.Text.Plain
             output.output.startsWith(FILE_DATA) -> path.resolveFileType()
             output.output.startsWith(FILE_EMPTY) -> NodeContent.File.Other
             output.output.startsWith(FILE_BOOTING) -> NodeContent.File.DataImage
+            output.output.startsWith(FILE_OGG) -> NodeContent.File.Music()
             else -> {
                 Log.e("searchboxapp", "$path ${output.output}")
                 NodeContent.File.Other
@@ -239,13 +244,7 @@ object Explorer {
     fun Node.sortByName(): Node {
         children?.items?.run {
             sortBy { it.name.lowercase() }
-            sortBy {
-                when {
-                    it.isDirectory -> 0
-                    it.isArchive -> 1
-                    else -> 2
-                }
-            }
+            sortBy { if (it.isDirectory) 0 else 1 }
         }
         return this
     }
@@ -384,7 +383,9 @@ object Explorer {
         endsWith(EXT_BZ2, ignoreCase = true) -> NodeContent.File.Archive.Bzip2()
         endsWith(EXT_GZ, ignoreCase = true) -> NodeContent.File.Archive.Gz()
         endsWith(EXT_RAR, ignoreCase = true) -> NodeContent.File.Archive.Rar()
-        endsWith(EXT_TXT, ignoreCase = true) -> NodeContent.File.Text
+        endsWith(EXT_SH, ignoreCase = true) -> NodeContent.File.Text.Script
+        endsWith(EXT_HTML, ignoreCase = true) ||
+        endsWith(EXT_TXT, ignoreCase = true) -> NodeContent.File.Text.Plain
         endsWith(EXT_IMG, ignoreCase = true) -> NodeContent.File.DataImage
         endsWith(EXT_MP4, ignoreCase = true) ||
         endsWith(EXT_3GP, ignoreCase = true) ||
@@ -393,6 +394,7 @@ object Explorer {
         endsWith(EXT_OGG, ignoreCase = true) ||
         endsWith(EXT_WAV, ignoreCase = true) ||
         endsWith(EXT_FLAC, ignoreCase = true) ||
+        endsWith(EXT_OGA, ignoreCase = true) ||
         endsWith(EXT_AAC, ignoreCase = true) -> NodeContent.File.Music()
         endsWith(EXT_PDF, ignoreCase = true) -> NodeContent.File.Pdf
         else -> NodeContent.File.Other
