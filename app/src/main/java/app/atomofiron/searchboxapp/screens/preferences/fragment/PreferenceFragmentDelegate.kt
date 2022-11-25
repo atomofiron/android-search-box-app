@@ -65,14 +65,6 @@ class PreferenceFragmentDelegate(
                 val i = (newValue?.toString() ?: preference.preferenceDataStore?.getString(key, null))?.toInt() ?: 0
                 preference.summary = resources.getStringArray(R.array.orientation_var)[i]
             }
-            PreferenceKeys.KeyMaxSize.name -> {
-                val suffixes = resources.getStringArray(R.array.size_suffix_arr)
-                var value = newValue as? Number ?: preference.preferenceDataStore?.getInt(key, -1)
-                value = value?.toInt()
-                if (value != null && value >= 0) {
-                    preference.summary = value.toHumanReadable(suffixes)
-                }
-            }
             PreferenceKeys.PREF_EXPORT_IMPORT -> preference.isEnabled = viewState.isExportImportAvailable
             PreferenceKeys.KeyToybox.name -> preference.isVisible = SDK_INT < Q
         }

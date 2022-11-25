@@ -54,7 +54,7 @@
             app:title="@string/pref_text_formats"
             app:key="pref_text_formats"
             />
-        <app.atomofiron.searchboxapp.custom.preference.NumberPreference
+        <app.atomofiron.searchboxapp.custom.preference.ByteSizePreference
             app:title="@string/pref_max_size"
             app:key="pref_max_size"
             app:defaultValue="10485760"

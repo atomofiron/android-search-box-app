@@ -6,14 +6,14 @@ import android.util.AttributeSet
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.view.NumberTextField
+import app.atomofiron.searchboxapp.custom.view.ByteSizeTextField
 
-class NumberPreference(context: Context, attrs: AttributeSet) : Preference(context, attrs) {
-    private var editText: NumberTextField? = null
+class ByteSizePreference(context: Context, attrs: AttributeSet) : Preference(context, attrs) {
+    private var editText: ByteSizeTextField? = null
     private var value = 0
 
     init {
-        widgetLayoutResource = R.layout.preference_number
+        widgetLayoutResource = R.layout.preference_byte_size
     }
 
     override fun onGetDefaultValue(array: TypedArray, index: Int): Int = array.getInt(index, 0)
@@ -25,9 +25,9 @@ class NumberPreference(context: Context, attrs: AttributeSet) : Preference(conte
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         if (editText == null) {
-            val editText = holder.findViewById(R.id.number) as NumberTextField
+            val editText = holder.itemView.findViewById<ByteSizeTextField>(R.id.size)
             editText.setOnSubmitListener(::onSubmit)
-            editText.setText(value.toString())
+            editText.setValue(value)
             this.editText = editText
         }
     }
