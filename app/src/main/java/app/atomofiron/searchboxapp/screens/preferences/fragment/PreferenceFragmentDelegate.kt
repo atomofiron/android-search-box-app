@@ -10,7 +10,6 @@ import app.atomofiron.searchboxapp.screens.preferences.PreferenceFragment
 import app.atomofiron.searchboxapp.screens.preferences.PreferenceViewState
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.PreferenceKeys
-import app.atomofiron.searchboxapp.utils.Util.toHumanReadable
 
 class PreferenceFragmentDelegate(
     private val fragment: PreferenceFragment,
@@ -53,7 +52,6 @@ class PreferenceFragmentDelegate(
     private fun updatePreference(preference: Preference, newValue: Any? = null): Boolean {
         when (val key = preference.key) {
             PreferenceKeys.KeyStoragePath.name -> preference.updateStringSummary(newValue as String?)
-            PreferenceKeys.KeyTextFormats.name -> preference.updateStringSummary(newValue as String?)
             PreferenceKeys.KeySpecialCharacters.name -> preference.updateStringSummary(newValue as String?)
             PreferenceKeys.KeyAppTheme.name -> {
                 var name = newValue?.toString() ?: preference.preferenceDataStore?.getString(key, null)

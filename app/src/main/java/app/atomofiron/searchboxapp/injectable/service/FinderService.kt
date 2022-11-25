@@ -21,11 +21,10 @@ class FinderService(
         val maxDepth = preferenceStore.maxDepthForSearch.value
         val useSu = preferenceStore.useSu.value
         val excludeDirs = preferenceStore.excludeDirs.value
-        val textFormats = preferenceStore.textFormats.value
 
         val inputData = FinderWorker.inputData(
-                query, useSu, useRegex, maxSize, ignoreCase, excludeDirs, isMultiline, forContent,
-                textFormats, maxDepth, where.map { it.path }.toTypedArray()
+            query, useSu, useRegex, maxSize, ignoreCase, excludeDirs, isMultiline, forContent,
+            maxDepth, where.map { it.path }.toTypedArray(),
         )
         val request = OneTimeWorkRequest.Builder(FinderWorker::class.java)
                 .setInputData(inputData)

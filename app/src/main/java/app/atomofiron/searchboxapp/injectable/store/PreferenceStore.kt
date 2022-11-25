@@ -23,7 +23,6 @@ import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyMaxSize
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyOpenedDirPath
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeySpecialCharacters
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyStoragePath
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyTextFormats
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyToybox
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyUseSu
 import app.atomofiron.searchboxapp.utils.Tool
@@ -100,14 +99,6 @@ class PreferenceStore(
 
     suspend fun setExcludeDirs(value: Boolean) {
         edit { it[KeyExcludeDirs] = value }
-    }
-
-    val textFormats = getFlow(KeyTextFormats) {
-        it.split(" ").toTypedArray()
-    }
-
-    suspend fun setTextFormats(value: Array<String>) {
-        edit { it[KeyTextFormats] = value.joinToString(separator = " ") }
     }
 
     val maxFileSizeForSearch = getFlow(KeyMaxSize)
@@ -201,7 +192,6 @@ class PreferenceStore(
             KeyOpenedDirPath -> "" as T
             KeyDockGravity -> Gravity.START as T
             KeySpecialCharacters -> Const.DEFAULT_SPECIAL_CHARACTERS as T
-            KeyTextFormats -> Const.DEFAULT_TEXT_FORMATS as T
             KeyAppOrientation -> AppOrientation.UNDEFINED.ordinal.toString() as T
             KeyAppTheme -> AppTheme.defaultName() as T
             KeyDeepBlack -> false as T

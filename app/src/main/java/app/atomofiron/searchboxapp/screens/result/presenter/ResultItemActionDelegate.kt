@@ -3,12 +3,12 @@ package app.atomofiron.searchboxapp.screens.result.presenter
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
 import app.atomofiron.searchboxapp.screens.result.ResultViewState
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
-import app.atomofiron.searchboxapp.utils.Util
 
 class ResultItemActionDelegate(
     private val viewModel: ResultViewState,
@@ -18,8 +18,7 @@ class ResultItemActionDelegate(
     private val preferenceStore: PreferenceStore,
 ) : ResultItemActionListener {
     override fun onItemClick(item: Node) {
-        val textFormats = preferenceStore.textFormats.value
-        if (item.isFile && Util.isTextFile(item.path, textFormats)) {
+        if (item.isFile && item.content is NodeContent.File.Text) {
             val params = viewModel.task.value.params
             router.openFile(item.path, params)
         } else {

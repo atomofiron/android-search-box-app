@@ -8,7 +8,6 @@ object PreferenceKeys {
     val KeyOpenedDirPath = stringPreferencesKey("pref_opened_dir_path")
     val KeyDockGravity = intPreferencesKey("pref_drawer_gravity")
     val KeySpecialCharacters = stringPreferencesKey("pref_special_characters")
-    val KeyTextFormats = stringPreferencesKey("pref_text_formats")
     val KeyAppOrientation = stringPreferencesKey("pref_app_orientation")
     val KeyHomeScreen = stringPreferencesKey("pref_home_screen")
     val KeyAppTheme = stringPreferencesKey("pref_app_theme")

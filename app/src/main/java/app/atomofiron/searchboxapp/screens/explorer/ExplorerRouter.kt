@@ -10,9 +10,9 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.android.Intents
 import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegate
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.screens.finder.FinderFragment
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
-import app.atomofiron.searchboxapp.utils.Util
 
 class ExplorerRouter(
     property: WeakProperty<out Fragment>,
@@ -31,8 +31,8 @@ class ExplorerRouter(
 
     fun showSettings() = navigate(R.id.preferenceFragment)
 
-    fun showFile(item: Node, textFormats: Array<String>) {
-        if (Util.isTextFile(item.path, textFormats)) {
+    fun showFile(item: Node) {
+        if (item.content is NodeContent.File.Text) {
             val arguments = TextViewerParams.arguments(item.path)
             navigate(R.id.textViewerFragment, arguments)
         } else {

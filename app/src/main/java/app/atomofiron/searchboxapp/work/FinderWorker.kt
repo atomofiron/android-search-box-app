@@ -26,7 +26,6 @@ import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.ChannelUtil
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
-import app.atomofiron.searchboxapp.utils.Util
 import app.atomofiron.searchboxapp.utils.escapeQuotes
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -48,13 +47,12 @@ class FinderWorker(
         private const val KEY_EXCLUDE_DIRS = "KEY_EXCLUDE_DIRS"
         private const val KEY_MULTILINE = "KEY_MULTILINE"
         private const val KEY_FOR_CONTENT = "KEY_FOR_CONTENT"
-        private const val KEY_TEXT_FORMATS = "KEY_TEXT_FORMATS"
         private const val KEY_MAX_DEPTH = "KEY_MAX_DEPTH"
         private const val KEY_WHERE_PATHS = "KEY_WHERE_PATHS"
 
         fun inputData(query: String, useSu: Boolean, useRegex: Boolean, maxSize: Int,
                       ignoreCase: Boolean, excludeDirs: Boolean, isMultiline: Boolean,
-                      forContent: Boolean, textFormats: Array<String>, maxDepth: Int, where: Array<String>): Data {
+                      forContent: Boolean, maxDepth: Int, where: Array<String>): Data {
             val builder = Data.Builder()
                     .putString(KEY_QUERY, query)
                     .putBoolean(KEY_USE_SU, useSu)
@@ -64,7 +62,6 @@ class FinderWorker(
                     .putBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
                     .putBoolean(KEY_MULTILINE, isMultiline)
                     .putBoolean(KEY_FOR_CONTENT, forContent)
-                    .putStringArray(KEY_TEXT_FORMATS, textFormats)
                     .putInt(KEY_MAX_DEPTH, maxDepth)
                     .putStringArray(KEY_WHERE_PATHS, where)
 
@@ -79,7 +76,6 @@ class FinderWorker(
     private var ignoreCase = false
     private var excludeDirs = false
     private var forContent = false
-    private lateinit var textFormats: Array<String>
     private var maxDepth = UNDEFINED
 
     private val task: MutableFinderTask by lazy(LazyThreadSafetyMode.NONE) {
@@ -120,10 +116,9 @@ class FinderWorker(
                 !useRegex && ignoreCase -> Shell[Shell.GREP_CS_I]
                 else -> Shell[Shell.GREP_CS]
             }
-            val nameArgs = textFormats.joinToString(" -o ") { "-name '*.$it'" }
-            val isTextFile = item.isFile && Util.isTextFile(item.path, textFormats)
+            val isTextFile = item.isFile && item.content is NodeContent.File.Text
             val command = when {
-                item.isDirectory -> template.format(item.path, maxDepth, nameArgs, query.escapeQuotes())
+                item.isDirectory -> template.format(item.path, maxDepth, query.escapeQuotes())
                 isTextFile -> template.format(query.escapeQuotes(), item.path)
                 else -> continue@forLoop
             }
@@ -192,7 +187,6 @@ class FinderWorker(
         excludeDirs = inputData.getBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
         val isMultiline = inputData.getBoolean(KEY_MULTILINE, false)
         forContent = inputData.getBoolean(KEY_FOR_CONTENT, forContent)
-        textFormats = inputData.getStringArray(KEY_TEXT_FORMATS)!!
         maxDepth = inputData.getInt(KEY_MAX_DEPTH, UNDEFINED)
 
         finderStore.add(task)

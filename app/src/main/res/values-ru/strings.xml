@@ -13,7 +13,7 @@
     <string name="results">Поиск дал %d результатов</string>
     <string name="find">Найти</string>
     <string name="search_in_the_content">Искать по содержимому файлов</string>
-    <string name="pref_search_in_the_content">Поиск по содержимому файлов</string>
+    <string name="pref_search">@string/search</string>
     <string name="regex">Поиск по шаблону</string>
     <string name="multiline">Флаг \'multiline\'</string>
     <string name="bad_ex">Неверное регулярное выражение</string>
@@ -38,7 +38,6 @@
     <string name="settings">Настройки</string>
     <string name="share">Поделиться</string>
     <string name="pref_storage_path">Путь к хранилищу</string>
-    <string name="pref_text_formats">Текстовые форматы (через пробел)</string>
     <string name="pref_orientation">Ориентация экрана</string>
     <string name="fucking_provider">Не удалось открыть файл из-за системных ограничений, попробуйте скопировать абсолютный путь к файлу и открыть его в другом приложении</string>
     <string name="pref_home_screen">Начальный экран</string>
@@ -49,6 +48,7 @@
     <string name="max_size_sum">При поиске по содержимому</string>
     <string name="pref_exclude_dirs">Исключить директории</string>
     <string name="exclude_dirs_summary">Из результатов поиска</string>
+    <string name="max_size_summary">При поиске по содержимому</string>
     <string name="pref_use_su">Использовать root</string>
     <string name="preferences">Настройки</string>
     <string name="pref_about">О Приложении</string>

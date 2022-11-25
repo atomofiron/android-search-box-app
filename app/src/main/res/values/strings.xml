@@ -13,7 +13,7 @@
     <string name="results">Your search returned %d results</string>
     <string name="find">Find</string>
     <string name="search_in_the_content">Search in the files content</string>
-    <string name="pref_search_in_the_content">@string/search_in_the_content</string>
+    <string name="pref_search">@string/search</string>
     <string name="regex">Use regexp</string>
     <string name="multiline">\'Multiline\' flag</string>
     <string name="bad_ex">Incorrect regular expression</string>
@@ -38,7 +38,6 @@
     <string name="settings">Settings</string>
     <string name="share">Share</string>
     <string name="pref_storage_path">Storage directory path</string>
-    <string name="pref_text_formats">Text formats</string>
     <string name="pref_orientation">Screen orientation</string>
     <string name="fucking_provider">Сould not open file due to system limitations, try to copy the absolute path to the file and open it in another application</string>
     <string name="pref_home_screen">Home screen</string>
@@ -49,6 +48,7 @@
     <string name="max_size_sum">If search in the content</string>
     <string name="pref_exclude_dirs">Exclude directories</string>
     <string name="exclude_dirs_summary">From search results</string>
+    <string name="max_size_summary">When searching by content</string>
     <string name="pref_use_su">Use super user</string>
     <string name="preferences">Preferences</string>
     <string name="pref_about">About the App</string>

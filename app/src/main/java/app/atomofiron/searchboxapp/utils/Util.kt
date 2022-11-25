@@ -14,16 +14,6 @@ object Util {
         Log.e("atomofiron", message)
     }
 
-    fun isTextFile(path: String, extra: Array<String>): Boolean {
-        val ext = getFormat(path)
-        if (ext.isEmpty()) return false
-        when (ext) {
-            "txt", "java", "xml", "html", "htm", "smali", "log", "js", "css", "json", "kt" -> return true
-        }
-        for (s in extra) if (ext == s) return true
-        return false
-    }
-
     fun fixChannel(context: Context, id: String, name: String, importance: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = NotificationManagerCompat.from(context)

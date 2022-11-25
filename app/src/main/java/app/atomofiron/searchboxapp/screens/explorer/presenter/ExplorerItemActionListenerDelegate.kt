@@ -58,7 +58,7 @@ class ExplorerItemActionListenerDelegate(
     private fun openItem(item: Node) {
         when {
             item.isDirectory -> explorerInteractor.toggleDir(item)
-            else -> router.showFile(item, preferenceStore.textFormats.value)
+            else -> router.showFile(item)
         }
     }
 

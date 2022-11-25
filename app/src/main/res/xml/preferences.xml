@@ -20,7 +20,18 @@
         <app.atomofiron.searchboxapp.custom.preference.TextFieldPreference
             app:title="@string/pref_storage_path"
             app:key="pref_storage_path"
+            app:icon="@drawable/ic_memory"
             />
+        <SwitchPreferenceCompat
+            app:title="@string/pref_use_su"
+            app:key="pref_use_su"
+            app:defaultValue="false"
+            app:icon="@drawable/ic_hash"
+            app:widgetLayout="@layout/widget_switch"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:title="@string/pref_search">
         <app.atomofiron.searchboxapp.custom.preference.TextFieldPreference
             app:title="@string/pref_special_characters"
             app:key="pref_special_characters"
@@ -31,33 +42,21 @@
             app:title="@string/pref_max_depth"
             app:key="pref_max_depth"
             app:defaultValue="1024"
+            app:icon="@drawable/ic_tornado"
             />
         <CheckBoxPreference
             app:title="@string/pref_exclude_dirs"
             android:key="pref_exclude_dirs"
             android:summary="@string/exclude_dirs_summary"
             app:widgetLayout="@layout/widget_checkbox"
-            />
-        <SwitchPreferenceCompat
-            app:title="@string/pref_use_su"
-            app:key="pref_use_su"
-            app:defaultValue="false"
-            app:icon="@drawable/ic_hash"
-            app:widgetLayout="@layout/widget_switch"
-            />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        app:title="@string/pref_search_in_the_content">
-
-        <app.atomofiron.searchboxapp.custom.preference.TextFieldPreference
-            app:title="@string/pref_text_formats"
-            app:key="pref_text_formats"
+            app:icon="@drawable/ic_folder_eye"
             />
         <app.atomofiron.searchboxapp.custom.preference.ByteSizePreference
             app:title="@string/pref_max_size"
             app:key="pref_max_size"
             app:defaultValue="10485760"
+            android:summary="@string/max_size_summary"
+            app:icon="@drawable/ic_weight"
             />
     </PreferenceCategory>
     <PreferenceCategory
@@ -85,6 +84,7 @@
         <Preference
             app:title="@string/pref_explorer_item"
             app:key="pref_explorer_item"
+            app:icon="@drawable/ic_folder"
             />
         <Preference
             app:title="@string/pref_joystick"
