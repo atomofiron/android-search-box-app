@@ -37,7 +37,7 @@
     <string name="tasks">Задачи</string>
     <string name="settings">Настройки</string>
     <string name="share">Поделиться</string>
-    <string name="pref_storage_path">Путь к хранилищу</string>
+    <string name="pref_storage_path">Путь ко внутренней памяти</string>
     <string name="pref_orientation">Ориентация экрана</string>
     <string name="fucking_provider">Не удалось открыть файл из-за системных ограничений, попробуйте скопировать абсолютный путь к файлу и открыть его в другом приложении</string>
     <string name="pref_home_screen">Начальный экран</string>
@@ -81,12 +81,12 @@
     <string name="successful">Успешно</string>
     <string name="successful_with_restart">Успешно. Убейте процесс приложения</string>
     <string name="more">Подробнее</string>
-    <string name="access_to_storage_forbidden">Доступ к хранилищу запрещён</string>
+    <string name="access_to_storage_forbidden">Доступ к памяти запрещён</string>
     <string name="allow">Разрешить</string>
     <string name="places">Места</string>
     <string name="confirm">Подтвердить</string>
-    <string name="internal_storage">Внутреннее хранилище</string>
-    <string name="external_storage">Внешнее хранилище</string>
+    <string name="internal_storage">Внутренняя память</string>
+    <string name="external_storage">Внешняя память</string>
     <string name="oops_not_working">Упс, пока не работает</string>
     <string name="user_interface">Интерфейс</string>
     <string name="pref_explorer_item">Файл / Директория</string>
