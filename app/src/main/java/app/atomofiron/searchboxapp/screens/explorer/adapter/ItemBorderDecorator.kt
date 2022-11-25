@@ -64,16 +64,18 @@ class ItemBorderDecorator(
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val first = parent.getChildAt(0)
         first ?: return
-        var index = parent.getChildViewHolder(first).bindingAdapterPosition
-        val lastIndex = index + parent.childCount.dec()
+        val items = adapter.currentList
+        val firstIndex = parent.getChildViewHolder(first).bindingAdapterPosition
+        val lastIndex = firstIndex + parent.childCount.dec()
+        var currentIndex = firstIndex
         var frameRect: RectF? = null
         paint.color = grey
         for (child in parent) {
             var left = parent.paddingLeft + strokeOffset
             var right = parent.width - (parent.paddingRight + strokeOffset)
-            val prev = adapter.currentList.getOrNull(index.dec())
-            val item = adapter.currentList[index]
-            val next = adapter.currentList.getOrNull(index.inc())
+            val prev = if (currentIndex == firstIndex) null else items.getOrNull(currentIndex.dec())
+            val item = items[currentIndex]
+            val next = if (currentIndex == lastIndex) null else items.getOrNull(currentIndex.inc())
             val nextParentPath = next?.parentPath ?: ""
             val childBottomEdge = child.bottom + levelSpace / 2
             when {
@@ -81,7 +83,7 @@ class ItemBorderDecorator(
                     left += innerPadding / 2
                     right -= innerPadding / 2
                     val top = childBottomEdge + strokeOffset
-                    var bottom =childBottomEdge + levelSpace - strokeOffset
+                    var bottom = childBottomEdge + levelSpace - strokeOffset
                     bottom = max(top, bottom)
                     rect.set(left, top, right, bottom)
                     frameRect = rect
@@ -92,7 +94,7 @@ class ItemBorderDecorator(
                     if (item.parentPath != prev?.parentPath) {
                         rect.top = child.top - levelSpace / 2
                     }
-                    if (item.parentPath != next?.parentPath || index == lastIndex) {
+                    if (item.parentPath != next?.parentPath) {
                         rect.bottom = childBottomEdge
                     }
                     frameRect = rect
@@ -105,7 +107,7 @@ class ItemBorderDecorator(
                     canvas.drawLine(left, childBottomEdge, right, childBottomEdge, paint)
                 }
             }
-            index++
+            currentIndex++
         }
         frameRect?.let {
             val minTop = ExplorerHeaderDelegate.getHeaderBottom(parent, headerView, adapter, currentDir) + strokeOffset

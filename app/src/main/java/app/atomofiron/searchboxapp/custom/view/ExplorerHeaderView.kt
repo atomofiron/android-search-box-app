@@ -27,7 +27,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
     private val binder = ExplorerItemBinderImpl(this)
     private var composition: ExplorerItemComposition? = null
     private var item: Node? = null
-    private var mBottom = 0
+    private var mTop = 0
     private var insetColor = 0
     private val paint = Paint()
     private var backgroundColor = 0
@@ -48,14 +48,15 @@ class ExplorerHeaderView @JvmOverloads constructor(
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        if (bottom != mBottom) {
-            move(mBottom)
+        if (top != mTop) {
+            val height = bottom - top
+            move(mTop + height)
         }
     }
 
     fun move(bottom: Int) {
-        mBottom = bottom
-        this.top = bottom - measuredHeight
+        mTop = bottom - height
+        this.top = mTop
         this.bottom = bottom
     }
 

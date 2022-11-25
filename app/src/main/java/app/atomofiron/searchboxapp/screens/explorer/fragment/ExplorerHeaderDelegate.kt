@@ -21,7 +21,7 @@ class ExplorerHeaderDelegate(
 ) : RecyclerView.OnScrollListener() {
     companion object {
         fun getHeaderBottom(recyclerView: RecyclerView, headerView: ExplorerHeaderView, adapter: ExplorerAdapter, currentDir: Node?): Int {
-            val headerHeight = headerView.measuredHeight
+            val headerHeight = headerView.height
             currentDir ?: return 0
             if (currentDir.isEmpty) return 0
             val topChildren = LinkedList<View>()
