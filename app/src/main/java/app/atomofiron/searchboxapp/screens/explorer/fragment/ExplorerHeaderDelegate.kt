@@ -19,34 +19,6 @@ class ExplorerHeaderDelegate(
     private val headerView: ExplorerHeaderView,
     private val adapter: ExplorerAdapter,
 ) : RecyclerView.OnScrollListener() {
-    companion object {
-        fun getHeaderBottom(recyclerView: RecyclerView, headerView: ExplorerHeaderView, adapter: ExplorerAdapter, currentDir: Node?): Int {
-            val headerHeight = headerView.height
-            currentDir ?: return 0
-            if (currentDir.isEmpty) return 0
-            val topChildren = LinkedList<View>()
-            for (i in 0 until recyclerView.childCount) {
-                val child = recyclerView.getChildAt(i)
-                if (child.top > headerHeight) break
-                topChildren.add(child)
-            }
-            if (topChildren.isEmpty()) return 0
-            val topItems = topChildren.map {
-                val holder = recyclerView.getChildViewHolder(it)
-                adapter.currentList[holder.bindingAdapterPosition]
-            }
-            var bottom = 0
-            topItems.forEachIndexed { i, it ->
-                val view = topChildren[i]
-                when {
-                    it.parentPath == currentDir.path -> bottom = view.bottom
-                    it.path != currentDir.path -> Unit
-                    view.bottom <= headerHeight -> bottom = max(headerHeight, view.bottom)
-                }
-            }
-            return min(headerHeight, bottom)
-        }
-    }
 
     private var currentDir: Node? = null
     private var currentIndex = -1
@@ -97,8 +69,35 @@ class ExplorerHeaderDelegate(
     private fun updateVisibility() {
         val bottom = when {
             currentIndex < 0 -> 0
-            else -> getHeaderBottom(recyclerView, headerView, adapter, currentDir)
+            else -> getHeaderBottom()
         }
         headerView.move(bottom)
+    }
+
+    private fun getHeaderBottom(): Int {
+        val headerHeight = headerView.height
+        val currentDir = currentDir ?: return 0
+        if (currentDir.isEmpty) return 0
+        val topChildren = LinkedList<View>()
+        for (i in 0 until recyclerView.childCount) {
+            val child = recyclerView.getChildAt(i)
+            if (child.top > headerHeight) break
+            topChildren.add(child)
+        }
+        if (topChildren.isEmpty()) return 0
+        val topItems = topChildren.map {
+            val holder = recyclerView.getChildViewHolder(it)
+            adapter.currentList[holder.bindingAdapterPosition]
+        }
+        var bottom = 0
+        topItems.forEachIndexed { i, it ->
+            val view = topChildren[i]
+            when {
+                it.parentPath == currentDir.path -> bottom = view.bottom
+                it.path != currentDir.path -> Unit
+                view.bottom <= headerHeight -> bottom = max(headerHeight, view.bottom)
+            }
+        }
+        return min(headerHeight, bottom)
     }
 }

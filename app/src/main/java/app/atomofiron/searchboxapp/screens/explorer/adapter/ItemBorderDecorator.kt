@@ -10,7 +10,6 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerHeaderDelegate
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -78,6 +77,7 @@ class ItemBorderDecorator(
             val next = if (currentIndex == lastIndex) null else items.getOrNull(currentIndex.inc())
             val nextParentPath = next?.parentPath ?: ""
             val childBottomEdge = child.bottom + levelSpace / 2
+            val currentDirMinTop = headerView.height.toFloat() + strokeOffset
             when {
                 item.isOpened && item.isEmpty -> {
                     left += innerPadding / 2
@@ -92,7 +92,7 @@ class ItemBorderDecorator(
                     rect.left = left
                     rect.right = right
                     if (item.parentPath != prev?.parentPath) {
-                        rect.top = child.top - levelSpace / 2
+                        rect.top = max(currentDirMinTop, child.top - levelSpace / 2)
                     }
                     if (item.parentPath != next?.parentPath) {
                         rect.bottom = childBottomEdge
@@ -110,8 +110,6 @@ class ItemBorderDecorator(
             currentIndex++
         }
         frameRect?.let {
-            val minTop = ExplorerHeaderDelegate.getHeaderBottom(parent, headerView, adapter, currentDir) + strokeOffset
-            frameRect.top = max(frameRect.top, minTop)
             frameRect.bottom = min(frameRect.bottom, parent.height - parent.paddingBottom - strokeOffset)
             val boxHeight = frameRect.height()
             if (boxHeight > 0) {
