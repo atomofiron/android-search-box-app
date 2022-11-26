@@ -7,7 +7,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
@@ -16,10 +16,13 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentFinderBinding
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.model.Screen
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
+import app.atomofiron.searchboxapp.screens.finder.adapter.FinderSpanSizeLookup
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import app.atomofiron.searchboxapp.utils.Util.getSize
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -29,6 +32,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
 
     private lateinit var binding: FragmentFinderBinding
     private val finderAdapter = FinderAdapter()
+    private lateinit var layoutManager: GridLayoutManager
 
     private val historyAdapter: HistoryAdapter = HistoryAdapter(object : HistoryAdapter.OnItemClickListener {
         override fun onItemClick(node: String) {
@@ -42,6 +46,8 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         initViewModel(this, FinderViewModel::class, savedInstanceState)
 
         finderAdapter.output = presenter
+        layoutManager = GridLayoutManager(context, 1)
+        layoutManager.spanSizeLookup = FinderSpanSizeLookup(finderAdapter, layoutManager)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,9 +56,8 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         binding = FragmentFinderBinding.bind(view)
 
         binding.recyclerView.run {
-            val linearLayoutManager = LinearLayoutManager(context)
-            linearLayoutManager.reverseLayout = true
-            layoutManager = linearLayoutManager
+            this@FinderFragment.layoutManager.reverseLayout = true
+            layoutManager = this@FinderFragment.layoutManager
             itemAnimator = null
             adapter = finderAdapter
         }
@@ -71,6 +76,11 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         binding.verticalDock.run {
             onGravityChangeListener = presenter::onDockGravityChange
             recyclerView.adapter = historyAdapter
+        }
+
+        binding.root.addOnLayoutChangeListener { _, left, _, right, _, _, _, _, _ ->
+            val size = resources.getSize(right - left)
+            layoutManager.spanCount = if (size == Screen.Expanded) 2 else 1
         }
 
         viewState.onViewCollect()
@@ -121,7 +131,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         return consumed || super.onBack()
     }
 
-    private fun onStateChange(state: List<FinderStateItem>) = finderAdapter.setItems(state)
+    private fun onStateChange(items: List<FinderStateItem>) = finderAdapter.submitList(items)
 
     private fun onReplaceQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)?.setText(value)

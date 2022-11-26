@@ -40,6 +40,8 @@
 	<dimen name="item_ripple_corner_radius">16dp</dimen>
 	<dimen name="content_padding_bottom">32dp</dimen>
 	<dimen name="bottom_bar_max_width">480dp</dimen>
+	<dimen name="screen_compact">480dp</dimen>
+	<dimen name="screen_medium">600dp</dimen>
 	<dimen name="curtain_max_width">480dp</dimen>
 	<dimen name="curtain_padding_top">24dp</dimen>
 	<dimen name="curtain_padding_bottom">48dp</dimen>

@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
-class ProgressHolder(parent: ViewGroup, id: Int, listener: OnActionListener) : CardViewHolder(parent, id) {
+class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListener) : CardViewHolder(parent, layoutId) {
     private val tvLabel = itemView.findViewById<TextView>(R.id.progress_tv_label)
     private val tvStatus = itemView.findViewById<TextView>(R.id.progress_tv_counter)
     private val bView = itemView.findViewById<BallsView>(R.id.item_explorer_ps)

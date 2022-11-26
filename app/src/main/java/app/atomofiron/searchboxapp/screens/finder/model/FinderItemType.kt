@@ -7,6 +7,7 @@ enum class FinderItemType(val id: Int) {
     CHARACTERS(R.layout.item_characters),
     CONFIGS(R.layout.item_config),
     TEST(R.layout.item_test),
+    BUTTONS(R.layout.item_finder_buttons),
     PROGRESS(R.layout.item_progress),
     TARGET(R.layout.item_finder_target),
     TIP(R.layout.item_finder_tip)

@@ -3,31 +3,18 @@ package app.atomofiron.searchboxapp.screens.finder.adapter
 import androidx.recyclerview.widget.DiffUtil
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
-class FinderDiffUtilCallback(
-    private val old: List<FinderStateItem>,
-    private val new: List<FinderStateItem>
-) : DiffUtil.Callback() {
+class FinderDiffUtilCallback : DiffUtil.ItemCallback<FinderStateItem>() {
 
-    override fun getOldListSize(): Int = old.size
-
-    override fun getNewListSize(): Int = new.size
-
-    override fun areItemsTheSame(i: Int, j: Int): Boolean {
-        val old = old[i]
-        val new = new[j]
-        return when {
-            old.layoutId != new.layoutId -> false
-            old.stableId != new.stableId -> false
-            else -> false
-        }
+    override fun areItemsTheSame(oldItem: FinderStateItem, newItem: FinderStateItem): Boolean = when {
+        oldItem.layoutId != newItem.layoutId -> false
+        oldItem.stableId != newItem.stableId -> false
+        else -> true
     }
 
-    override fun areContentsTheSame(i: Int, j: Int): Boolean {
-        val old = old[i]
-        val new = new[j]
-        return when (old) {
+    override fun areContentsTheSame(oldItem: FinderStateItem, newItem: FinderStateItem): Boolean {
+        return when (oldItem) {
             is FinderStateItem.ProgressItem -> false
-            else -> old.hashCode() == new.hashCode()
+            else -> oldItem.hashCode() == newItem.hashCode()
         }
     }
 }

@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class FinderViewState(
     private val scope: CoroutineScope,
 ) : FinderItemsState by FinderItemsStateDelegate() {
+
+    private var configItem = FinderStateItem.ConfigItem()
+
     val targets = ArrayList<Node>()
 
     val historyDrawerGravity = MutableStateFlow(Gravity.START)
@@ -69,9 +72,17 @@ class FinderViewState(
     }
 
     fun switchConfigItemVisibility() {
-        updateConfig {
-            copy(isCollapsed = !isCollapsed)
+        var index = uniqueItems.indexOfFirst { it is FinderStateItem.ConfigItem }
+        if (index < 0) {
+            index = uniqueItems.indexOfFirst { it is FinderStateItem.ButtonsItem }
+            when {
+                uniqueItems.size >= index -> uniqueItems.add(configItem)
+                else -> uniqueItems[index.inc()] = configItem
+            }
+        } else {
+            uniqueItems.removeAt(index)
         }
+        updateState()
     }
 
     fun reloadHistory() = reloadHistory.invoke(scope)
@@ -99,9 +110,11 @@ class FinderViewState(
     }
 
     private inline fun updateConfig(action: FinderStateItem.ConfigItem.() -> FinderStateItem.ConfigItem) {
-        val index = uniqueItems.indexOf(getConfigItem())
-        val item = uniqueItems[index] as FinderStateItem.ConfigItem
-        uniqueItems[index] = item.action()
+        configItem = configItem.action()
+        val index = uniqueItems.indexOfFirst { it is FinderStateItem.ConfigItem }
+        if (index >= 0) {
+            uniqueItems[index] = configItem
+        }
         updateState()
     }
 }

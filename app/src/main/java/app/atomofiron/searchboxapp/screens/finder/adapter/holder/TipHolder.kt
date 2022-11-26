@@ -6,7 +6,7 @@ import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
-class TipHolder(parent: ViewGroup, id: Int) : GeneralHolder<FinderStateItem>(parent, id) {
+class TipHolder(parent: ViewGroup, layoutId: Int) : GeneralHolder<FinderStateItem>(parent, layoutId) {
     private val tvTitle = itemView.findViewById<TextView>(R.id.finder_tv_tip)
 
     override fun onBind(item: FinderStateItem, position: Int) {

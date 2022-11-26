@@ -13,7 +13,7 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.custom.view.style.RoundedBackgroundSpan
 import java.util.regex.Pattern
 
-class TestHolder(parent: ViewGroup, id: Int) : GeneralHolder<FinderStateItem>(parent, id), TextWatcher {
+class TestHolder(parent: ViewGroup, layoutId: Int) : GeneralHolder<FinderStateItem>(parent, layoutId), TextWatcher {
     private val editText: EditText
     private val span get() = RoundedBackgroundSpan(
         context.findColorByAttr(R.attr.colorAccent),

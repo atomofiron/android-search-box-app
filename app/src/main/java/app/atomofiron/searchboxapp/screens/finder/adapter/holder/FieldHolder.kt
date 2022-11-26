@@ -15,8 +15,8 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem.SearchAndReplaceItem
 import java.util.regex.Pattern
 
-class FieldHolder(parent: ViewGroup, id: Int, private val listener: OnActionListener) :
-        GeneralHolder<FinderStateItem>(parent, id) {
+class FieldHolder(parent: ViewGroup, layoutId: Int, private val listener: OnActionListener) :
+        GeneralHolder<FinderStateItem>(parent, layoutId) {
     private val params: SearchAndReplaceItem get() = item as SearchAndReplaceItem
 
     private val etFind = itemView.findViewById<RegexInputField>(R.id.item_find_rt_find)

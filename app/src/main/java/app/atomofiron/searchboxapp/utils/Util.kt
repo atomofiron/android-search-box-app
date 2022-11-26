@@ -2,9 +2,12 @@ package app.atomofiron.searchboxapp.utils
 
 import android.app.NotificationChannel
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
+import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.model.Screen
 import java.util.*
 import kotlin.math.max
 
@@ -40,5 +43,11 @@ object Util {
             order++
         }
         return String.format(Locale.US, "%1$.2f %2\$s", byteCount, suffixes[order]).replace("[.,]00|(?<=[.,][0-9])0".toRegex(), "")
+    }
+
+    fun Resources.getSize(size: Int): Screen = when {
+        size < getDimensionPixelSize(R.dimen.screen_compact) -> Screen.Compact
+        size < getDimensionPixelSize(R.dimen.screen_medium) -> Screen.Medium
+        else -> Screen.Expanded
     }
 }

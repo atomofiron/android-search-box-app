@@ -45,7 +45,7 @@ class CurtainSearchDelegate(
     }
 
     fun set(items: List<FinderStateItem>, xFile: Node, composition: ExplorerItemComposition) {
-        finderAdapter.setItems(items)
+        finderAdapter.submitList(items)
         this.xFile = xFile
         this.composition = composition
     }

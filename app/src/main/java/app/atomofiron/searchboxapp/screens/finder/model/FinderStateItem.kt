@@ -10,7 +10,8 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         private const val SEARCH_ID = 1L
         private const val CHARACTERS_ID = 2L
         private const val CONFIG_ID = 3L
-        private const val TEST_ID = 4L
+        private const val BUTTONS_ID = 4L
+        private const val TEST_ID = 5L
     }
     data class SearchAndReplaceItem(
         var query: String = "", // mutable field
@@ -29,8 +30,9 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
       val excludeDirs: Boolean = false,
       val replaceEnabled: Boolean = false,
       val isLocal: Boolean = false,
-      val isCollapsed: Boolean = false,
     ) : FinderStateItem(CONFIG_ID, R.layout.item_config)
+
+    object ButtonsItem : FinderStateItem(BUTTONS_ID, R.layout.item_finder_buttons)
 
     data class TestItem(
         val searchQuery: String = "",
@@ -64,6 +66,7 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         is SpecialCharactersItem -> characters.hashCode()
         is ConfigItem -> stableId.toInt()
         is TestItem -> stableId.toInt()
+        is ButtonsItem -> stableId.toInt()
         is ProgressItem -> finderTask.hashCode()
         is TargetItem -> stableId.toInt()
         is TipItem -> stableId.toInt()
