@@ -84,11 +84,13 @@ class JoystickView @JvmOverloads constructor(
             else -> composition.glow(isDark, colorPrimary)
         }
 
-        val limit = if (isDark) 0.4 else 0.6
-        val isCircleLight = ColorUtils.calculateLuminance(circleColor) > limit
+        val black = ContextCompat.getColor(context, R.color.black)
+        val white = ContextCompat.getColor(context, R.color.white)
+        val contrastBlack = ColorUtils.calculateContrast(black, circleColor)
+        val contrastWhite = ColorUtils.calculateContrast(white, circleColor)
         val iconColor = when {
-            isCircleLight -> ContextCompat.getColor(context, R.color.black)
-            else -> ContextCompat.getColor(context, R.color.white)
+            contrastBlack > contrastWhite -> black
+            else -> white
         }
         icon.colorFilter = PorterDuffColorFilter(iconColor, PorterDuff.Mode.SRC_IN)
         invalidate()
