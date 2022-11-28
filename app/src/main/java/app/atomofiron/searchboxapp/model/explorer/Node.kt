@@ -13,8 +13,11 @@ data class Node constructor(
 
     val properties: NodeProperties = NodeProperties(name = path.name()),
     val content: NodeContent,
-    val state: NodeState = stateStub,
     val error: NodeError? = null,
+    // в дереве всегда state = stateStub
+    val state: NodeState = stateStub,
+    // в дереве всегда isChecked = false
+    val isChecked: Boolean = false,
 ) : INodeProperties by properties, INodeState by state {
     companion object {
         private val stateStub = NodeState(0)
@@ -23,7 +26,6 @@ data class Node constructor(
     val isRoot: Boolean = uniqueId == rootId
 
     val isDirectory: Boolean = content is NodeContent.Directory
-    val isArchive: Boolean = content is NodeContent.File.Archive
     val isFile: Boolean = content is NodeContent.File
 
     val isCached: Boolean get() = children != null
@@ -42,7 +44,6 @@ data class Node constructor(
         other.isEmpty != isEmpty -> false
         other.isOpened != isOpened -> false
         other.isDirectory != isDirectory -> false
-        other.isArchive != isArchive -> false
         other.isFile != isFile -> false
         else -> true
     }

@@ -317,11 +317,13 @@ object Explorer {
 
     fun Node.isTheDeepest(): Boolean = isOpened && children != null && children.find { it.isOpened } == null
 
-    fun NodeChildren.clearChildren() {
-        for (i in items.indices) {
-            val child = items[i]
-            if (child.isCached) {
-                items[i] = child.copy(children = null)
+    private fun NodeChildren.clearChildren() {
+        val iter = items.listIterator()
+        while (iter.hasNext()) {
+            val item = iter.next()
+            when {
+                item.error is NodeError.NoSuchFile -> iter.remove()
+                item.isCached -> iter.set(item.copy(children = null))
             }
         }
     }
@@ -362,11 +364,11 @@ object Explorer {
         }
     }
 
-    fun NodeState?.theSame(cachingJob: Job?, isChecked: Boolean, isDeleting: Boolean): Boolean {
+    fun NodeState?.theSame(cachingJob: Job?, operation: Operation): Boolean {
+        val currentOperation = this?.operation ?: Operation.None
         return when {
-            this?.cachingJob !== cachingJob -> false
-            (this?.isChecked ?: false) != isChecked -> false
-            (this?.isDeleting ?: false) != isDeleting -> false
+            this?.cachingJob != cachingJob -> false
+            currentOperation != operation -> false
             else -> true
         }
     }
