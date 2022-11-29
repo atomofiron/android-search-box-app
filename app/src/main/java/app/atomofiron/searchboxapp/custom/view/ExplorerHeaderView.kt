@@ -58,6 +58,15 @@ class ExplorerHeaderView @JvmOverloads constructor(
     private var insetColor = 0
     private val paint = Paint()
 
+    init {
+        val colorSurface = context.findColorByAttr(R.attr.colorSurface)
+        val colorSurfaceVariant = context.findColorByAttr(R.attr.colorSurfaceVariant)
+        var backgroundColor = ColorUtils.setAlphaComponent(colorSurfaceVariant, Byte.MAX_VALUE.toInt())
+        backgroundColor = ColorUtils.compositeColors(backgroundColor, colorSurface)
+        setBackgroundColor(backgroundColor)
+        insetColor = ColorUtils.setAlphaComponent(backgroundColor, Byte.MAX_VALUE.toInt())
+    }
+
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {
         binder.onItemActionListener = listener
     }
@@ -103,12 +112,5 @@ class ExplorerHeaderView @JvmOverloads constructor(
             val top = -top.toFloat()
             canvas.drawRect(0f, top, width.toFloat(), top + paddingTop.toFloat(), paint)
         }
-    }
-
-    override fun setBackgroundColor(color: Int) {
-        val colorSurface = context.findColorByAttr(R.attr.colorSurface)
-        val backgroundColor = ColorUtils.compositeColors(color, colorSurface)
-        super.setBackgroundColor(backgroundColor)
-        insetColor = ColorUtils.setAlphaComponent(color, Byte.MAX_VALUE.toInt())
     }
 }

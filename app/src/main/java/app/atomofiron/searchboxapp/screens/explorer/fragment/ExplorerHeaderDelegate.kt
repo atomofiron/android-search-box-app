@@ -64,7 +64,6 @@ class ExplorerHeaderDelegate(
             else -> backgroundColor
         }
         headerView.setComposition(composition)
-        headerView.setBackgroundColor(color)
         headerView.bind(currentDir)
     }
 
