@@ -19,22 +19,24 @@ class ItemBorderDecorator(
     private val headerView: ExplorerHeaderView,
 ) : ItemDecoration() {
 
+    private var grey = headerView.context.findColorByAttr(R.attr.colorOutline)
+    private var accent = headerView.context.findColorByAttr(R.attr.colorTertiary)
+    private var cornerRadius = headerView.resources.getDimension(R.dimen.explorer_border_corner_radius)
+    private var borderWidth = headerView.resources.getDimension(R.dimen.explorer_border_width)
+    private var borderOffset = floor(borderWidth / 2f)
+    private var levelSpace = headerView.resources.getDimension(R.dimen.explorer_level_space)
+    private var innerPadding = headerView.resources.getDimension(R.dimen.content_margin)
+
     private var currentDir: Node? = null
     private val paint = Paint()
-    private var grey = 0
-    private var accent = 0
     private val rect = RectF()
-    private var cornerRadius = 0f
-    private var strokeWidth = 0f
-    private var strokeOffset = 0f
-    private var levelSpace = 0f
-    private var innerPadding = 0f
+    private val framePath = Path()
 
     init {
         paint.isAntiAlias = true
-        paint.style = Paint.Style.STROKE
+        paint.style = Paint.Style.FILL
         paint.strokeCap = Paint.Cap.ROUND
-        paint.strokeWidth = 20f
+        paint.strokeWidth = borderWidth
     }
 
     fun setCurrentDir(item: Node?) {
@@ -42,13 +44,6 @@ class ItemBorderDecorator(
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-        grey = parent.context.findColorByAttr(R.attr.colorOutline)
-        accent = parent.context.findColorByAttr(R.attr.colorTertiary)
-        cornerRadius = view.resources.getDimension(R.dimen.explorer_border_corner_radius)
-        strokeWidth = view.resources.getDimension(R.dimen.explorer_border_width)
-        strokeOffset = floor(strokeWidth / 2f)
-        levelSpace = view.resources.getDimension(R.dimen.explorer_level_space)
-        innerPadding = view.resources.getDimension(R.dimen.content_margin)
 
         val holder = parent.getChildViewHolder(view)
         holder ?: return
@@ -68,34 +63,32 @@ class ItemBorderDecorator(
         val lastIndex = firstIndex + parent.childCount.dec()
         var currentIndex = firstIndex
         var frameRect: RectF? = null
+        var currentDirMinTop = headerView.height.toFloat()
         paint.color = grey
         for (child in parent) {
-            var left = parent.paddingLeft + strokeOffset
-            var right = parent.width - (parent.paddingRight + strokeOffset)
+            var left = parent.paddingLeft.toFloat()
+            var right = parent.width - parent.paddingRight.toFloat()
             val prev = if (currentIndex == firstIndex) null else items.getOrNull(currentIndex.dec())
             val item = items[currentIndex]
             val next = if (currentIndex == lastIndex) null else items.getOrNull(currentIndex.inc())
             val nextParentPath = next?.parentPath ?: ""
-            val childBottomEdge = child.bottom + levelSpace / 2
-            val currentDirMinTop = headerView.height.toFloat() + strokeOffset
+            val childBottomOffset = child.bottom + levelSpace / 2
             when {
                 item.isOpened && item.isEmpty -> {
-                    left += innerPadding / 2
-                    right -= innerPadding / 2
-                    val top = childBottomEdge + strokeOffset
-                    var bottom = childBottomEdge + levelSpace - strokeOffset
-                    bottom = max(top, bottom)
+                    val top = child.bottom.toFloat()
+                    val bottom = child.bottom + levelSpace * 2 - borderOffset
                     rect.set(left, top, right, bottom)
                     frameRect = rect
+                    currentDirMinTop = -cornerRadius
                 }
                 item.parentPath == currentDir?.path -> {
                     rect.left = left
                     rect.right = right
                     if (item.parentPath != prev?.parentPath) {
-                        rect.top = max(currentDirMinTop, child.top - levelSpace / 2)
+                        rect.top = child.top - levelSpace
                     }
                     if (item.parentPath != next?.parentPath) {
-                        rect.bottom = childBottomEdge
+                        rect.bottom = childBottomOffset
                     }
                     frameRect = rect
                 }
@@ -104,20 +97,37 @@ class ItemBorderDecorator(
                 item.parentPath != nextParentPath -> {
                     left += innerPadding
                     right -= innerPadding
-                    canvas.drawLine(left, childBottomEdge, right, childBottomEdge, paint)
+                    canvas.drawLine(left, childBottomOffset, right, childBottomOffset, paint)
                 }
             }
             currentIndex++
         }
         frameRect?.let {
-            frameRect.bottom = min(frameRect.bottom, parent.height - parent.paddingBottom - strokeOffset)
+            frameRect.bottom = min(frameRect.bottom, parent.height - parent.paddingBottom - borderOffset)
             val boxHeight = frameRect.height()
             if (boxHeight > 0) {
                 val alpha = (255 * (boxHeight / (levelSpace / 2)).coerceIn(0f, 1f)).toInt()
-                paint.strokeWidth = strokeWidth
-                paint.style = Paint.Style.STROKE
                 paint.color = ColorUtils.setAlphaComponent(accent, alpha)
-                canvas.drawRoundRect(frameRect, cornerRadius, cornerRadius, paint)
+                framePath.reset()
+                val minTop = min(currentDirMinTop, frameRect.bottom - levelSpace / 2)
+                framePath.addRoundRect(
+                    frameRect.left,
+                    max(minTop, frameRect.top),
+                    frameRect.right,
+                    frameRect.bottom + borderOffset,
+                    FloatArray(8) { if (it <= 3) 0f else cornerRadius},
+                    Path.Direction.CW,
+                )
+                framePath.addRoundRect(
+                    frameRect.left + borderWidth,
+                    max(minTop, frameRect.top),
+                    frameRect.right - borderWidth,
+                    frameRect.bottom - borderOffset,
+                    cornerRadius - borderWidth,
+                    cornerRadius - borderWidth,
+                    Path.Direction.CCW,
+                )
+                canvas.drawPath(framePath, paint)
             }
         }
     }

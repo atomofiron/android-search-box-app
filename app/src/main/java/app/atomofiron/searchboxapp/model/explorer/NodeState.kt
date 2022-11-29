@@ -18,7 +18,7 @@ data class NodeState(
 sealed class Operation {
     object None : Operation()
     object Deleting : Operation()
-    class Copying(
+    data class Copying(
         val isSource: Boolean,
         val asMoving: Boolean,
     ) : Operation()

@@ -62,10 +62,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.isItemActiveIndicatorEnabled = false
 
-        binding.run {
-            OrientationLayoutDelegate(coordinator, recyclerView, bottomBar, navigationRail, explorerHeader)
-        }
-
         binding.verticalDock.run {
             onGravityChangeListener = presenter::onDockGravityChange
             recyclerView.adapter = placesAdapter
@@ -105,13 +101,23 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
-        // binding.coordinator is already in OrientationLayoutDelegate
         binding.verticalDock.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
-        binding.explorerHeader.applyPaddingInsets()
+        binding.explorerHeader.applyPaddingInsets(start = true, top = true, end = true)
+        binding.explorerTabs.applyPaddingInsets(start = true, top = true, end = true)
         binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
         binding.navigationRail.applyPaddingInsets()
+        binding.run {
+            OrientationLayoutDelegate(
+                binding.root,
+                recyclerView,
+                bottomBar,
+                navigationRail,
+                systemUiBackground,
+                explorerTabs,
+                explorerHeader,
+            )
+        }
     }
 
     override fun onBack(): Boolean {

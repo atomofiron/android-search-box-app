@@ -18,7 +18,7 @@ class ExplorerHeaderDelegate(
     private val recyclerView: RecyclerView,
     private val headerView: ExplorerHeaderView,
     private val adapter: ExplorerAdapter,
-) : RecyclerView.OnScrollListener() {
+) : RecyclerView.OnScrollListener(), View.OnLayoutChangeListener {
 
     private var currentDir: Node? = null
     private var currentIndex = -1
@@ -26,9 +26,11 @@ class ExplorerHeaderDelegate(
     private var composition: ExplorerItemComposition? = null
     private var backgroundGrey = 0
     private var backgroundColor = 0
+    private val updateVisibilityCallback = ::updateVisibility
 
     init {
         recyclerView.addOnScrollListener(this)
+        recyclerView.addOnLayoutChangeListener(this)
         backgroundColor = headerView.context.findColorByAttr(R.attr.colorBackground)
         backgroundGrey = headerView.context.getExplorerItemBackground()
         backgroundGrey = ColorUtils.compositeColors(backgroundGrey, backgroundColor)
@@ -99,5 +101,10 @@ class ExplorerHeaderDelegate(
             }
         }
         return min(headerHeight, bottom)
+    }
+
+    override fun onLayoutChange(view: View, l: Int, t: Int, r: Int, b: Int, oL: Int, oT: Int, oR: Int, oB: Int) {
+        updateVisibility()
+        view.post(updateVisibilityCallback)
     }
 }

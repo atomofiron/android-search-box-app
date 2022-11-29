@@ -206,7 +206,7 @@ class ExplorerService(
             }
         }.forEach { item ->
             scope.launch {
-                delay(30000)
+                delay(1000)
                 val result = item.delete(useSu)
                 withTab {
                     levels.replaceItem(item.uniqueId, item.parentPath, result)
@@ -242,7 +242,8 @@ class ExplorerService(
             updateDirectoryTypes()
             val items = renderNodes()
             explorerStore.items.emit(items)
-            levels.updateCurrentDir()
+            updateCurrentDir()
+
             updateStates(items)
             updateChecked(items)
             val checked = items.filter { it.isChecked }
@@ -303,7 +304,11 @@ class ExplorerService(
         for (i in levels.indices) {
             val level = levels[i]
             for (j in 0..level.getOpenedIndex()) {
-                items.add(updateStateFor(level.children[j]))
+                var item = updateStateFor(level.children[j])
+                if (item.isOpened && i == levels.lastIndex.dec()) {
+                    item = item.copy(isCurrent = true)
+                }
+                items.add(item)
             }
         }
         for (i in levels.indices.reversed()) {
@@ -340,8 +345,10 @@ class ExplorerService(
         }
     }
 
-    private fun List<NodeLevel>.updateCurrentDir() {
-        explorerStore.current.value = findLast { it.getOpened() != null }?.getOpened()
+    private fun NodeTab.updateCurrentDir() {
+        val item = levels.findLast { it.getOpened() != null }?.getOpened()
+        item ?: return
+        explorerStore.current.value = updateStateFor(item)
     }
 
     private suspend fun CoroutineScope.cacheSync(item: Node) {

@@ -11,7 +11,6 @@
 		<item name="android:splitMotionEvents">false</item>
 
 		<item name="colorContent">@color/day_night_content</item>
-		<item name="colorPositive">@color/day_night_positive</item>
 
 		<item name="colorBackground">?colorSurface</item>
 		<item name="colorFieldBackground">@color/day_night_background</item>
@@ -68,5 +67,7 @@
 	<style name="OutlinedButtonStyle" parent="@style/Widget.Material3.Button.OutlinedButton" />
 
 	<style name="InputOutlinedDenseStyle" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense" />
+
+	<style name="InputOutlinedDenseStyle2" parent="@style/Widget.Material3.TabLayout" />
 
 </resources>

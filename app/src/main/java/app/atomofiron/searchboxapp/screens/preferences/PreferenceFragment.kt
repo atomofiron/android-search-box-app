@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
 import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import app.atomofiron.searchboxapp.utils.Shell
@@ -51,10 +52,10 @@ class PreferenceFragment : PreferenceFragmentCompat(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.applyPaddingInsets()
-        OrientationLayoutDelegate(view as ViewGroup, recyclerView)
+        val systemUiView = view.findViewById<SystemUiBackgroundView>(R.id.system_ui_background)
+        OrientationLayoutDelegate(view as ViewGroup, recyclerView, systemUiView = systemUiView)
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         viewState.onViewCollect()

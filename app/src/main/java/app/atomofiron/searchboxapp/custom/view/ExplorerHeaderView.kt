@@ -1,14 +1,21 @@
 package app.atomofiron.searchboxapp.custom.view
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.*
+import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
@@ -18,19 +25,38 @@ class ExplorerHeaderView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
-    init {
-        LayoutInflater.from(context).inflate(R.layout.item_explorer, this)
-        clipToPadding = false
-        getChildAt(0).background = null
+    companion object {
+        fun ItemExplorerBinding.makeOpposite() {
+            val colorSurface = root.context.findColorByAttr(R.attr.colorSurface)
+            val colorOnSurface = root.context.findColorByAttr(R.attr.colorOnSurface)
+            val colorTertiary = root.context.findColorByAttr(R.attr.colorTertiary)
+            val cornerRadius = root.resources.getDimension(R.dimen.explorer_border_corner_radius)
+            val drawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(colorTertiary, colorTertiary))
+            drawable.cornerRadii = floatArrayOf(cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0f, 0f, 0f, 0f)
+            root.background = RippleDrawable(ColorStateList.valueOf(colorSurface), drawable, null)
+            val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(colorSurface, BlendModeCompat.SRC_IN)
+            itemExplorerIvIcon.colorFilter = filter
+            itemExplorerCb.buttonTintList = ColorStateList.valueOf(colorSurface)
+            itemExplorerCb.buttonIconTintList = ColorStateList.valueOf(colorOnSurface)
+            itemExplorerTvTitle.setTextColor(colorSurface)
+            itemExplorerTvDate.setTextColor(colorSurface)
+            itemExplorerTvSize.setTextColor(colorSurface)
+            itemExplorerTvDescription.setTextColor(colorSurface)
+            itemExplorerErrorTv.setTextColor(colorSurface)
+        }
     }
 
-    private val binder = ExplorerItemBinderImpl(this)
+    private val binder = LayoutInflater.from(context).inflate(R.layout.item_explorer, this).run {
+        val binding = ItemExplorerBinding.bind(getChildAt(0))
+        binding.makeOpposite()
+        ExplorerItemBinderImpl(binding.root)
+    }
+
     private var composition: ExplorerItemComposition? = null
     private var item: Node? = null
     private var mTop = 0
     private var insetColor = 0
     private val paint = Paint()
-    private var backgroundColor = 0
 
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {
         binder.onItemActionListener = listener
@@ -69,8 +95,6 @@ class ExplorerHeaderView @JvmOverloads constructor(
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.drawColor(backgroundColor)
-
         super.draw(canvas)
 
         if (paddingTop > 0 && insetColor != 0 && top < 0 && top > -height) {
@@ -82,7 +106,9 @@ class ExplorerHeaderView @JvmOverloads constructor(
     }
 
     override fun setBackgroundColor(color: Int) {
+        val colorSurface = context.findColorByAttr(R.attr.colorSurface)
+        val backgroundColor = ColorUtils.compositeColors(color, colorSurface)
+        super.setBackgroundColor(backgroundColor)
         insetColor = ColorUtils.setAlphaComponent(color, Byte.MAX_VALUE.toInt())
-        backgroundColor = color
     }
 }

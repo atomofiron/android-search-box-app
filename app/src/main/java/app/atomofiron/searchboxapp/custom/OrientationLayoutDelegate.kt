@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.custom.view.JoystickView
+import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.navigationrail.NavigationRailView
 
 @SuppressLint("PrivateResource")
@@ -21,6 +23,8 @@ class OrientationLayoutDelegate(
     private val recyclerView: RecyclerView? = null,
     private val bottomView: BottomNavigationView? = null,
     private val railView: NavigationRailView? = null,
+    private val systemUiView: SystemUiBackgroundView? = null,
+    private val tabLayout: MaterialButtonToggleGroup? = null,
     private val headerView: ExplorerHeaderView? = null,
 ) : OnApplyWindowInsetsListener {
     enum class Side {
@@ -39,22 +43,12 @@ class OrientationLayoutDelegate(
         parent.setSideListener {
             val side = if (it) Side.Bottom else Side.Right
             this.side = side
-            if (side == Side.Bottom) showBottom() else showRail()
+            setLayout(side != Side.Bottom)
             parent.requestApplyInsets()
         }
     }
 
     override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
-        for (i in 0 until parent.childCount) {
-            val child = parent.getChildAt(i)
-            val individual = when {
-                child === headerView -> continue
-                child === recyclerView -> continue
-                child === railView -> continue
-                else -> insets
-            }
-            ViewCompat.dispatchApplyWindowInsets(child, individual)
-        }
         headerView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets.getHeaderViewInsets())
         }
@@ -64,23 +58,31 @@ class OrientationLayoutDelegate(
         railView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets.getRailViewInsets())
         }
+        tabLayout?.run {
+            ViewCompat.dispatchApplyWindowInsets(this, insets.getTabLayoutInsets())
+        }
+        systemUiView?.run {
+            ViewCompat.dispatchApplyWindowInsets(this, insets)
+        }
         return WindowInsetsCompat.CONSUMED
     }
 
-    private fun showRail() {
-        bottomView?.isVisible = false
-        railView?.isVisible = true
-    }
-
-    private fun showBottom() {
-        bottomView?.isVisible = true
-        railView?.isVisible = false
+    private fun setLayout(landscape: Boolean) {
+        bottomView?.isVisible = !landscape
+        railView?.isVisible = landscape
+        tabLayout?.isVisible = !landscape
     }
 
     private fun WindowInsetsCompat.getRecyclerViewInsets(): WindowInsetsCompat {
         return WindowInsetsCompat.Builder(this)
             .setInsets(insetsType, getInsets(insetsType).editForRecyclerView())
             .setInsets(Type.ime(), getInsets(Type.ime()).editForRecyclerView())
+            .build()
+    }
+
+    private fun WindowInsetsCompat.getTabLayoutInsets(): WindowInsetsCompat {
+        return WindowInsetsCompat.Builder(this)
+            .setInsets(insetsType, getInsets(insetsType).editForTabLayout())
             .build()
     }
 
@@ -101,6 +103,18 @@ class OrientationLayoutDelegate(
             Side.Bottom -> bottom + navigationSize
             Side.Left, Side.Right -> bottom
         }
+        val left = when (side) {
+            Side.Left -> left + navigationSize
+            Side.Bottom, Side.Right -> left
+        }
+        val right = when (side) {
+            Side.Right -> right + navigationSize
+            Side.Bottom, Side.Left -> right
+        }
+        return Insets.of(left, top, right, bottom)
+    }
+
+    private fun Insets.editForTabLayout(): Insets {
         val left = when (side) {
             Side.Left -> left + navigationSize
             Side.Bottom, Side.Right -> left
@@ -133,6 +147,10 @@ class OrientationLayoutDelegate(
         val right = when (side) {
             Side.Right -> right + navigationSize
             Side.Left, Side.Bottom -> right
+        }
+        val top = when (side) {
+            Side.Bottom -> 0
+            Side.Left, Side.Right -> top
         }
         return Insets.of(left, top, right, bottom)
     }

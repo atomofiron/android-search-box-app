@@ -6,17 +6,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView.Companion.makeOpposite
+import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.NodeCallback
-import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import java.util.LinkedList
 
 class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
     companion object {
-        private const val UNDEFINED = -1
-        private const val VIEW_TYPE = 1
+        private const val VIEW_TYPE_ANY = 1
+        private const val VIEW_TYPE_CURRENT = 2
         private const val VIEW_POOL_MAX_COUNT = 30
     }
 
@@ -37,7 +38,7 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.itemAnimator = null
-        recyclerView.recycledViewPool.setMaxRecycledViews(VIEW_TYPE, VIEW_POOL_MAX_COUNT)
+        recyclerView.recycledViewPool.setMaxRecycledViews(VIEW_TYPE_ANY, VIEW_POOL_MAX_COUNT)
 
         viewPool = arrayOfNulls(VIEW_POOL_MAX_COUNT)
         val inflater = LayoutInflater.from(recyclerView.context)
@@ -46,18 +47,21 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         }
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
+    override fun getItemViewType(position: Int): Int {
+        return when (currentList[position].isCurrent) {
+            true -> VIEW_TYPE_CURRENT
+            false -> VIEW_TYPE_ANY
+        }
     }
-
-    override fun getItemViewType(position: Int): Int = VIEW_TYPE
 
     override fun getItemId(position: Int): Long = currentList[position].uniqueId.toLong()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorerHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = getNewView(inflater, parent)
-        view.applyPaddingInsets(start = true, end = true)
+        if (viewType == VIEW_TYPE_CURRENT) {
+            ItemExplorerBinding.bind(view).makeOpposite()
+        }
         return ExplorerHolder(view)
     }
 

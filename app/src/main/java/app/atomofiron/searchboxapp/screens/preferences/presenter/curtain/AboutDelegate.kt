@@ -32,7 +32,7 @@ class AboutDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
         var componentName = githubIntent.resolveActivity(context.packageManager)
         aboutTvGithub.isEnabled = componentName != null
         aboutTvGithub.alpha = if (componentName == null) ALPHA_DISABLED else ALPHA_ENABLED
-        val tint = context.findColorByAttr(R.attr.colorPositive)
+        val tint = context.findColorByAttr(R.attr.colorOnSurface)
         aboutTvGithub.compoundDrawablesRelative[0].setTint(tint)
         aboutTvForpda.compoundDrawablesRelative[0].setTint(tint)
 

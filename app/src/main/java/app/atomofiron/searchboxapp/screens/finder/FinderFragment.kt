@@ -69,10 +69,6 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.isItemActiveIndicatorEnabled = false
 
-        binding.run {
-            OrientationLayoutDelegate(coordinator, recyclerView, bottomBar, navigationRail)
-        }
-
         binding.verticalDock.run {
             onGravityChangeListener = presenter::onDockGravityChange
             recyclerView.adapter = historyAdapter
@@ -118,11 +114,12 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
-        // binding.coordinator is already in OrientationLayoutDelegate
         binding.recyclerView.applyPaddingInsets()
         binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
         binding.navigationRail.applyPaddingInsets()
+        binding.run {
+            OrientationLayoutDelegate(coordinator, recyclerView, bottomBar, navigationRail, systemUiBackground)
+        }
     }
 
     override fun onBack(): Boolean {

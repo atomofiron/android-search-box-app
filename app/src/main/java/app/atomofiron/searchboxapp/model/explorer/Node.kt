@@ -18,6 +18,8 @@ data class Node constructor(
     val state: NodeState = stateStub,
     // в дереве всегда isChecked = false
     val isChecked: Boolean = false,
+    // в дереве всегда isCurrent = false
+    val isCurrent: Boolean = false,
 ) : INodeProperties by properties, INodeState by state {
     companion object {
         private val stateStub = NodeState(0)
@@ -45,6 +47,8 @@ data class Node constructor(
         other.isOpened != isOpened -> false
         other.isDirectory != isDirectory -> false
         other.isFile != isFile -> false
+        other.isChecked != isChecked -> false
+        other.isCurrent != isCurrent -> false
         else -> true
     }
 
