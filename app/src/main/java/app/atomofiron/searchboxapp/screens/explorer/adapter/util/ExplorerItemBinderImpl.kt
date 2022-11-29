@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -70,9 +69,8 @@ class ExplorerItemBinderImpl(
         val stateDisabledUnchecked = intArrayOf(-android.R.attr.state_enabled, -android.R.attr.state_checked)
         val colorEnabledChecked = defaultBoxTintList.getColorForState(stateEnabledChecked, Color.RED)
         val colorDisabledChecked = defaultBoxTintList.getColorForState(stateDisabledChecked, Color.RED)
-        val colorDisabledUnchecked = defaultBoxTintList.getColorForState(stateDisabledUnchecked, Color.RED)
         val states = arrayOf(stateEnabledChecked, stateDisabledChecked, stateEnabledUnchecked, stateDisabledUnchecked)
-        val colors = intArrayOf(colorEnabledChecked, colorDisabledChecked, Color.TRANSPARENT, colorDisabledUnchecked)
+        val colors = intArrayOf(colorEnabledChecked, colorDisabledChecked, Color.TRANSPARENT, Color.TRANSPARENT)
         transparentBoxTintList = ColorStateList(states, colors)
 
         val externalStoragePath = itemView.context.getExternalStorageDirectory()
