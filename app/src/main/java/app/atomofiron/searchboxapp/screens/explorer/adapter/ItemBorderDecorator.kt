@@ -19,8 +19,8 @@ class ItemBorderDecorator(
 ) : ItemDecoration() {
 
     private val items get() = adapter.currentList
-    private val grey = headerView.context.findColorByAttr(R.attr.colorOutline)
-    private val accent = headerView.context.findColorByAttr(R.attr.colorTertiary)
+    private val intermediateColor = headerView.context.findColorByAttr(R.attr.colorSecondary)
+    private val currentColor = headerView.context.findColorByAttr(R.attr.colorTertiary)
     private val innerPadding = headerView.resources.getDimension(R.dimen.content_margin)
     private val cornerRadius = headerView.resources.getDimension(R.dimen.explorer_border_corner_radius)
     private val borderWidth = headerView.resources.getDimension(R.dimen.explorer_border_width)
@@ -74,7 +74,6 @@ class ItemBorderDecorator(
         val right = parent.width - parent.paddingRight.toFloat()
         val headerBottom = headerView.height.toFloat()
         val parentBottom = parent.height.toFloat() - parent.paddingBottom
-        paint.color = grey
         for (child in parent) {
             val prev = if (currentIndex == firstIndex) null else items.getOrNull(currentIndex.dec())
             val item = items[currentIndex]
@@ -118,9 +117,10 @@ class ItemBorderDecorator(
                         rect.bottom = max(rect.bottom, rect.top + frameBottomOffset)
                     }
                 }
-                !item.isOpened && item.isRoot -> Unit
-                item.parentPath != next?.parentPath -> {
-                    val bottom = child.bottom + openedSpace / 2
+                next == null -> Unit
+                item.parentPath.length > next.parentPath.length -> {
+                    paint.color = intermediateColor
+                    val bottom = child.bottom + openedEndSpace / 2
                     canvas.drawLine(left + innerPadding, bottom, right - innerPadding, bottom, paint)
                 }
             }
@@ -133,7 +133,7 @@ class ItemBorderDecorator(
         val stroke = borderWidth
         val innerRadius = cornerRadius - stroke
         val radii = FloatArray(8) { if (it <= 3) 0f else cornerRadius }
-        paint.color = accent
+        paint.color = currentColor
         framePath.reset()
         framePath.addRoundRect(left, top, right, bottom, radii, Direction.CW)
         framePath.addRoundRect(left + stroke, top, right - stroke, bottom - stroke, innerRadius, innerRadius, Direction.CCW)

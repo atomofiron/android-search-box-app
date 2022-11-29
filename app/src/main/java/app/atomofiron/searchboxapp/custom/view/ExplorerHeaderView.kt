@@ -26,29 +26,52 @@ class ExplorerHeaderView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
     companion object {
-        fun ItemExplorerBinding.makeOpposite() {
-            val colorSurface = root.context.findColorByAttr(R.attr.colorSurface)
-            val colorOnSurface = root.context.findColorByAttr(R.attr.colorOnSurface)
-            val colorTertiary = root.context.findColorByAttr(R.attr.colorTertiary)
+        fun ItemExplorerBinding.makeOpened() {
+            val background = root.context.findColorByAttr(R.attr.colorSecondary)
+            val content = root.context.findColorByAttr(R.attr.colorSurface)
+            val buttonIcon = root.context.findColorByAttr(R.attr.colorOnSurface)
+            makeOpposite(background, content, buttonIcon, topRadius = true, bottomRadius = true)
+        }
+
+        fun ItemExplorerBinding.makeOpenedCurrent() {
+            val background = root.context.findColorByAttr(R.attr.colorTertiary)
+            val content = root.context.findColorByAttr(R.attr.colorSurface)
+            val buttonIcon = root.context.findColorByAttr(R.attr.colorOnSurface)
+            makeOpposite(background, content, buttonIcon, topRadius = true)
+        }
+
+        fun ItemExplorerBinding.makeOpposite(
+            background: Int,
+            content: Int,
+            buttonIcon: Int,
+            topRadius: Boolean = false,
+            bottomRadius: Boolean = false,
+        ) {
             val cornerRadius = root.resources.getDimension(R.dimen.explorer_border_corner_radius)
-            val drawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(colorTertiary, colorTertiary))
-            drawable.cornerRadii = floatArrayOf(cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0f, 0f, 0f, 0f)
-            root.background = RippleDrawable(ColorStateList.valueOf(colorSurface), drawable, null)
-            val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(colorSurface, BlendModeCompat.SRC_IN)
+            val drawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(background, background))
+            drawable.cornerRadii = FloatArray(8) {
+                when {
+                    it < 5 && topRadius -> cornerRadius
+                    it > 4 && bottomRadius -> cornerRadius
+                    else -> 0f
+                }
+            }
+            root.background = RippleDrawable(ColorStateList.valueOf(content), drawable, null)
+            val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(content, BlendModeCompat.SRC_IN)
             itemExplorerIvIcon.colorFilter = filter
-            itemExplorerCb.buttonTintList = ColorStateList.valueOf(colorSurface)
-            itemExplorerCb.buttonIconTintList = ColorStateList.valueOf(colorOnSurface)
-            itemExplorerTvTitle.setTextColor(colorSurface)
-            itemExplorerTvDate.setTextColor(colorSurface)
-            itemExplorerTvSize.setTextColor(colorSurface)
-            itemExplorerTvDescription.setTextColor(colorSurface)
-            itemExplorerErrorTv.setTextColor(colorSurface)
+            itemExplorerCb.buttonTintList = ColorStateList.valueOf(content)
+            itemExplorerCb.buttonIconTintList = ColorStateList.valueOf(buttonIcon)
+            itemExplorerTvTitle.setTextColor(content)
+            itemExplorerTvDate.setTextColor(content)
+            itemExplorerTvSize.setTextColor(content)
+            itemExplorerTvDescription.setTextColor(content)
+            itemExplorerErrorTv.setTextColor(content)
         }
     }
 
     private val binder = LayoutInflater.from(context).inflate(R.layout.item_explorer, this).run {
         val binding = ItemExplorerBinding.bind(getChildAt(0))
-        binding.makeOpposite()
+        binding.makeOpenedCurrent()
         ExplorerItemBinderImpl(binding.root)
     }
 
