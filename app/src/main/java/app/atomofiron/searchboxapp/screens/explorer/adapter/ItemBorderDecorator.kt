@@ -85,7 +85,7 @@ class ItemBorderDecorator(
                         rect.top = child.top - levelSpace
                     }
                     if (item.parentPath != next?.parentPath) {
-                        rect.bottom = childBottomOffset
+                        rect.bottom = childBottomOffset + borderWidth / 2
                     }
                     frameRect = rect
                 }
