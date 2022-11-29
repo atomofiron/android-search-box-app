@@ -2,7 +2,6 @@ package app.atomofiron.searchboxapp.screens.explorer.adapter
 
 import android.graphics.*
 import android.view.View
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.iterator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -10,7 +9,6 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
-import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,7 +21,6 @@ class ItemBorderDecorator(
     private var accent = headerView.context.findColorByAttr(R.attr.colorTertiary)
     private var cornerRadius = headerView.resources.getDimension(R.dimen.explorer_border_corner_radius)
     private var borderWidth = headerView.resources.getDimension(R.dimen.explorer_border_width)
-    private var borderOffset = floor(borderWidth / 2f)
     private var levelSpace = headerView.resources.getDimension(R.dimen.explorer_level_space)
     private var innerPadding = headerView.resources.getDimension(R.dimen.content_margin)
 
@@ -76,7 +73,7 @@ class ItemBorderDecorator(
             when {
                 item.isOpened && item.isEmpty -> {
                     val top = child.bottom.toFloat()
-                    val bottom = child.bottom + levelSpace * 2 - borderOffset
+                    val bottom = child.bottom + levelSpace * 2
                     rect.set(left, top, right, bottom)
                     frameRect = rect
                     currentDirMinTop = -cornerRadius
@@ -103,26 +100,25 @@ class ItemBorderDecorator(
             currentIndex++
         }
         frameRect?.let {
-            frameRect.bottom = min(frameRect.bottom, parent.height - parent.paddingBottom - borderOffset)
+            frameRect.bottom = min(frameRect.bottom, parent.height.toFloat() - parent.paddingBottom)
             val boxHeight = frameRect.height()
             if (boxHeight > 0) {
-                val alpha = (255 * (boxHeight / (levelSpace / 2)).coerceIn(0f, 1f)).toInt()
-                paint.color = ColorUtils.setAlphaComponent(accent, alpha)
+                paint.color = accent
                 framePath.reset()
                 val minTop = min(currentDirMinTop, frameRect.bottom - levelSpace / 2)
                 framePath.addRoundRect(
                     frameRect.left,
                     max(minTop, frameRect.top),
                     frameRect.right,
-                    frameRect.bottom + borderOffset,
-                    FloatArray(8) { if (it <= 3) 0f else cornerRadius},
+                    frameRect.bottom,
+                    FloatArray(8) { if (it <= 3) 0f else cornerRadius },
                     Path.Direction.CW,
                 )
                 framePath.addRoundRect(
                     frameRect.left + borderWidth,
                     max(minTop, frameRect.top),
                     frameRect.right - borderWidth,
-                    frameRect.bottom - borderOffset,
+                    frameRect.bottom - borderWidth,
                     cornerRadius - borderWidth,
                     cornerRadius - borderWidth,
                     Path.Direction.CCW,
