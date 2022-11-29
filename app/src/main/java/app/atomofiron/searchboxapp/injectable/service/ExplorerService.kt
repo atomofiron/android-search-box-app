@@ -347,8 +347,7 @@ class ExplorerService(
 
     private fun NodeTab.updateCurrentDir() {
         val item = levels.findLast { it.getOpened() != null }?.getOpened()
-        item ?: return
-        explorerStore.current.value = updateStateFor(item)
+        explorerStore.current.value = item?.let { updateStateFor(it) }
     }
 
     private suspend fun CoroutineScope.cacheSync(item: Node) {
