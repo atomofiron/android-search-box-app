@@ -1,15 +1,11 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment
 
 import android.view.View
-import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.util.findColorByAttr
-import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemBackgroundDecorator.Companion.getExplorerItemBackground
 import java.util.LinkedList
 import kotlin.math.max
 import kotlin.math.min
@@ -24,16 +20,11 @@ class ExplorerHeaderDelegate(
     private var currentIndex = -1
 
     private var composition: ExplorerItemComposition? = null
-    private var backgroundGrey = 0
-    private var backgroundColor = 0
     private val updateVisibilityCallback = ::updateVisibility
 
     init {
         recyclerView.addOnScrollListener(this)
         recyclerView.addOnLayoutChangeListener(this)
-        backgroundColor = headerView.context.findColorByAttr(R.attr.colorBackground)
-        backgroundGrey = headerView.context.getExplorerItemBackground()
-        backgroundGrey = ColorUtils.compositeColors(backgroundGrey, backgroundColor)
     }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -59,10 +50,6 @@ class ExplorerHeaderDelegate(
         val composition = composition ?: return
         val currentDir = currentDir ?: return
 
-        val color = when (currentIndex % 2) {
-            0 -> backgroundGrey
-            else -> backgroundColor
-        }
         headerView.setComposition(composition)
         headerView.bind(currentDir)
     }

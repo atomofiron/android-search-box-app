@@ -66,39 +66,37 @@ class ItemBorderDecorator(
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val first = parent.getChildAt(0)
         first ?: return
+
+        rect.left  = parent.paddingLeft.toFloat()
+        rect.right = parent.width - parent.paddingRight.toFloat()
+
+        var frameRect: RectF? = null
+        val headerBottom = headerView.height.toFloat()
+        val parentBottom = parent.height.toFloat() - parent.paddingBottom
+
         val firstIndex = parent.getChildViewHolder(first).bindingAdapterPosition
         val lastIndex = firstIndex + parent.childCount.dec()
         var currentIndex = firstIndex
-        var frameRect: RectF? = null
-        val left = parent.paddingLeft.toFloat()
-        val right = parent.width - parent.paddingRight.toFloat()
-        val headerBottom = headerView.height.toFloat()
-        val parentBottom = parent.height.toFloat() - parent.paddingBottom
         for (child in parent) {
-            val prev = if (currentIndex == firstIndex) null else items.getOrNull(currentIndex.dec())
+            val prev = if (currentIndex == firstIndex) null else items[currentIndex.dec()]
             val item = items[currentIndex]
-            val next = if (currentIndex == lastIndex) null else items.getOrNull(currentIndex.inc())
+            val next = if (currentIndex == lastIndex) null else items[currentIndex.inc()]
             when {
                 // под открытой пустой папкой всё просто
                 item.isOpened && item.isEmpty -> {
                     frameRect = rect
-                    val top = child.bottom.toFloat()
-                    val bottom = child.bottom + emptySpace
-                    rect.set(left, top, right, bottom)
+                    rect.top = child.bottom.toFloat()
+                    rect.bottom = child.bottom + emptySpace
                 }
                 // под глубочайшей открытой директорией задаём с рассчётом на то,
                 // что дочерние айтемы может быть не видно
                 item.isOpened && item.path == currentDir?.path -> {
                     frameRect = rect
-                    rect.left = left
-                    rect.right = right
                     rect.top = child.bottom.toFloat()
                     rect.bottom = child.bottom + frameBottomOffset
                 }
                 item.parentPath == currentDir?.path -> {
                     frameRect = rect
-                    rect.left = left
-                    rect.right = right
                     // верхняя граница рамки или у низа хедера текущей директории,
                     // или у низа айтема текущей директории
                     if (item.parentPath != prev?.parentPath) {
@@ -121,7 +119,7 @@ class ItemBorderDecorator(
                 item.parentPath.length > next.parentPath.length -> {
                     paint.color = intermediateColor
                     val bottom = child.bottom + openedEndSpace / 2
-                    canvas.drawLine(left + innerPadding, bottom, right - innerPadding, bottom, paint)
+                    canvas.drawLine(rect.left + innerPadding, bottom, rect.right - innerPadding, bottom, paint)
                 }
             }
             currentIndex++
