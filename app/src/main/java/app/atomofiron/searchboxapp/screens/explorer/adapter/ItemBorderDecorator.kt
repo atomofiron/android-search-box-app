@@ -72,7 +72,7 @@ class ItemBorderDecorator(
 
         var frameRect: RectF? = null
         val headerBottom = headerView.height.toFloat()
-        val parentBottom = parent.height.toFloat() - parent.paddingBottom
+        val parentBottom = (parent.height - parent.paddingBottom).toFloat()
 
         val firstIndex = parent.getChildViewHolder(first).bindingAdapterPosition
         val lastIndex = firstIndex + parent.childCount.dec()

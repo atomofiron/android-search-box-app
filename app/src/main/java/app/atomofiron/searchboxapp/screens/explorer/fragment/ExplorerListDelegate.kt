@@ -53,21 +53,21 @@ class ExplorerListDelegate(
     fun scrollToCurrentDir(unit: Unit = Unit) {
         val dir = currentDir ?: return
         var lastChild = getLastChild() ?: return
-        val position = adapter.currentList.indexOf(dir)
+        val position = adapter.currentList.indexOfFirst { it.path == dir.path }
         val lastItemPosition = recyclerView.getChildLayoutPosition(lastChild)
         when {
             position > lastItemPosition -> {
                 recyclerView.scrollToPosition(position.dec())
                 recyclerView.post {
-                    lastChild = getLastChild()!!
-                    recyclerView.smoothScrollBy(0, lastChild.height * 3 / 2) // ItemSpaceDecorator
+                    lastChild = getLastChild() ?: return@post
+                    recyclerView.smoothScrollBy(0, lastChild.height * 2)
                 }
             }
             else -> {
                 recyclerView.scrollToPosition(position.inc())
                 recyclerView.post {
-                    val firstChild = getFirstChild()!!
-                    recyclerView.smoothScrollBy(0, -firstChild.height * 5 / 2) // ItemSpaceDecorator
+                    val firstChild = getFirstChild() ?: return@post
+                    recyclerView.smoothScrollBy(0, -firstChild.height * 3 / 2)
                 }
             }
         }
