@@ -22,7 +22,7 @@ class ExplorerListDelegate(
     private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, adapter)
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
-    private val borderDecorator = ItemBorderDecorator(adapter, headerView, headerDelegate::updateAfterLayoutChanged)
+    private val borderDecorator = ItemBorderDecorator(adapter, headerView, headerDelegate::onDecoratorDraw)
 
     init {
         recyclerView.addItemDecoration(gravityDecorator)

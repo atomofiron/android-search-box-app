@@ -20,7 +20,8 @@ class ExplorerHeaderDelegate(
     private var currentIndex = -1
 
     private var composition: ExplorerItemComposition? = null
-    private var layoutWasChanged = true
+    private var updateOnDecoratorDraw = true
+    private var bindingRequired = true
 
     init {
         recyclerView.addOnScrollListener(this)
@@ -28,8 +29,11 @@ class ExplorerHeaderDelegate(
     }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        layoutWasChanged = false
-        if (dy != 0) updateOffset()
+        if (bindingRequired) tryBind()
+        if (dy != 0) {
+            updateOnDecoratorDraw = false
+            updateOffset()
+        }
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
@@ -43,12 +47,11 @@ class ExplorerHeaderDelegate(
             null -> -1
             else -> adapter.currentList.indexOfFirst { it.uniqueId == item.uniqueId }
         }
-        tryBind()
-        updateOffset()
+        bindingRequired = true
     }
 
-    fun updateAfterLayoutChanged() {
-        if (layoutWasChanged) {
+    fun onDecoratorDraw() {
+        if (updateOnDecoratorDraw) {
             updateOffset()
         }
     }
@@ -59,6 +62,7 @@ class ExplorerHeaderDelegate(
 
         headerView.setComposition(composition)
         headerView.bind(currentDir)
+        bindingRequired = false
     }
 
     private fun updateOffset() {
@@ -97,6 +101,6 @@ class ExplorerHeaderDelegate(
     }
 
     override fun onLayoutChange(view: View, l: Int, t: Int, r: Int, b: Int, oL: Int, oT: Int, oR: Int, oB: Int) {
-        layoutWasChanged = true
+        updateOnDecoratorDraw = true
     }
 }

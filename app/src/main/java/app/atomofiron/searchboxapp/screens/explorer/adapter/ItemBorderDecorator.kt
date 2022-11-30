@@ -125,9 +125,8 @@ class ItemBorderDecorator(
             }
             currentIndex++
         }
-        frameRect?.drawFrame(canvas)?.let {
-            requestUpdateHeaderPosition()
-        }
+        frameRect?.drawFrame(canvas)
+        requestUpdateHeaderPosition()
     }
 
     private fun RectF.drawFrame(canvas: Canvas) {
