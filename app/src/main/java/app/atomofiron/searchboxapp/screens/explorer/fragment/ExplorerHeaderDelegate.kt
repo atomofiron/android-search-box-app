@@ -20,7 +20,7 @@ class ExplorerHeaderDelegate(
     private var currentIndex = -1
 
     private var composition: ExplorerItemComposition? = null
-    private val updateVisibilityCallback = ::updateVisibility
+    private var layoutWasChanged = true
 
     init {
         recyclerView.addOnScrollListener(this)
@@ -28,7 +28,8 @@ class ExplorerHeaderDelegate(
     }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        if (dy != 0) updateVisibility()
+        layoutWasChanged = false
+        if (dy != 0) updateOffset()
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
@@ -43,7 +44,13 @@ class ExplorerHeaderDelegate(
             else -> adapter.currentList.indexOfFirst { it.uniqueId == item.uniqueId }
         }
         tryBind()
-        updateVisibility()
+        updateOffset()
+    }
+
+    fun updateAfterLayoutChanged() {
+        if (layoutWasChanged) {
+            updateOffset()
+        }
     }
 
     private fun tryBind() {
@@ -54,7 +61,7 @@ class ExplorerHeaderDelegate(
         headerView.bind(currentDir)
     }
 
-    private fun updateVisibility() {
+    private fun updateOffset() {
         val bottom = when {
             currentIndex < 0 -> 0
             else -> getHeaderBottom()
@@ -90,7 +97,6 @@ class ExplorerHeaderDelegate(
     }
 
     override fun onLayoutChange(view: View, l: Int, t: Int, r: Int, b: Int, oL: Int, oT: Int, oR: Int, oB: Int) {
-        updateVisibility()
-        view.post(updateVisibilityCallback)
+        layoutWasChanged = true
     }
 }

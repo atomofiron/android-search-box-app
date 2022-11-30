@@ -15,7 +15,6 @@ import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.screens.explorer.adapter.*
-import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerHeaderDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
@@ -36,7 +35,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     private val placesAdapter = PlacesAdapter()
 
     private lateinit var listDelegate: ExplorerListDelegate
-    private lateinit var headerDelegate: ExplorerHeaderDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +65,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             recyclerView.adapter = placesAdapter
         }
         listDelegate = ExplorerListDelegate(binding.recyclerView, explorerAdapter, binding.explorerHeader, presenter)
-        headerDelegate = ExplorerHeaderDelegate(binding.recyclerView, binding.explorerHeader, explorerAdapter)
 
         viewState.onViewCollect()
         onApplyInsets(view)
@@ -84,13 +81,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     override fun ExplorerViewState.onViewCollect() {
         viewCollect(actions, collector = explorerAdapter::onAction)
         viewCollect(items, collector = explorerAdapter::submitList)
-        viewCollect(current) {
-            listDelegate.setCurrentDir(it)
-            headerDelegate.setCurrentDir(it)
-        }
+        viewCollect(current, collector = listDelegate::setCurrentDir)
         viewCollect(itemComposition) {
             listDelegate.setComposition(it)
-            headerDelegate.setComposition(it)
             explorerAdapter.setComposition(it)
         }
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)

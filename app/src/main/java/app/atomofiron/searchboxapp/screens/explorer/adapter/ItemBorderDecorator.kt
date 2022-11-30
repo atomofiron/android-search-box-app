@@ -16,6 +16,7 @@ import kotlin.math.min
 class ItemBorderDecorator(
     private val adapter: ExplorerAdapter,
     private val headerView: ExplorerHeaderView,
+    private val requestUpdateHeaderPosition: () -> Unit,
 ) : ItemDecoration() {
 
     private val items get() = adapter.currentList
@@ -124,7 +125,9 @@ class ItemBorderDecorator(
             }
             currentIndex++
         }
-        frameRect?.drawFrame(canvas)
+        frameRect?.drawFrame(canvas)?.let {
+            requestUpdateHeaderPosition()
+        }
     }
 
     private fun RectF.drawFrame(canvas: Canvas) {

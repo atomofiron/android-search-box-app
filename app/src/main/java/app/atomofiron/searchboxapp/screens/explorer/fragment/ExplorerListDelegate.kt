@@ -10,7 +10,7 @@ import app.atomofiron.searchboxapp.screens.explorer.adapter.*
 class ExplorerListDelegate(
     private val recyclerView: RecyclerView,
     private val adapter: ExplorerAdapter,
-    private val headerView: ExplorerHeaderView,
+    headerView: ExplorerHeaderView,
     private val output: ExplorerItemActionListener,
 ) {
     private var currentDir: Node? = null
@@ -19,9 +19,10 @@ class ExplorerListDelegate(
         null -> -1
         else -> adapter.currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
     }
+    private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, adapter)
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
-    private val borderDecorator = ItemBorderDecorator(adapter, headerView)
+    private val borderDecorator = ItemBorderDecorator(adapter, headerView, headerDelegate::updateAfterLayoutChanged)
 
     init {
         recyclerView.addItemDecoration(gravityDecorator)
@@ -44,10 +45,12 @@ class ExplorerListDelegate(
     fun setCurrentDir(item: Node?) {
         currentDir = item
         borderDecorator.setCurrentDir(item)
+        headerDelegate.setCurrentDir(item)
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
         backgroundDecorator.enabled = composition.visibleBg
+        headerDelegate.setComposition(composition)
     }
 
     fun scrollToCurrentDir(unit: Unit = Unit) {
