@@ -13,7 +13,7 @@ object MediaDelegate {
         val picture = BitmapFactory.decodeFile(path)
         val size = config.previewSize
         val width = if (picture.width < picture.height) size else picture.width * size / picture.height
-        val height = if (picture.height < picture.height) size else picture.height * size / picture.width
+        val height = if (picture.height < picture.width) size else picture.height * size / picture.width
         return ThumbnailUtils.extractThumbnail(picture, width, height)
     }
 }
