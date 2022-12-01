@@ -319,7 +319,7 @@ class ExplorerService(
                 skip -> skip = false
                 else -> levels.getOrNull(i.dec())?.getOpened()?.let {
                     val path = it.path.endingDot()
-                    val item = Node(path, it.parentPath, it.rootId, children = it.children, properties = it.properties, content = it.content)
+                    val item = Node(path, it.parentPath, rootId = it.rootId, children = it.children, properties = it.properties, content = it.content)
                     items.add(item)
                 }
             }
