@@ -17,7 +17,7 @@ import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewState
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.CreateDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.RenameDelegate
-import app.atomofiron.searchboxapp.utils.Explorer.isParentOf
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isParentOf
 import app.atomofiron.searchboxapp.utils.showCurtain
 import kotlinx.coroutines.CoroutineScope
 
