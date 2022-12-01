@@ -124,4 +124,9 @@ class BallsView @JvmOverloads constructor(
         radians = (animator.animatedValue as Float).toDouble()
         invalidate()
     }
+
+    fun setColor(color: Int) {
+        paintCircle.color = color
+        paintBall.color = color
+    }
 }

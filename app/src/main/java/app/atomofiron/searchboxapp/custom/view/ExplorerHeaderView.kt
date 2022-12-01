@@ -66,6 +66,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
             itemExplorerTvSize.setTextColor(content)
             itemExplorerTvDescription.setTextColor(content)
             itemExplorerErrorTv.setTextColor(content)
+            itemExplorerPs.setColor(content)
         }
     }
 
