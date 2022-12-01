@@ -30,12 +30,6 @@ class ExplorerInteractor(
         }
     }
 
-    fun openParent() {
-        scope.launch(context) {
-            service.tryOpenParent()
-        }
-    }
-
     fun updateItem(file: Node) {
         scope.launch(context) {
             service.tryCacheAsync(file)

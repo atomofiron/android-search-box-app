@@ -8,11 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView.Companion.makeOpened
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView.Companion.makeOpenedCurrent
+import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView.Companion.makeSeparator
 import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.util.NodeCallback
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
 import java.util.LinkedList
 
 class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
@@ -20,10 +22,13 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         private const val VIEW_TYPE_ANY = 1
         private const val VIEW_TYPE_OPENED = 2
         private const val VIEW_TYPE_OPENED_CURRENT = 3
+        private const val VIEW_TYPE_OPENED_SEPARATOR = 4
         private const val VIEW_POOL_MAX_COUNT = 30
     }
 
     lateinit var itemActionListener: ExplorerItemActionListener
+    lateinit var separatorClickListener: (Node) -> Unit
+    private val separatorListener = SeparatorItemActionListener()
     private var viewPool: Array<View?>? = null
 
     private lateinit var composition: ExplorerItemComposition
@@ -52,6 +57,7 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
     override fun getItemViewType(position: Int): Int {
         val item = currentList[position]
         return when {
+            item.isDot() -> VIEW_TYPE_OPENED_SEPARATOR
             item.isCurrent -> VIEW_TYPE_OPENED_CURRENT
             item.isOpened -> VIEW_TYPE_OPENED
             else -> VIEW_TYPE_ANY
@@ -66,6 +72,7 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
         when (viewType) {
             VIEW_TYPE_OPENED -> ItemExplorerBinding.bind(view).makeOpened()
             VIEW_TYPE_OPENED_CURRENT -> ItemExplorerBinding.bind(view).makeOpenedCurrent()
+            VIEW_TYPE_OPENED_SEPARATOR -> ItemExplorerBinding.bind(view).makeSeparator()
         }
         return ExplorerHolder(view)
     }
@@ -73,7 +80,10 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
     override fun onBindViewHolder(holder: ExplorerHolder, position: Int) {
         val item = getItem(position)
         holder.onBind(item)
-        holder.setOnItemActionListener(itemActionListener)
+        when {
+            item.isDot() -> holder.setOnItemActionListener(separatorListener)
+            else -> holder.setOnItemActionListener(itemActionListener)
+        }
         holder.bindComposition(composition)
     }
 
@@ -107,5 +117,12 @@ class ExplorerAdapter : ListAdapter<Node, ExplorerHolder>(NodeCallback()) {
 
     private fun inflateNewView(inflater: LayoutInflater, parent: ViewGroup): View {
         return inflater.inflate(R.layout.item_explorer, parent, false)
+    }
+
+    private inner class SeparatorItemActionListener : ExplorerItemActionListener {
+        override fun onItemVisible(item: Node) = Unit
+        override fun onItemLongClick(item: Node) = Unit
+        override fun onItemCheck(item: Node, isChecked: Boolean) = Unit
+        override fun onItemClick(item: Node) = separatorClickListener(item)
     }
 }

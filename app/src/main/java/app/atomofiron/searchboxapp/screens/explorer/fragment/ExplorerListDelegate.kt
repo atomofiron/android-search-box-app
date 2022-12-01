@@ -35,11 +35,14 @@ class ExplorerListDelegate(
 
     private fun getLastChild(): View? = recyclerView.getChildAt(recyclerView.childCount.dec())
 
-    fun isCurrentDirVisible(): Boolean {
+    fun isCurrentDirVisible(): Boolean = isVisible(headerItemPosition)
+
+    fun isVisible(position: Int): Boolean {
+        if (position < 0) return false
         val firstChild = getFirstChild() ?: return false
         val topItemPosition = recyclerView.getChildLayoutPosition(firstChild)
         val bottomItemPosition = recyclerView.getChildLayoutPosition(getLastChild()!!)
-        return headerItemPosition in topItemPosition..bottomItemPosition
+        return position in topItemPosition..bottomItemPosition
     }
 
     fun setCurrentDir(item: Node?) {
@@ -53,10 +56,9 @@ class ExplorerListDelegate(
         headerDelegate.setComposition(composition)
     }
 
-    fun scrollToCurrentDir(unit: Unit = Unit) {
-        val dir = currentDir ?: return
+    fun scrollTo(item: Node) {
         var lastChild = getLastChild() ?: return
-        val position = adapter.currentList.indexOfFirst { it.path == dir.path }
+        val position = adapter.currentList.indexOfFirst { it.path == item.path }
         val lastItemPosition = recyclerView.getChildLayoutPosition(lastChild)
         when {
             position > lastItemPosition -> {
@@ -85,7 +87,7 @@ class ExplorerListDelegate(
 
         override fun onItemClick(item: Node) = when {
             isCurrentDirVisible() -> output.onItemClick(item)
-            else -> scrollToCurrentDir()
+            else -> scrollTo(item)
         }
     }
 }

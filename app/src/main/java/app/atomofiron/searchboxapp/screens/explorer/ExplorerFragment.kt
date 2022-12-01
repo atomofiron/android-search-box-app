@@ -14,12 +14,14 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.explorer.adapter.*
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
 import app.atomofiron.searchboxapp.utils.getString
 import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -41,6 +43,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         initViewModel(this, ExplorerViewModel::class, savedInstanceState)
 
         explorerAdapter.itemActionListener = presenter
+        explorerAdapter.separatorClickListener = ::onSeparatorClick
         placesAdapter.itemActionListener = presenter
     }
 
@@ -89,7 +92,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
         viewCollect(places, collector = placesAdapter::setItems)
-        viewCollect(scrollToCurrentDir, collector = listDelegate::scrollToCurrentDir)
+        viewCollect(scrollTo, collector = listDelegate::scrollTo)
         viewCollect(alerts, collector = ::showAlert)
     }
 
@@ -133,6 +136,14 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         explorerAdapter.notifyItemChanged(0)
+    }
+
+    private fun onSeparatorClick(item: Node) {
+        val path = item.withoutDot()
+        val index = explorerAdapter.currentList.indexOfFirst { it.path == path }
+        val dir = explorerAdapter.currentList.getOrNull(index)
+        dir ?: return
+        presenter.onSeparatorClick(dir, listDelegate.isVisible(index))
     }
 
     private fun showPermissionRequiredWarning(unit: Unit) {

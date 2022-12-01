@@ -20,20 +20,16 @@ class ItemBorderDecorator(
 ) : ItemDecoration() {
 
     private val items get() = adapter.currentList
-    private val intermediateColor = headerView.context.findColorByAttr(R.attr.colorSecondary)
     private val currentColor = headerView.context.findColorByAttr(R.attr.colorTertiary)
-    private val innerPadding = headerView.resources.getDimension(R.dimen.content_margin)
     private val cornerRadius = headerView.resources.getDimension(R.dimen.explorer_border_corner_radius)
     private val borderWidth = headerView.resources.getDimension(R.dimen.explorer_border_width)
-    // под открытой пустой директорией
-    private val emptySpace = cornerRadius * 2
     // под открытой не пустой директорией
-    private val openedSpace = cornerRadius
+    private val space = cornerRadius
     // под последним айтемом глубочайшей директории
-    private val openedEndSpace = cornerRadius * 2
+    private val doubleSpace = cornerRadius * 2
     // расстояние между низом последнего айтема глубочайшей директории и нижним краем рамки,
     // а так же минимальное расстояние между низом открытой директории и нижним краем рамки
-    private val frameBottomOffset = openedEndSpace / 2 + borderWidth / 2
+    private val frameBottomOffset = doubleSpace / 2 + borderWidth / 2
 
     private var currentDir: Node? = null
     private val paint = Paint()
@@ -57,9 +53,10 @@ class ItemBorderDecorator(
         val item = items[holder.bindingAdapterPosition]
         val next = items.getOrNull(holder.bindingAdapterPosition.inc())
         outRect.bottom = when {
-            item.isOpened && item.isEmpty -> emptySpace
-            item.isOpened -> openedSpace
-            item.parentPath != next?.parentPath -> openedEndSpace
+            item.isOpened && item.isEmpty -> doubleSpace
+            item.isOpened -> space
+            item.parentPath != next?.parentPath && item.parentPath == currentDir?.path -> doubleSpace
+            item.parentPath != next?.parentPath -> space
             else -> return
         }.toInt()
     }
@@ -87,7 +84,7 @@ class ItemBorderDecorator(
                 item.isOpened && item.isEmpty -> {
                     frameRect = rect
                     rect.top = child.bottom.toFloat()
-                    rect.bottom = child.bottom + emptySpace
+                    rect.bottom = child.bottom + doubleSpace
                 }
                 // под глубочайшей открытой директорией задаём с рассчётом на то,
                 // что дочерние айтемы может быть не видно
@@ -101,7 +98,7 @@ class ItemBorderDecorator(
                     // верхняя граница рамки или у низа хедера текущей директории,
                     // или у низа айтема текущей директории
                     if (item.parentPath != prev?.parentPath) {
-                        rect.top = child.top - openedSpace
+                        rect.top = child.top - space
                         rect.top = max(rect.top, headerBottom)
                     }
                     // top: хедер уезжает вместе с низом последнего айтема текущей директории
@@ -115,12 +112,6 @@ class ItemBorderDecorator(
                         rect.bottom = min(rect.bottom, parentBottom)
                         rect.bottom = max(rect.bottom, rect.top + frameBottomOffset)
                     }
-                }
-                next == null -> Unit
-                item.parentPath.length > next.parentPath.length -> {
-                    paint.color = intermediateColor
-                    val bottom = child.bottom + openedEndSpace / 2
-                    canvas.drawLine(rect.left + innerPadding, bottom, rect.right - innerPadding, bottom, paint)
                 }
             }
             currentIndex++

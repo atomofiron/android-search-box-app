@@ -25,7 +25,7 @@ class ExplorerViewState(
     val manyFilesOptions = listOf(R.id.menu_remove, R.id.menu_share)
 
     val permissionRequiredWarning = ChannelFlow<Unit>()
-    val scrollToCurrentDir = ChannelFlow<Unit>()
+    val scrollTo = ChannelFlow<Node>()
     val historyDrawerGravity = MutableStateFlow(Gravity.START)
     val places = MutableStateFlow<List<XPlace>>(listOf())
     val itemComposition = DeferredStateFlow<ExplorerItemComposition>()
@@ -38,5 +38,7 @@ class ExplorerViewState(
         permissionRequiredWarning(scope)
     }
 
-    fun scrollToCurrentDir() = scrollToCurrentDir.invoke(scope)
+    fun scrollTo(item: Node) {
+        scrollTo[scope] = item
+    }
 }

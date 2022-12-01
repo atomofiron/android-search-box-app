@@ -26,6 +26,8 @@ class ExplorerHeaderView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
     companion object {
+        fun ItemExplorerBinding.makeSeparator() = makeOpened()
+
         fun ItemExplorerBinding.makeOpened() {
             val background = root.context.findColorByAttr(R.attr.colorSecondary)
             val content = root.context.findColorByAttr(R.attr.colorSurface)

@@ -336,6 +336,10 @@ object ExplorerDelegate {
 
     fun NodeProperties.isLink(): Boolean = access.firstOrNull() == LINK_CHAR
 
+    fun Node.isDot(): Boolean = path.endsWith("/.")
+
+    fun Node.withoutDot(): String = path.replace(Regex("(?<=\\/)\\.$"), "")
+
     fun Node.delete(useSu: Boolean): Node? {
         val output = Shell.exec(Shell[Shell.RM_RF].format(path), useSu)
         return when {

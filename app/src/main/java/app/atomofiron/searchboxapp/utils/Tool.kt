@@ -16,6 +16,8 @@ object Tool {
         }
     }
 
+    fun String.endingDot(): String = "${this}."
+
     fun InputStream.writeTo(stream: OutputStream): Boolean {
         var remaining = available()
         val bytes = ByteArray(1024)

@@ -6,6 +6,7 @@ import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
@@ -83,8 +84,16 @@ class ExplorerPresenter(
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 
-    fun onVolumeUp(isCurrentDirVisible: Boolean) = when {
-        isCurrentDirVisible -> explorerInteractor.openParent()
-        else -> viewState.scrollToCurrentDir()
+    fun onSeparatorClick(item: Node, isTargetVisible: Boolean) = scrollOrOpenParent(item, isTargetVisible)
+
+    fun onVolumeUp(isCurrentDirVisible: Boolean) {
+        val currentDir = viewState.current.value
+        currentDir ?: return
+        scrollOrOpenParent(currentDir, isCurrentDirVisible)
+    }
+
+    private fun scrollOrOpenParent(item: Node, isTargetVisible: Boolean) = when {
+        isTargetVisible -> explorerInteractor.toggleDir(item)
+        else -> viewState.scrollTo(item)
     }
 }

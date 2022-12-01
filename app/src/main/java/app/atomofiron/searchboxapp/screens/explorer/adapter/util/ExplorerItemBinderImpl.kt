@@ -17,6 +17,8 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getExternalStorageDirectory
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
+import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import app.atomofiron.searchboxapp.utils.getString
 
 class ExplorerItemBinderImpl(
@@ -77,6 +79,7 @@ class ExplorerItemBinderImpl(
         val externalStoragePath = itemView.context.getExternalStorageDirectory()
         if (externalStoragePath != null) {
             rootsAliases[externalStoragePath] = R.string.internal_storage
+            rootsAliases[externalStoragePath.endingDot()] = R.string.internal_storage
         }
         rootsAliases[Const.SDCARD] = R.string.internal_storage
         rootsAliases[Const.ROOT] = R.string.root
@@ -113,7 +116,7 @@ class ExplorerItemBinderImpl(
         tvError.isVisible = error != null
 
         cbBox.isChecked = item.isChecked
-        cbBox.isInvisible = item.withOperation
+        cbBox.isInvisible = item.isDot() || item.withOperation
         psProgress.isVisible = item.withOperation
     }
 
@@ -165,6 +168,7 @@ class ExplorerItemBinderImpl(
     }
 
     private fun Node.defineIcon(): Int {
+        if (isDot()) return R.drawable.ic_double_arrow_up
         return when (val content = content) {
             is NodeContent.Unknown,
             is NodeContent.Link -> R.drawable.ic_explorer_link

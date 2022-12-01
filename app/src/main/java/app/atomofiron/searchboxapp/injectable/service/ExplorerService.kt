@@ -21,6 +21,7 @@ import app.atomofiron.searchboxapp.utils.ExplorerDelegate.rename
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.sortByName
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.theSame
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
+import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import app.atomofiron.searchboxapp.utils.Tool.writeTo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -124,16 +125,6 @@ class ExplorerService(
             }
             if (state?.isCaching != true) job.cancel()
             return
-        }
-    }
-
-    suspend fun tryOpenParent() {
-        withTab {
-            if (levels.size <= 1) return
-            levels.removeLast()
-            val last = levels.last()
-            val index = last.getOpenedIndex()
-            last.children[index] = last.children[index].close()
         }
     }
 
@@ -306,6 +297,7 @@ class ExplorerService(
     }
 
     private fun NodeTab.renderNodes(): List<Node> {
+        var isEmpty = false
         val count = levels.sumOf { it.count }
         val items = ArrayList<Node>(count)
         for (i in levels.indices) {
@@ -314,12 +306,23 @@ class ExplorerService(
                 var item = updateStateFor(level.children[j])
                 if (item.isOpened && i == levels.lastIndex.dec()) {
                     item = item.copy(isCurrent = true)
+                    isEmpty = item.isEmpty
                 }
                 items.add(item)
             }
         }
+        var skip = true
         for (i in levels.indices.reversed()) {
             val level = levels[i]
+            when {
+                isEmpty -> isEmpty = false
+                skip -> skip = false
+                else -> levels.getOrNull(i.dec())?.getOpened()?.let {
+                    val path = it.path.endingDot()
+                    val item = Node(path, it.parentPath, it.rootId, children = it.children, properties = it.properties, content = it.content)
+                    items.add(item)
+                }
+            }
             for (j in level.getOpenedIndex().inc() until level.count) {
                 items.add(updateStateFor(level.children[j]))
             }
