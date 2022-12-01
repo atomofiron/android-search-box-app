@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
@@ -16,7 +16,7 @@ import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.Explorer.getExternalStorageDirectory
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getExternalStorageDirectory
 import app.atomofiron.searchboxapp.utils.getString
 
 class ExplorerItemBinderImpl(
@@ -31,6 +31,7 @@ class ExplorerItemBinderImpl(
     private lateinit var item: Node
 
     private val ivIcon = itemView.findViewById<ImageView>(R.id.item_explorer_iv_icon)
+    private val ivThumbnail = itemView.findViewById<ImageView>(R.id.item_explorer_iv_thumbnail)
     private val tvName = itemView.findViewById<TextView>(R.id.item_explorer_tv_title)
     private val tvDescription = itemView.findViewById<TextView>(R.id.item_explorer_tv_description)
     private val tvDate = itemView.findViewById<TextView>(R.id.item_explorer_tv_date)
@@ -90,6 +91,10 @@ class ExplorerItemBinderImpl(
 
         ivIcon.setImageResource(item.defineIcon())
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
+        val thumbnail = (item.content as? NodeContent.File)?.thumbnail
+        ivThumbnail.setImageBitmap(thumbnail)
+        ivThumbnail.isVisible = thumbnail != null
+        ivIcon.isVisible = thumbnail == null
 
         val aliasId = rootsAliases[item.path]
         tvName.text = when (aliasId) {
@@ -108,8 +113,8 @@ class ExplorerItemBinderImpl(
         tvError.isVisible = error != null
 
         cbBox.isChecked = item.isChecked
-        cbBox.isGone = item.isDeleting
-        psProgress.isVisible = item.isDeleting
+        cbBox.isInvisible = item.withOperation
+        psProgress.isVisible = item.withOperation
     }
 
     override fun setOnItemActionListener(listener: ExplorerItemActionListener?) {

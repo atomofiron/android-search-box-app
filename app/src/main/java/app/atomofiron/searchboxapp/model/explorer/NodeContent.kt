@@ -2,7 +2,12 @@ package app.atomofiron.searchboxapp.model.explorer
 
 import android.graphics.Bitmap
 
-sealed class NodeContent(val mimeType: String? = null) {
+sealed class NodeContent(
+    // '*/*' - значит тип неизвестен,
+    // null - пока неизвестно, известен тип или нет,
+    // поэтому тут null
+    val mimeType: String? = null,
+) {
 
     object Unknown : NodeContent()
     object Link : NodeContent()
@@ -13,10 +18,19 @@ sealed class NodeContent(val mimeType: String? = null) {
         }
     }
 
-    sealed class File(mimeType: String? = null) : NodeContent(mimeType) {
+    sealed class File(
+        mimeType: String? = null,
+        val thumbnail: Bitmap? = null,
+    ) : NodeContent(mimeType) {
+        // прямая связь
+        val isEmpty: Boolean = thumbnail == null
+
         data class Movie(val duration: Int = 0, val preview: Bitmap? = null) : File()
         data class Music(val duration: Int = 0, val cover: Bitmap? = null) : File()
-        sealed class Picture(mimeType: String, val thumbnail: Bitmap? = null) : File(mimeType) {
+        sealed class Picture(
+            mimeType: String,
+            thumbnail: Bitmap? = null,
+        ) : File(mimeType, thumbnail) {
             class Png(thumbnail: Bitmap? = null) : Picture("image/png", thumbnail)
             class Jpeg(thumbnail: Bitmap? = null) : Picture("image/jpeg", thumbnail)
             class Gif(thumbnail: Bitmap? = null) : Picture("image/gif", thumbnail)

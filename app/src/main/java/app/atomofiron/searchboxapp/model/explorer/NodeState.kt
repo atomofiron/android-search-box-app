@@ -11,8 +11,8 @@ data class NodeState(
     val withoutState: Boolean = cachingJob == null && operation is Operation.None
 
     val isCaching: Boolean = cachingJob != null
-    val withOperation: Boolean = operation !is Operation.None
-    override val isDeleting: Boolean = operation is Operation.Deleting
+    val isDeleting: Boolean = operation is Operation.Deleting
+    override val withOperation: Boolean = operation !is Operation.None
 }
 
 sealed class Operation {
@@ -25,6 +25,6 @@ sealed class Operation {
 }
 
 interface INodeState {
-    val isDeleting: Boolean
     val operation: Operation?
+    val withOperation: Boolean
 }

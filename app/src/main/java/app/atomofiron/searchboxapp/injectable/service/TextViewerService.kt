@@ -6,6 +6,7 @@ import kotlinx.coroutines.sync.withLock
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.logE
+import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
@@ -13,7 +14,7 @@ import app.atomofiron.searchboxapp.model.textviewer.LineIndexMatches
 import app.atomofiron.searchboxapp.model.textviewer.TextLine
 import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.Explorer.update
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
 
@@ -106,7 +107,7 @@ class TextViewerService(
         textViewerChannel.matchesCount.value = null
 
         fileSize = getFileSize()
-        item.update(useSu)
+        item.update(CacheConfig(useSu))
         currentTask = task
 
         when (task?.params) {

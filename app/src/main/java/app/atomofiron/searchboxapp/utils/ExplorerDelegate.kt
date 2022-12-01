@@ -2,11 +2,13 @@ package app.atomofiron.searchboxapp.utils
 
 import android.content.Context
 import android.util.Log
+import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
+import app.atomofiron.searchboxapp.utils.MediaDelegate.getThumbnail
 import kotlinx.coroutines.Job
 
-object Explorer {
+object ExplorerDelegate {
     const val ROOT_PARENT_PATH = "root_parent_path"
 
     private const val TOTAL = "total"
@@ -29,7 +31,7 @@ object Explorer {
     private const val FILE_TAR = "POSIX tar archive"
     private const val FILE_UTF8_TEXT = "UTF-8 text"
     private const val FILE_ASCII_TEXT = "ASCII text"
-    private const val FILE_DATA = "data" // pdf mp4 mp3 ogg rar
+    private const val FILE_DATA = "data" // pdf mp4 mp3 ogg rar webp
     private const val FILE_EMPTY = "empty"
     private const val FILE_BOOTING = "Android bootimg" // img
     private const val FILE_SH_SCRIPT = "/bin/sh script" // sh
@@ -121,7 +123,7 @@ object Explorer {
         }
         val item = Node(path = targetPath, parentPath = parent.path, rootId = parent.rootId, content = content)
         return when {
-            output.success -> item.update(useSu)
+            output.success -> item.update(CacheConfig(useSu))
             else -> item.copy(error = output.error.toNodeError(targetPath))
         }
     }
@@ -170,11 +172,6 @@ object Explorer {
         )
     }
 
-    // todo java.util.ConcurrentModificationException
-    fun Node.hasChild(item: Node): Boolean {
-        return children?.find { it.uniqueId == item.uniqueId } != null
-    }
-
     fun getDirectoryType(name: String): Type {
         return when (name) {
             "Android" -> Type.Android
@@ -187,15 +184,15 @@ object Explorer {
         }
     }
 
-    fun Node.update(useSu: Boolean): Node {
-        val output = Shell.exec(Shell[Shell.LS_LAHLD].format(path), useSu)
+    fun Node.update(config: CacheConfig): Node {
+        val output = Shell.exec(Shell[Shell.LS_LAHLD].format(path), config.useSu)
         val lines = output.output.split("\n").filter { it.isNotEmpty() }
         return when {
             output.success && lines.size == 1 -> parseNode(lines.first()).run {
                 when {
                     isCached -> this
-                    isDirectory -> cacheDir(useSu)
-                    else -> cacheFile(useSu)
+                    isDirectory -> cacheDir(config.useSu)
+                    else -> cacheFile(config)
                 }
             }
             output.success -> copy(children = null, error = NodeError.Unknown)
@@ -213,12 +210,13 @@ object Explorer {
         }
     }
 
-    private fun Node.cacheFile(useSu: Boolean): Node {
-        val output = Shell.exec(Shell[Shell.FILE_B].format(path), useSu)
-        val content =  when {
+    private fun Node.cacheFile(config: CacheConfig): Node {
+        val output = Shell.exec(Shell[Shell.FILE_B].format(path), config.useSu)
+        var content = content
+        content = when {
             !output.success || output.output.isBlank() -> path.resolveFileType()
-            output.output.startsWith(FILE_PNG) -> NodeContent.File.Picture.Png()
-            output.output.startsWith(FILE_JPEG) -> NodeContent.File.Picture.Jpeg()
+            output.output.startsWith(FILE_PNG) -> content.ifEmpty { NodeContent.File.Picture.Png(getThumbnail(config)) }
+            output.output.startsWith(FILE_JPEG) -> content.ifEmpty { NodeContent.File.Picture.Jpeg(getThumbnail(config)) }
             output.output.startsWith(FILE_ZIP) -> when {
                 path.endsWith(EXT_APK, ignoreCase = true) -> NodeContent.File.Apk()
                 else -> NodeContent.File.Archive.Zip()
@@ -239,6 +237,10 @@ object Explorer {
             }
         }
         return copy(content = content)
+    }
+
+    private inline fun <reified T : NodeContent.File> NodeContent?.ifEmpty(action: () -> T): T {
+        return if (this !is T || isEmpty) action() else this
     }
 
     fun Node.sortByName(): Node {

@@ -1,7 +1,7 @@
 package app.atomofiron.searchboxapp.model.explorer
 
-import app.atomofiron.searchboxapp.utils.Explorer.name
-import app.atomofiron.searchboxapp.utils.Explorer.parent
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.name
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.parent
 
 
 data class Node constructor(
@@ -49,6 +49,7 @@ data class Node constructor(
         other.isFile != isFile -> false
         other.isChecked != isChecked -> false
         other.isCurrent != isCurrent -> false
+        other.content !== content -> false
         else -> true
     }
 

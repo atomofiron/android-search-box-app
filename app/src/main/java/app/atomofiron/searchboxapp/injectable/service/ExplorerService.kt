@@ -5,20 +5,22 @@ import android.content.res.AssetManager
 import android.net.Uri
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.set
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.*
-import app.atomofiron.searchboxapp.utils.Explorer.close
-import app.atomofiron.searchboxapp.utils.Explorer.delete
-import app.atomofiron.searchboxapp.utils.Explorer.open
-import app.atomofiron.searchboxapp.utils.Explorer.rename
-import app.atomofiron.searchboxapp.utils.Explorer.sortByName
-import app.atomofiron.searchboxapp.utils.Explorer.theSame
-import app.atomofiron.searchboxapp.utils.Explorer.update
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.delete
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.open
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.rename
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.sortByName
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.theSame
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.Tool.writeTo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -38,7 +40,7 @@ class ExplorerService(
     private val scope = appStore.scope
 
     private val defaultStoragePath = Tool.getExternalStorageDirectory(context)
-    private val useSu: Boolean get() = preferenceStore.useSu.value
+    private var config = CacheConfig(useSu = false)
 
     private val states = LinkedList<NodeState>()
     private val mutex = Mutex()
@@ -50,6 +52,11 @@ class ExplorerService(
                 copyToybox(context)
             }
         }
+        // todo try move out
+        val thumbnailSize = context.resources.getDimensionPixelSize(R.dimen.thumbnail_size)
+        preferenceStore.useSu.collect(scope) {
+            config = CacheConfig(it, thumbnailSize)
+        }
         explorerStore.current.collect(scope) {
             preferenceStore.setOpenedDirPath(it?.path)
         }
@@ -60,13 +67,13 @@ class ExplorerService(
 
     suspend fun trySetRoots(paths: Collection<String>) {
         val roots = paths.parMapMut {
-            Explorer.asRoot(it)
-                .update(useSu)
+            ExplorerDelegate.asRoot(it)
+                .update(config)
                 .sortByName()
         }
         withTab {
             levels.clear()
-            levels.add(NodeLevel(Explorer.ROOT_PARENT_PATH, roots))
+            levels.add(NodeLevel(ExplorerDelegate.ROOT_PARENT_PATH, roots))
         }
     }
 
@@ -135,7 +142,7 @@ class ExplorerService(
             levels.findNode(it.uniqueId)
         }
         item ?: return
-        val renamed = item.rename(name, useSu)
+        val renamed = item.rename(name, config.useSu)
         withTab {
             val (_, level) = levels.findIndexed(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
@@ -145,7 +152,7 @@ class ExplorerService(
     }
 
     suspend fun tryCreate(dir: Node, name: String, directory: Boolean) {
-        val item = Explorer.create(dir, name, directory, useSu)
+        val item = ExplorerDelegate.create(dir, name, directory, config.useSu)
         withTab {
             val (_, level) = levels.findIndexed(dir.path)
             level?.children ?: return
@@ -207,7 +214,7 @@ class ExplorerService(
         }.forEach { item ->
             scope.launch {
                 delay(1000)
-                val result = item.delete(useSu)
+                val result = item.delete(config.useSu)
                 withTab {
                     levels.replaceItem(item.uniqueId, item.parentPath, result)
                     states.updateState(item.uniqueId) { null }
@@ -254,7 +261,7 @@ class ExplorerService(
     }
 
     private fun MutableList<NodeLevel>.dropClosedLevels() {
-        var parentPath = Explorer.ROOT_PARENT_PATH
+        var parentPath = ExplorerDelegate.ROOT_PARENT_PATH
         var chained = true
         for (i in indices) {
             when {
@@ -339,7 +346,7 @@ class ExplorerService(
             val content = item.content as? NodeContent.Directory
             content ?: continue
             if (content.type != Type.Ordinary) continue
-            val type = Explorer.getDirectoryType(item.name)
+            val type = ExplorerDelegate.getDirectoryType(item.name)
             if (type == Type.Ordinary) continue
             level.children[i] = item.copy(content = content.copy(type = type))
         }
@@ -352,7 +359,7 @@ class ExplorerService(
 
     private suspend fun CoroutineScope.cacheSync(item: Node) {
         if (!isActive) return
-        val cached = item.update(useSu).sortByName()
+        val cached = item.update(config).sortByName()
         withTab {
             states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
