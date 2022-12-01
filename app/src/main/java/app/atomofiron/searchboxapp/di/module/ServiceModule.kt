@@ -2,16 +2,15 @@ package app.atomofiron.searchboxapp.di.module
 
 import android.app.NotificationManager
 import android.content.ClipboardManager
+import android.content.ContentResolver
 import android.content.Context
+import android.content.pm.PackageInstaller
 import android.content.res.AssetManager
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
-import app.atomofiron.searchboxapp.injectable.service.FinderService
-import app.atomofiron.searchboxapp.injectable.service.ResultService
-import app.atomofiron.searchboxapp.injectable.service.WindowService
-import app.atomofiron.searchboxapp.injectable.service.ExplorerService
+import app.atomofiron.searchboxapp.injectable.service.*
 import app.atomofiron.searchboxapp.injectable.store.*
 import javax.inject.Singleton
 
@@ -53,4 +52,12 @@ open class ServiceModule {
     fun windowService(
         appStore: AppStore,
     ): WindowService = WindowService(appStore)
+
+    @Provides
+    @Singleton
+    fun apkService(
+        appStore: AppStore,
+        packageInstaller: PackageInstaller,
+        contentResolver: ContentResolver,
+    ): ApkService = ApkService(appStore.context, packageInstaller, contentResolver)
 }

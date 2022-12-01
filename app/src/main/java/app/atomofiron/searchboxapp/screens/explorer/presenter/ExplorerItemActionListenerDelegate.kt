@@ -4,10 +4,12 @@ import android.Manifest
 import android.os.Build.VERSION.SDK_INT
 import android.os.Environment
 import app.atomofiron.common.util.Android
+import app.atomofiron.searchboxapp.injectable.interactor.ApkInteractor
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent.File.Apk
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewState
@@ -20,6 +22,7 @@ class ExplorerItemActionListenerDelegate(
     private val preferenceStore: PreferenceStore,
     private val router: ExplorerRouter,
     private val explorerInteractor: ExplorerInteractor,
+    private val apkInteractor: ApkInteractor,
 ) : ExplorerItemActionListener {
 
     override fun onItemLongClick(item: Node) {
@@ -58,6 +61,7 @@ class ExplorerItemActionListenerDelegate(
     private fun openItem(item: Node) {
         when {
             item.isDirectory -> explorerInteractor.toggleDir(item)
+            item.content is Apk -> apkInteractor.installApk(item)
             else -> router.showFile(item)
         }
     }

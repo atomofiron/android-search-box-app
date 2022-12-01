@@ -5,6 +5,7 @@ import android.content.res.AssetManager
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
+import app.atomofiron.searchboxapp.injectable.interactor.ApkInteractor
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -53,6 +54,7 @@ class ExplorerModule {
         preferenceStore: PreferenceStore,
         router: ExplorerRouter,
         explorerInteractor: ExplorerInteractor,
+        apkInteractor: ApkInteractor,
     ): ExplorerItemActionListenerDelegate {
         return ExplorerItemActionListenerDelegate(
             viewState,
@@ -61,6 +63,7 @@ class ExplorerModule {
             preferenceStore,
             router,
             explorerInteractor,
+            apkInteractor,
         )
     }
 
@@ -138,4 +141,5 @@ interface ExplorerDependencies {
     fun preferenceStore(): PreferenceStore
     fun appStore(): AppStore
     fun curtainChannel(): CurtainChannel
+    fun apkInteractor(): ApkInteractor
 }

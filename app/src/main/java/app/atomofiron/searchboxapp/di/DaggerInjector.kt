@@ -13,6 +13,9 @@ object DaggerInjector {
             .appContext(application.applicationContext)
             .appWatcher(AppWatcherProxy())
             .assetManager(application.assets)
+            .packageManager(application.packageManager)
+            .packageInstaller(application.packageManager.packageInstaller)
+            .contentResolver(application.contentResolver)
             .build()
     }
 }

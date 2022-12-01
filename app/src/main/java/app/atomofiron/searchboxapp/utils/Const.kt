@@ -53,6 +53,7 @@ object Const {
     const val FOREGROUND_INTENT_REQUEST_CODE = 102
     const val REQUEST_CODE_MARKET_UPDATE = 7453
     const val NOTIFICATION_ID_UPDATE = 9485
+    const val REQUEST_CODE_INSTALL = 5673
 
     const val DATE_PATTERN = "yyyy-MM-DD_HH-mm-ss"
     const val MIME_TYPE_TEXT = "text/plain"
