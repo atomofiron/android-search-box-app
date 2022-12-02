@@ -31,6 +31,7 @@
         android:layout_marginEnd="@dimen/common_margin_half"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_explorer_picture"
+        android:background="@drawable/clip_item_thumbnail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/barrier_start"

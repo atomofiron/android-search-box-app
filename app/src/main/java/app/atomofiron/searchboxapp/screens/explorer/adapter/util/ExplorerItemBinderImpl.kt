@@ -83,6 +83,8 @@ class ExplorerItemBinderImpl(
         }
         rootsAliases[Const.SDCARD] = R.string.internal_storage
         rootsAliases[Const.ROOT] = R.string.root
+
+        ivThumbnail.clipToOutline = true
     }
 
     override fun onBind(item: Node) {
