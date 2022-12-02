@@ -23,7 +23,7 @@ data class Node constructor(
 ) : INodeProperties by properties, INodeState by state {
     companion object {
         private val stateStub = NodeState(0)
-        private fun String.toUniqueId(): Int = hashCode()
+        fun String.toUniqueId(): Int = hashCode()
     }
     val isRoot: Boolean = uniqueId == rootId
 

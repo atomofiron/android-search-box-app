@@ -14,6 +14,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.model.explorer.*
+import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
@@ -45,19 +46,19 @@ class ExplorerItemBinderImpl(
 
     var onItemActionListener: ExplorerItemBinderActionListener? = null
 
-    var rootsAliases = HashMap<String, Int>()
+    private val rootsAliases = HashMap<Int, Int>()
 
     private val defaultBoxTintList: ColorStateList by lazy(LazyThreadSafetyMode.NONE) { cbBox.buttonTintList!! }
     private val transparentBoxTintList: ColorStateList
 
-    private var onClickListener: ((View) -> Unit) = {
+    private val onClickListener: ((View) -> Unit) = {
         onItemActionListener?.onItemClick(item)
     }
-    private var onLongClickListener: ((View) -> Boolean) = {
+    private val onLongClickListener: ((View) -> Boolean) = {
         onItemActionListener?.onItemLongClick(item)
         true
     }
-    private var onCheckListener: ((View, Boolean) -> Unit) = { _, checked ->
+    private val onCheckListener: ((View, Boolean) -> Unit) = { _, checked ->
         if (checked != item.isChecked) {
             onItemActionListener?.onItemCheck(item, checked)
         }
@@ -79,11 +80,11 @@ class ExplorerItemBinderImpl(
 
         val externalStoragePath = itemView.context.getExternalStorageDirectory()
         if (externalStoragePath != null) {
-            rootsAliases[externalStoragePath] = R.string.internal_storage
-            rootsAliases[externalStoragePath.endingDot()] = R.string.internal_storage
+            rootsAliases[externalStoragePath.toUniqueId()] = R.string.internal_storage
+            rootsAliases[externalStoragePath.endingDot().toUniqueId()] = R.string.internal_storage
         }
-        rootsAliases[Const.SDCARD] = R.string.internal_storage
-        rootsAliases[Const.ROOT] = R.string.root
+        rootsAliases[Const.SDCARD.toUniqueId()] = R.string.internal_storage
+        rootsAliases[Const.ROOT.toUniqueId()] = R.string.root
 
         ivThumbnail.clipToOutline = true
     }
@@ -100,7 +101,7 @@ class ExplorerItemBinderImpl(
         val thumbnail = (item.content as? NodeContent.File)?.thumbnail
         ivThumbnail.setImageBitmap(thumbnail)
 
-        val aliasId = rootsAliases[item.path]
+        val aliasId = rootsAliases[item.uniqueId]
         tvName.text = when (aliasId) {
             null -> item.name
             else -> itemView.context.getString(aliasId)
