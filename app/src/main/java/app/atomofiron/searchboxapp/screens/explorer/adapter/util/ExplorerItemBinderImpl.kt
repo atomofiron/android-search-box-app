@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -98,8 +99,6 @@ class ExplorerItemBinderImpl(
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
         val thumbnail = (item.content as? NodeContent.File)?.thumbnail
         ivThumbnail.setImageBitmap(thumbnail)
-        ivThumbnail.isVisible = thumbnail != null
-        ivIcon.isVisible = thumbnail == null
 
         val aliasId = rootsAliases[item.path]
         tvName.text = when (aliasId) {
@@ -108,18 +107,25 @@ class ExplorerItemBinderImpl(
         }
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
-        tvSize.text = when {
-            !item.isFile -> EMPTY
-            item.size.isBlank() -> EMPTY
-            else -> item.size + BYTE_LETTER
-        }
         val error = item.error?.let { itemView.resources.getString(it, item.content) }
         tvError.text = error
-        tvError.isVisible = error != null
 
         cbBox.isChecked = item.isChecked
-        cbBox.isInvisible = item.isDot() || item.withOperation
-        psProgress.isVisible = item.withOperation
+
+        val isDot = item.isDot()
+        val withThumbnail = !isDot && thumbnail != null
+        ivIcon.isGone = withThumbnail
+        ivThumbnail.isVisible = withThumbnail
+        tvDescription.isVisible = !isDot
+        tvDate.isVisible = !isDot
+        tvSize.isVisible = !isDot
+        tvError.isVisible = !isDot && error != null
+        psProgress.isVisible = !isDot && item.withOperation
+        when {
+            isDot -> cbBox.isGone = true
+            item.withOperation -> cbBox.isInvisible = true
+            else -> cbBox.isVisible = true
+        }
     }
 
     override fun setOnItemActionListener(listener: ExplorerItemActionListener?) {
@@ -146,7 +152,12 @@ class ExplorerItemBinderImpl(
             string.append(SPACE).append(item.time)
         }
         tvDate.text = string.toString()
-        tvSize.isVisible = composition.visibleSize
+        tvSize.text = when {
+            !composition.visibleSize -> EMPTY
+            !item.isFile -> EMPTY
+            item.size.isBlank() -> EMPTY
+            else -> item.size + BYTE_LETTER
+        }
         cbBox.buttonTintList = if (composition.visibleBox) defaultBoxTintList else transparentBoxTintList
     }
 
