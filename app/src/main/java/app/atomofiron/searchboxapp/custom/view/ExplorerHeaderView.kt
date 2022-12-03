@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.*
 import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
+import app.atomofiron.searchboxapp.databinding.ItemExplorerSeparatorBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
@@ -26,7 +27,17 @@ class ExplorerHeaderView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
     companion object {
-        fun ItemExplorerBinding.makeSeparator() = makeOpened()
+        fun ItemExplorerSeparatorBinding.makeSeparator() {
+            val background = root.context.findColorByAttr(R.attr.colorSecondary)
+            val content = root.context.findColorByAttr(R.attr.colorSurface)
+            val cornerRadius = root.resources.getDimension(R.dimen.explorer_border_corner_radius)
+            val drawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(background, background))
+            drawable.cornerRadii = FloatArray(8) { cornerRadius }
+            root.background = RippleDrawable(ColorStateList.valueOf(content), drawable, null)
+            val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(content, BlendModeCompat.SRC_IN)
+            itemExplorerIvIcon.colorFilter = filter
+            itemExplorerTvTitle.setTextColor(content)
+        }
 
         fun ItemExplorerBinding.makeOpened() {
             val background = root.context.findColorByAttr(R.attr.colorSecondary)

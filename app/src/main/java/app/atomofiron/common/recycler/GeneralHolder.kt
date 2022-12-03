@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 open class GeneralHolder<D : Any>(view: View) : RecyclerView.ViewHolder(view) {
     protected val context = view.context
 
-    lateinit var item: D
+    protected lateinit var item: D
         private set
 
     constructor(parent: ViewGroup, layoutId: Int)

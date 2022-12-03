@@ -7,20 +7,15 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.google.android.material.checkbox.MaterialCheckBox
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.model.explorer.*
-import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getExternalStorageDirectory
-import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
-import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import app.atomofiron.searchboxapp.utils.getString
 
 class ExplorerItemBinderImpl(
@@ -77,15 +72,6 @@ class ExplorerItemBinderImpl(
         val states = arrayOf(stateEnabledChecked, stateDisabledChecked, stateEnabledUnchecked, stateDisabledUnchecked)
         val colors = intArrayOf(colorEnabledChecked, colorDisabledChecked, Color.TRANSPARENT, Color.TRANSPARENT)
         transparentBoxTintList = ColorStateList(states, colors)
-
-        val externalStoragePath = itemView.context.getExternalStorageDirectory()
-        if (externalStoragePath != null) {
-            rootsAliases[externalStoragePath.toUniqueId()] = R.string.internal_storage
-            rootsAliases[externalStoragePath.endingDot().toUniqueId()] = R.string.internal_storage
-        }
-        rootsAliases[Const.SDCARD.toUniqueId()] = R.string.internal_storage
-        rootsAliases[Const.ROOT.toUniqueId()] = R.string.root
-
         ivThumbnail.clipToOutline = true
     }
 
@@ -113,17 +99,12 @@ class ExplorerItemBinderImpl(
 
         cbBox.isChecked = item.isChecked
 
-        val isDot = item.isDot()
-        val withThumbnail = !isDot && thumbnail != null
-        ivIcon.isGone = withThumbnail
+        val withThumbnail = thumbnail != null
+        ivIcon.isVisible = !withThumbnail
         ivThumbnail.isVisible = withThumbnail
-        tvDescription.isVisible = !isDot
-        tvDate.isVisible = !isDot
-        tvSize.isVisible = !isDot
-        tvError.isVisible = !isDot && error != null
-        psProgress.isVisible = !isDot && item.withOperation
+        tvError.isVisible = error != null
+        psProgress.isVisible = item.withOperation
         when {
-            isDot -> cbBox.isGone = true
             item.withOperation -> cbBox.isInvisible = true
             else -> cbBox.isVisible = true
         }
@@ -182,7 +163,6 @@ class ExplorerItemBinderImpl(
     }
 
     private fun Node.defineIcon(): Int {
-        if (isDot()) return R.drawable.ic_double_arrow_up
         return when (val content = content) {
             is NodeContent.Unknown,
             is NodeContent.Link -> R.drawable.ic_explorer_link
