@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageInstaller
+import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import androidx.work.WorkManager
 import dagger.Module
@@ -25,7 +26,8 @@ open class ServiceModule {
         appStore: AppStore,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
-    ): ExplorerService = ExplorerService(context, assets, appStore, explorerStore, preferenceStore)
+        packageManager: PackageManager,
+    ): ExplorerService = ExplorerService(context, packageManager, assets, appStore, explorerStore, preferenceStore)
 
     @Provides
     @Singleton

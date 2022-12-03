@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.model.explorer
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 
 sealed class NodeContent(
     // '*/*' - значит тип неизвестен,
@@ -20,7 +21,7 @@ sealed class NodeContent(
 
     sealed class File(
         mimeType: String? = null,
-        val thumbnail: Bitmap? = null,
+        open val thumbnail: Drawable? = null,
     ) : NodeContent(mimeType) {
         // прямая связь
         val isEmpty: Boolean = thumbnail == null
@@ -29,19 +30,20 @@ sealed class NodeContent(
         data class Music(val duration: Int = 0, val cover: Bitmap? = null) : File()
         sealed class Picture(
             mimeType: String,
-            thumbnail: Bitmap? = null,
+            thumbnail: Drawable? = null,
         ) : File(mimeType, thumbnail) {
-            class Png(thumbnail: Bitmap? = null) : Picture("image/png", thumbnail)
-            class Jpeg(thumbnail: Bitmap? = null) : Picture("image/jpeg", thumbnail)
-            class Gif(thumbnail: Bitmap? = null) : Picture("image/gif", thumbnail)
-            class Webp(thumbnail: Bitmap? = null) : Picture("image/webp", thumbnail)
+            class Png(thumbnail: Drawable? = null) : Picture("image/png", thumbnail)
+            class Jpeg(thumbnail: Drawable? = null) : Picture("image/jpeg", thumbnail)
+            class Gif(thumbnail: Drawable? = null) : Picture("image/gif", thumbnail)
+            class Webp(thumbnail: Drawable? = null) : Picture("image/webp", thumbnail)
         }
         data class Apk(
-            val icon: Bitmap? = null,
+            override val thumbnail: Drawable? = null,
+            val appName: String = "",
             val versionName: String = "",
             val versionCode: Int = 0,
             val children: List<Node>? = null,
-        ) : File("application/vnd.android.package-archive")
+        ) : File("application/vnd.android.package-archive", thumbnail)
         sealed class Archive(
             mimeType: String,
             val children: List<Node>? = null,

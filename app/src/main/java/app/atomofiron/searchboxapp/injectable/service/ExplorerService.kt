@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.service
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.net.Uri
 import app.atomofiron.common.util.flow.collect
@@ -28,10 +29,10 @@ import kotlinx.coroutines.sync.Mutex
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ExplorerService(
     context: Context,
+    private val packageManager: PackageManager,
     private val assets: AssetManager,
     private val appStore: AppStore,
     private val explorerStore: ExplorerStore,
@@ -362,7 +363,8 @@ class ExplorerService(
 
     private suspend fun CoroutineScope.cacheSync(item: Node) {
         if (!isActive) return
-        val cached = item.update(config).sortByName()
+        var cached = item.update(config).sortByName()
+        cached = cached.updateContent()
         withTab {
             states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
@@ -469,6 +471,26 @@ class ExplorerService(
     private fun List<NodeLevel>.findIndexed(parentPath: String): Pair<Int, NodeLevel?> = this@findIndexed.findIndexed { it.parentPath == parentPath }
 
     private fun List<NodeState>.findIndexed(uniqueId: Int): Pair<Int, NodeState?> = this@findIndexed.findIndexed { it.uniqueId == uniqueId }
+
+    private fun Node.updateContent(): Node {
+        val content = content
+        return when {
+            content is NodeContent.File.Apk && content.thumbnail == null -> {
+                val info = packageManager.getPackageArchiveInfo(path, 0)
+                info ?: return this
+                info.applicationInfo.sourceDir = path
+                info.applicationInfo.publicSourceDir = path
+                val new = NodeContent.File.Apk(
+                    thumbnail = info.applicationInfo.loadIcon(packageManager),
+                    appName = info.applicationInfo.loadLabel(packageManager).toString(),
+                    versionName = info.versionName,
+                    versionCode = info.versionCode,
+                )
+                copy(content = new)
+            }
+            else -> this
+        }
+    }
 
     private fun copyToybox(context: Context) {
         val variants = arrayOf(

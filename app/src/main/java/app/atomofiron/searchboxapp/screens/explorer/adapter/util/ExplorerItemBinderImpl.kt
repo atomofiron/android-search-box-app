@@ -99,7 +99,7 @@ class ExplorerItemBinderImpl(
         ivIcon.setImageResource(item.defineIcon())
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
         val thumbnail = (item.content as? NodeContent.File)?.thumbnail
-        ivThumbnail.setImageBitmap(thumbnail)
+        ivThumbnail.setImageDrawable(thumbnail)
 
         val aliasId = rootsAliases[item.uniqueId]
         tvName.text = when (aliasId) {
