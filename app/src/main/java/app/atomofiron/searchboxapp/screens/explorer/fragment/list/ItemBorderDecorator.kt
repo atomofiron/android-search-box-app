@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.list
+package app.atomofiron.searchboxapp.screens.explorer.fragment.list
 
 import android.graphics.*
 import android.graphics.Path.Direction

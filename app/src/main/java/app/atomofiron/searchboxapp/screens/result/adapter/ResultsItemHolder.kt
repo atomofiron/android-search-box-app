@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.list.util.ExplorerItemBinderImpl
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.ExplorerItemBinderImpl
 
 class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
     private val binder = ExplorerItemBinderImpl(itemView)

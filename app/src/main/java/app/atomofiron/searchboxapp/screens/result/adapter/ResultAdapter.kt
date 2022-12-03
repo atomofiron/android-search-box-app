@@ -8,8 +8,8 @@ import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.list.ItemBackgroundDecorator
-import app.atomofiron.searchboxapp.screens.explorer.list.ItemGravityDecorator
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ItemBackgroundDecorator
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ItemGravityDecorator
 
 class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
     companion object {

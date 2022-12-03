@@ -13,7 +13,7 @@ import app.atomofiron.searchboxapp.model.explorer.NodeContent.File.Apk
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewState
-import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
 
 class ExplorerItemActionListenerDelegate(
     private val viewState: ExplorerViewState,

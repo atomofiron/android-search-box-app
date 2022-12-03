@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.list.*
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
 
 class ExplorerListDelegate(
     private val recyclerView: RecyclerView,

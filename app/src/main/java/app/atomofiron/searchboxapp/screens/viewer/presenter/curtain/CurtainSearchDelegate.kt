@@ -6,7 +6,7 @@ import app.atomofiron.searchboxapp.databinding.CurtainTextViewerSearchBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
-import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem

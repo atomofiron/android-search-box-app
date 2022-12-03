@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.list.util
+package app.atomofiron.searchboxapp.screens.explorer.fragment.list.util
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.list
+package app.atomofiron.searchboxapp.screens.explorer.fragment.list
 
 import android.content.Context
 import android.graphics.Canvas
@@ -8,7 +8,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.screens.explorer.list.util.getSortedChildren
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.getSortedChildren
 
 class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
     companion object {

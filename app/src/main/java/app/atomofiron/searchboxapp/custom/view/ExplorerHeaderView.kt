@@ -18,8 +18,8 @@ import app.atomofiron.searchboxapp.*
 import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerItemActionListener
-import app.atomofiron.searchboxapp.screens.explorer.list.util.ExplorerItemBinderImpl
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.ExplorerItemBinderImpl
 
 class ExplorerHeaderView @JvmOverloads constructor(
     context: Context,
