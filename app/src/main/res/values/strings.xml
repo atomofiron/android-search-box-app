@@ -82,7 +82,6 @@
     <string name="more">More</string>
     <string name="access_to_storage_forbidden">Access to the storage is forbidden</string>
     <string name="allow">Allow</string>
-    <string name="places">Places</string>
     <string name="confirm">Confirm</string>
     <string name="internal_storage">Internal storage</string>
     <string name="external_storage">External storage</string>

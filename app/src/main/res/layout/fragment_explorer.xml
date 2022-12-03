@@ -1,93 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/explorer_dl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@+id/explorer_tabs"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+        android:id="@+id/system_ui_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        />
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/explorer_tabs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:background="@color/surface_variant_lite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:overScrollMode="never"
-            app:layout_constraintTop_toBottomOf="@+id/explorer_tabs"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
-        <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
-            android:id="@+id/system_ui_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/explorer_tabs"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:background="@color/surface_variant_lite"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            >
-            <Button
-                style="?attr/materialButtonOutlinedStyle"
-                android:id="@+id/button1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Button 1"
-                />
-            <Button
-                style="?attr/materialButtonOutlinedStyle"
-                android:id="@+id/button3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Button 3"
-                />
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/explorer_tabs"
-            >
-            <app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
-                android:id="@+id/explorer_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                />
-        </FrameLayout>
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:menu="@menu/nav_explorer"
-            app:itemTextColor="?android:textColorPrimary"
-            app:itemIconTint="?android:textColorPrimary"
-            app:labelVisibilityMode="labeled"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
-        <com.google.android.material.navigationrail.NavigationRailView
-            android:id="@+id/navigation_rail"
+        <Button
+            style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/button1"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:menu="@menu/nav_explorer"
-            app:labelVisibilityMode="unlabeled"
-            app:itemTextColor="?android:textColorPrimary"
-            app:itemIconTint="?android:textColorPrimary"
-            app:elevation="3dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="wrap_content"
+            android:text="Button 1"
             />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <app.atomofiron.searchboxapp.custom.view.VerticalDockView
-        android:id="@+id/vertical_dock"
+        <Button
+            style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Button 3"
+            />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/explorer_tabs"
+        >
+        <app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
+            android:id="@+id/explorer_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            />
+    </FrameLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/nav_explorer"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    <com.google.android.material.navigationrail.NavigationRailView
+        android:id="@+id/navigation_rail"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="?attr/colorBackground"
-        android:layout_gravity="start"
-        app:title="@string/places"
+        app:menu="@menu/nav_explorer"
+        app:labelVisibilityMode="unlabeled"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:elevation="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
         />
-</androidx.drawerlayout.widget.DrawerLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

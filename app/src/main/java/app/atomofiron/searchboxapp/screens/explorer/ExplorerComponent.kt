@@ -19,7 +19,6 @@ import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
-import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
 import javax.inject.Scope
 
 @Scope
@@ -69,12 +68,6 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun placesListener(viewState: ExplorerViewState): PlacesActionListenerDelegate {
-        return PlacesActionListenerDelegate(viewState)
-    }
-
-    @Provides
-    @ExplorerScope
     fun menuListener(
         scope: CoroutineScope,
         viewState: ExplorerViewState,
@@ -94,10 +87,8 @@ class ExplorerModule {
         router: ExplorerRouter,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
-        appStore: AppStore,
         explorerInteractor: ExplorerInteractor,
         itemListener: ExplorerItemActionListenerDelegate,
-        placesListener: PlacesActionListenerDelegate,
         curtainMenuDelegate: ExplorerCurtainMenuDelegate,
     ): ExplorerPresenter {
         return ExplorerPresenter(
@@ -106,10 +97,8 @@ class ExplorerModule {
             router,
             explorerStore,
             preferenceStore,
-            appStore,
             explorerInteractor,
             itemListener,
-            placesListener,
             curtainMenuDelegate,
         )
     }

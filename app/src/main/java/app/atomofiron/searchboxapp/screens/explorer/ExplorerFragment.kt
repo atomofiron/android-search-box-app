@@ -18,14 +18,12 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.explorer.adapter.*
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
-import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
 import app.atomofiron.searchboxapp.utils.getString
 import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     BaseFragment<ExplorerFragment, ExplorerViewState, ExplorerPresenter> by BaseFragmentImpl(),
@@ -34,7 +32,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     private lateinit var binding: FragmentExplorerBinding
 
     private val explorerAdapter = ExplorerAdapter()
-    private val placesAdapter = PlacesAdapter()
 
     private lateinit var listDelegate: ExplorerListDelegate
 
@@ -44,7 +41,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         explorerAdapter.itemActionListener = presenter
         explorerAdapter.separatorClickListener = ::onSeparatorClick
-        placesAdapter.itemActionListener = presenter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,10 +59,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.isItemActiveIndicatorEnabled = false
 
-        binding.verticalDock.run {
-            onGravityChangeListener = presenter::onDockGravityChange
-            recyclerView.adapter = placesAdapter
-        }
         listDelegate = ExplorerListDelegate(binding.recyclerView, explorerAdapter, binding.explorerHeader, presenter)
 
         viewState.onViewCollect()
@@ -90,14 +82,11 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             explorerAdapter.setComposition(it)
         }
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
-        viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
-        viewCollect(places, collector = placesAdapter::setItems)
         viewCollect(scrollTo, collector = listDelegate::scrollTo)
         viewCollect(alerts, collector = ::showAlert)
     }
 
     override fun onApplyInsets(root: View) {
-        binding.verticalDock.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
         binding.explorerHeader.applyPaddingInsets(start = true, top = true, end = true)
         binding.explorerTabs.applyPaddingInsets(start = true, top = true, end = true)
@@ -114,14 +103,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
                 explorerHeader,
             )
         }
-    }
-
-    override fun onBack(): Boolean {
-        if (binding.verticalDock.isOpened) {
-            binding.verticalDock.close()
-            return true
-        }
-        return super.onBack()
     }
 
     override fun onKeyDown(keyCode: Int): Boolean = when {

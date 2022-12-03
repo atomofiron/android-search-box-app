@@ -3,18 +3,13 @@ package app.atomofiron.searchboxapp.screens.explorer
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
-import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
-import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
-import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
-import app.atomofiron.searchboxapp.screens.explorer.places.XPlaceType
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
-import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
 import kotlinx.coroutines.CoroutineScope
 
 class ExplorerPresenter(
@@ -23,37 +18,20 @@ class ExplorerPresenter(
     router: ExplorerRouter,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
-    appStore: AppStore,
     private val explorerInteractor: ExplorerInteractor,
     itemListener: ExplorerItemActionListenerDelegate,
-    placesListener: PlacesActionListenerDelegate,
     private val curtainMenuDelegate: ExplorerCurtainMenuDelegate
 ) : BasePresenter<ExplorerViewModel, ExplorerRouter>(scope, router),
-    ExplorerItemActionListener by itemListener,
-    PlacesAdapter.ItemActionListener by placesListener {
-
-    private val resources by appStore.resourcesProperty
+    ExplorerItemActionListener by itemListener {
 
     init {
-        preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
         preferenceStore.explorerItemComposition.collect(scope) {
             viewState.itemComposition.value = it
         }
 
-        val items = ArrayList<XPlace>()
-        items.add(XPlace.InternalStorage(resources.getString(XPlaceType.InternalStorage.titleId), visible = true))
-        items.add(XPlace.ExternalStorage(resources.getString(XPlaceType.ExternalStorage.titleId), visible = true))
-        items.add(XPlace.AnotherPlace("Another Place 0"))
-        items.add(XPlace.AnotherPlace("Another Place 1"))
-        items.add(XPlace.AnotherPlace("Another Place 2"))
-        viewState.places.value = items
     }
 
     override fun onSubscribeData() = Unit
-
-    private fun onDockGravityChanged(gravity: Int) {
-        viewState.historyDrawerGravity.value = gravity
-    }
 
     fun onSearchOptionSelected() = router.showFinder()
 

@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import android.view.Gravity
 import app.atomofiron.common.util.flow.*
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -8,10 +7,8 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -26,8 +23,6 @@ class ExplorerViewState(
 
     val permissionRequiredWarning = ChannelFlow<Unit>()
     val scrollTo = ChannelFlow<Node>()
-    val historyDrawerGravity = MutableStateFlow(Gravity.START)
-    val places = MutableStateFlow<List<XPlace>>(listOf())
     val itemComposition = DeferredStateFlow<ExplorerItemComposition>()
     val items: SharedFlow<List<Node>> = explorerStore.items
     val current: StateFlow<Node?> = explorerStore.current
