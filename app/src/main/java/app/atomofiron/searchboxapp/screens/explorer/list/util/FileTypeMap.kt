@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.adapter.util
+package app.atomofiron.searchboxapp.screens.explorer.list.util
 
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.NodeContent

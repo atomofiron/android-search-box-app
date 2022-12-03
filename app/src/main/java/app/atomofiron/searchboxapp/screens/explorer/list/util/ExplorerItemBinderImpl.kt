@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.adapter.util
+package app.atomofiron.searchboxapp.screens.explorer.list.util
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -16,7 +16,7 @@ import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getExternalStorageDirectory
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot

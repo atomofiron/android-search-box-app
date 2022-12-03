@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.adapter.util
+package app.atomofiron.searchboxapp.screens.explorer.list.util
 
 import androidx.recyclerview.widget.DiffUtil
 import app.atomofiron.searchboxapp.model.explorer.Node

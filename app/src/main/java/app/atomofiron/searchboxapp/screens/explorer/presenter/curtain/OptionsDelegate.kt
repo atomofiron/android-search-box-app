@@ -10,8 +10,8 @@ import app.atomofiron.searchboxapp.custom.view.menu.MenuImpl
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerOptionsBinding
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
-import app.atomofiron.searchboxapp.screens.explorer.adapter.util.ExplorerItemBinderImpl
+import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.list.util.ExplorerItemBinderImpl
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class OptionsDelegate(

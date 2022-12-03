@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.adapter
+package app.atomofiron.searchboxapp.screens.explorer.list
 
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +13,7 @@ import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.adapter.util.NodeCallback
+import app.atomofiron.searchboxapp.screens.explorer.list.util.NodeCallback
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
 import java.util.LinkedList
 

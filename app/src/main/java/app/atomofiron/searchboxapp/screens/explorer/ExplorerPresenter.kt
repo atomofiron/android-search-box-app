@@ -7,7 +7,7 @@ import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import kotlinx.coroutines.CoroutineScope

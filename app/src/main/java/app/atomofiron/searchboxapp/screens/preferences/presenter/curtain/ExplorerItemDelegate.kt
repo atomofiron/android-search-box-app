@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.explorer.NodeProperties
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerHolder
 import app.atomofiron.searchboxapp.utils.Const
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 

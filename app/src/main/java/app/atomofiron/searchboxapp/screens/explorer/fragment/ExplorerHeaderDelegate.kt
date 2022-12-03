@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
+import app.atomofiron.searchboxapp.screens.explorer.list.ExplorerAdapter
 import java.util.LinkedList
 import kotlin.math.max
 import kotlin.math.min

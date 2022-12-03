@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.adapter
+package app.atomofiron.searchboxapp.screens.explorer.list
 
 import android.graphics.Rect
 import android.view.View
