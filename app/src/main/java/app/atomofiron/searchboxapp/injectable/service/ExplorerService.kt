@@ -169,6 +169,17 @@ class ExplorerService(
         }
     }
 
+    suspend fun tryMarkInstalling(item: Node, installing: Operation.Installing?): Boolean {
+        return withTab {
+            var state = states.find { it.uniqueId == item.uniqueId }
+            if (state?.operation == installing) return false
+            state = states.updateState(item.uniqueId) {
+                nextState(item.uniqueId, installing = installing)
+            }
+            state?.operation == installing
+        }
+    }
+
     /** @return action succeed */
     private fun MutableList<Int>.tryUpdateCheck(uniqueId: Int, makeChecked: Boolean): Boolean {
         val iter = iterator()
@@ -380,11 +391,13 @@ class ExplorerService(
         cachingJob: Job? = this?.cachingJob,
         deleting: Operation.Deleting? = this?.operation as? Operation.Deleting,
         copying: Operation.Copying? = this?.operation as? Operation.Copying,
+        installing: Operation.Installing? = this?.operation as? Operation.Installing,
     ): NodeState? {
         val nextOperation = when (this?.operation ?: Operation.None) {
-            is Operation.None -> deleting ?: copying
+            is Operation.None -> deleting ?: copying ?: installing
             is Operation.Deleting -> deleting ?: copying
             is Operation.Copying -> copying ?: deleting
+            is Operation.Installing -> installing ?: deleting
         } ?: Operation.None
 
         return when {

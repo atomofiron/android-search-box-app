@@ -22,6 +22,7 @@ sealed class Operation {
         val isSource: Boolean,
         val asMoving: Boolean,
     ) : Operation()
+    object Installing : Operation()
 }
 
 interface INodeState {

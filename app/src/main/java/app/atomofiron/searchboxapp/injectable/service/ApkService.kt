@@ -15,7 +15,7 @@ class ApkService(
     private val installer: PackageInstaller,
     private val resolver: ContentResolver,
 ) {
-    fun installApk2(uri: Uri) {
+    fun installApk(uri: Uri) {
         resolver.openInputStream(uri)?.use { apkStream ->
             val length = DocumentFile.fromSingleUri(context, uri)?.length() ?: -1
             if (length < 0) return@use
