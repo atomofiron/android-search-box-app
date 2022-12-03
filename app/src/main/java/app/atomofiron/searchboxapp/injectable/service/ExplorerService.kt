@@ -41,7 +41,7 @@ class ExplorerService(
 
     private val scope = appStore.scope
 
-    private val defaultStoragePath = Tool.getExternalStorageDirectory(context)
+    private val internalStoragePath = Tool.getExternalStorageDirectory(context)
     private var config = CacheConfig(useSu = false)
 
     private val states = LinkedList<NodeState>()
@@ -53,6 +53,7 @@ class ExplorerService(
             withTab {
                 copyToybox(context)
             }
+            setRoots(arrayOf(internalStoragePath).filterNotNull())
         }
         // todo try move out
         val thumbnailSize = context.resources.getDimensionPixelSize(R.dimen.thumbnail_size)
@@ -67,7 +68,7 @@ class ExplorerService(
         }
     }
 
-    suspend fun trySetRoots(paths: Collection<String>) {
+    private suspend fun setRoots(paths: Collection<String>) {
         val roots = paths.parMapMut {
             ExplorerDelegate.asRoot(it)
                 .update(config)
@@ -342,7 +343,7 @@ class ExplorerService(
     }
 
     private fun NodeTab.updateDirectoryTypes() {
-        val defaultStoragePath = defaultStoragePath ?: return
+        val defaultStoragePath = internalStoragePath ?: return
         val (_, level) = levels.findIndexed(defaultStoragePath)
         level ?: return
         for (i in level.children.indices) {

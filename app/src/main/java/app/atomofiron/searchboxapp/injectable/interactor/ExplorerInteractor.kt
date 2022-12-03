@@ -12,11 +12,6 @@ class ExplorerInteractor(
 ) {
     private val context = Dispatchers.IO
 
-    fun setRoot(path: String) {
-        scope.launch(context) {
-            service.trySetRoots(listOf(path))
-        }
-    }
 
     fun checkItem(item: Node, isChecked: Boolean) {
         scope.launch(context) {

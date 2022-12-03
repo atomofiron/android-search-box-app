@@ -22,10 +22,8 @@ import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyMaxDepth
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyMaxSize
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyOpenedDirPath
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeySpecialCharacters
-import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyStoragePath
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyToybox
 import app.atomofiron.searchboxapp.utils.PreferenceKeys.KeyUseSu
-import app.atomofiron.searchboxapp.utils.Tool
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -62,12 +60,6 @@ class PreferenceStore(
 
     suspend fun setUseSu(value: Boolean) {
         edit { it[KeyUseSu] = value }
-    }
-
-    val storagePath = getFlow(KeyStoragePath)
-
-    suspend fun setStoragePath(value: String) {
-        edit { it[KeyStoragePath] = value }
     }
 
     val openedDirPath = getFlow(KeyOpenedDirPath)
@@ -188,7 +180,6 @@ class PreferenceStore(
     @Suppress("UNCHECKED_CAST")
     fun <T> Preferences.Key<T>.default(): T {
         return when (this) {
-            KeyStoragePath -> Tool.getExternalStorageDirectory(context) as T
             KeyOpenedDirPath -> "" as T
             KeyDockGravity -> Gravity.START as T
             KeySpecialCharacters -> Const.DEFAULT_SPECIAL_CHARACTERS as T

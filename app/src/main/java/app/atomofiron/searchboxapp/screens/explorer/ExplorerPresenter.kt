@@ -36,9 +36,6 @@ class ExplorerPresenter(
 
     init {
         preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
-        preferenceStore.storagePath.collect(scope) { path ->
-            explorerInteractor.setRoot(path)
-        }
         preferenceStore.explorerItemComposition.collect(scope) {
             viewState.itemComposition.value = it
         }

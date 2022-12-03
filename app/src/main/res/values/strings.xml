@@ -37,7 +37,6 @@
     <string name="tasks">Tasks</string>
     <string name="settings">Settings</string>
     <string name="share">Share</string>
-    <string name="pref_storage_path">Storage directory path</string>
     <string name="pref_orientation">Screen orientation</string>
     <string name="fucking_provider">Сould not open file due to system limitations, try to copy the absolute path to the file and open it in another application</string>
     <string name="pref_home_screen">Home screen</string>

@@ -37,7 +37,6 @@
     <string name="tasks">Задачи</string>
     <string name="settings">Настройки</string>
     <string name="share">Поделиться</string>
-    <string name="pref_storage_path">Путь ко внутренней памяти</string>
     <string name="pref_orientation">Ориентация экрана</string>
     <string name="fucking_provider">Не удалось открыть файл из-за системных ограничений, попробуйте скопировать абсолютный путь к файлу и открыть его в другом приложении</string>
     <string name="pref_home_screen">Начальный экран</string>

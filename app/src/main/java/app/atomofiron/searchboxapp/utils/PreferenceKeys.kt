@@ -4,7 +4,6 @@ import androidx.datastore.preferences.core.*
 
 object PreferenceKeys {
 
-    val KeyStoragePath = stringPreferencesKey("pref_storage_path")
     val KeyOpenedDirPath = stringPreferencesKey("pref_opened_dir_path")
     val KeyDockGravity = intPreferencesKey("pref_drawer_gravity")
     val KeySpecialCharacters = stringPreferencesKey("pref_special_characters")
@@ -12,7 +11,7 @@ object PreferenceKeys {
     val KeyHomeScreen = stringPreferencesKey("pref_home_screen")
     val KeyAppTheme = stringPreferencesKey("pref_app_theme")
     val KeyDeepBlack = booleanPreferencesKey("pref_deep_black")
-    // it was long but DataStore make it int
+    // it was long but DataStore made it int
     val KeyMaxSize = intPreferencesKey("pref_max_size")
     val KeyMaxDepth = intPreferencesKey("pref_max_depth")
     val KeyExcludeDirs = booleanPreferencesKey("pref_exclude_dirs")
