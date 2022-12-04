@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
+import kotlin.math.max
 import kotlin.math.min
 
 class ExplorerSpanSizeLookup(
@@ -29,7 +30,8 @@ class ExplorerSpanSizeLookup(
                 frameWidth = resources.displayMetrics.widthPixels
             }
             frameWidth -= paddingStart + paddingEnd
-            min(rootsAdapter.itemCount, frameWidth / minWidth)
+            val max = max(1, rootsAdapter.itemCount)
+            min(max, frameWidth / minWidth)
         }
         if (spanCount != layoutManager.spanCount) {
             layoutManager.spanCount = spanCount

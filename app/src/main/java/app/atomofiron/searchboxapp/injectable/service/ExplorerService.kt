@@ -13,6 +13,7 @@ import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
+import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
@@ -46,14 +47,14 @@ class ExplorerService(
 
     private val states = LinkedList<NodeState>()
     private val mutex = Mutex()
-    private val tab = NodeTab(mutex, states)
+    private val tab = NodeTabTree(mutex, states)
 
     init {
         scope.launch(Dispatchers.IO) {
             withTab {
                 copyToybox(context)
             }
-            setRoots(arrayOf(internalStoragePath).filterNotNull())
+            initRoots()
         }
         // todo try move out
         val thumbnailSize = context.resources.getDimensionPixelSize(R.dimen.thumbnail_size)
@@ -68,15 +69,44 @@ class ExplorerService(
         }
     }
 
-    private suspend fun setRoots(paths: Collection<String>) {
-        val roots = paths.parMapMut {
-            ExplorerDelegate.asRoot(it)
-                .update(config)
-                .sortByName()
+    private suspend fun initRoots() {
+        val storagePath = internalStoragePath ?: return
+        val roots = listOf(
+            NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("$storagePath/DCIM/Camera/")),
+            NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("$storagePath/DCIM/Camera/")),
+            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("$storagePath/Download/")),
+            NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("$storagePath/Bluetooth/")),
+            NodeRoot(NodeRootType.Screenshots, ExplorerDelegate.asRoot("$storagePath/Pictures/Screenshots/")),
+            NodeRoot(NodeRootType.InternalStorage(), ExplorerDelegate.asRoot(storagePath)),
+        ).parMapMut {
+            val item = it.item.update(config).sortByName()
+            it.copy(item = item)
         }
         withTab {
+            this.roots.clear()
+            this.roots.addAll(roots)
+        }
+    }
+
+    suspend fun trySelectRoot(item: NodeRoot) {
+        withTab {
+            var index = roots.indexOfFirst { it.isSelected }
             tree.clear()
-            tree.add(NodeLevel(ExplorerDelegate.ROOT_PARENT_PATH, roots))
+            if (index >= 0) {
+                val selected = roots[index]
+                roots[index] = selected.copy(isSelected = false)
+                if (selected.stableId == item.stableId) {
+                    return@withTab
+                }
+            }
+            index = roots.indexOfFirst { it.stableId == item.stableId }
+            val root = roots[index].copy(isSelected = true)
+            roots[index] = root
+            val rootItem = root.item.copy(children = root.item.children?.copy(isOpened = true))
+            NodeLevel(rootItem.parentPath, mutableListOf(rootItem))
+            tree.add(NodeLevel(rootItem.parentPath, mutableListOf(rootItem)))
+            val children = rootItem.children?.items?.toMutableList() ?: mutableListOf()
+            tree.add(NodeLevel(rootItem.path, children))
         }
     }
 
@@ -240,7 +270,7 @@ class ExplorerService(
         outputStream.close()
     }
 
-    private suspend inline fun <R> withTab(block: NodeTab.() -> R): R {
+    private suspend inline fun <R> withTab(block: NodeTabTree.() -> R): R {
         return tab.updateTree {
             val result = block()
 
@@ -252,7 +282,7 @@ class ExplorerService(
             tree.dropClosedLevels()
             updateDirectoryTypes()
             val items = renderNodes()
-            explorerStore.items.emit(items)
+            explorerStore.items.emit(NodeTabItems(roots, items))
             updateCurrentDir()
 
             updateStates(items)
@@ -282,7 +312,7 @@ class ExplorerService(
         }
     }
 
-    private fun NodeTab.updateStates(items: List<Node>) {
+    private fun NodeTabTree.updateStates(items: List<Node>) {
         if (states.isNotEmpty()) {
             val iterator = states.listIterator()
             while (iterator.hasNext()) {
@@ -298,7 +328,7 @@ class ExplorerService(
         }
     }
 
-    private fun NodeTab.updateChecked(items: List<Node>) {
+    private fun NodeTabTree.updateChecked(items: List<Node>) {
         if (checked.isNotEmpty()) {
             val iterator = checked.listIterator()
             while (iterator.hasNext()) {
@@ -309,7 +339,7 @@ class ExplorerService(
         }
     }
 
-    private fun NodeTab.renderNodes(): List<Node> {
+    private fun NodeTabTree.renderNodes(): List<Node> {
         var isEmpty = false
         val count = tree.sumOf { it.count }
         val items = ArrayList<Node>(count)
@@ -343,7 +373,7 @@ class ExplorerService(
         return items
     }
 
-    private fun NodeTab.updateStateFor(item: Node): Node {
+    private fun NodeTabTree.updateStateFor(item: Node): Node {
         val state = states.find { it.uniqueId == item.uniqueId }
         val isChecked = checked.find { it == item.uniqueId } != null
         return when {
@@ -353,7 +383,7 @@ class ExplorerService(
         }
     }
 
-    private fun NodeTab.updateDirectoryTypes() {
+    private fun NodeTabTree.updateDirectoryTypes() {
         val defaultStoragePath = internalStoragePath ?: return
         val (_, level) = tree.findIndexed(defaultStoragePath)
         level ?: return
@@ -368,7 +398,7 @@ class ExplorerService(
         }
     }
 
-    private fun NodeTab.updateCurrentDir() {
+    private fun NodeTabTree.updateCurrentDir() {
         val item = tree.findLast { it.getOpened() != null }?.getOpened()
         explorerStore.current.value = item?.let { updateStateFor(it) }
     }

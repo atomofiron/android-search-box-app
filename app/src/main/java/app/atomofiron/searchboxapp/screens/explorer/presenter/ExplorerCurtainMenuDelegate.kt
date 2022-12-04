@@ -96,7 +96,7 @@ class ExplorerCurtainMenuDelegate(
 
     private fun getRenameData(): RenameDelegate.RenameData? {
         val item = data?.items?.first() ?: return null
-        val dirFiles = explorerStore.items.value
+        val dirFiles = explorerStore.items.value.items
             .find { it.isParentOf(item) }
             ?.children?.map { it.name }
         dirFiles ?: return null

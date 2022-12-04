@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeRoot
 
 class ExplorerInteractor(
     private val scope: CoroutineScope,
@@ -12,6 +13,11 @@ class ExplorerInteractor(
 ) {
     private val context = Dispatchers.IO
 
+    fun selectRoot(item: NodeRoot) {
+        scope.launch(context) {
+            service.trySelectRoot(item)
+        }
+    }
 
     fun checkItem(item: Node, isChecked: Boolean) {
         scope.launch(context) {

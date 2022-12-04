@@ -6,8 +6,10 @@ import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeRoot
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +24,7 @@ class ExplorerPresenter(
     itemListener: ExplorerItemActionListenerDelegate,
     private val curtainMenuDelegate: ExplorerCurtainMenuDelegate
 ) : BasePresenter<ExplorerViewModel, ExplorerRouter>(scope, router),
+    RootAdapter.RootClickListener,
     ExplorerItemActionListener by itemListener {
 
     init {
@@ -32,6 +35,8 @@ class ExplorerPresenter(
     }
 
     override fun onSubscribeData() = Unit
+
+    override fun onRootClick(item: NodeRoot) = explorerInteractor.selectRoot(item)
 
     fun onSearchOptionSelected() = router.showFinder()
 

@@ -46,6 +46,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         explorerAdapter.itemActionListener = presenter
         explorerAdapter.separatorClickListener = ::onSeparatorClick
+        rootAdapter.clickListener = presenter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,7 +87,10 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
     override fun ExplorerViewState.onViewCollect() {
         viewCollect(actions, collector = explorerAdapter::onAction)
-        viewCollect(items, collector = explorerAdapter::submitList)
+        viewCollect(items) {
+            rootAdapter.submitList(it.roots)
+            explorerAdapter.submitList(it.items)
+        }
         viewCollect(current, collector = listDelegate::setCurrentDir)
         viewCollect(itemComposition) {
             listDelegate.setComposition(it)

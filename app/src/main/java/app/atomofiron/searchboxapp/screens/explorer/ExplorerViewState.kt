@@ -6,6 +6,7 @@ import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.explorer.NodeError
+import app.atomofiron.searchboxapp.model.explorer.NodeTabItems
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ class ExplorerViewState(
     val permissionRequiredWarning = ChannelFlow<Unit>()
     val scrollTo = ChannelFlow<Node>()
     val itemComposition = DeferredStateFlow<ExplorerItemComposition>()
-    val items: SharedFlow<List<Node>> = explorerStore.items
+    val items: SharedFlow<NodeTabItems> = explorerStore.items
     val current: StateFlow<Node?> = explorerStore.current
     val actions: Flow<NodeAction> = explorerStore.actions
     val alerts: Flow<NodeError> = explorerStore.alerts

@@ -34,7 +34,7 @@ class RootViewHolder(itemView: View) : GeneralHolder<NodeRoot>(itemView) {
             is NodeRootType.Bluetooth -> context.getString(R.string.root_bluetooth)
             is NodeRootType.Screenshots -> context.getString(R.string.root_screenshots)
             is NodeRootType.InternalStorage -> context.getString(R.string.internal_storage)
-            is NodeRootType.Favorite -> type.item.name
+            is NodeRootType.Favorite -> item.name
         }
     }
 

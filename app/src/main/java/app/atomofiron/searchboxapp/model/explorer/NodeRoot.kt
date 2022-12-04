@@ -5,17 +5,26 @@ import java.util.Objects
 
 data class NodeRoot(
     val type: NodeRootType,
+    val item: Node,
     val thumbnail: Bitmap? = null,
+    val isSelected: Boolean = false,
 ) {
+    val stableId: Int = type.stableId
+
     sealed class NodeRootType {
+        open val stableId: Int = Objects.hash(this::class)
+
         object Photos : NodeRootType()
         object Videos : NodeRootType()
         object Camera : NodeRootType()
         object Downloads : NodeRootType()
         object Bluetooth : NodeRootType()
         object Screenshots : NodeRootType()
-        object InternalStorage : NodeRootType()
-        class Favorite(val item: Node) : NodeRootType()
+        data class InternalStorage(
+            val used: Long = 0,
+            val free: Long = 0,
+        ) : NodeRootType()
+        object Favorite : NodeRootType()
     }
 
     override fun equals(other: Any?): Boolean = when {

@@ -18,7 +18,6 @@ class ExplorerHeaderDelegate(
 ) : RecyclerView.OnScrollListener(), View.OnLayoutChangeListener {
 
     private var currentDir: Node? = null
-    private var currentIndex = -1
 
     private var composition: ExplorerItemComposition? = null
     private var updateOnDecoratorDraw = true
@@ -44,10 +43,6 @@ class ExplorerHeaderDelegate(
 
     fun setCurrentDir(item: Node?) {
         currentDir = item
-        currentIndex = when (item) {
-            null -> -1
-            else -> adapter.currentList.indexOfFirst { it.uniqueId == item.uniqueId }
-        }
         bindingRequired = true
     }
 
@@ -67,8 +62,8 @@ class ExplorerHeaderDelegate(
     }
 
     private fun updateOffset() {
-        val bottom = when {
-            currentIndex < 0 -> 0
+        val bottom = when (currentDir) {
+            null -> 0
             else -> getHeaderBottom()
         }
         headerView.move(bottom)
