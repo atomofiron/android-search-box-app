@@ -23,7 +23,12 @@ class SwipeMarkerDelegate(resources: Resources) : RecyclerView.OnItemTouchListen
 
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
         if (e.action == MotionEvent.ACTION_DOWN) {
-            downChild = rv.findChildViewUnder(e.x, e.y)
+            val child = rv.findChildViewUnder(e.x, e.y)
+            if (child?.id != R.id.item_explorer) {
+                allowed = false
+                return false
+            }
+            downChild = child
             prevIndex = downChild?.let { rv.getChildViewHolder(it).layoutPosition } ?: -1
             val end = rv.width - rv.paddingEnd
             allowed = e.x.toInt() in (end - allowedAria)..end
