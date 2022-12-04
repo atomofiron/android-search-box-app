@@ -9,7 +9,6 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:overScrollMode="never"
         app:layout_constraintTop_toBottomOf="@+id/explorer_tabs"
         app:layout_constraintBottom_toBottomOf="parent"
         />

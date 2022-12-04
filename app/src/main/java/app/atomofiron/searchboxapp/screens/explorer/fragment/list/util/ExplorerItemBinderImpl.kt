@@ -170,7 +170,7 @@ class ExplorerItemBinderImpl(
 
     private fun Node.defineIcon(): Int {
         return when (val content = content) {
-            is NodeContent.Unknown,
+            is NodeContent.Unknown -> R.drawable.ic_explorer_unknown
             is NodeContent.Link -> R.drawable.ic_explorer_link
             is NodeContent.File -> content.getIcon()
             is NodeContent.Directory -> content.getIcon(isEmpty)
