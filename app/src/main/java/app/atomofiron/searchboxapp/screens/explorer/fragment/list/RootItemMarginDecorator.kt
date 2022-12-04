@@ -5,6 +5,7 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
+import kotlin.math.roundToInt
 
 class RootItemMarginDecorator : RecyclerView.ItemDecoration() {
 
@@ -17,18 +18,24 @@ class RootItemMarginDecorator : RecyclerView.ItemDecoration() {
         val layoutManager = parent.layoutManager as GridLayoutManager
         val spanCount = layoutManager.spanCount
         val spanSize = layoutManager.spanSizeLookup.getSpanSize(position)
-        val margin = parent.resources.getDimensionPixelSize(R.dimen.content_margin)
+        val margin = parent.resources.getDimension(R.dimen.content_margin)
         val count = spanCount / spanSize
+        val cellIndex = position % count
+        val sum = margin * spanCount.inc()
+        val avg = sum / spanCount
+        val piece = avg - margin
 
-        val sum = margin * spanCount.dec()
-
-        outRect.left = when (position % count) {
+        // распредиляем отступы так,
+        // чтобы ячейки стали одинаковой ширины
+        val left = when (position % count) {
             0 -> margin
-            else -> margin / 2
+            else -> (margin - piece * cellIndex)
         }
-        outRect.right = when (position % count) {
+        val right = when (position % count) {
             count.dec() -> margin
-            else -> margin / 2
+            else -> avg - left
         }
+        outRect.left = left.roundToInt()
+        outRect.right = right.roundToInt()
     }
 }
