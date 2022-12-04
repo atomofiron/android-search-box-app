@@ -182,17 +182,19 @@ class ExplorerService(
                     type == NodeRootType.Videos && it.content is NodeContent.File.Movie ||
                     type == NodeRootType.Screenshots && it.content is NodeContent.File.Picture
         }
-        var content = lastChild?.content as? NodeContent.File
-        if (content?.thumbnail == null && lastChild != null) {
-            content = lastChild.update(config.copy(thumbnailSize = previewSize)).content as? NodeContent.File
+        val root = when {
+            lastChild == null -> copy(thumbnail = null, thumbnailPath = "")
+            thumbnailPath == lastChild.path -> this
+            else -> {
+                val config = config.copy(thumbnailSize = previewSize)
+                val updatedChild = lastChild.copy(content = NodeContent.Unknown).update(config)
+                val content = updatedChild.content as? NodeContent.File
+                copy(item = updated, thumbnail = content?.thumbnail, thumbnailPath = lastChild.path)
+            }
         }
-        val root = copy(item = updated, thumbnail = content?.thumbnail)
         withTab {
             roots.replace {
-                when (it.stableId) {
-                    root.stableId -> root
-                    else -> it
-                }
+                if (it.stableId == root.stableId) root else it
             }
             states.updateState(root.stableId) {
                 nextState(root.stableId, cachingJob = null)

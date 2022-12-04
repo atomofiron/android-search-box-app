@@ -7,6 +7,7 @@ data class NodeRoot(
     val type: NodeRootType,
     val item: Node,
     val thumbnail: Drawable? = null,
+    val thumbnailPath: String = "",
     val isSelected: Boolean = false,
 ) {
     val stableId: Int = type.stableId
