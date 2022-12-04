@@ -6,7 +6,8 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
@@ -17,7 +18,9 @@ import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
+import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerSpanSizeLookup
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
+import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
@@ -31,6 +34,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 {
     private lateinit var binding: FragmentExplorerBinding
 
+    private val rootAdapter = RootAdapter()
     private val explorerAdapter = ExplorerAdapter()
 
     private lateinit var listDelegate: ExplorerListDelegate
@@ -48,8 +52,13 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         binding = FragmentExplorerBinding.bind(view)
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = explorerAdapter
+        binding.recyclerView.layoutManager = GridLayoutManager(context, 1).apply {
+            spanSizeLookup = ExplorerSpanSizeLookup(binding.recyclerView, this, rootAdapter)
+        }
+        val config = ConcatAdapter.Config.Builder()
+            .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
+            .build()
+        binding.recyclerView.adapter = ConcatAdapter(config, rootAdapter, explorerAdapter)
         binding.recyclerView.addOnItemTouchListener(SwipeMarkerDelegate(resources))
 
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
@@ -59,7 +68,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.isItemActiveIndicatorEnabled = false
 
-        listDelegate = ExplorerListDelegate(binding.recyclerView, explorerAdapter, binding.explorerHeader, presenter)
+        listDelegate = ExplorerListDelegate(binding.recyclerView, rootAdapter, explorerAdapter, binding.explorerHeader, presenter)
 
         viewState.onViewCollect()
         onApplyInsets(view)

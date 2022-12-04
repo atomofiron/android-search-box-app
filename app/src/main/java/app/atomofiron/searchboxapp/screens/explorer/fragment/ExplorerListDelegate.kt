@@ -6,10 +6,12 @@ import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
+import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 
 class ExplorerListDelegate(
     private val recyclerView: RecyclerView,
-    private val adapter: ExplorerAdapter,
+    private val rootAdapter: RootAdapter,
+    private val nodeAdapter: ExplorerAdapter,
     headerView: ExplorerHeaderView,
     private val output: ExplorerItemActionListener,
 ) {
@@ -17,15 +19,15 @@ class ExplorerListDelegate(
 
     private val headerItemPosition: Int get() = when (val dir = currentDir) {
         null -> -1
-        else -> adapter.currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
+        else -> nodeAdapter.currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
     }
-    private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, adapter)
-    private val gravityDecorator = ItemGravityDecorator()
+    private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, nodeAdapter)
+    private val rootMarginDecorator = RootItemMarginDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
-    private val borderDecorator = ItemBorderDecorator(adapter, headerView, headerDelegate::onDecoratorDraw)
+    private val borderDecorator = ItemBorderDecorator(nodeAdapter, headerView, headerDelegate::onDecoratorDraw)
 
     init {
-        recyclerView.addItemDecoration(gravityDecorator)
+        recyclerView.addItemDecoration(rootMarginDecorator)
         recyclerView.addItemDecoration(backgroundDecorator)
         recyclerView.addItemDecoration(borderDecorator)
         headerView.setOnItemActionListener(HeaderListener())
@@ -58,7 +60,8 @@ class ExplorerListDelegate(
 
     fun scrollTo(item: Node) {
         var lastChild = getLastChild() ?: return
-        val position = adapter.currentList.indexOfFirst { it.path == item.path }
+        var position = nodeAdapter.currentList.indexOfFirst { it.path == item.path }
+        position += rootAdapter.itemCount
         val lastItemPosition = recyclerView.getChildLayoutPosition(lastChild)
         when {
             position > lastItemPosition -> {

@@ -36,6 +36,7 @@ class SwipeMarkerDelegate(resources: Resources) : RecyclerView.OnItemTouchListen
         downChild?.let { child ->
             downChild = null
             val checkbox = child.getCheckBox()
+            checkbox ?: return@let
             makeChecked = !checkbox.isChecked
             checkbox.isChecked = !checkbox.isChecked
         }
@@ -47,6 +48,7 @@ class SwipeMarkerDelegate(resources: Resources) : RecyclerView.OnItemTouchListen
 
     private fun View.tryCheck() {
         val checkbox = getCheckBox()
+        checkbox ?: return
         if (makeChecked == null) {
             makeChecked = !checkbox.isChecked
         }
@@ -72,5 +74,5 @@ class SwipeMarkerDelegate(resources: Resources) : RecyclerView.OnItemTouchListen
 
     private fun Int.stepTo(target: Int): Int = this + (target - this).sign
 
-    private fun View.getCheckBox() = findViewById<CheckBox>(R.id.item_explorer_cb)
+    private fun View.getCheckBox(): CheckBox? = findViewById(R.id.item_explorer_cb)
 }

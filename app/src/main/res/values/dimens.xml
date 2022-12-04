@@ -39,6 +39,7 @@
     <dimen name="background_span_corner_radius">4dp</dimen>
 
 
+	<dimen name="column_min_width">120dp</dimen>
 	<dimen name="item_ripple_corner_radius">16dp</dimen>
 	<dimen name="content_padding_bottom">32dp</dimen>
 	<dimen name="bottom_bar_max_width">480dp</dimen>

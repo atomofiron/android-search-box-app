@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.explorer.fragment
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
@@ -80,6 +81,7 @@ class ExplorerHeaderDelegate(
         val topChildren = LinkedList<View>()
         for (i in 0 until recyclerView.childCount) {
             val child = recyclerView.getChildAt(i)
+            if (child.id != R.id.item_explorer) continue
             if (child.top > headerHeight) break
             topChildren.add(child)
         }

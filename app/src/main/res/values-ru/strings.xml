@@ -82,8 +82,12 @@
     <string name="more">Подробнее</string>
     <string name="access_to_storage_forbidden">Доступ к памяти запрещён</string>
     <string name="allow">Разрешить</string>
-    <string name="places">Места</string>
     <string name="confirm">Подтвердить</string>
+    <string name="root_photos">Фото</string>
+    <string name="root_videos">Видео</string>
+    <string name="root_camera">Камера</string>
+    <string name="root_downloads">Загрузки</string>
+    <string name="root_screenshots">Снимки экрана</string>
     <string name="internal_storage">Внутренняя память</string>
     <string name="external_storage">Внешняя память</string>
     <string name="oops_not_working">Упс, пока не работает</string>

@@ -31,6 +31,7 @@ class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
 
         parent.getSortedChildren().forEach {
             val child = it.value
+            if (child.id != R.id.item_explorer) return@forEach
             val position = parent.getChildLayoutPosition(child)
 
             if (position % 2 == 0) {

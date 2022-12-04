@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.view.iterator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
@@ -48,8 +49,10 @@ class ItemBorderDecorator(
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        if (view.id != R.id.item_explorer && view.id != R.id.item_explorer_separator) {
+            return
+        }
         val holder = parent.getChildViewHolder(view)
-        holder ?: return
         val item = items[holder.bindingAdapterPosition]
         val next = items.getOrNull(holder.bindingAdapterPosition.inc())
         outRect.bottom = when {
@@ -62,8 +65,11 @@ class ItemBorderDecorator(
     }
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        val first = parent.getChildAt(0)
+        val first = parent.getFirstItemView()
         first ?: return
+
+        val firstItemViewHolder = first.first
+        val itemChildCount = first.second
 
         rect.left  = parent.paddingLeft.toFloat()
         rect.right = parent.width - parent.paddingRight.toFloat()
@@ -72,10 +78,11 @@ class ItemBorderDecorator(
         val headerBottom = headerView.height.toFloat()
         val parentBottom = (parent.height - parent.paddingBottom).toFloat()
 
-        val firstIndex = parent.getChildViewHolder(first).bindingAdapterPosition
-        val lastIndex = firstIndex + parent.childCount.dec()
+        val firstIndex = firstItemViewHolder.bindingAdapterPosition
+        val lastIndex = firstIndex + itemChildCount.dec()
         var currentIndex = firstIndex
         for (child in parent) {
+            if (child.id != R.id.item_explorer) continue
             val prev = if (currentIndex == firstIndex) null else items[currentIndex.dec()]
             val item = items[currentIndex]
             val next = if (currentIndex == lastIndex) null else items[currentIndex.inc()]
@@ -118,6 +125,23 @@ class ItemBorderDecorator(
         }
         frameRect?.drawFrame(canvas)
         requestUpdateHeaderPosition()
+    }
+
+    /** @return the first item view and node item count */
+    private fun RecyclerView.getFirstItemView(): Pair<ViewHolder, Int>? {
+        var holder: ViewHolder? = null
+        var count = 0
+        for (i in 0 until childCount) {
+            val view = getChildAt(i)
+            if (view.id == R.id.item_explorer) {
+                count++
+                if (holder == null) {
+                    holder = getChildViewHolder(view)
+                    if (holder.bindingAdapterPosition < 0) holder = null
+                }
+            }
+        }
+        return holder?.let { it to count }
     }
 
     private fun RectF.drawFrame(canvas: Canvas) {

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_explorer_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/common_margin"
+    android:foreground="?selectableItemBackground"
+    android:padding="50dp"
+    >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/cart_thumbnail"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="W,1:1"
+            />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cart_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/common_margin_half"
+            android:layout_marginVertical="@dimen/common_margin"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cart_thumbnail"
+            app:layout_constraintBottom_toTopOf="@+id/cart_subtitle"
+            tools:text="Some Root"
+            />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cart_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin_half"
+            android:layout_marginHorizontal="@dimen/common_margin_half"
+            android:layout_marginBottom="@dimen/common_margin"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cart_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Some Root"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

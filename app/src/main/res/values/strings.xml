@@ -83,6 +83,12 @@
     <string name="access_to_storage_forbidden">Access to the storage is forbidden</string>
     <string name="allow">Allow</string>
     <string name="confirm">Confirm</string>
+    <string name="root_photos">Internal storage</string>
+    <string name="root_videos">Internal storage</string>
+    <string name="root_camera">Internal storage</string>
+    <string name="root_downloads">Internal storage</string>
+    <string name="root_bluetooth" translatable="false">Bluetooth</string>
+    <string name="root_screenshots">Internal storage</string>
     <string name="internal_storage">Internal storage</string>
     <string name="external_storage">External storage</string>
     <string name="oops_not_working">Oops, not working yet</string>

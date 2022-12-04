@@ -17,6 +17,8 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.getString
+import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getExternalStorageDirectory
 
 class ExplorerItemBinderImpl(
     private val itemView: View,
@@ -62,6 +64,10 @@ class ExplorerItemBinderImpl(
         if (cbBox.buttonTintList == null) {
             cbBox.isUseMaterialThemeColors = true
         }
+        itemView.context.getExternalStorageDirectory()?.let {
+            rootsAliases[it.toUniqueId()] = R.string.internal_storage
+        }
+        rootsAliases[Const.ROOT.toUniqueId()] = R.string.root
 
         val stateEnabledChecked = intArrayOf(android.R.attr.state_enabled, android.R.attr.state_checked)
         val stateDisabledChecked = intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked)
