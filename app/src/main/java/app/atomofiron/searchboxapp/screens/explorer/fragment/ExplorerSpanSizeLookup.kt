@@ -1,10 +1,10 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment
 
-import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
+import kotlin.math.min
 
 class ExplorerSpanSizeLookup(
     recyclerView: RecyclerView,
@@ -13,12 +13,7 @@ class ExplorerSpanSizeLookup(
 ) : GridLayoutManager.SpanSizeLookup() {
 
     init {
-        recyclerView.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
-            if (right - left != oldRight - oldLeft) {
-                recyclerView.updateSpanCount()
-            }
-        }
-        recyclerView.updateSpanCount()
+        updateSpanCount(recyclerView)
     }
 
     override fun getSpanSize(position: Int): Int = when {
@@ -26,14 +21,19 @@ class ExplorerSpanSizeLookup(
         else -> layoutManager.spanCount
     }
 
-    private fun View.updateSpanCount() {
-        val minWidth = resources.getDimensionPixelSize(R.dimen.column_min_width)
-        var frameWidth = width
-        if (frameWidth == 0) {
-            frameWidth = resources.displayMetrics.widthPixels
+    fun updateSpanCount(recyclerView: RecyclerView) {
+        val spanCount = recyclerView.run {
+            val minWidth = resources.getDimensionPixelSize(R.dimen.column_min_width)
+            var frameWidth = width
+            if (frameWidth == 0) {
+                frameWidth = resources.displayMetrics.widthPixels
+            }
+            frameWidth -= paddingStart + paddingEnd
+            min(rootsAdapter.itemCount, frameWidth / minWidth)
         }
-        frameWidth -= paddingStart + paddingEnd
-        layoutManager.spanCount = frameWidth / minWidth
-        rootsAdapter.notifyDataSetChanged()
+        if (spanCount != layoutManager.spanCount) {
+            layoutManager.spanCount = spanCount
+            rootsAdapter.notifyDataSetChanged()
+        }
     }
 }

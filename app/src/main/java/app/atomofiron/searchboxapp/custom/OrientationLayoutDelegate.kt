@@ -26,6 +26,7 @@ class OrientationLayoutDelegate(
     private val systemUiView: SystemUiBackgroundView? = null,
     private val tabLayout: MaterialButtonToggleGroup? = null,
     private val headerView: ExplorerHeaderView? = null,
+    private val onInsetsApplied: (() -> Unit)? = null,
 ) : OnApplyWindowInsetsListener {
     enum class Side {
         Left, Bottom, Right,
@@ -64,6 +65,7 @@ class OrientationLayoutDelegate(
         systemUiView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets)
         }
+        onInsetsApplied?.invoke()
         return WindowInsetsCompat.CONSUMED
     }
 

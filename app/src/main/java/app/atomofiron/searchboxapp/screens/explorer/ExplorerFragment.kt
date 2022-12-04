@@ -38,6 +38,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     private val explorerAdapter = ExplorerAdapter()
 
     private lateinit var listDelegate: ExplorerListDelegate
+    private lateinit var spanSizeLookup: ExplorerSpanSizeLookup
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,9 +53,10 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
         binding = FragmentExplorerBinding.bind(view)
 
-        binding.recyclerView.layoutManager = GridLayoutManager(context, 1).apply {
-            spanSizeLookup = ExplorerSpanSizeLookup(binding.recyclerView, this, rootAdapter)
-        }
+        val layoutManager = GridLayoutManager(context, 1)
+        spanSizeLookup = ExplorerSpanSizeLookup(binding.recyclerView, layoutManager, rootAdapter)
+        layoutManager.spanSizeLookup = spanSizeLookup
+        binding.recyclerView.layoutManager = layoutManager
         val config = ConcatAdapter.Config.Builder()
             .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
             .build()
@@ -110,7 +112,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
                 systemUiBackground,
                 explorerTabs,
                 explorerHeader,
-            )
+            ) {
+                spanSizeLookup.updateSpanCount(recyclerView)
+            }
         }
     }
 
