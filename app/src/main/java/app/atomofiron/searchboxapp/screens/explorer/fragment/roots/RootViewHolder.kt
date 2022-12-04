@@ -19,10 +19,8 @@ class RootViewHolder(itemView: View) : GeneralHolder<NodeRoot>(itemView) {
 
     override fun onBind(item: NodeRoot, position: Int) {
         binding.cartTitle.text = item.getTitle()
-        when (item.thumbnail) {
-            null -> binding.cartThumbnail.setImageDrawable(item.getIcon())
-            else -> binding.cartThumbnail.setImageBitmap(item.thumbnail)
-        }
+        binding.cartThumbnail.background = item.getThumbnailBackground()
+        binding.cartThumbnail.setImageDrawable((item.thumbnail ?: item.getIcon()))
     }
 
     private fun NodeRoot.getTitle(): String {
@@ -50,5 +48,22 @@ class RootViewHolder(itemView: View) : GeneralHolder<NodeRoot>(itemView) {
             is NodeRootType.Favorite -> R.drawable.ic_thumbnail_favorite
         }
         return ContextCompat.getDrawable(context, resId)
+    }
+
+    private fun NodeRoot.getThumbnailBackground(): Drawable? {
+        val resId = when (type) {
+            is NodeRootType.Photos,
+            is NodeRootType.Videos,
+            is NodeRootType.Camera,
+            is NodeRootType.Screenshots -> R.drawable.item_root_thumbnail
+            is NodeRootType.Downloads,
+            is NodeRootType.Bluetooth,
+            is NodeRootType.InternalStorage,
+            is NodeRootType.Favorite -> 0
+        }
+        return when (resId) {
+            0 -> null
+            else ->  ContextCompat.getDrawable(context, resId)
+        }
     }
 }

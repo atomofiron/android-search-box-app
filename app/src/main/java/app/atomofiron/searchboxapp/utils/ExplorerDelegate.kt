@@ -215,22 +215,22 @@ object ExplorerDelegate {
         var content = content
         content = when {
             !output.success || output.output.isBlank() -> path.resolveFileType()
-            output.output.startsWith(FILE_PNG) -> content.ifEmpty { NodeContent.File.Picture.Png(getThumbnail(config)) }
-            output.output.startsWith(FILE_JPEG) -> content.ifEmpty { NodeContent.File.Picture.Jpeg(getThumbnail(config)) }
+            output.output.startsWith(FILE_PNG) -> content.ifEmpty { NodeContent.File.Picture.Png(path.getThumbnail(config)) }
+            output.output.startsWith(FILE_JPEG) -> content.ifEmpty { NodeContent.File.Picture.Jpeg(path.getThumbnail(config)) }
             output.output.startsWith(FILE_ZIP) -> when {
-                path.endsWith(EXT_APK, ignoreCase = true) -> NodeContent.File.Apk()
-                else -> NodeContent.File.Archive.Zip()
+                path.endsWith(EXT_APK, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Apk() }
+                else -> content.ifEmpty { NodeContent.File.Archive.Zip() }
             }
-            output.output.startsWith(FILE_BZIP2) -> NodeContent.File.Archive.Bzip2()
-            output.output.startsWith(FILE_GZIP) -> NodeContent.File.Archive.Gz()
-            output.output.startsWith(FILE_TAR) -> NodeContent.File.Archive.Tar()
+            output.output.startsWith(FILE_BZIP2) -> content.ifEmpty { NodeContent.File.Archive.Bzip2() }
+            output.output.startsWith(FILE_GZIP) -> content.ifEmpty { NodeContent.File.Archive.Gz() }
+            output.output.startsWith(FILE_TAR) -> content.ifEmpty { NodeContent.File.Archive.Tar() }
             output.output.startsWith(FILE_SH_SCRIPT) -> NodeContent.File.Text.Script
             output.output.startsWith(FILE_UTF8_TEXT) ||
             output.output.startsWith(FILE_ASCII_TEXT) -> NodeContent.File.Text.Plain
-            output.output.startsWith(FILE_DATA) -> path.resolveFileType()
+            output.output.startsWith(FILE_DATA) -> path.resolveFileType(content, config)
             output.output.startsWith(FILE_EMPTY) -> NodeContent.File.Other
             output.output.startsWith(FILE_BOOTING) -> NodeContent.File.DataImage
-            output.output.startsWith(FILE_OGG) -> NodeContent.File.Music()
+            output.output.startsWith(FILE_OGG) -> content.ifEmpty { NodeContent.File.Music() }
             else -> {
                 Log.e("searchboxapp", "$path ${output.output}")
                 NodeContent.File.Other
@@ -379,32 +379,32 @@ object ExplorerDelegate {
         }
     }
 
-    private fun String.resolveFileType(): NodeContent = when {
-        endsWith(EXT_PNG, ignoreCase = true) -> NodeContent.File.Picture.Png()
+    private fun String.resolveFileType(content: NodeContent? = null, config: CacheConfig? = null): NodeContent = when {
+        endsWith(EXT_PNG, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Picture.Png() }
         endsWith(EXT_JPG, ignoreCase = true) ||
-        endsWith(EXT_JPEG, ignoreCase = true) -> NodeContent.File.Picture.Jpeg()
-        endsWith(EXT_GIF, ignoreCase = true) -> NodeContent.File.Picture.Gif()
-        endsWith(EXT_WEBP, ignoreCase = true) -> NodeContent.File.Picture.Webp()
-        endsWith(EXT_APK, ignoreCase = true) -> NodeContent.File.Apk()
-        endsWith(EXT_ZIP, ignoreCase = true) -> NodeContent.File.Archive.Zip()
-        endsWith(EXT_TAR, ignoreCase = true) -> NodeContent.File.Archive.Tar()
-        endsWith(EXT_BZ2, ignoreCase = true) -> NodeContent.File.Archive.Bzip2()
-        endsWith(EXT_GZ, ignoreCase = true) -> NodeContent.File.Archive.Gz()
-        endsWith(EXT_RAR, ignoreCase = true) -> NodeContent.File.Archive.Rar()
+        endsWith(EXT_JPEG, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Picture.Jpeg() }
+        endsWith(EXT_GIF, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Picture.Gif() }
+        endsWith(EXT_WEBP, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Picture.Webp() }
+        endsWith(EXT_APK, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Apk() }
+        endsWith(EXT_ZIP, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Archive.Zip() }
+        endsWith(EXT_TAR, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Archive.Tar() }
+        endsWith(EXT_BZ2, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Archive.Bzip2() }
+        endsWith(EXT_GZ, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Archive.Gz() }
+        endsWith(EXT_RAR, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Archive.Rar() }
         endsWith(EXT_SH, ignoreCase = true) -> NodeContent.File.Text.Script
         endsWith(EXT_HTML, ignoreCase = true) ||
         endsWith(EXT_TXT, ignoreCase = true) -> NodeContent.File.Text.Plain
         endsWith(EXT_IMG, ignoreCase = true) -> NodeContent.File.DataImage
         endsWith(EXT_MP4, ignoreCase = true) ||
         endsWith(EXT_3GP, ignoreCase = true) ||
-        endsWith(EXT_AVI, ignoreCase = true) -> NodeContent.File.Movie()
+        endsWith(EXT_AVI, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Movie() }
         endsWith(EXT_MP3, ignoreCase = true) ||
         endsWith(EXT_OGG, ignoreCase = true) ||
         endsWith(EXT_WAV, ignoreCase = true) ||
         endsWith(EXT_FLAC, ignoreCase = true) ||
         endsWith(EXT_OGA, ignoreCase = true) ||
-        endsWith(EXT_AAC, ignoreCase = true) -> NodeContent.File.Music()
-        endsWith(EXT_PDF, ignoreCase = true) -> NodeContent.File.Pdf
+        endsWith(EXT_AAC, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Music() }
+        endsWith(EXT_PDF, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Pdf }
         else -> NodeContent.File.Other
     }
 }

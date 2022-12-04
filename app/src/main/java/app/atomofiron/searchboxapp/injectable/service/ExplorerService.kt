@@ -41,6 +41,7 @@ class ExplorerService(
 ) {
 
     private val scope = appStore.scope
+    private val previewSize = context.resources.getDimensionPixelSize(R.dimen.preview_size)
 
     private val internalStoragePath = Tool.getExternalStorageDirectory(context)
     private var config = CacheConfig(useSu = false)
@@ -55,6 +56,7 @@ class ExplorerService(
                 copyToybox(context)
             }
             initRoots()
+            updateRoots()
         }
         // todo try move out
         val thumbnailSize = context.resources.getDimensionPixelSize(R.dimen.thumbnail_size)
@@ -72,11 +74,11 @@ class ExplorerService(
     private suspend fun initRoots() {
         val storagePath = internalStoragePath ?: return
         val roots = listOf(
-            NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("$storagePath/DCIM/Camera/")),
-            NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("$storagePath/DCIM/Camera/")),
-            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("$storagePath/Download/")),
-            NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("$storagePath/Bluetooth/")),
-            NodeRoot(NodeRootType.Screenshots, ExplorerDelegate.asRoot("$storagePath/Pictures/Screenshots/")),
+            NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("${storagePath}DCIM/Camera/")),
+            NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("${storagePath}DCIM/Camera/")),
+            NodeRoot(NodeRootType.Screenshots, ExplorerDelegate.asRoot("${storagePath}Pictures/Screenshots/")),
+            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("${storagePath}Download/")),
+            NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("${storagePath}Bluetooth/")),
             NodeRoot(NodeRootType.InternalStorage(), ExplorerDelegate.asRoot(storagePath)),
         ).parMapMut {
             val item = it.item.update(config).sortByName()
@@ -147,11 +149,72 @@ class ExplorerService(
         }
     }
 
+    suspend fun updateRoots() {
+        withTab {
+            roots.forEach { root ->
+                when (root.type) {
+                    is NodeRootType.Photos -> Unit
+                    is NodeRootType.Videos -> Unit
+                    is NodeRootType.Screenshots -> Unit
+                    else -> return@forEach
+                }
+                var state = states.find { it.uniqueId == root.stableId }
+                if (state != null) return
+                val job = scope.launch {
+                    root.update()
+                }
+                state = states.updateState(root.stableId) {
+                    nextState(root.stableId, cachingJob = job)
+                }
+                if (state?.isCaching != true) job.cancel()
+            }
+        }
+    }
+
+    private suspend fun NodeRoot.update() {
+        val updated = item.update(config)
+        val lastChild = updated.children?.findLast {
+            type == NodeRootType.Photos && it.content is NodeContent.File.Picture ||
+                    type == NodeRootType.Videos && it.content is NodeContent.File.Movie ||
+                    type == NodeRootType.Screenshots && it.content is NodeContent.File.Picture
+        }
+        var content = lastChild?.content as? NodeContent.File
+        if (content?.thumbnail == null && lastChild != null) {
+            content = lastChild.update(config.copy(thumbnailSize = previewSize)).content as? NodeContent.File
+        }
+        val root = copy(item = updated, thumbnail = content?.thumbnail)
+        withTab {
+            roots.replace {
+                when (it.stableId) {
+                    root.stableId -> root
+                    else -> it
+                }
+            }
+        }
+    }
+
+    private inline fun <T> MutableList<T>.replace(action: (T) -> T?) {
+        val iterator = listIterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            val new = action(next)
+            when {
+                new === next -> Unit
+                new == null -> iterator.remove()
+                else -> iterator.set(new)
+            }
+        }
+    }
+
     suspend fun tryCacheAsync(it: Node) {
         withTab {
             val item = tree.findNode(it.uniqueId)
             item ?: return
-            val job = scope.launch { cacheSync(item) }
+            val job = scope.launch {
+                cacheSync(item) {
+                    tree.replaceItem(it)
+                }
+            }
             val state = states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = job)
             }
@@ -274,15 +337,14 @@ class ExplorerService(
         return tab.updateTree {
             val result = block()
 
-            val iter = states.iterator()
-            while (iter.hasNext()) {
-                if (iter.next().withoutState) iter.remove()
+            states.replace {
+                if (it.withoutState) null else it
             }
 
             tree.dropClosedLevels()
             updateDirectoryTypes()
             val items = renderNodes()
-            explorerStore.items.emit(NodeTabItems(roots, items))
+            explorerStore.items.emit(NodeTabItems(roots.toMutableList(), items))
             updateCurrentDir()
 
             updateStates(items)
@@ -403,7 +465,7 @@ class ExplorerService(
         explorerStore.current.value = item?.let { updateStateFor(it) }
     }
 
-    private suspend fun CoroutineScope.cacheSync(item: Node) {
+    private suspend fun CoroutineScope.cacheSync(item: Node, predicate: NodeTabTree.(Node) -> Boolean) {
         if (!isActive) return
         var cached = item.update(config).sortByName()
         cached = cached.updateContent()
@@ -411,7 +473,7 @@ class ExplorerService(
             states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
             }
-            if (!tree.replaceItem(cached)) return
+            if (!predicate(cached)) return
             explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
         }
     }

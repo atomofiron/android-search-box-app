@@ -1,12 +1,12 @@
 package app.atomofiron.searchboxapp.model.explorer
 
-import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import java.util.Objects
 
 data class NodeRoot(
     val type: NodeRootType,
     val item: Node,
-    val thumbnail: Bitmap? = null,
+    val thumbnail: Drawable? = null,
     val isSelected: Boolean = false,
 ) {
     val stableId: Int = type.stableId
@@ -17,9 +17,9 @@ data class NodeRoot(
         object Photos : NodeRootType()
         object Videos : NodeRootType()
         object Camera : NodeRootType()
+        object Screenshots : NodeRootType()
         object Downloads : NodeRootType()
         object Bluetooth : NodeRootType()
-        object Screenshots : NodeRootType()
         data class InternalStorage(
             val used: Long = 0,
             val free: Long = 0,

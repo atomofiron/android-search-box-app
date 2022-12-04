@@ -6,6 +6,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.appcompat.app.AppCompatActivity
 import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.store.AppStore
@@ -17,6 +18,7 @@ import kotlinx.coroutines.*
 interface AppEventDelegateApi {
     fun onActivityCreate(activity: AppCompatActivity)
     fun onIntent(intent: Intent)
+    fun onMaximize()
     fun onDestroy(activity: AppCompatActivity)
     fun onActivityFinish()
 }
@@ -53,6 +55,8 @@ class AppEventDelegate(
             }
         }
     }
+
+    override fun onMaximize() = mainChannel.maximized.invoke(scope)
 
     override fun onDestroy(activity: AppCompatActivity) {
         appStore.onActivityDestroy()

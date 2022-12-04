@@ -26,8 +26,8 @@ sealed class NodeContent(
         // прямая связь
         val isEmpty: Boolean = thumbnail == null
 
-        data class Movie(val duration: Int = 0, val preview: Bitmap? = null) : File()
-        data class Music(val duration: Int = 0, val cover: Bitmap? = null) : File()
+        class Movie(val duration: Int = 0, thumbnail: Drawable? = null) : File(thumbnail = thumbnail)
+        class Music(val duration: Int = 0, thumbnail: Drawable? = null) : File(thumbnail = thumbnail)
         sealed class Picture(
             mimeType: String,
             thumbnail: Drawable? = null,

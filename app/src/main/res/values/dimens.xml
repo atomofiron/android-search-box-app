@@ -32,6 +32,7 @@
     <dimen name="edge_size">48dp</dimen>
     <dimen name="item_explorer_min_height">40dp</dimen>
     <dimen name="thumbnail_size">48dp</dimen>
+    <dimen name="preview_size">192dp</dimen>
     <dimen name="item_dir_shadow_size">6dp</dimen>
 	<dimen name="item_dir_separation_size">3.5dp</dimen>
 	<dimen name="curtain_title_margin">52dp</dimen>

@@ -37,6 +37,12 @@ class ExplorerInteractor(
         }
     }
 
+    fun updateRoots() {
+        scope.launch(context) {
+            service.updateRoots()
+        }
+    }
+
     fun deleteItems(items: List<Node>) {
         scope.launch(context) {
             service.tryDelete(items)
