@@ -20,6 +20,7 @@ import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.delete
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.open
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.rename
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.sortByDate
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.sortByName
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.theSame
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
@@ -80,10 +81,7 @@ class ExplorerService(
             NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("${storagePath}Download/")),
             NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("${storagePath}Bluetooth/")),
             NodeRoot(NodeRootType.InternalStorage(), ExplorerDelegate.asRoot(storagePath)),
-        ).parMapMut {
-            val item = it.item.update(config).sortByName()
-            it.copy(item = item)
-        }
+        )
         withTab {
             this.roots.clear()
             this.roots.addAll(roots)
@@ -152,28 +150,34 @@ class ExplorerService(
     suspend fun updateRoots() {
         withTab {
             roots.forEach { root ->
-                when (root.type) {
-                    is NodeRootType.Photos -> Unit
-                    is NodeRootType.Videos -> Unit
-                    is NodeRootType.Screenshots -> Unit
-                    else -> return@forEach
-                }
-                var state = states.find { it.uniqueId == root.stableId }
-                if (state != null) return
-                val job = scope.launch {
-                    root.update()
-                }
-                state = states.updateState(root.stableId) {
-                    nextState(root.stableId, cachingJob = job)
-                }
-                if (state?.isCaching != true) job.cancel()
+                root.updateRoot()
             }
         }
     }
 
-    private suspend fun NodeRoot.update() {
-        val updated = item.update(config)
-        val lastChild = updated.children?.findLast {
+    private suspend fun NodeRoot.updateRoot() {
+        when (type) {
+            is NodeRootType.Photos,
+            is NodeRootType.Videos,
+            is NodeRootType.Screenshots -> Unit
+            else -> if (item.isCached) return
+        }
+        var state = states.find { it.uniqueId == stableId }
+        if (state != null) return
+        val job = scope.launch {
+            updatePreview()
+        }
+        state = states.updateState(stableId) {
+            nextState(stableId, cachingJob = job)
+        }
+        if (state?.isCaching != true) {
+            job.cancel()
+        }
+    }
+
+    private suspend fun NodeRoot.updatePreview() {
+        val updated = item.update(config).sortByDate()
+        val lastChild = updated.children?.find {
             type == NodeRootType.Photos && it.content is NodeContent.File.Picture ||
                     type == NodeRootType.Videos && it.content is NodeContent.File.Movie ||
                     type == NodeRootType.Screenshots && it.content is NodeContent.File.Picture
@@ -189,6 +193,9 @@ class ExplorerService(
                     root.stableId -> root
                     else -> it
                 }
+            }
+            states.updateState(root.stableId) {
+                nextState(root.stableId, cachingJob = null)
             }
         }
     }
@@ -210,8 +217,9 @@ class ExplorerService(
         withTab {
             val item = tree.findNode(it.uniqueId)
             item ?: return
+            val isMediaRoot = roots.find { it.item.uniqueId == item.uniqueId }?.isMedia == true
             val job = scope.launch {
-                cacheSync(item) {
+                cacheSync(item, isMediaRoot) {
                     tree.replaceItem(it)
                 }
             }
@@ -292,7 +300,9 @@ class ExplorerService(
     }
 
     suspend fun tryDelete(its: List<Node>) {
-        withTab {
+        var mediaRootAffected: NodeRoot? = null
+        val items = withTab {
+            mediaRootAffected = roots.find { it.isSelected && it.isMedia }
             its.mapNotNull { item ->
                 tree.findNode(item.uniqueId)?.takeIf {
                     val state = states.updateState(item.uniqueId) {
@@ -308,7 +318,8 @@ class ExplorerService(
                     state?.isDeleting == true
                 }
             }
-        }.forEach { item ->
+        }
+        val jobs = items.map { item ->
             scope.launch {
                 delay(1000)
                 val result = item.delete(config.useSu)
@@ -322,6 +333,8 @@ class ExplorerService(
                 }
             }
         }
+        jobs.forEach { it.join() }
+        mediaRootAffected?.updateRoot()
     }
 
     suspend fun tryReceive(where: Node, uri: Uri) {
@@ -380,7 +393,8 @@ class ExplorerService(
             while (iterator.hasNext()) {
                 val state = iterator.next()
                 if (state.withoutState) continue
-                val item = items.find { it.uniqueId == state.uniqueId }
+                var item = roots.find { it.stableId == state.uniqueId }?.item
+                item = item ?: items.find { it.uniqueId == state.uniqueId }
                 if (item == null) {
                     state.cachingJob?.cancel()
                     val next = state.nextState(state.uniqueId, cachingJob = null)
@@ -465,9 +479,11 @@ class ExplorerService(
         explorerStore.current.value = item?.let { updateStateFor(it) }
     }
 
-    private suspend fun CoroutineScope.cacheSync(item: Node, predicate: NodeTabTree.(Node) -> Boolean) {
+    private suspend fun CoroutineScope.cacheSync(item: Node, isMediaRoot: Boolean, predicate: NodeTabTree.(Node) -> Boolean) {
         if (!isActive) return
-        var cached = item.update(config).sortByName()
+        var cached = item.update(config).run {
+            if (isMediaRoot) sortByDate() else sortByName()
+        }
         cached = cached.updateContent()
         withTab {
             states.updateState(item.uniqueId) {

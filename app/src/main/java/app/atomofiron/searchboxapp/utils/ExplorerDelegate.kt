@@ -190,8 +190,8 @@ object ExplorerDelegate {
         return when {
             output.success && lines.size == 1 -> parseNode(lines.first()).run {
                 when {
-                    isCached -> this
                     isDirectory -> cacheDir(config.useSu)
+                    isCached -> this
                     else -> cacheFile(config)
                 }
             }
@@ -246,6 +246,16 @@ object ExplorerDelegate {
     fun Node.sortByName(): Node {
         children?.items?.run {
             sortBy { it.name.lowercase() }
+            sortBy { if (it.isDirectory) 0 else 1 }
+        }
+        return this
+    }
+
+    fun Node.sortByDate(newFirst: Boolean = true): Node {
+        children?.items?.run {
+            sortBy { it.time }
+            sortBy { it.date }
+            if (newFirst) reverse()
             sortBy { if (it.isDirectory) 0 else 1 }
         }
         return this

@@ -10,6 +10,13 @@ data class NodeRoot(
     val isSelected: Boolean = false,
 ) {
     val stableId: Int = type.stableId
+    val isMedia: Boolean = when (type) {
+        is NodeRootType.Photos,
+        is NodeRootType.Videos,
+        is NodeRootType.Camera,
+        is NodeRootType.Screenshots -> true
+        else -> false
+    }
 
     sealed class NodeRootType {
         open val stableId: Int = Objects.hash(this::class)

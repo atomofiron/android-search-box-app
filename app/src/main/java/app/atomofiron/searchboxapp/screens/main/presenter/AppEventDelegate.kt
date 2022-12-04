@@ -17,9 +17,9 @@ import kotlinx.coroutines.*
 
 interface AppEventDelegateApi {
     fun onActivityCreate(activity: AppCompatActivity)
+    fun onActivityDestroy()
     fun onIntent(intent: Intent)
     fun onMaximize()
-    fun onDestroy(activity: AppCompatActivity)
     fun onActivityFinish()
 }
 
@@ -58,9 +58,7 @@ class AppEventDelegate(
 
     override fun onMaximize() = mainChannel.maximized.invoke(scope)
 
-    override fun onDestroy(activity: AppCompatActivity) {
-        appStore.onActivityDestroy()
-    }
+    override fun onActivityDestroy() = appStore.onActivityDestroy()
 
     override fun onActivityFinish() = Unit// todo appUpdateService.tryCompleteUpdate(forced = false)
 
