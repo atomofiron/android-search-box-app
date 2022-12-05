@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.net.Uri
+import android.os.StatFs
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.R
@@ -15,6 +16,7 @@ import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
+import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.delete
@@ -55,8 +57,8 @@ class ExplorerService(
         scope.launch(Dispatchers.IO) {
             withTab {
                 copyToybox(context)
+                initRoots()
             }
-            initRoots()
             updateRoots()
         }
         // todo try move out
@@ -72,7 +74,7 @@ class ExplorerService(
         }
     }
 
-    private suspend fun initRoots() {
+    private fun NodeTabTree.initRoots() {
         val storagePath = internalStoragePath ?: return
         val roots = listOf(
             NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("${storagePath}DCIM/Camera/")),
@@ -82,10 +84,8 @@ class ExplorerService(
             NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("${storagePath}Bluetooth/")),
             NodeRoot(NodeRootType.InternalStorage(), ExplorerDelegate.asRoot(storagePath)),
         )
-        withTab {
-            this.roots.clear()
-            this.roots.addAll(roots)
-        }
+        this.roots.clear()
+        this.roots.addAll(roots)
     }
 
     suspend fun trySelectRoot(item: NodeRoot) {
@@ -149,6 +149,7 @@ class ExplorerService(
 
     suspend fun updateRoots() {
         withTab {
+            updateInternalStorageStats()
             roots.forEach { root ->
                 root.updateRootAsync()
             }
@@ -171,6 +172,17 @@ class ExplorerService(
         if (state?.isCaching != true) {
             job.cancel()
         }
+    }
+
+    private fun NodeTabTree.updateInternalStorageStats() {
+        var root = roots.find { it.type is NodeRootType.InternalStorage }!!
+        val statFs = StatFs(root.item.path)
+        val freeBytes = statFs.freeBytes
+        val totalBytes = statFs.totalBytes
+        val type = (root.type as NodeRootType.InternalStorage).copy(used = totalBytes - freeBytes, free = freeBytes)
+        poop("type ${type.used} ${type.free}")
+        root = root.copy(type = type)
+        roots.replace(root) { it.stableId == root.stableId }
     }
 
     private suspend fun NodeRoot.updateRootSync() {
@@ -208,6 +220,12 @@ class ExplorerService(
             states.updateState(root.stableId) {
                 nextState(root.stableId, cachingJob = null)
             }
+        }
+    }
+
+    private inline fun <T> MutableList<T>.replace(new: T?, action: (T) -> Boolean) {
+        replace {
+            if (action(it)) new else it
         }
     }
 
@@ -358,13 +376,14 @@ class ExplorerService(
     }
 
     private suspend inline fun <R> withTab(block: NodeTabTree.() -> R): R {
-        return tab.updateTree {
+        return tab.updateTab {
             val result = block()
 
             states.replace {
                 if (it.withoutState) null else it
             }
 
+            poop("updateTree ${roots.map { it.type }.find { it is NodeRootType.InternalStorage } as? NodeRootType.InternalStorage}")
             tree.dropClosedLevels()
             updateDirectoryTypes()
             val items = renderNodes()

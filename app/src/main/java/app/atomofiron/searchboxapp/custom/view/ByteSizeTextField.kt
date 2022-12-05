@@ -8,6 +8,7 @@ import android.text.Spanned
 import android.util.AttributeSet
 import android.view.Gravity
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.utils.Tool.convert
 import kotlin.math.min
 
 class ByteSizeTextField @JvmOverloads constructor(
@@ -19,6 +20,7 @@ class ByteSizeTextField @JvmOverloads constructor(
     }
 
     private var submitListener: OnSubmitListener? = null
+    private val suffixes = resources.getStringArray(R.array.size_suffix_arr)
 
     init {
         filters = arrayOf<InputFilter>(InputFilterImpl())
@@ -27,7 +29,7 @@ class ByteSizeTextField @JvmOverloads constructor(
         inputType = inputType and InputType.TYPE_NUMBER_FLAG_DECIMAL.inv()
     }
 
-    fun setValue(value: Int) = setText(value.convert())
+    fun setValue(value: Int) = setText(value.convert(suffixes))
 
     fun setOnSubmitListener(listener: OnSubmitListener?) {
         submitListener = listener
@@ -44,33 +46,6 @@ class ByteSizeTextField @JvmOverloads constructor(
             setText(withoutStartingZero)
             setSelection(min(selection, withoutStartingZero.length))
         }
-    }
-
-    private fun Int.convert(): String {
-        val suffixes = resources.getStringArray(R.array.size_suffix_arr)
-        var value = this
-        for (i in suffixes.indices) {
-            if (value / 1024 == 0) return "$value${suffixes[i]}"
-            if (value % 1024 != 0) return "$value${suffixes[i]}"
-            if (i < suffixes.lastIndex) value /= 1024
-        }
-        return "$value${suffixes.last()}"
-    }
-
-    private fun String.convert(): Int {
-        val digits = Regex("\\d+|0")
-        val metrics = Regex("([gGгГ]|[mMмМ]|[kKкК])?[bBбБ]")
-        var value = digits.find(this)?.value?.toFloat()
-        value ?: return 0
-        val rate = metrics.find(this)?.value
-        rate ?: return 0
-        value *= when (rate.first()) {
-            'g', 'G', 'г', 'Г' -> 1024 * 1024 * 1024
-            'm', 'M', 'м', 'М' -> 1024 * 1024
-            'k', 'K', 'к', 'К' -> 1024
-            else -> 1
-        }
-        return value.toInt()
     }
 
     fun interface OnSubmitListener {

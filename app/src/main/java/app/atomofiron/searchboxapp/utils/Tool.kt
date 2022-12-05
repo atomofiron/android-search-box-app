@@ -30,4 +30,32 @@ object Tool {
         }
         return remaining == 0
     }
+
+    fun Int.convert(suffixes: Array<String>, lossless: Boolean = true): String = toLong().convert(suffixes, lossless)
+
+    fun Long.convert(suffixes: Array<String>, lossless: Boolean = true): String {
+        var value = this
+        for (i in suffixes.indices) {
+            if (value / 1024 == 0L) return "$value${suffixes[i]}"
+            if (lossless && value % 1024 != 0L) return "$value${suffixes[i]}"
+            if (i < suffixes.lastIndex) value /= 1024
+        }
+        return "$value${suffixes.last()}"
+    }
+
+    fun String.convert(): Int {
+        val digits = Regex("\\d+|0")
+        val metrics = Regex("([gGгГ]|[mMмМ]|[kKкК])?[bBбБ]")
+        var value = digits.find(this)?.value?.toFloat()
+        value ?: return 0
+        val rate = metrics.find(this)?.value
+        rate ?: return 0
+        value *= when (rate.first()) {
+            'g', 'G', 'г', 'Г' -> 1024 * 1024 * 1024
+            'm', 'M', 'м', 'М' -> 1024 * 1024
+            'k', 'K', 'к', 'К' -> 1024
+            else -> 1
+        }
+        return value.toInt()
+    }
 }

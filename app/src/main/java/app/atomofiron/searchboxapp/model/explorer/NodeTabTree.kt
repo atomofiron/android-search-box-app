@@ -13,7 +13,7 @@ class NodeTabTree(
     val tree = mutableListOf<NodeLevel>()
     val checked: MutableList<Int> = LinkedList()
 
-    suspend inline fun <R> updateTree(block: NodeTabTree.() -> R): R {
+    suspend inline fun <R> updateTab(block: NodeTabTree.() -> R): R {
         return mutex.withLock {
             block()
         }
