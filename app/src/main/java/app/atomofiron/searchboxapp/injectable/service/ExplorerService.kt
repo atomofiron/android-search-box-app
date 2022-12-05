@@ -150,12 +150,12 @@ class ExplorerService(
     suspend fun updateRoots() {
         withTab {
             roots.forEach { root ->
-                root.updateRoot()
+                root.updateRootAsync()
             }
         }
     }
 
-    private suspend fun NodeRoot.updateRoot() {
+    private suspend fun NodeRoot.updateRootAsync() {
         when (type) {
             is NodeRootType.Photos,
             is NodeRootType.Videos,
@@ -164,9 +164,7 @@ class ExplorerService(
         }
         var state = states.find { it.uniqueId == stableId }
         if (state != null) return
-        val job = scope.launch {
-            updatePreview()
-        }
+        val job = scope.launch { updateRootSync() }
         state = states.updateState(stableId) {
             nextState(stableId, cachingJob = job)
         }
@@ -175,15 +173,17 @@ class ExplorerService(
         }
     }
 
-    private suspend fun NodeRoot.updatePreview() {
-        val updated = item.update(config).sortByDate()
-        val lastChild = updated.children?.find {
+    private suspend fun NodeRoot.updateRootSync() {
+        val updated = item.update(config).run {
+            if (isMedia) sortByDate() else sortByName()
+        }
+        val lastChild = updated.takeIf { isMedia }?.children?.find {
             type == NodeRootType.Photos && it.content is NodeContent.File.Picture ||
                     type == NodeRootType.Videos && it.content is NodeContent.File.Movie ||
                     type == NodeRootType.Screenshots && it.content is NodeContent.File.Picture
         }
         val root = when {
-            lastChild == null -> copy(thumbnail = null, thumbnailPath = "")
+            lastChild == null -> copy(item = updated, thumbnail = null, thumbnailPath = "")
             thumbnailPath == lastChild.path -> this
             else -> {
                 val config = config.copy(thumbnailSize = previewSize)
@@ -336,7 +336,7 @@ class ExplorerService(
             }
         }
         jobs.forEach { it.join() }
-        mediaRootAffected?.updateRoot()
+        mediaRootAffected?.updateRootAsync()
     }
 
     suspend fun tryReceive(where: Node, uri: Uri) {
