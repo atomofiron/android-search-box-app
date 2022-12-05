@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.model.explorer
 
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.areChildrenContentsTheSame
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.name
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.parent
 
@@ -49,7 +50,7 @@ data class Node constructor(
         other.isFile != isFile -> false
         other.isChecked != isChecked -> false
         other.isCurrent != isCurrent -> false
-        other.content !== content -> false
+        other.content != content -> false
         else -> true
     }
 
@@ -58,7 +59,7 @@ data class Node constructor(
     override fun equals(other: Any?): Boolean = when {
         other !is Node -> false
         !areContentsTheSame(other) -> false
-        else -> other.children?.equals(children) == true
+        else -> other.children.areChildrenContentsTheSame(children)
     }
 
     fun rename(name: String): Node {

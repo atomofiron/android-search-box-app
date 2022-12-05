@@ -228,7 +228,7 @@ object ExplorerDelegate {
             output.output.startsWith(FILE_SH_SCRIPT) -> NodeContent.File.Text.Script
             output.output.startsWith(FILE_UTF8_TEXT) ||
             output.output.startsWith(FILE_ASCII_TEXT) -> NodeContent.File.Text.Plain
-            output.output.startsWith(FILE_DATA) -> path.resolveFileType(content, config)
+            output.output.startsWith(FILE_DATA) -> path.resolveFileType(content)
             output.output.startsWith(FILE_EMPTY) -> NodeContent.File.Other
             output.output.startsWith(FILE_BOOTING) ||
             output.output.startsWith(FILE_BOOT_IMAGE) -> NodeContent.File.DataImage
@@ -342,6 +342,22 @@ object ExplorerDelegate {
         }
     }
 
+    fun NodeChildren?.areChildrenContentsTheSame(other: NodeChildren?): Boolean {
+        when {
+            other == null && this == null -> return true
+            other == null -> return false
+            this == null -> return false
+            other.size != this.size -> return false
+        }
+        this!!
+        other!!.forEachIndexed { i, it ->
+            if (!it.areContentsTheSame(get(i))) {
+                return false
+            }
+        }
+        return true
+    }
+
     fun NodeProperties.isFile(): Boolean = access.firstOrNull() == FILE_CHAR
 
     fun NodeProperties.isDirectory(): Boolean = access.firstOrNull() == DIR_CHAR
@@ -391,7 +407,7 @@ object ExplorerDelegate {
         }
     }
 
-    private fun String.resolveFileType(content: NodeContent? = null, config: CacheConfig? = null): NodeContent = when {
+    private fun String.resolveFileType(content: NodeContent? = null): NodeContent = when {
         endsWith(EXT_PNG, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Picture.Png() }
         endsWith(EXT_JPG, ignoreCase = true) ||
         endsWith(EXT_JPEG, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Picture.Jpeg() }

@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.model.explorer
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 
 sealed class NodeContent(
@@ -24,18 +23,21 @@ sealed class NodeContent(
         open val thumbnail: Drawable? = null,
     ) : NodeContent(mimeType) {
         // прямая связь
-        val isEmpty: Boolean = thumbnail == null
+        val isEmpty: Boolean get() = thumbnail == null
 
-        class Movie(val duration: Int = 0, thumbnail: Drawable? = null) : File(thumbnail = thumbnail)
-        class Music(val duration: Int = 0, thumbnail: Drawable? = null) : File(thumbnail = thumbnail)
-        sealed class Picture(
-            mimeType: String,
-            thumbnail: Drawable? = null,
-        ) : File(mimeType, thumbnail) {
-            class Png(thumbnail: Drawable? = null) : Picture("image/png", thumbnail)
-            class Jpeg(thumbnail: Drawable? = null) : Picture("image/jpeg", thumbnail)
-            class Gif(thumbnail: Drawable? = null) : Picture("image/gif", thumbnail)
-            class Webp(thumbnail: Drawable? = null) : Picture("image/webp", thumbnail)
+        data class Movie(
+            val duration: Int = 0,
+            override val thumbnail: Drawable? = null,
+        ) : File()
+        data class Music(
+            val duration: Int = 0,
+            override val thumbnail: Drawable? = null,
+        ) : File()
+        sealed class Picture(mimeType: String) : File(mimeType) {
+            data class Png(override val thumbnail: Drawable? = null) : Picture("image/png")
+            data class Jpeg(override val thumbnail: Drawable? = null) : Picture("image/jpeg")
+            data class Gif(override val thumbnail: Drawable? = null) : Picture("image/gif")
+            data class Webp(override val thumbnail: Drawable? = null) : Picture("image/webp")
         }
         data class Apk(
             override val thumbnail: Drawable? = null,
@@ -46,13 +48,14 @@ sealed class NodeContent(
         ) : File("application/vnd.android.package-archive", thumbnail)
         sealed class Archive(
             mimeType: String,
-            val children: List<Node>? = null,
         ) : File(mimeType) {
-            class Zip(children: List<Node>? = null) : Archive("application/zip", children)
-            class Bzip2(children: List<Node>? = null) : Archive("application/x-bzip2", children)
-            class Gz(children: List<Node>? = null) : Archive("application/gzip", children)
-            class Tar(children: List<Node>? = null) : Archive("application/x-tar", children)
-            class Rar(children: List<Node>? = null) : Archive("application/vnd.rar", children)
+            abstract val children: List<Node>?
+
+            data class Zip(override val children: List<Node>? = null) : Archive("application/zip")
+            data class Bzip2(override val children: List<Node>? = null) : Archive("application/x-bzip2")
+            data class Gz(override val children: List<Node>? = null) : Archive("application/gzip")
+            data class Tar(override val children: List<Node>? = null) : Archive("application/x-tar")
+            data class Rar(override val children: List<Node>? = null) : Archive("application/vnd.rar")
         }
         sealed class Text : File("text/plain") {
             object Plain : Text()
