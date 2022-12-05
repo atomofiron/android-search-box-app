@@ -9,7 +9,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -52,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewState: MainViewState
     private lateinit var presenter: MainPresenter
     private var suspendStartJob: Job? = null
+    private var isFirstStart = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,6 +119,19 @@ class MainActivity : AppCompatActivity() {
         presenter.updateLightStatusBar(isDarkTheme())
         setOrientation(viewState.setOrientation.value)
         onCollect()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        when {
+            isFirstStart -> isFirstStart = false
+            else -> presenter.onMaximize()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onActivityDestroy()
     }
 
     private fun applyInsets() {
