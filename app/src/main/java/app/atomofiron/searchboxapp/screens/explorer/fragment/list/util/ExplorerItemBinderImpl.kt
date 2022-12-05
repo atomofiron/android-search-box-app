@@ -86,8 +86,10 @@ class ExplorerItemBinderImpl(
         val thumbnail = (item.content as? NodeContent.File)?.thumbnail
         ivThumbnail.setImageDrawable(thumbnail)
 
-        val alias = rootAliases[item.uniqueId]
-        tvName.text = alias ?: item.name
+        tvName.text = when {
+            item.isRoot -> rootAliases[item.uniqueId] ?: item.name
+            else -> item.name
+        }
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         val error = item.error?.let { itemView.resources.getString(it, item.content) }

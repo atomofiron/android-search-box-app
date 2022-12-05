@@ -20,8 +20,10 @@ class ExplorerSeparatorHolder(
     }
 
     override fun onBind(item: Node, position: Int) {
-        val alias = rootAliases[item.uniqueId]
-        binding.itemExplorerTvTitle.text = alias ?: item.name
+        binding.itemExplorerTvTitle.text = when {
+            item.isRoot -> rootAliases[item.uniqueId] ?: item.name
+            else -> item.name
+        }
     }
 
     fun setOnClickListener(listener: (Node) -> Unit) {
