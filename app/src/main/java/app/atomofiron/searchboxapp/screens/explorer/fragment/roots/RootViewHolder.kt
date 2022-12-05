@@ -1,11 +1,13 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment.roots
 
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
 import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ItemExplorerCardBinding
+import app.atomofiron.searchboxapp.getColorByAttr
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 
@@ -15,20 +17,30 @@ class RootViewHolder(
 ) : GeneralHolder<NodeRoot>(itemView) {
 
     private val binding = ItemExplorerCardBinding.bind(itemView)
+    private val colors = ColorStateList(
+        arrayOf(intArrayOf(android.R.attr.state_selected), intArrayOf(0)),
+        intArrayOf(
+            context.getColorByAttr(R.attr.colorPrimary),
+            binding.cartTitle.textColors.defaultColor,
+        )
+    )
 
     init {
         binding.cartThumbnail.clipToOutline = true
+        binding.cartTitle.setTextColor(colors)
     }
 
     override fun onBind(item: NodeRoot, position: Int) {
+        binding.root.isSelected = item.isSelected
         binding.cartTitle.text = item.getTitle()
+        binding.cartThumbnail.imageTintList = if (item.withPreview) null else colors
         binding.cartThumbnail.background = item.getThumbnailBackground()
         binding.cartThumbnail.setImageDrawable((item.thumbnail ?: item.getIcon()))
     }
 
     private fun NodeRoot.getTitle(): String = rootAliases[item.uniqueId] ?: item.name
 
-    private fun NodeRoot.getIcon(): Drawable? {
+    private fun NodeRoot.getIcon(): Drawable {
         val resId = when (type) {
             is NodeRootType.Photos -> R.drawable.ic_thumbnail_camera
             is NodeRootType.Videos -> R.drawable.ic_thumbnail_videocam
@@ -39,7 +51,7 @@ class RootViewHolder(
             is NodeRootType.InternalStorage -> R.drawable.ic_thumbnail_memory
             is NodeRootType.Favorite -> R.drawable.ic_thumbnail_favorite
         }
-        return ContextCompat.getDrawable(context, resId)
+        return ContextCompat.getDrawable(context, resId)!!
     }
 
     private fun NodeRoot.getThumbnailBackground(): Drawable? {

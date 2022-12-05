@@ -175,7 +175,7 @@ class ExplorerService(
 
     private suspend fun NodeRoot.updateRootSync() {
         val updated = item.update(config).run {
-            if (isMedia) sortByDate() else sortByName()
+            if (withPreview) sortByDate() else sortByName()
         }
         val onlyPhotos = type == NodeRootType.Photos || type == NodeRootType.Screenshots
         val onlyVideos = type == NodeRootType.Videos
@@ -190,7 +190,7 @@ class ExplorerService(
                 }
             }
         }
-        val newestChild = updated.takeIf { isMedia }?.children?.firstOrNull()
+        val newestChild = updated.takeIf { withPreview }?.children?.firstOrNull()
         val root = when {
             newestChild == null -> copy(item = updated, thumbnail = null, thumbnailPath = "")
             thumbnailPath == newestChild.path -> this
@@ -228,7 +228,7 @@ class ExplorerService(
         withTab {
             val item = tree.findNode(it.uniqueId)
             item ?: return
-            val isMediaRoot = roots.find { it.item.uniqueId == item.uniqueId }?.isMedia == true
+            val isMediaRoot = roots.find { it.item.uniqueId == item.uniqueId }?.withPreview == true
             val job = scope.launch {
                 cacheSync(item, isMediaRoot) {
                     tree.replaceItem(it)
@@ -313,7 +313,7 @@ class ExplorerService(
     suspend fun tryDelete(its: List<Node>) {
         var mediaRootAffected: NodeRoot? = null
         val items = withTab {
-            mediaRootAffected = roots.find { it.isSelected && it.isMedia }
+            mediaRootAffected = roots.find { it.isSelected && it.withPreview }
             its.mapNotNull { item ->
                 tree.findNode(item.uniqueId)?.takeIf {
                     val state = states.updateState(item.uniqueId) {

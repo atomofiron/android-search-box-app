@@ -11,7 +11,7 @@ data class NodeRoot(
     val isSelected: Boolean = false,
 ) {
     val stableId: Int = type.stableId
-    val isMedia: Boolean = when (type) {
+    val withPreview: Boolean = when (type) {
         is NodeRootType.Photos,
         is NodeRootType.Videos,
         is NodeRootType.Camera,
@@ -39,6 +39,7 @@ data class NodeRoot(
         other !is NodeRoot -> false
         other.type != type -> false
         other.thumbnail !== thumbnail -> false
+        other.isSelected != isSelected -> false
         else -> true
     }
 

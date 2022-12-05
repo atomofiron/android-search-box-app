@@ -3,6 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle"
     >
-    <corners android:radius="12dp" />
+    <corners android:radius="@dimen/card_corner_radius" />
     <solid android:color="?colorOutline" />
 </shape>
