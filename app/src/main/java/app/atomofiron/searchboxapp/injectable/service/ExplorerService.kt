@@ -16,7 +16,6 @@ import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
-import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.delete
@@ -180,7 +179,6 @@ class ExplorerService(
         val freeBytes = statFs.freeBytes
         val totalBytes = statFs.totalBytes
         val type = (root.type as NodeRootType.InternalStorage).copy(used = totalBytes - freeBytes, free = freeBytes)
-        poop("type ${type.used} ${type.free}")
         root = root.copy(type = type)
         roots.replace(root) { it.stableId == root.stableId }
     }
@@ -383,7 +381,6 @@ class ExplorerService(
                 if (it.withoutState) null else it
             }
 
-            poop("updateTree ${roots.map { it.type }.find { it is NodeRootType.InternalStorage } as? NodeRootType.InternalStorage}")
             tree.dropClosedLevels()
             updateDirectoryTypes()
             val items = renderNodes()
