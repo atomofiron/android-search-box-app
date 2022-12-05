@@ -54,7 +54,7 @@ class ByteSizeTextField @JvmOverloads constructor(
 
     private class InputFilterImpl : InputFilter {
 
-        private val regex = Regex("(\\d+|0)[ ]?([gGгГ]|[mMмМ]|[kKкК])?[bBбБ]?")
+        private val regex = Regex("(\\d+|0)([gGгГ]|[mMмМ]|[kKкК])?[bBбБ]?")
 
         override fun filter(
             source: CharSequence?,

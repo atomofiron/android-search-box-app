@@ -48,7 +48,7 @@ class RootViewHolder(
     private fun NodeRoot.bindType() {
         if (type !is NodeRootType.InternalStorage) return
         binding.cartArc.set(type.used, type.used + type.free)
-        binding.cartArcLabel.text = type.used.convert(suffixes, lossless = false)
+        binding.cartArcLabel.text = type.used.convert(suffixes, lossless = false, separator = "\u2009")
     }
 
     private fun NodeRoot.getTitle(): String = rootAliases[item.uniqueId] ?: item.name

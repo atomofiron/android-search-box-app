@@ -33,10 +33,10 @@
     </string-array>
 
     <string-array name="size_suffix_arr">
-        <item>b</item>
-        <item>Kb</item>
-        <item>Mb</item>
-        <item>Gb</item>
+        <item>B</item>
+        <item>KB</item>
+        <item>MB</item>
+        <item>GB</item>
     </string-array>
 
     <string-array name="home_var">

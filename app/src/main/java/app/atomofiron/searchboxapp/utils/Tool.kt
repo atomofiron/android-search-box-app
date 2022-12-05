@@ -23,14 +23,14 @@ object Tool {
 
     fun Int.convert(suffixes: Array<String>, lossless: Boolean = true): String = toLong().convert(suffixes, lossless)
 
-    fun Long.convert(suffixes: Array<String>, lossless: Boolean = true): String {
+    fun Long.convert(suffixes: Array<String>, lossless: Boolean = true, separator: String = ""): String {
         var value = this
         for (i in suffixes.indices) {
-            if (value / 1024 == 0L) return "$value${suffixes[i]}"
+            if (value / 1024 == 0L) return "$value$separator${suffixes[i]}"
             if (lossless && value % 1024 != 0L) return "$value${suffixes[i]}"
             if (i < suffixes.lastIndex) value /= 1024
         }
-        return "$value${suffixes.last()}"
+        return "$value$separator${suffixes.last()}"
     }
 
     fun String.convert(): Int {
