@@ -101,6 +101,10 @@ class OrientationLayoutDelegate(
     }
 
     private fun Insets.editForRecyclerView(): Insets {
+        val top = when (side) {
+            Side.Bottom -> 0
+            Side.Left, Side.Right -> top
+        }
         val bottom = when (side) {
             Side.Bottom -> bottom + navigationSize
             Side.Left, Side.Right -> bottom
