@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.utils
 
-import android.content.Context
 import android.util.Log
 import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.*
@@ -71,19 +70,17 @@ object ExplorerDelegate {
     private val lastPart = Regex("(?<=/)/*[^/]+/*$|^/+\$")
     private val endingSlashes = Regex("/*$")
 
-    private fun completePath(absolutePath: String, isDirectory: Boolean): String {
+    fun String.completePath(directory: Boolean): String {
         return when {
-            absolutePath == ROOT -> ROOT
-            isDirectory -> absolutePath.replace(endingSlashes, SLASH)
-            else -> absolutePath.replace(endingSlashes, "")
+            this == ROOT -> ROOT
+            directory -> replace(endingSlashes, SLASH)
+            else -> replace(endingSlashes, "")
         }
     }
 
     fun String.parent(): String = replace(lastPart, "")
 
     fun String.name(): String = split(slashes).findLast { it.isNotEmpty() } ?: ROOT_NAME
-
-    private fun completeDirPath(absolutePath: String): String = completePath(absolutePath, isDirectory = true)
 
     fun create(parent: Node, name: String, isDirectory: Boolean): Node {
         val content = when {
@@ -102,7 +99,7 @@ object ExplorerDelegate {
     fun create(parent: Node, name: String, directory: Boolean, useSu: Boolean): Node {
         var targetPath = parent.path + name
         if (directory) {
-            targetPath = completeDirPath(targetPath)
+            targetPath = targetPath.completePath(directory = true)
         }
         val output = when {
             directory -> Shell.exec(Shell[Shell.MKDIR].format(targetPath), useSu)
@@ -156,7 +153,7 @@ object ExplorerDelegate {
         val asDir = content is NodeContent.Directory
         return Node(
             rootId = root,
-            path = completePath(parentPath + properties.name, asDir),
+            path = (parentPath + properties.name).completePath(asDir),
             parentPath = parentPath,
             properties = properties,
             content = content,

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.net.Uri
+import android.os.Environment
 import android.os.StatFs
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.set
@@ -18,6 +19,7 @@ import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.completePath
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.delete
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.open
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.rename
@@ -45,8 +47,11 @@ class ExplorerService(
     private val scope = appStore.scope
     private val previewSize = context.resources.getDimensionPixelSize(R.dimen.preview_size)
 
-    private val internalStoragePath = context.getExternalFilesDir(null)?.absolutePath
     private var config = CacheConfig(useSu = false)
+    private val internalStoragePath = Environment
+        .getExternalStorageDirectory()
+        .absolutePath
+        .completePath(directory = true)
 
     private val states = LinkedList<NodeState>()
     private val mutex = Mutex()
