@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment.list
 
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralHolder
@@ -16,7 +17,7 @@ import java.util.LinkedList
 
 class ExplorerAdapter(
     private val rootAliases: Map<Int, String>,
-) : ListAdapter<Node, GeneralHolder<Node>>(NodeCallback()) {
+) : ListAdapter<Node, GeneralHolder<Node>>(AsyncDifferConfig.Builder(NodeCallback()).build()) {
 
     lateinit var itemActionListener: ExplorerItemActionListener
     lateinit var separatorClickListener: (Node) -> Unit
