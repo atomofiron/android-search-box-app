@@ -45,7 +45,7 @@ class ExplorerService(
     private val scope = appStore.scope
     private val previewSize = context.resources.getDimensionPixelSize(R.dimen.preview_size)
 
-    private val internalStoragePath = Tool.getExternalStorageDirectory(context)
+    private val internalStoragePath = context.getExternalFilesDir(null)?.absolutePath
     private var config = CacheConfig(useSu = false)
 
     private val states = LinkedList<NodeState>()

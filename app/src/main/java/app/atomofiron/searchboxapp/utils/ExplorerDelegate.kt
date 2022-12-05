@@ -71,17 +71,7 @@ object ExplorerDelegate {
     private val lastPart = Regex("(?<=/)/*[^/]+/*$|^/+\$")
     private val endingSlashes = Regex("/*$")
 
-    fun Context.getExternalStorageDirectory(): String? {
-        val absolutePath = getExternalFilesDir(null)?.absolutePath
-        absolutePath ?: return null
-        val index = absolutePath.indexOf(Const.ANDROID_DIR).inc()
-        return when (index) {
-            0 -> null
-            else -> absolutePath.substring(0, index)
-        }
-    }
-
-    fun completePath(absolutePath: String, isDirectory: Boolean): String {
+    private fun completePath(absolutePath: String, isDirectory: Boolean): String {
         return when {
             absolutePath == ROOT -> ROOT
             isDirectory -> absolutePath.replace(endingSlashes, SLASH)
@@ -93,7 +83,7 @@ object ExplorerDelegate {
 
     fun String.name(): String = split(slashes).findLast { it.isNotEmpty() } ?: ROOT_NAME
 
-    fun completeDirPath(absolutePath: String): String = completePath(absolutePath, isDirectory = true)
+    private fun completeDirPath(absolutePath: String): String = completePath(absolutePath, isDirectory = true)
 
     fun create(parent: Node, name: String, isDirectory: Boolean): Node {
         val content = when {
@@ -328,8 +318,6 @@ object ExplorerDelegate {
     fun Node.close(): Node = open(false)
 
     fun Node.isParentOf(other: Node): Boolean = other.parentPath == path
-
-    fun Node.isTheDeepest(): Boolean = isOpened && children != null && children.find { it.isOpened } == null
 
     private fun NodeChildren.clearChildren() {
         val iter = items.listIterator()
