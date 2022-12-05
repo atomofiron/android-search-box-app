@@ -103,8 +103,8 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             initRootAliases(it.roots)
             rootAdapter.submitList(it.roots)
             explorerAdapter.submitList(it.items)
+            listDelegate.setCurrentDir(it.current)
         }
-        viewCollect(current, collector = listDelegate::setCurrentDir)
         viewCollect(itemComposition) {
             listDelegate.setComposition(it)
             explorerAdapter.setComposition(it)

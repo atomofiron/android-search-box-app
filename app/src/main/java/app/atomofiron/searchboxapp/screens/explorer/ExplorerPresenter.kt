@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.explorer
 
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
+import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -71,7 +72,7 @@ class ExplorerPresenter(
     fun onSeparatorClick(item: Node, isTargetVisible: Boolean) = scrollOrOpenParent(item, isTargetVisible)
 
     fun onVolumeUp(isCurrentDirVisible: Boolean) {
-        val currentDir = viewState.current.value
+        val currentDir = viewState.items.value.current
         currentDir ?: return
         scrollOrOpenParent(currentDir, isCurrentDirVisible)
     }

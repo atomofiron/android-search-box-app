@@ -383,9 +383,10 @@ class ExplorerService(
 
             tree.dropClosedLevels()
             updateDirectoryTypes()
+            val currentDir = getCurrentDir()
             val items = renderNodes()
-            explorerStore.items.emit(NodeTabItems(roots.toMutableList(), items))
-            updateCurrentDir()
+            explorerStore.items.emit(NodeTabItems(roots.toMutableList(), items, currentDir))
+            explorerStore.current.value = currentDir
 
             updateStates(items)
             updateChecked(items)
@@ -501,9 +502,9 @@ class ExplorerService(
         }
     }
 
-    private fun NodeTabTree.updateCurrentDir() {
+    private fun NodeTabTree.getCurrentDir(): Node? {
         val item = tree.findLast { it.getOpened() != null }?.getOpened()
-        explorerStore.current.value = item?.let { updateStateFor(it) }
+        return item?.let { updateStateFor(it) }
     }
 
     private suspend fun CoroutineScope.cacheSync(item: Node, isMediaRoot: Boolean, predicate: NodeTabTree.(Node) -> Boolean) {
