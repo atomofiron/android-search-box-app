@@ -34,6 +34,7 @@ object ExplorerDelegate {
     private const val FILE_DATA = "data" // pdf mp4 mp3 ogg rar webp
     private const val FILE_EMPTY = "empty"
     private const val FILE_BOOTING = "Android bootimg" // img
+    private const val FILE_BOOT_IMAGE = "Android boot image v2" // img
     private const val FILE_SH_SCRIPT = "/bin/sh script" // sh
     private const val FILE_OGG = "Ogg data, opus audio" // oga
 
@@ -229,7 +230,8 @@ object ExplorerDelegate {
             output.output.startsWith(FILE_ASCII_TEXT) -> NodeContent.File.Text.Plain
             output.output.startsWith(FILE_DATA) -> path.resolveFileType(content, config)
             output.output.startsWith(FILE_EMPTY) -> NodeContent.File.Other
-            output.output.startsWith(FILE_BOOTING) -> NodeContent.File.DataImage
+            output.output.startsWith(FILE_BOOTING) ||
+            output.output.startsWith(FILE_BOOT_IMAGE) -> NodeContent.File.DataImage
             output.output.startsWith(FILE_OGG) -> content.ifEmpty { NodeContent.File.Music() }
             else -> {
                 Log.e("searchboxapp", "$path ${output.output}")
