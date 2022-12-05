@@ -28,7 +28,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
     companion object {
         fun ItemExplorerSeparatorBinding.makeSeparator() {
-            val background = root.context.findColorByAttr(R.attr.colorSecondary)
+            val background = root.context.findColorByAttr(R.attr.colorOutline)
             val content = root.context.findColorByAttr(R.attr.colorSurface)
             val cornerRadius = root.resources.getDimension(R.dimen.explorer_border_corner_radius)
             val drawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(background, background))
@@ -40,14 +40,14 @@ class ExplorerHeaderView @JvmOverloads constructor(
         }
 
         fun ItemExplorerBinding.makeOpened() {
-            val background = root.context.findColorByAttr(R.attr.colorSecondary)
+            val background = root.context.findColorByAttr(R.attr.colorOutline)
             val content = root.context.findColorByAttr(R.attr.colorSurface)
             val buttonIcon = root.context.findColorByAttr(R.attr.colorOnSurface)
             makeOpposite(background, content, buttonIcon, topRadius = true, bottomRadius = true)
         }
 
         fun ItemExplorerBinding.makeOpenedCurrent() {
-            val background = root.context.findColorByAttr(R.attr.colorTertiary)
+            val background = root.context.findColorByAttr(R.attr.colorSecondary)
             val content = root.context.findColorByAttr(R.attr.colorSurface)
             val buttonIcon = root.context.findColorByAttr(R.attr.colorOnSurface)
             makeOpposite(background, content, buttonIcon, topRadius = true)

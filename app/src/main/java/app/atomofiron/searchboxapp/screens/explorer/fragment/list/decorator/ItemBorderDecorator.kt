@@ -22,7 +22,7 @@ class ItemBorderDecorator(
 ) : ItemDecoration() {
 
     private val items get() = adapter.currentList
-    private val currentColor = headerView.context.findColorByAttr(R.attr.colorTertiary)
+    private val currentColor = headerView.context.findColorByAttr(R.attr.colorSecondary)
     private val cornerRadius = headerView.resources.getDimension(R.dimen.explorer_border_corner_radius)
     private val borderWidth = headerView.resources.getDimension(R.dimen.explorer_border_width)
     // под открытой не пустой директорией
