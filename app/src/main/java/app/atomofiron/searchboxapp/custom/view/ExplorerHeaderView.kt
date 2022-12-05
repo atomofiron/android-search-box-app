@@ -53,7 +53,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
             makeOpposite(background, content, buttonIcon, topRadius = true)
         }
 
-        fun ItemExplorerBinding.makeOpposite(
+        private fun ItemExplorerBinding.makeOpposite(
             background: Int,
             content: Int,
             buttonIcon: Int,
@@ -103,6 +103,8 @@ class ExplorerHeaderView @JvmOverloads constructor(
         setBackgroundColor(backgroundColor)
         insetColor = ColorUtils.setAlphaComponent(backgroundColor, Byte.MAX_VALUE.toInt())
     }
+
+    fun setRootAliases(map: Map<Int, String>) = binder.setRootAliases(map)
 
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {
         binder.onItemActionListener = listener

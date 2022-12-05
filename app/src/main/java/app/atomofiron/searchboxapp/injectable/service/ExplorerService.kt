@@ -177,19 +177,28 @@ class ExplorerService(
         val updated = item.update(config).run {
             if (isMedia) sortByDate() else sortByName()
         }
-        val lastChild = updated.takeIf { isMedia }?.children?.find {
-            type == NodeRootType.Photos && it.content is NodeContent.File.Picture ||
-                    type == NodeRootType.Videos && it.content is NodeContent.File.Movie ||
-                    type == NodeRootType.Screenshots && it.content is NodeContent.File.Picture
+        val onlyPhotos = type == NodeRootType.Photos || type == NodeRootType.Screenshots
+        val onlyVideos = type == NodeRootType.Videos
+        val onlyMedia = type == NodeRootType.Camera
+        if (onlyPhotos || onlyVideos || onlyMedia) {
+            updated.children?.items?.replace {
+                when {
+                    onlyPhotos && it.content !is NodeContent.File.Picture -> null
+                    onlyVideos && it.content !is NodeContent.File.Movie -> null
+                    onlyMedia && it.content !is NodeContent.File.Movie && it.content !is NodeContent.File.Picture -> null
+                    else -> it
+                }
+            }
         }
+        val newestChild = updated.takeIf { isMedia }?.children?.firstOrNull()
         val root = when {
-            lastChild == null -> copy(item = updated, thumbnail = null, thumbnailPath = "")
-            thumbnailPath == lastChild.path -> this
+            newestChild == null -> copy(item = updated, thumbnail = null, thumbnailPath = "")
+            thumbnailPath == newestChild.path -> this
             else -> {
                 val config = config.copy(thumbnailSize = previewSize)
-                val updatedChild = lastChild.copy(content = NodeContent.Unknown).update(config)
+                val updatedChild = newestChild.copy(content = NodeContent.Unknown).update(config)
                 val content = updatedChild.content as? NodeContent.File
-                copy(item = updated, thumbnail = content?.thumbnail, thumbnailPath = lastChild.path)
+                copy(item = updated, thumbnail = content?.thumbnail, thumbnailPath = newestChild.path)
             }
         }
         withTab {

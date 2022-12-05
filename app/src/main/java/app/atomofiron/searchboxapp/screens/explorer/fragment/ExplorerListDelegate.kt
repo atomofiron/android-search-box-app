@@ -6,6 +6,9 @@ import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBackgroundDecorator
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBorderDecorator
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.RootItemMarginDecorator
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 
 class ExplorerListDelegate(
@@ -14,6 +17,7 @@ class ExplorerListDelegate(
     private val nodeAdapter: ExplorerAdapter,
     headerView: ExplorerHeaderView,
     private val output: ExplorerItemActionListener,
+    private val rootAliases: Map<Int, String>,
 ) {
     private var currentDir: Node? = null
 
@@ -21,7 +25,7 @@ class ExplorerListDelegate(
         null -> -1
         else -> nodeAdapter.currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
     }
-    private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, nodeAdapter)
+    private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, nodeAdapter, rootAliases)
     private val rootMarginDecorator = RootItemMarginDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
     private val borderDecorator = ItemBorderDecorator(nodeAdapter, headerView, headerDelegate::onDecoratorDraw)

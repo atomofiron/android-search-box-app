@@ -7,11 +7,16 @@ import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerItemViewFactory
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerSeparatorHolder
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.NodeCallback
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
 import java.util.LinkedList
 
-class ExplorerAdapter : ListAdapter<Node, GeneralHolder<Node>>(NodeCallback()) {
+class ExplorerAdapter(
+    private val rootAliases: Map<Int, String>,
+) : ListAdapter<Node, GeneralHolder<Node>>(NodeCallback()) {
 
     lateinit var itemActionListener: ExplorerItemActionListener
     lateinit var separatorClickListener: (Node) -> Unit
@@ -45,7 +50,7 @@ class ExplorerAdapter : ListAdapter<Node, GeneralHolder<Node>>(NodeCallback()) {
     override fun getItemId(position: Int): Long = currentList[position].uniqueId.toLong()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GeneralHolder<Node> {
-        return ExplorerItemViewFactory.values()[viewType].createHolder(parent)
+        return ExplorerItemViewFactory.values()[viewType].createHolder(parent, rootAliases)
     }
 
     override fun onBindViewHolder(holder: GeneralHolder<Node>, position: Int) {

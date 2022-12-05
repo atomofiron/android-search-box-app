@@ -17,11 +17,10 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.getString
-import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
-import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getExternalStorageDirectory
 
 class ExplorerItemBinderImpl(
     private val itemView: View,
+    private var rootAliases: Map<Int, String> = mapOf(),
 ) : ExplorerItemBinder {
     companion object {
         private const val BYTE_LETTER = "B"
@@ -43,8 +42,6 @@ class ExplorerItemBinderImpl(
 
     var onItemActionListener: ExplorerItemBinderActionListener? = null
 
-    private val rootsAliases = HashMap<Int, Int>()
-
     private val defaultBoxTintList: ColorStateList by lazy(LazyThreadSafetyMode.NONE) { cbBox.buttonTintList!! }
     private val transparentBoxTintList: ColorStateList
 
@@ -64,10 +61,6 @@ class ExplorerItemBinderImpl(
         if (cbBox.buttonTintList == null) {
             cbBox.isUseMaterialThemeColors = true
         }
-        itemView.context.getExternalStorageDirectory()?.let {
-            rootsAliases[it.toUniqueId()] = R.string.internal_storage
-        }
-        rootsAliases[Const.ROOT.toUniqueId()] = R.string.root
 
         val stateEnabledChecked = intArrayOf(android.R.attr.state_enabled, android.R.attr.state_checked)
         val stateDisabledChecked = intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked)
@@ -93,11 +86,8 @@ class ExplorerItemBinderImpl(
         val thumbnail = (item.content as? NodeContent.File)?.thumbnail
         ivThumbnail.setImageDrawable(thumbnail)
 
-        val aliasId = rootsAliases[item.uniqueId]
-        tvName.text = when (aliasId) {
-            null -> item.name
-            else -> itemView.context.getString(aliasId)
-        }
+        val alias = rootAliases[item.uniqueId]
+        tvName.text = alias ?: item.name
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         val error = item.error?.let { itemView.resources.getString(it, item.content) }
@@ -114,6 +104,10 @@ class ExplorerItemBinderImpl(
             item.withOperation -> cbBox.isInvisible = true
             else -> cbBox.isVisible = true
         }
+    }
+
+    fun setRootAliases(map: Map<Int, String>) {
+        rootAliases = map
     }
 
     override fun setOnItemActionListener(listener: ExplorerItemActionListener?) {

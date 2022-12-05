@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,6 +17,9 @@ import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
+import app.atomofiron.searchboxapp.model.explorer.NodeRoot
+import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerSpanSizeLookup
@@ -24,6 +28,7 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
+import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import app.atomofiron.searchboxapp.utils.getString
 import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -33,9 +38,10 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     KeyCodeConsumer
 {
     private lateinit var binding: FragmentExplorerBinding
+    private val rootAliases = HashMap<Int, String>()
 
-    private val rootAdapter = RootAdapter()
-    private val explorerAdapter = ExplorerAdapter()
+    private val rootAdapter = RootAdapter(rootAliases)
+    private val explorerAdapter = ExplorerAdapter(rootAliases)
 
     private lateinit var listDelegate: ExplorerListDelegate
     private lateinit var spanSizeLookup: ExplorerSpanSizeLookup
@@ -71,7 +77,13 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.isItemActiveIndicatorEnabled = false
 
-        listDelegate = ExplorerListDelegate(binding.recyclerView, rootAdapter, explorerAdapter, binding.explorerHeader, presenter)
+        listDelegate = ExplorerListDelegate(
+            binding.recyclerView,
+            rootAdapter, explorerAdapter,
+            binding.explorerHeader,
+            presenter,
+            rootAliases,
+        )
 
         viewState.onViewCollect()
         onApplyInsets(view)
@@ -88,6 +100,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     override fun ExplorerViewState.onViewCollect() {
         viewCollect(actions, collector = explorerAdapter::onAction)
         viewCollect(items) {
+            initRootAliases(it.roots)
             rootAdapter.submitList(it.roots)
             explorerAdapter.submitList(it.items)
         }
@@ -142,6 +155,28 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         val dir = explorerAdapter.currentList.getOrNull(index)
         dir ?: return
         presenter.onSeparatorClick(dir, listDelegate.isVisible(index))
+    }
+
+    private fun initRootAliases(roots: List<NodeRoot>) {
+        if (rootAliases.isNotEmpty()) return
+        for (root in roots) {
+            when (root.type) {
+                is NodeRootType.Photos -> addRootAlias(root.item.path, R.string.root_photos)
+                is NodeRootType.Videos -> addRootAlias(root.item.path, R.string.root_photos)
+                is NodeRootType.Camera -> addRootAlias(root.item.path, R.string.root_camera)
+                is NodeRootType.Downloads -> addRootAlias(root.item.path, R.string.root_downloads)
+                is NodeRootType.Bluetooth -> addRootAlias(root.item.path, R.string.root_bluetooth)
+                is NodeRootType.Screenshots -> addRootAlias(root.item.path, R.string.root_screenshots)
+                is NodeRootType.InternalStorage -> addRootAlias(root.item.path, R.string.internal_storage)
+                is NodeRootType.Favorite -> Unit
+            }
+        }
+    }
+
+    private fun addRootAlias(path: String, @StringRes alias: Int) {
+        val string = resources.getString(alias)
+        rootAliases[path.toUniqueId()] = string
+        rootAliases[path.endingDot().toUniqueId()] = string
     }
 
     private fun showPermissionRequiredWarning(unit: Unit) {

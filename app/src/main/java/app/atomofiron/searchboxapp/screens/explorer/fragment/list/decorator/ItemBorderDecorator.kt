@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.screens.explorer.fragment.list
+package app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator
 
 import android.graphics.*
 import android.graphics.Path.Direction
@@ -11,6 +11,7 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerAdapter
 import kotlin.math.max
 import kotlin.math.min
 

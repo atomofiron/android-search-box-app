@@ -9,7 +9,7 @@ import android.widget.Button
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerRenameBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
