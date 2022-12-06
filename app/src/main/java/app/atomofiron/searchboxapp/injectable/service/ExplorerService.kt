@@ -17,6 +17,7 @@ import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
+import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.completePath
@@ -104,12 +105,11 @@ class ExplorerService(
                 }
             }
             index = roots.indexOfFirst { it.stableId == item.stableId }
-            val root = roots[index].copy(isSelected = true)
-            roots[index] = root
+            val root = roots[index]
             val rootItem = root.item.copy(children = root.item.children?.copy(isOpened = true))
-            NodeLevel(rootItem.parentPath, mutableListOf(rootItem))
+            roots[index] = root.copy(item = rootItem, isSelected = true)
             tree.add(NodeLevel(rootItem.parentPath, mutableListOf(rootItem)))
-            val children = rootItem.children?.items?.toMutableList() ?: mutableListOf()
+            val children = rootItem.children?.items ?: mutableListOf()
             tree.add(NodeLevel(rootItem.path, children))
         }
     }
@@ -117,12 +117,10 @@ class ExplorerService(
     suspend fun tryToggle(it: Node) {
         withTab {
             var item = tree.findNode(it.uniqueId)
-            if (item?.isCached != true) return
-            if (item.isOpened) {
-                val nextOpened = item.children?.find { it.isOpened }
-                if (nextOpened != null) {
-                    item = nextOpened
-                }
+            item = when {
+                item?.isCached != true -> return
+                item.isOpened -> item.children?.find { it.isOpened } ?: item
+                else -> item
             }
             val (levelIndex, level) = tree.findIndexed(item.parentPath)
             if (levelIndex < 0 || level == null) return
@@ -141,9 +139,13 @@ class ExplorerService(
             val target = level.children[targetIndex]
             val children = item.children
             level.children[targetIndex] = when {
-                target.isOpened -> target.close()
-                children == null -> return
+                target.isOpened -> {
+                    poop("close()")
+                    target.close()
+                }
+                children == null -> return poop("children == null")
                 else -> {
+                    poop("open()")
                     tree.add(NodeLevel(target.path, children.items))
                     target.open()
                 }
