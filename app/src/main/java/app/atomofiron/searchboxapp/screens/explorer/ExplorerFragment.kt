@@ -24,6 +24,7 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerSpanSizeLookup
 import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.OnScrollIdleSubmitter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
@@ -98,11 +99,12 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun ExplorerViewState.onViewCollect() {
+        val submitter = OnScrollIdleSubmitter(binding.recyclerView, explorerAdapter)
         viewCollect(actions, collector = explorerAdapter::onAction)
         viewCollect(items) {
             initRootAliases(it.roots)
             rootAdapter.submitList(it.roots)
-            explorerAdapter.submitList(it.items)
+            submitter.trySubmitList(it.items, it.current?.path)
             listDelegate.setCurrentDir(it.current)
         }
         viewCollect(itemComposition) {
