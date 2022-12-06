@@ -44,8 +44,8 @@ class ExplorerHeaderDelegate(
     }
 
     fun setCurrentDir(item: Node?) {
+        bindingRequired = bindingRequired || currentDir?.areContentsTheSame(item) != true
         currentDir = item
-        bindingRequired = true
     }
 
     fun onDecoratorDraw() {
