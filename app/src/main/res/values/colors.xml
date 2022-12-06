@@ -88,7 +88,4 @@
 	<color name="spanGreen">@color/primary_dark</color>
 	<color name="item_explorer_background">#20a0a0a0</color>
 	<color name="item_explorer_background_intensive">#80a0a0a0</color>
-
-	<color name="ic_launcher_background">#222233</color>
-	<color name="ic_launcher_background_secondary">#332222</color>
 </resources>
