@@ -5,13 +5,16 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralHolder
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerItemViewFactory
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerItemViewFactory.*
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerSeparatorHolder
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.NodeCallback
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.RecycleItemViewFactory
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
 import java.util.LinkedList
 
@@ -23,6 +26,9 @@ class ExplorerAdapter(
     lateinit var separatorClickListener: (Node) -> Unit
 
     private lateinit var composition: ExplorerItemComposition
+    private var viewCacheLimit = 5 // RecycledViewPool.DEFAULT_MAX_SCRAP
+
+    private lateinit var viewFactory: RecycleItemViewFactory
 
     init {
         setHasStableIds(true)
@@ -36,22 +42,32 @@ class ExplorerAdapter(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.itemAnimator = null
+        viewFactory = RecycleItemViewFactory(recyclerView.context, R.layout.item_explorer)
+        viewFactory.generate(NodeItem.layoutId, recyclerView)
     }
 
     override fun getItemViewType(position: Int): Int {
         val item = currentList[position]
         return when {
-            item.isDot() -> ExplorerItemViewFactory.SeparatorNodeItem.ordinal
-            item.isCurrent -> ExplorerItemViewFactory.CurrentOpenedNodeItem.ordinal
-            item.isOpened -> ExplorerItemViewFactory.OpenedNodeItem.ordinal
-            else -> ExplorerItemViewFactory.NodeItem.ordinal
-        }
+            item.isDot() -> SeparatorNodeItem
+            item.isCurrent -> CurrentOpenedNodeItem
+            item.isOpened -> OpenedNodeItem
+            else -> NodeItem
+        }.ordinal
     }
 
     override fun getItemId(position: Int): Long = currentList[position].uniqueId.toLong()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GeneralHolder<Node> {
-        return ExplorerItemViewFactory.values()[viewType].createHolder(parent, rootAliases)
+        if (parent.childCount > viewCacheLimit) {
+            viewCacheLimit = parent.childCount
+            parent as RecyclerView
+            parent.recycledViewPool.setMaxRecycledViews(NodeItem.ordinal, viewCacheLimit)
+            viewFactory.setLimit(viewCacheLimit)
+        }
+        val enum = ExplorerItemViewFactory.values()[viewType]
+        val view = viewFactory.getOrCreate(enum.layoutId, parent)
+        return enum.createHolder(view, rootAliases)
     }
 
     override fun onBindViewHolder(holder: GeneralHolder<Node>, position: Int) {
