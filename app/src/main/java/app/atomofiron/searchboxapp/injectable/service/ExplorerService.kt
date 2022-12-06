@@ -80,7 +80,7 @@ class ExplorerService(
     }
 
     private fun NodeTabTree.initRoots() {
-        val storagePath = internalStoragePath ?: return
+        val storagePath = internalStoragePath
         val roots = listOf(
             NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("${storagePath}DCIM/Camera/")),
             NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("${storagePath}DCIM/Camera/")),
@@ -495,7 +495,7 @@ class ExplorerService(
     }
 
     private fun NodeTabTree.updateDirectoryTypes() {
-        val defaultStoragePath = internalStoragePath ?: return
+        val defaultStoragePath = internalStoragePath
         val (_, level) = tree.findIndexed(defaultStoragePath)
         level ?: return
         for (i in level.children.indices) {
@@ -599,19 +599,6 @@ class ExplorerService(
             else -> parentChildren[cachedIndex] = item
         }
         return true
-    }
-
-    private suspend inline fun <T, reified R> Collection<T>.parMapMut(
-        crossinline action: suspend (T) -> R,
-    ): MutableList<R> {
-        val arr = arrayOfNulls<R>(size)
-        val jobs = mapIndexed { i, it ->
-            scope.launch {
-                arr[i] = action(it)
-            }
-        }
-        jobs.forEach { it.join() }
-        return MutableList(size) { i -> arr[i] as R }
     }
 
     private fun List<NodeLevel>.findNode(uniqueId: Int): Node? {
