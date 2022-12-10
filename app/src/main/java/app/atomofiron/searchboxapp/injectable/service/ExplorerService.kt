@@ -567,15 +567,20 @@ class ExplorerService(
 
     private suspend fun CoroutineScope.cacheSync(item: Node, isMediaRoot: Boolean, predicate: NodeTabTree.(Node) -> Boolean) {
         if (!isActive) return
-        var cached = item.update(config).run {
+        var updated = item.update(config).run {
             if (isMediaRoot) sortByDate() else sortByName()
         }
-        cached = cached.updateContent()
+        updated = updated.updateContent()
         withTab {
             states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, cachingJob = null)
             }
-            if (!predicate(cached)) return
+            val current = tree.findNode(item.uniqueId)
+            current ?: return
+            if (updated.isOpened != current.isOpened) {
+                updated = updated.copy(children = updated.children?.copy(isOpened = current.isOpened))
+            }
+            if (!predicate(updated)) return
             explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
         }
     }
