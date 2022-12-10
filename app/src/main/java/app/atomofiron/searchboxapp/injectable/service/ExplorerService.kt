@@ -205,7 +205,8 @@ class ExplorerService(
                         it.stableId != root.stableId -> it
                         else -> {
                             if (root.isSelected && !item.isCached) tree.clear()
-                            root.copy(isSelected = false, item = item)
+                            val isSelected = root.isSelected && item.isCached
+                            root.copy(isSelected = isSelected, item = item)
                         }
                     }
                 }
@@ -253,7 +254,14 @@ class ExplorerService(
         }
         withTab {
             roots.replace {
-                if (it.stableId == root.stableId) root else it
+                when {
+                    it.stableId != root.stableId -> it
+                    else -> {
+                        if (root.isSelected && !item.isCached) tree.clear()
+                        val isSelected = root.isSelected && item.isCached
+                        root.copy(isSelected = isSelected, item = updated)
+                    }
+                }
             }
             states.updateState(root.stableId) {
                 nextState(root.stableId, cachingJob = null)
