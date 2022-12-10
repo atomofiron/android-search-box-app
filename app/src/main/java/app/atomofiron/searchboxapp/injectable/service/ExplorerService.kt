@@ -43,6 +43,13 @@ class ExplorerService(
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
 ) {
+    companion object {
+        private const val SUB_PATH_CAMERA = "DCIM/Camera/"
+        private const val SUB_PATH_PICTURES = "Pictures/Screenshots/"
+        private const val SUB_PATH_DOWNLOAD = "Download/"
+        private const val SUB_PATH_DOWNLOAD_BLUETOOTH = "Download/Bluetooth/"
+        private const val SUB_PATH_BLUETOOTH = "Bluetooth/"
+    }
 
     private val scope = appStore.scope
     private val previewSize = context.resources.getDimensionPixelSize(R.dimen.preview_size)
@@ -81,11 +88,11 @@ class ExplorerService(
     private fun NodeTabTree.initRoots() {
         val storagePath = internalStoragePath
         val roots = listOf(
-            NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("${storagePath}DCIM/Camera/")),
-            NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("${storagePath}DCIM/Camera/")),
-            NodeRoot(NodeRootType.Screenshots, ExplorerDelegate.asRoot("${storagePath}Pictures/Screenshots/")),
-            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("${storagePath}Download/")),
-            NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("${storagePath}Bluetooth/")),
+            NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA")),
+            NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA")),
+            NodeRoot(NodeRootType.Screenshots, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_PICTURES")),
+            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_DOWNLOAD")),
+            NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_BLUETOOTH")),
             NodeRoot(NodeRootType.InternalStorage(), ExplorerDelegate.asRoot(storagePath)),
         )
         this.roots.clear()
@@ -156,26 +163,53 @@ class ExplorerService(
         withTab {
             updateInternalStorageStats()
             roots.forEach { root ->
-                root.updateRootAsync()
+                updateRootAsync(root)
             }
         }
     }
 
-    private suspend fun NodeRoot.updateRootAsync() {
-        when (type) {
+    private suspend fun NodeTabTree.updateRootAsync(root: NodeRoot) {
+        when (root.type) {
             is NodeRootType.Photos,
             is NodeRootType.Videos,
             is NodeRootType.Screenshots -> Unit
-            else -> if (item.isCached) return
+            is NodeRootType.Bluetooth -> return updateBluetoothAsync(root)
+            else -> if (root.item.isCached) return
         }
-        var state = states.find { it.uniqueId == stableId }
-        if (state != null) return
-        val job = scope.launch { updateRootSync() }
-        state = states.updateState(stableId) {
-            nextState(stableId, cachingJob = job)
+        withCachingState(root.stableId) {
+            root.updateRootSync()
         }
-        if (state?.isCaching != true) {
-            job.cancel()
+    }
+
+    private suspend fun NodeTabTree.updateBluetoothAsync(root: NodeRoot) {
+        val storagePath = internalStoragePath
+        var current = root.item
+        var bluetooth = ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_BLUETOOTH")
+        var downloadBluetooth = ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_DOWNLOAD_BLUETOOTH")
+        withCachingState(root.stableId) {
+            current = current.update(config).sortByDate()
+            bluetooth = if (current.error == null) bluetooth.update(config).sortByDate() else bluetooth
+            downloadBluetooth = if (current.error == null) downloadBluetooth.update(config).sortByDate() else downloadBluetooth
+            val item = when {
+                current.error == null -> current
+                bluetooth.error == null -> bluetooth
+                downloadBluetooth.error == null -> downloadBluetooth
+                else -> current
+            }
+            withTab {
+                states.updateState(root.stableId) {
+                    nextState(root.stableId, cachingJob = null)
+                }
+                roots.replace {
+                    when {
+                        it.stableId != root.stableId -> it
+                        else -> {
+                            if (root.isSelected && !item.isCached) tree.clear()
+                            root.copy(isSelected = false, item = item)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -251,15 +285,11 @@ class ExplorerService(
             val item = tree.findNode(it.uniqueId)
             item ?: return
             val isMediaRoot = roots.find { it.item.uniqueId == item.uniqueId }?.withPreview == true
-            val job = scope.launch {
+            withCachingState(item.uniqueId) {
                 cacheSync(item, isMediaRoot) {
                     tree.replaceItem(it)
                 }
             }
-            val state = states.updateState(item.uniqueId) {
-                nextState(item.uniqueId, cachingJob = job)
-            }
-            if (state?.isCaching != true) job.cancel()
             return
         }
     }
@@ -367,7 +397,11 @@ class ExplorerService(
             }
         }
         jobs.forEach { it.join() }
-        mediaRootAffected?.updateRootAsync()
+        mediaRootAffected?.let {
+            withTab {
+                updateRootAsync(it)
+            }
+        }
     }
 
     suspend fun tryReceive(where: Node, uri: Uri) {
@@ -511,6 +545,16 @@ class ExplorerService(
     private fun NodeTabTree.getCurrentDir(): Node? {
         val item = tree.findLast { it.getOpened() != null }?.getOpened()
         return item?.let { updateStateFor(it) }
+    }
+
+    private fun NodeTabTree.withCachingState(id: Int, async: suspend CoroutineScope.() -> Unit) {
+        var state = states.find { it.uniqueId == id }
+        if (state != null) return
+        val job = scope.launch(block = async)
+        state = states.updateState(id) {
+            nextState(id, cachingJob = job)
+        }
+        if (state?.isCaching != true) job.cancel()
     }
 
     private suspend fun CoroutineScope.cacheSync(item: Node, isMediaRoot: Boolean, predicate: NodeTabTree.(Node) -> Boolean) {

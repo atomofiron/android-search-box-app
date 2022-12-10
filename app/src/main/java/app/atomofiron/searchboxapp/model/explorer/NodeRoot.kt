@@ -40,6 +40,7 @@ data class NodeRoot(
         other.type != type -> false
         other.thumbnail !== thumbnail -> false
         other.isSelected != isSelected -> false
+        !other.item.areContentsTheSame(item) -> false
         else -> true
     }
 

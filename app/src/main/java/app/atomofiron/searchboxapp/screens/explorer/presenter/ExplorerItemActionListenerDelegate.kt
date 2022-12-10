@@ -62,7 +62,7 @@ class ExplorerItemActionListenerDelegate(
         when {
             item.isDirectory -> explorerInteractor.toggleDir(item)
             item.content is Apk -> apkInteractor.installApk(item)
-            else -> router.showFile(item)
+            item.isFile -> router.showFile(item)
         }
     }
 

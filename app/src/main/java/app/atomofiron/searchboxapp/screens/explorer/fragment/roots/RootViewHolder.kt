@@ -11,6 +11,7 @@ import app.atomofiron.searchboxapp.databinding.ItemExplorerCardBinding
 import app.atomofiron.searchboxapp.getColorByAttr
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
+import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Tool.convert
 
 class RootViewHolder(
@@ -38,6 +39,8 @@ class RootViewHolder(
         binding.cartArc.isVisible = withArc
         binding.cartArcLabel.isVisible = withArc
         binding.root.isSelected = item.isSelected
+        binding.root.isEnabled = item.item.isCached
+        binding.root.alpha = if (item.item.isCached) Const.ALPHA_ENABLED else Const.ALPHA_DISABLED
         binding.cartTitle.text = item.getTitle()
         binding.cartThumbnail.imageTintList = if (item.withPreview) null else colors
         binding.cartThumbnail.background = item.getThumbnailBackground()
