@@ -58,6 +58,9 @@ object Shell {
     // FASTEST toybox find %s -name "*.%s" -type f | xargs grep "%s" -c
     // find . -maxdepth 2 -exec grep -H -c -s "k[e]" {} \;
 
+    private val oneByteNbps = String(byteArrayOf(0xA0.toByte()), Charsets.UTF_8)
+    private const val twoBytesNbps = "\u00A0"
+
     operator fun get(template: String, toyboxPath: String = Shell.toyboxPath): String = template.replace(TOYBOX, toyboxPath)
 
     fun checkSu(): Output {
@@ -118,7 +121,7 @@ object Shell {
             val tik = System.currentTimeMillis()
 
             when (forEachLine) {
-                null -> output = inputStream.reader().readText()
+                null -> output = inputStream.reader().readText().replace(oneByteNbps, twoBytesNbps)
                 else -> InputStreamReader(inputStream, Charsets.UTF_8).forEachLine(forEachLine)
             }
             error = errorStream.reader().readText()
