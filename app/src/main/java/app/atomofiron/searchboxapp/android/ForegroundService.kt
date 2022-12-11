@@ -7,10 +7,10 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.logI
@@ -64,12 +64,11 @@ class ForegroundService : IntentService("NotificationService") {
 
         val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, Const.FOREGROUND_INTENT_REQUEST_CODE, intent, flag)
-        val color = ContextCompat.getColor(this, R.color.primary_light)
         val notification = NotificationCompat.Builder(this, Const.FOREGROUND_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle(getString(R.string.searching))
                 .setSmallIcon(R.drawable.ic_notification)
-                .setColor(color)
+                .setColor(findColorByAttr(R.attr.colorPrimary))
                 .setContentIntent(pendingIntent)
                 .build()
         startForeground(Const.FOREGROUND_NOTIFICATION_ID, notification)

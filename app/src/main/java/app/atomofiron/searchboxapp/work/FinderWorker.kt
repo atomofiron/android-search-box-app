@@ -6,11 +6,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import app.atomofiron.common.util.ServiceConnectionImpl
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.android.ForegroundService
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -236,7 +236,6 @@ class FinderWorker(
         val id = task.id.toInt()
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val color = ContextCompat.getColor(context, R.color.primary_light)
         val icon = when {
             task.error != null -> R.drawable.ic_notification_error
             task.isDone -> R.drawable.ic_notification_done
@@ -247,7 +246,7 @@ class FinderWorker(
                 .setContentTitle(context.getString(R.string.search_completed, task.results.size, task.count))
                 .setContentText(task.error)
                 .setSmallIcon(icon)
-                .setColor(color)
+                .setColor(context.findColorByAttr(R.attr.colorPrimary))
                 .setContentIntent(pendingIntent)
                 .build()
 
