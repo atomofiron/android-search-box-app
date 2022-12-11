@@ -27,6 +27,7 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.OnScrollIdleSubmitter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
+import app.atomofiron.searchboxapp.scrollToTop
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
 import app.atomofiron.searchboxapp.utils.Tool.endingDot
@@ -60,34 +61,46 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentExplorerBinding.bind(view)
+        binding.initView()
+        viewState.onViewCollect()
+        onApplyInsets(view)
+    }
 
+    private fun FragmentExplorerBinding.initView() {
         val layoutManager = GridLayoutManager(context, 1)
-        spanSizeLookup = ExplorerSpanSizeLookup(binding.recyclerView, layoutManager, rootAdapter)
+        spanSizeLookup = ExplorerSpanSizeLookup(recyclerView, layoutManager, rootAdapter)
         layoutManager.spanSizeLookup = spanSizeLookup
-        binding.recyclerView.layoutManager = layoutManager
+        recyclerView.layoutManager = layoutManager
         val config = ConcatAdapter.Config.Builder()
             .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
             .build()
-        binding.recyclerView.adapter = ConcatAdapter(config, rootAdapter, explorerAdapter)
-        binding.recyclerView.addOnItemTouchListener(SwipeMarkerDelegate(resources))
+        recyclerView.adapter = ConcatAdapter(config, rootAdapter, explorerAdapter)
+        recyclerView.addOnItemTouchListener(SwipeMarkerDelegate(resources))
 
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
-        binding.bottomBar.isItemActiveIndicatorEnabled = false
-        binding.bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
+        bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        bottomBar.isItemActiveIndicatorEnabled = false
+        bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.menu.removeItem(R.id.stub)
-        binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
-        binding.navigationRail.isItemActiveIndicatorEnabled = false
+        navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
+        navigationRail.isItemActiveIndicatorEnabled = false
 
         listDelegate = ExplorerListDelegate(
-            binding.recyclerView,
+            recyclerView,
             rootAdapter, explorerAdapter,
-            binding.explorerHeader,
+            explorerHeader,
             presenter,
             rootAliases,
         )
 
-        viewState.onViewCollect()
-        onApplyInsets(view)
+        explorerTabs.addOnButtonCheckedListener { group, id, isChecked ->
+            if (!isChecked && group.checkedButtonId == View.NO_ID) {
+                recyclerView.scrollToTop()
+                group.check(id)
+            }
+        }
+        explorerTabs.setOnClickListener {
+            recyclerView.scrollToTop()
+        }
     }
 
     private fun onNavigationItemSelected(item: MenuItem): Boolean {

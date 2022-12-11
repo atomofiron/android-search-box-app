@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -24,9 +25,11 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:background="@color/surface_variant_lite"
+        app:singleSelection="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        tools:background="@null"
         >
         <Button
             style="?attr/materialButtonOutlinedStyle"

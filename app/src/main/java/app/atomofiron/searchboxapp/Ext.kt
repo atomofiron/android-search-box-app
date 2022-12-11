@@ -11,6 +11,10 @@ import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlin.math.max
 
 val Fragment.anchorView: View get() = requireActivity().findViewById(R.id.joystick)
@@ -47,3 +51,22 @@ fun View.isRtl(): Boolean = resources.isRtl()
 
 fun Resources.isRtl(): Boolean = configuration.layoutDirection == LayoutDirection.RTL
 
+
+fun RecyclerView.scrollToTop() {
+    if (childCount == 0) return
+    val topChild = getChildAt(0)
+    val topHolder = getChildViewHolder(topChild)
+    if (topHolder.absoluteAdapterPosition == 0) {
+        smoothScrollToPosition(0)
+        return
+    }
+    val spanCount = when (val manager = layoutManager) {
+        is GridLayoutManager -> manager.spanCount
+        is StaggeredGridLayoutManager -> manager.spanCount
+        else -> 1
+    }
+    scrollToPosition(spanCount)
+    post {
+        smoothScrollToPosition(0)
+    }
+}
