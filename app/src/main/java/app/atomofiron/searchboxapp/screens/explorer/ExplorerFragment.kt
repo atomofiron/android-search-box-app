@@ -153,10 +153,9 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     override fun onKeyDown(keyCode: Int): Boolean = when {
         !isVisible -> false
         keyCode != KeyEvent.KEYCODE_VOLUME_UP -> false
-        else -> {
-            presenter.onVolumeUp(listDelegate.isCurrentDirVisible())
-            true
-        }
+        else -> listDelegate.isCurrentDirVisible()?.also {
+            presenter.onVolumeUp(it)
+        } != null
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

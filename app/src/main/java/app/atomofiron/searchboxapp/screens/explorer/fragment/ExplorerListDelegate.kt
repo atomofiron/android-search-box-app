@@ -21,10 +21,6 @@ class ExplorerListDelegate(
 ) {
     private var currentDir: Node? = null
 
-    private val headerItemPosition: Int get() = when (val dir = currentDir) {
-        null -> -1
-        else -> nodeAdapter.currentList.indexOfFirst { it.uniqueId == dir.uniqueId }
-    }
     private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, nodeAdapter, rootAliases)
     private val rootMarginDecorator = RootItemMarginDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
@@ -41,7 +37,11 @@ class ExplorerListDelegate(
 
     private fun getLastChild(): View? = recyclerView.getChildAt(recyclerView.childCount.dec())
 
-    fun isCurrentDirVisible(): Boolean = isVisible(headerItemPosition)
+    fun isCurrentDirVisible(): Boolean? {
+        val current = currentDir ?: return null
+        val index = nodeAdapter.currentList.indexOfFirst { it.uniqueId == current.uniqueId }
+        return isVisible(index + rootAdapter.itemCount)
+    }
 
     fun isVisible(position: Int): Boolean {
         if (position < 0) return false
@@ -67,6 +67,7 @@ class ExplorerListDelegate(
         var position = nodeAdapter.currentList.indexOfFirst { it.path == item.path }
         position += rootAdapter.itemCount
         val lastItemPosition = recyclerView.getChildLayoutPosition(lastChild)
+        recyclerView.stopScroll()
         when {
             position > lastItemPosition -> {
                 recyclerView.scrollToPosition(position.dec())
@@ -92,9 +93,10 @@ class ExplorerListDelegate(
 
         override fun onItemCheck(item: Node, isChecked: Boolean) = output.onItemCheck(item, isChecked)
 
-        override fun onItemClick(item: Node) = when {
-            isCurrentDirVisible() -> output.onItemClick(item)
-            else -> scrollTo(item)
+        override fun onItemClick(item: Node) = when (isCurrentDirVisible()) {
+            true -> output.onItemClick(item)
+            false -> scrollTo(item)
+            null -> Unit
         }
     }
 }
