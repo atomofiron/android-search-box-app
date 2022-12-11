@@ -65,6 +65,9 @@ class OrientationLayoutDelegate(
         systemUiView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets)
         }
+        bottomView?.run {
+            ViewCompat.dispatchApplyWindowInsets(this, insets)
+        }
         onInsetsApplied?.invoke()
         return WindowInsetsCompat.CONSUMED
     }
