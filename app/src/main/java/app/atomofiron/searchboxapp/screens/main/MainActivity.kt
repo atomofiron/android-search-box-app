@@ -21,7 +21,6 @@ import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.android.App
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.syncOrientation
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
@@ -64,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             override fun handleOnBackPressed() = presenter.onBackButtonClick()
         })
 
+        updateTheme(viewState.setTheme.value)
         resolveTheme(savedInstanceState)
     }
 
@@ -72,18 +72,16 @@ class MainActivity : AppCompatActivity() {
         if (currentTheme == null) {
             lifecycleScope.launch(Dispatchers.Main) {
                 // todo avoid using flow.replayCache.first() in SharedFlowProperty
-                val theme = viewState.run {
+                viewState.run {
                     preferenceStore.specialCharacters.first()
                     preferenceStore.excludeDirs.first()
                     preferenceStore.useSu.first()
                     preferenceStore.appTheme.first()
                 }
-                updateTheme(theme)
                 suspendStartJob?.join()
                 onCreateView(savedInstanceState)
             }
         } else {
-            updateTheme(currentTheme)
             onCreateView(savedInstanceState)
         }
     }
@@ -186,11 +184,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTheme(theme: AppTheme) {
-        App.instance.setTheme(theme)
-        when (theme.deepBlack) {
-            findBooleanByAttr(R.attr.isBlackDeep) -> Unit
-            true -> setTheme(R.style.CompatTheme_Amoled)
-            false -> setTheme(R.style.CompatTheme)
+        when {
+            theme is AppTheme.Light -> Unit
+            theme.deepBlack == findBooleanByAttr(R.attr.isBlackDeep) -> Unit
+            theme.deepBlack -> setTheme(R.style.CompatTheme_Amoled)
+            else -> setTheme(R.style.CompatTheme)
         }
         presenter.onThemeApplied(isDarkTheme())
     }

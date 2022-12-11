@@ -10,6 +10,7 @@ import dagger.Component
 import app.atomofiron.searchboxapp.android.App
 import app.atomofiron.searchboxapp.android.ForegroundService
 import app.atomofiron.searchboxapp.di.module.*
+import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.screens.curtain.CurtainDependencies
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerDependencies
 import app.atomofiron.searchboxapp.screens.finder.FinderDependencies
@@ -50,6 +51,9 @@ interface AppComponent :
 
         @BindsInstance
         fun appWatcher(proxy: AppWatcherProxy): Builder
+
+        @BindsInstance
+        fun initialStore(initialDelegate: InitialDelegate): Builder
 
         @BindsInstance
         fun assetManager(assetManager: AssetManager): Builder

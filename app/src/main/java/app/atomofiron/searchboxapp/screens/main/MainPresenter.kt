@@ -1,7 +1,9 @@
 package app.atomofiron.searchboxapp.screens.main
 
 import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.injectable.channel.MainChannel
+import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -18,6 +20,7 @@ class MainPresenter(
     private val windowService: WindowService,
     appStore: AppStore,
     private val preferenceStore: PreferenceStore,
+    private val initialDelegate: InitialDelegate,
     mainChannel: MainChannel,
 ) : BasePresenter<MainViewModel, MainRouter>(scope, router), SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput,
     AppEventDelegateApi by AppEventDelegate(scope, router, appStore, preferenceStore, mainChannel)
@@ -26,6 +29,10 @@ class MainPresenter(
 
     init {
         viewState.tasks.value = Array(16) { XTask() }.toList()
+        preferenceStore.appTheme.collect(scope) {
+            initialDelegate.updateTheme(it)
+            viewState.setTheme.value = it
+        }
     }
 
     override fun onSubscribeData() = Unit

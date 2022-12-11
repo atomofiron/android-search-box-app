@@ -5,20 +5,17 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.model.preference.AppTheme
+import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import app.atomofiron.searchboxapp.utils.getMarketIntent
 import app.atomofiron.searchboxapp.utils.immutable
 import app.atomofiron.searchboxapp.work.NotificationWorker
@@ -28,21 +25,14 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import javax.inject.Inject
 
 class App : Application(), Configuration.Provider {
-    companion object {
-        private const val PRIVATE_PREFERENCES_NAME = "app_preferences"
-
-        lateinit var instance: App
-    }
 
     @Inject
     lateinit var workManager: WorkManager
-    private lateinit var sp: SharedPreferences
+    @Inject
+    lateinit var initialDelegate: InitialDelegate
 
     override fun onCreate() {
         super.onCreate()
-
-        instance = this
-        sp = getSharedPreferences(PRIVATE_PREFERENCES_NAME, MODE_PRIVATE)
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 
@@ -50,22 +40,9 @@ class App : Application(), Configuration.Provider {
         DaggerInjector.appComponent.inject(this)
         workManager.cancelUniqueWork(NotificationWorker.NAME)
 
-        val themeName = sp.getString(PreferenceKeys.KeyAppTheme.name, AppTheme.defaultName())
-        setTheme(AppTheme.fromString(themeName))
+        initialDelegate.applyTheme()
 
         checkForUpdate(this)
-    }
-
-    fun setTheme(theme: AppTheme) {
-        val mode = when(theme) {
-            is AppTheme.System -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            is AppTheme.Light -> AppCompatDelegate.MODE_NIGHT_NO
-            is AppTheme.Dark -> AppCompatDelegate.MODE_NIGHT_YES
-        }
-        AppCompatDelegate.setDefaultNightMode(mode)
-        sp.edit()
-            .putString(PreferenceKeys.KeyAppTheme.name, theme.name)
-            .apply()
     }
 
     override fun getWorkManagerConfiguration(): Configuration = Configuration.Builder().build()
@@ -113,7 +90,7 @@ class App : Application(), Configuration.Provider {
                 .setSmallIcon(R.drawable.ic_notification_update)
                 .setContentIntent(notificationIntent)
                 .addAction(0, getString(R.string.get_update), actionIntent)
-                .setColor(ContextCompat.getColor(this, R.color.primary_light))
+                .setColor(findColorByAttr(R.attr.colorPrimary))
                 .build()
 
         notificationManager.notify(Const.NOTIFICATION_ID_UPDATE, notification)
