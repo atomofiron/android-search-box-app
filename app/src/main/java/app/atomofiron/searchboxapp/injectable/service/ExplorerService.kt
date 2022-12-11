@@ -30,6 +30,7 @@ import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import app.atomofiron.searchboxapp.utils.Tool.writeTo
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import java.io.File
 import java.io.FileOutputStream
@@ -67,6 +68,7 @@ class ExplorerService(
     init {
         scope.launch(Dispatchers.IO) {
             withTab {
+                preferenceStore.useSu.first()
                 copyToybox(context)
                 initRoots()
             }

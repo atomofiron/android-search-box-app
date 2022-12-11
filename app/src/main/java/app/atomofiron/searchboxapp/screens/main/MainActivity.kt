@@ -3,7 +3,6 @@ package app.atomofiron.searchboxapp.screens.main
 import android.app.Service
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -16,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.valueOrNull
 import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
@@ -28,10 +26,6 @@ import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -49,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewState: MainViewState
     private lateinit var presenter: MainPresenter
-    private var suspendStartJob: Job? = null
     private var isFirstStart = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,26 +57,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         updateTheme(viewState.setTheme.value)
-        resolveTheme(savedInstanceState)
-    }
-
-    private fun resolveTheme(savedInstanceState: Bundle?) {
-        val currentTheme = viewState.preferenceStore.appTheme.valueOrNull
-        if (currentTheme == null) {
-            lifecycleScope.launch(Dispatchers.Main) {
-                // todo avoid using flow.replayCache.first() in SharedFlowProperty
-                viewState.run {
-                    preferenceStore.specialCharacters.first()
-                    preferenceStore.excludeDirs.first()
-                    preferenceStore.useSu.first()
-                    preferenceStore.appTheme.first()
-                }
-                suspendStartJob?.join()
-                onCreateView(savedInstanceState)
-            }
-        } else {
-            onCreateView(savedInstanceState)
-        }
+        onCreateView(savedInstanceState)
     }
 
     private fun onCreateView(savedInstanceState: Bundle?) {
@@ -163,16 +137,6 @@ class MainActivity : AppCompatActivity() {
             binding.root.setBackgroundColor(findColorByAttr(R.attr.colorBackground))
             binding.joystick.setComposition()
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        suspendStartJob = Job()
-        super.onSaveInstanceState(outState, outPersistentState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        suspendStartJob?.cancel()
     }
 
     private fun onCollect() {
