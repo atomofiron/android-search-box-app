@@ -40,6 +40,7 @@
 		<item name="materialCardViewStyle">@style/CardViewStyle.Amoled</item>
 		<item name="bottomNavigationStyle">@style/BottomNavigationStyle.Amoled</item>
 		<item name="navigationRailStyle">@style/NavigationRailStyle.Amoled</item>
+		<item name="materialButtonToggleGroupStyle">@style/ToggleGroupStyle</item>
 	</style>
 
 	<style name="AppTheme.Legacy" parent="@style/AppTheme">
@@ -69,5 +70,9 @@
 	<style name="InputOutlinedDenseStyle" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense" />
 
 	<style name="InputOutlinedDenseStyle2" parent="@style/Widget.Material3.TabLayout" />
+
+	<style name="ToggleGroupStyle" parent="@style/Widget.MaterialComponents.MaterialButtonToggleGroup">
+		<item name="android:background">@color/surface_variant_lite</item>
+	</style>
 
 </resources>
