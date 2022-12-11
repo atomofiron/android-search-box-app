@@ -4,8 +4,10 @@ import java.util.*
 
 data class NodeChildren(
     val items: MutableList<Node>,
-    val isOpened: Boolean = false,
+    val isOpened: Boolean,
 ) : List<Node> by items {
+
+    val names = items.map { it.name }.toMutableList()
 
     override fun hashCode(): Int = Objects.hash(isOpened, items.map { it.path })
 
@@ -14,14 +16,20 @@ data class NodeChildren(
             other !is NodeChildren -> false
             other.isOpened != isOpened -> false
             other.items.size != items.size -> false
-            else -> {
-                for (i in items.indices) {
-                    if (!other.items[i].areContentsTheSame(items[i])) {
-                        return false
-                    }
-                }
-                true
-            }
+            other.names.containsAll(names) -> false
+            names.containsAll(other.names) -> false
+            // do not compare the children because of ConcurrentModificationException
+            else -> true
         }
+    }
+
+    inline fun update(updateNames: Boolean = true, action: MutableList<Node>.() -> Unit) {
+        items.action()
+        if (updateNames) updateChildrenNames()
+    }
+
+    fun updateChildrenNames() {
+        names.clear()
+        items.forEach { names.add(it.name) }
     }
 }

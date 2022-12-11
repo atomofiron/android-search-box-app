@@ -232,12 +232,14 @@ class ExplorerService(
         val onlyVideos = type == NodeRootType.Videos
         val onlyMedia = type == NodeRootType.Camera
         if (onlyPhotos || onlyVideos || onlyMedia) {
-            updated.children?.items?.replace {
-                when {
-                    onlyPhotos && it.content !is NodeContent.File.Picture -> null
-                    onlyVideos && it.content !is NodeContent.File.Movie -> null
-                    onlyMedia && it.content !is NodeContent.File.Movie && it.content !is NodeContent.File.Picture -> null
-                    else -> it
+            updated.children?.update {
+                replace {
+                    when {
+                        onlyPhotos && it.content !is NodeContent.File.Picture -> null
+                        onlyVideos && it.content !is NodeContent.File.Movie -> null
+                        onlyMedia && it.content !is NodeContent.File.Movie && it.content !is NodeContent.File.Picture -> null
+                        else -> it
+                    }
                 }
             }
         }
@@ -645,14 +647,15 @@ class ExplorerService(
         }
         // далее заменяем/удаляем айтем в родительской ноде
         val parent = upLevel?.children?.find { it.path == parentPath }
-        val parentChildren = parent?.children?.items
-        val cached = parentChildren?.findIndexed { it.uniqueId == uniqueId }
+        val cached = parent?.children?.findIndexed { it.uniqueId == uniqueId }
         val cachedIndex = cached?.first ?: -1
         val cachedItem = cached?.second
-        when {
-            cachedItem == null -> Unit // добавление обрабатывается отдельно, учитывая, что папки первые
-            item == null -> parentChildren.removeAt(cachedIndex)
-            else -> parentChildren[cachedIndex] = item
+        parent?.children?.update {
+            when {
+                cachedItem == null -> Unit // добавление обрабатывается отдельно, учитывая, что папки первые
+                item == null -> removeAt(cachedIndex)
+                else -> set(cachedIndex, item)
+            }
         }
         return true
     }

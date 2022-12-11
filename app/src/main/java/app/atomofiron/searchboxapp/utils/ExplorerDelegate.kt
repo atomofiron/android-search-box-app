@@ -233,7 +233,7 @@ object ExplorerDelegate {
     }
 
     fun Node.sortByName(): Node {
-        children?.items?.run {
+        children?.update(updateNames = false) {
             sortBy { it.name.lowercase() }
             sortBy { if (it.isDirectory) 0 else 1 }
         }
@@ -241,7 +241,7 @@ object ExplorerDelegate {
     }
 
     fun Node.sortByDate(newFirst: Boolean = true): Node {
-        children?.items?.run {
+        children?.update(updateNames = false) {
             sortBy { it.time }
             sortBy { it.date }
             if (newFirst) reverse()
@@ -316,8 +316,8 @@ object ExplorerDelegate {
 
     fun Node.isParentOf(other: Node): Boolean = other.parentPath == path
 
-    private fun NodeChildren.clearChildren() {
-        val iter = items.listIterator()
+    private fun NodeChildren.clearChildren() = update {
+        val iter = listIterator()
         while (iter.hasNext()) {
             val item = iter.next()
             when {
