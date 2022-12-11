@@ -1,18 +1,22 @@
 package app.atomofiron.searchboxapp
 
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
 import android.content.Context
 import android.content.res.Resources
 import android.content.res.TypedArray
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES
 import android.util.AttributeSet
 import android.util.LayoutDirection
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlin.math.max
@@ -70,3 +74,20 @@ fun RecyclerView.scrollToTop() {
         smoothScrollToPosition(0)
     }
 }
+
+@SuppressLint("WrongConstant")
+fun Context.updateNotificationChannel(
+    id: String,
+    name: String,
+    importance: Int = NotificationManagerCompat.IMPORTANCE_DEFAULT,
+) {
+    if (SDK_INT >= VERSION_CODES.O) {
+        val manager = NotificationManagerCompat.from(this)
+        var channel = manager.getNotificationChannel(id)
+        if (channel == null || channel.name != name) {
+            channel = NotificationChannel(id, name, importance)
+            manager.createNotificationChannel(channel)
+        }
+    }
+}
+

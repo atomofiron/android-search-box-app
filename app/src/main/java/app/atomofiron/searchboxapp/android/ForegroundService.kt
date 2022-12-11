@@ -15,7 +15,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.logI
 import app.atomofiron.searchboxapp.screens.main.MainActivity
-import app.atomofiron.searchboxapp.utils.ChannelUtil
+import app.atomofiron.searchboxapp.updateNotificationChannel
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.work.NotificationWorker
 import java.lang.Deprecated
@@ -56,10 +56,11 @@ class ForegroundService : IntentService("NotificationService") {
     }
 
     private fun startForeground() {
-        ChannelUtil.id(Const.FOREGROUND_NOTIFICATION_CHANNEL_ID)
-                .name(getString(R.string.foreground_notification_name))
-                .importance(IMPORTANCE_LOW)
-                .fix(this)
+        updateNotificationChannel(
+            Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
+            getString(R.string.foreground_notification_name),
+            IMPORTANCE_LOW,
+        )
 
         val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, Const.FOREGROUND_INTENT_REQUEST_CODE, intent, flag)

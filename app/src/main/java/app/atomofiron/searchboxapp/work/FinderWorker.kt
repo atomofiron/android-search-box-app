@@ -23,7 +23,7 @@ import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.finder.FinderResult
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
 import app.atomofiron.searchboxapp.screens.main.MainActivity
-import app.atomofiron.searchboxapp.utils.ChannelUtil
+import app.atomofiron.searchboxapp.updateNotificationChannel
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
@@ -253,10 +253,11 @@ class FinderWorker(
 
         notification.flags = notification.flags or NotificationCompat.FLAG_AUTO_CANCEL
 
-        ChannelUtil.id(Const.RESULT_NOTIFICATION_CHANNEL_ID)
-                .name(context.getString(R.string.result_notification_name))
-                .importance(NotificationManager.IMPORTANCE_DEFAULT)
-                .fix(context)
+        context.updateNotificationChannel(
+            Const.RESULT_NOTIFICATION_CHANNEL_ID,
+            context.getString(R.string.result_notification_name),
+            NotificationManager.IMPORTANCE_DEFAULT,
+        )
 
         notificationManager.notify(id, notification)
     }
