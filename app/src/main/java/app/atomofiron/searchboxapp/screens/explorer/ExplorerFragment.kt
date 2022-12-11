@@ -169,7 +169,10 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         val index = explorerAdapter.currentList.indexOfFirst { it.path == path }
         val dir = explorerAdapter.currentList.getOrNull(index)
         dir ?: return
-        presenter.onSeparatorClick(dir, listDelegate.isVisible(index))
+        val absolutePosition = index + rootAdapter.itemCount
+        if (!listDelegate.isVisible(absolutePosition)) {
+            listDelegate.scrollTo(dir)
+        }
     }
 
     private fun initRootAliases(roots: List<NodeRoot>) {

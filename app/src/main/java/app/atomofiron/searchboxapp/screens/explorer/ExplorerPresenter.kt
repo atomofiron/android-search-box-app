@@ -69,8 +69,6 @@ class ExplorerPresenter(
 
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 
-    fun onSeparatorClick(item: Node, isTargetVisible: Boolean) = scrollOrOpenParent(item, isTargetVisible)
-
     fun onVolumeUp(isCurrentDirVisible: Boolean) {
         val currentDir = viewState.items.value.current
         currentDir ?: return
