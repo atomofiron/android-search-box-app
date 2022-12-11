@@ -23,8 +23,4 @@
         <item name="boxStrokeColor">@color/bg_edit_text_outlined</item>
     </style>
 
-    <style name="ToggleGroupStyle" parent="@style/Widget.MaterialComponents.MaterialButtonToggleGroup">
-        <item name="android:background">@color/black</item>
-    </style>
-
 </resources>

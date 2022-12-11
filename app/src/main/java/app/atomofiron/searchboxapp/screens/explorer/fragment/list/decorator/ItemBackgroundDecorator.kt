@@ -7,14 +7,13 @@ import android.graphics.Rect
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.getSortedChildren
 
 class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
     companion object {
-        fun Context.getExplorerItemBackground(): Int {
-            return ContextCompat.getColor(this, R.color.surface_variant_lite)
-        }
+        fun Context.getExplorerItemBackground(): Int = findColorByAttr(R.attr.topRadioGroupBackground)
     }
 
     private val paint = Paint()
