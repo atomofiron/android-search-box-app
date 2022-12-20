@@ -2,14 +2,13 @@ package app.atomofiron.searchboxapp.screens.explorer
 
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.value
+import app.atomofiron.searchboxapp.custom.ExplorerView
 import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot
-import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
@@ -27,40 +26,38 @@ class ExplorerPresenter(
     private val curtainMenuDelegate: ExplorerCurtainMenuDelegate,
     mainChannel: MainChannel,
 ) : BasePresenter<ExplorerViewModel, ExplorerRouter>(scope, router),
+    ExplorerView.ExplorerViewOutput,
     RootAdapter.RootClickListener,
     ExplorerItemActionListener by itemListener {
+
+    private val currentTab get() = viewState.currentTab.value
 
     init {
         preferenceStore.explorerItemComposition.collect(scope) {
             viewState.itemComposition.value = it
         }
         mainChannel.maximized.collect(scope) {
-            explorerInteractor.updateRoots()
+            explorerInteractor.updateRoots(currentTab)
         }
     }
 
     override fun onSubscribeData() = Unit
 
-    override fun onRootClick(item: NodeRoot) = explorerInteractor.selectRoot(item)
+    override fun onRootClick(item: NodeRoot) = explorerInteractor.selectRoot(currentTab, item)
 
     fun onSearchOptionSelected() = router.showFinder()
 
-    fun onOptionsOptionSelected() {
-        val current = explorerStore.current.value
-        val checked = explorerStore.checked.value
-        val files = when {
-            checked.isNotEmpty() -> ArrayList(checked)
-            current != null -> listOf(current)
-            else -> return
+    fun onTabSelected(index: Int) {
+        viewState.currentTab.value = when (index) {
+            0 -> viewState.firstTab
+            else -> viewState.secondTab
         }
-        val ids = when {
-            files.size > 1 -> viewState.manyFilesOptions
-            files.first().isRoot -> viewState.rootOptions
-            files.first().isDirectory -> viewState.directoryOptions
-            else -> viewState.oneFileOptions
-        }
-        val options = ExplorerItemOptions(ids, files, viewState.itemComposition.value)
-        curtainMenuDelegate.showOptions(options)
+        explorerInteractor.updateRoots(currentTab)
+        explorerStore.current.value = viewState.getCurrentDir()
+        /* todo searchTargets
+            val checked = items.filter { it.isChecked }
+            explorerStore.searchTargets.set(checked)
+        */
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
@@ -70,13 +67,13 @@ class ExplorerPresenter(
     fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 
     fun onVolumeUp(isCurrentDirVisible: Boolean) {
-        val currentDir = viewState.items.value.current
+        val currentDir = viewState.getCurrentDir()
         currentDir ?: return
         scrollOrOpenParent(currentDir, isCurrentDirVisible)
     }
 
     private fun scrollOrOpenParent(item: Node, isTargetVisible: Boolean) = when {
-        isTargetVisible -> explorerInteractor.toggleDir(item)
+        isTargetVisible -> explorerInteractor.toggleDir(currentTab, item)
         else -> viewState.scrollTo(item)
     }
 }

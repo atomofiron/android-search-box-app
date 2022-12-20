@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class ExplorerStore {
     val items = DataFlow<NodeTabItems>()
     val current = MutableStateFlow<Node?>(null)
-    val checked = MutableStateFlow<List<Node>>(listOf())
+    val searchTargets = MutableStateFlow<List<Node>>(listOf())
     val alerts = EventFlow<NodeError>()
+    // todo move
     val actions = EventFlow<NodeAction>()
 }

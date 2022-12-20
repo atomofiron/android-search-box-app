@@ -1,36 +1,22 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.ExplorerView
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
-import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
-import app.atomofiron.searchboxapp.model.explorer.NodeRoot
-import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
-import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
-import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
-import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerSpanSizeLookup
-import app.atomofiron.searchboxapp.screens.explorer.fragment.SwipeMarkerDelegate
-import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.OnScrollIdleSubmitter
-import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
+import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerPagerAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
-import app.atomofiron.searchboxapp.scrollToTop
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
-import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
-import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import app.atomofiron.searchboxapp.utils.getString
 import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -40,66 +26,51 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     KeyCodeConsumer
 {
     private lateinit var binding: FragmentExplorerBinding
-    private val rootAliases = HashMap<Int, String>()
-
-    private val rootAdapter = RootAdapter(rootAliases)
-    private val explorerAdapter = ExplorerAdapter(rootAliases)
-
-    private lateinit var listDelegate: ExplorerListDelegate
-    private lateinit var spanSizeLookup: ExplorerSpanSizeLookup
+    private lateinit var pagerAdapter: ExplorerPagerAdapter
+    private val explorerViews get() = pagerAdapter.items
+    private val tabIds = arrayOf(R.id.first_button, R.id.second_button)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewModel(this, ExplorerViewModel::class, savedInstanceState)
-
-        explorerAdapter.itemActionListener = presenter
-        explorerAdapter.separatorClickListener = ::onSeparatorClick
-        rootAdapter.clickListener = presenter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentExplorerBinding.bind(view)
+        pagerAdapter = ExplorerPagerAdapter(binding.pager, presenter)
         binding.initView()
         viewState.onViewCollect()
         onApplyInsets(view)
     }
 
     private fun FragmentExplorerBinding.initView() {
-        val layoutManager = GridLayoutManager(context, 1)
-        spanSizeLookup = ExplorerSpanSizeLookup(recyclerView, layoutManager, rootAdapter)
-        layoutManager.spanSizeLookup = spanSizeLookup
-        recyclerView.layoutManager = layoutManager
-        val config = ConcatAdapter.Config.Builder()
-            .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
-            .build()
-        recyclerView.adapter = ConcatAdapter(config, rootAdapter, explorerAdapter)
-        recyclerView.addOnItemTouchListener(SwipeMarkerDelegate(resources))
-
+        pager.adapter = pagerAdapter
         bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         bottomBar.isItemActiveIndicatorEnabled = false
         bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.menu.removeItem(R.id.stub)
         navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
         navigationRail.isItemActiveIndicatorEnabled = false
-
-        listDelegate = ExplorerListDelegate(
-            recyclerView,
-            rootAdapter, explorerAdapter,
-            explorerHeader,
-            presenter,
-            rootAliases,
-        )
+        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                presenter.onTabSelected(position)
+                explorerTabs.check(tabIds[position])
+            }
+        })
 
         explorerTabs.addOnButtonCheckedListener { group, id, isChecked ->
             if (!isChecked && group.checkedButtonId == View.NO_ID) {
-                recyclerView.scrollToTop()
+                getCurrentTabView().scrollToTop()
                 group.check(id)
+            }
+            if (isChecked) {
+                pager.currentItem = tabIds.indexOf(id)
             }
         }
         explorerTabs.setOnClickListener {
-            recyclerView.scrollToTop()
+            getCurrentTabView().scrollToTop()
         }
     }
 
@@ -112,89 +83,46 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun ExplorerViewState.onViewCollect() {
-        val submitter = OnScrollIdleSubmitter(binding.recyclerView, explorerAdapter)
-        viewCollect(actions, collector = explorerAdapter::onAction)
-        viewCollect(items) {
-            initRootAliases(it.roots)
-            rootAdapter.submitList(it.roots)
-            submitter.trySubmitList(it.items, it.current?.path)
-            listDelegate.setCurrentDir(it.current)
-        }
-        viewCollect(itemComposition) {
-            listDelegate.setComposition(it)
-            explorerAdapter.setComposition(it)
+        //viewCollect(actions, collector = explorerAdapter::onAction)
+        viewCollect(firstTabItems, collector = explorerViews.first()::submitList)
+        viewCollect(secondTabItems, collector = explorerViews.last()::submitList)
+        viewCollect(itemComposition) { composition ->
+            explorerViews.forEach { it.setComposition(composition) }
         }
         viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
-        viewCollect(scrollTo, collector = listDelegate::scrollTo)
+        viewCollect(scrollTo) { item ->
+            getCurrentTabView().scrollTo(item)
+        }
         viewCollect(alerts, collector = ::showAlert)
+        viewCollect(currentTab) {
+            binding.pager.currentItem = it.index
+        }
     }
 
     override fun onApplyInsets(root: View) {
-        binding.recyclerView.applyPaddingInsets()
-        binding.explorerHeader.applyPaddingInsets(start = true, top = true, end = true)
         binding.explorerTabs.applyPaddingInsets(start = true, top = true, end = true)
         binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
         binding.navigationRail.applyPaddingInsets()
         binding.run {
             OrientationLayoutDelegate(
                 binding.root,
-                recyclerView,
-                bottomBar,
-                navigationRail,
-                systemUiBackground,
-                explorerTabs,
-                explorerHeader,
-            ) {
-                spanSizeLookup.updateSpanCount(recyclerView)
-            }
+                explorerViews,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                tabLayout = explorerTabs,
+            )
         }
     }
 
     override fun onKeyDown(keyCode: Int): Boolean = when {
         !isVisible -> false
         keyCode != KeyEvent.KEYCODE_VOLUME_UP -> false
-        else -> listDelegate.isCurrentDirVisible()?.also {
+        else -> getCurrentTabView().isCurrentDirVisible()?.also {
             presenter.onVolumeUp(it)
         } != null
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        explorerAdapter.notifyItemChanged(0)
-    }
-
-    private fun onSeparatorClick(item: Node) {
-        val path = item.withoutDot()
-        val index = explorerAdapter.currentList.indexOfFirst { it.path == path }
-        val dir = explorerAdapter.currentList.getOrNull(index)
-        dir ?: return
-        val absolutePosition = index + rootAdapter.itemCount
-        if (!listDelegate.isVisible(absolutePosition)) {
-            listDelegate.scrollTo(dir)
-        }
-    }
-
-    private fun initRootAliases(roots: List<NodeRoot>) {
-        if (rootAliases.isNotEmpty()) return
-        for (root in roots) {
-            when (root.type) {
-                is NodeRootType.Photos -> addRootAlias(root.item.path, R.string.root_photos)
-                is NodeRootType.Videos -> addRootAlias(root.item.path, R.string.root_photos)
-                is NodeRootType.Camera -> addRootAlias(root.item.path, R.string.root_camera)
-                is NodeRootType.Downloads -> addRootAlias(root.item.path, R.string.root_downloads)
-                is NodeRootType.Bluetooth -> addRootAlias(root.item.path, R.string.root_bluetooth)
-                is NodeRootType.Screenshots -> addRootAlias(root.item.path, R.string.root_screenshots)
-                is NodeRootType.InternalStorage -> addRootAlias(root.item.path, R.string.internal_storage)
-                is NodeRootType.Favorite -> Unit
-            }
-        }
-    }
-
-    private fun addRootAlias(path: String, @StringRes alias: Int) {
-        val string = resources.getString(alias)
-        rootAliases[path.toUniqueId()] = string
-        rootAliases[path.endingDot().toUniqueId()] = string
-    }
+    private fun getCurrentTabView(): ExplorerView = explorerViews[binding.pager.currentItem]
 
     private fun showPermissionRequiredWarning(unit: Unit) {
         val view = view ?: return

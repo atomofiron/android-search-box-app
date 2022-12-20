@@ -420,4 +420,15 @@ object ExplorerDelegate {
         endsWith(EXT_PDF, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Pdf }
         else -> NodeContent.File.Other
     }
+
+    fun Node.updateWith(item: Node): Node {
+        val oldChildren = children
+        val newChildren = item.children
+        val items = newChildren?.map { new ->
+            val old = oldChildren?.find { it.uniqueId == new.uniqueId }
+            new.copy(children = old?.children)
+        }?.toMutableList() ?: mutableListOf()
+        val wasOpened = oldChildren?.isOpened ?: false
+        return item.copy(children = newChildren?.copy(items = items, isOpened = wasOpened))
+    }
 }

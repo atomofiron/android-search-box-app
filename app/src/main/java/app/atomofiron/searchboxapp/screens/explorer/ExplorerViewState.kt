@@ -2,21 +2,24 @@ package app.atomofiron.searchboxapp.screens.explorer
 
 import app.atomofiron.common.util.flow.*
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
-import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.explorer.NodeAction
-import app.atomofiron.searchboxapp.model.explorer.NodeError
-import app.atomofiron.searchboxapp.model.explorer.NodeTabItems
+import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class ExplorerViewState(
     private val scope: CoroutineScope,
     explorerStore: ExplorerStore,
+    explorerInteractor: ExplorerInteractor,
 ) {
+    companion object{
+        private const val FIRST_TAB = "FIRST_TAB"
+        private const val SECOND_TAB = "SECOND_TAB"
+    }
     val rootOptions = listOf(R.id.menu_create)
     val directoryOptions = listOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_create)
     val oneFileOptions = listOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_share, R.id.menu_open_with)
@@ -25,10 +28,16 @@ class ExplorerViewState(
     val permissionRequiredWarning = ChannelFlow<Unit>()
     val scrollTo = ChannelFlow<Node>()
     val itemComposition = DeferredStateFlow<ExplorerItemComposition>()
-    val items: SharedFlow<NodeTabItems> = explorerStore.items
     val current: StateFlow<Node?> = explorerStore.current
     val actions: Flow<NodeAction> = explorerStore.actions
     val alerts: Flow<NodeError> = explorerStore.alerts
+
+    val firstTab = NodeTabKey(FIRST_TAB, index = 0)
+    val secondTab = NodeTabKey(SECOND_TAB, index = 1)
+    val currentTab = MutableStateFlow(firstTab)
+
+    val firstTabItems = explorerInteractor.getFlow(firstTab)
+    val secondTabItems = explorerInteractor.getFlow(secondTab)
 
     fun showPermissionRequiredWarning() {
         permissionRequiredWarning(scope)
@@ -36,5 +45,12 @@ class ExplorerViewState(
 
     fun scrollTo(item: Node) {
         scrollTo[scope] = item
+    }
+
+    fun getCurrentDir(): Node? {
+        return when (currentTab.value) {
+            firstTab -> firstTabItems.valueOrNull?.current
+            else -> secondTabItems.valueOrNull?.current
+        }
     }
 }

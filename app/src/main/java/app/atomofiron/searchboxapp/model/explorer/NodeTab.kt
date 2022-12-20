@@ -1,21 +1,15 @@
 package app.atomofiron.searchboxapp.model.explorer
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.*
 
 class NodeTabTree(
-    val mutex: Mutex,
+    val key: NodeTabKey,
     val states: MutableList<NodeState>,
 ) {
 
     val roots = mutableListOf<NodeRoot>()
     val tree = mutableListOf<NodeLevel>()
     val checked: MutableList<Int> = LinkedList()
-
-    suspend inline fun <R> updateTab(block: NodeTabTree.() -> R): R {
-        return mutex.withLock {
-            block()
-        }
-    }
+    val flow = MutableSharedFlow<NodeTabItems>()
 }

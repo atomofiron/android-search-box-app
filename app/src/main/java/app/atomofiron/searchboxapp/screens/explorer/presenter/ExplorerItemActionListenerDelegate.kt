@@ -25,9 +25,11 @@ class ExplorerItemActionListenerDelegate(
     private val apkInteractor: ApkInteractor,
 ) : ExplorerItemActionListener {
 
+    private val currentTab get() = viewState.currentTab.value
+
     override fun onItemLongClick(item: Node) {
         val files: List<Node> = when {
-            item.isChecked -> explorerStore.checked.value
+            item.isChecked -> explorerStore.searchTargets.value
             else -> listOf(item)
         }
         val ids = when {
@@ -60,13 +62,13 @@ class ExplorerItemActionListenerDelegate(
 
     private fun openItem(item: Node) {
         when {
-            item.isDirectory -> explorerInteractor.toggleDir(item)
+            item.isDirectory -> explorerInteractor.toggleDir(currentTab, item)
             item.content is Apk -> apkInteractor.installApk(item)
             item.isFile -> router.showFile(item)
         }
     }
 
-    override fun onItemCheck(item: Node, isChecked: Boolean) = explorerInteractor.checkItem(item, isChecked)
+    override fun onItemCheck(item: Node, isChecked: Boolean) = explorerInteractor.checkItem(currentTab, item, isChecked)
 
-    override fun onItemVisible(item: Node) = explorerInteractor.updateItem(item)
+    override fun onItemVisible(item: Node) = explorerInteractor.updateItem(currentTab, item)
 }

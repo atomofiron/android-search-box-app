@@ -55,7 +55,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.applyPaddingInsets()
         val systemUiView = view.findViewById<SystemUiBackgroundView>(R.id.system_ui_background)
-        OrientationLayoutDelegate(view as ViewGroup, recyclerView, systemUiView = systemUiView)
+        OrientationLayoutDelegate(view as ViewGroup, recyclerView = recyclerView, systemUiView = systemUiView)
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         viewState.onViewCollect()

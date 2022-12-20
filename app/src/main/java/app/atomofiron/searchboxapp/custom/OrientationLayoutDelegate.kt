@@ -18,15 +18,15 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.navigationrail.NavigationRailView
 
 @SuppressLint("PrivateResource")
-class OrientationLayoutDelegate(
+class OrientationLayoutDelegate constructor(
     private val parent: ViewGroup,
+    private val explorerViews: Array<ExplorerView>? = null,
     private val recyclerView: RecyclerView? = null,
     private val bottomView: BottomNavigationView? = null,
     private val railView: NavigationRailView? = null,
     private val systemUiView: SystemUiBackgroundView? = null,
     private val tabLayout: MaterialButtonToggleGroup? = null,
     private val headerView: ExplorerHeaderView? = null,
-    private val onInsetsApplied: (() -> Unit)? = null,
 ) : OnApplyWindowInsetsListener {
     enum class Side {
         Left, Bottom, Right,
@@ -68,7 +68,12 @@ class OrientationLayoutDelegate(
         bottomView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets)
         }
-        onInsetsApplied?.invoke()
+        explorerViews?.forEach {
+            ViewCompat.dispatchApplyWindowInsets(it.headerView, insets.getHeaderViewInsets())
+            ViewCompat.dispatchApplyWindowInsets(it.recyclerView, insets.getRecyclerViewInsets())
+            ViewCompat.dispatchApplyWindowInsets(it.systemUiView, insets)
+            it.onInsetsApplied()
+        }
         return WindowInsetsCompat.CONSUMED
     }
 
@@ -76,6 +81,9 @@ class OrientationLayoutDelegate(
         bottomView?.isVisible = !landscape
         railView?.isVisible = landscape
         tabLayout?.isVisible = !landscape
+        explorerViews?.forEach {
+            it.systemUiView.update(statusBar = landscape)
+        }
     }
 
     private fun WindowInsetsCompat.getRecyclerViewInsets(): WindowInsetsCompat {

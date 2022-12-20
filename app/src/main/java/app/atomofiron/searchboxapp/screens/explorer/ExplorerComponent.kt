@@ -120,8 +120,8 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun viewState(scope: CoroutineScope, explorerStore: ExplorerStore): ExplorerViewState {
-        return ExplorerViewState(scope, explorerStore)
+    fun viewState(scope: CoroutineScope, explorerStore: ExplorerStore, interactor: ExplorerInteractor): ExplorerViewState {
+        return ExplorerViewState(scope, explorerStore, interactor)
     }
 }
 

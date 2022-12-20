@@ -39,6 +39,8 @@ class ExplorerCurtainMenuDelegate(
     private val createDelegate = CreateDelegate(output = this)
     private val renameDelegate = RenameDelegate(output = this)
 
+    private val currentTab get() = viewState.currentTab.value
+
     override var data: ExplorerItemOptions? = null
 
     init {
@@ -81,17 +83,17 @@ class ExplorerCurtainMenuDelegate(
 
     fun onCreateConfirm(dir: Node, name: String, directory: Boolean) {
         controller?.close()
-        explorerInteractor.create(dir, name, directory)
+        explorerInteractor.create(currentTab, dir, name, directory)
     }
 
     fun onRenameConfirm(item: Node, name: String) {
         controller?.close()
-        explorerInteractor.rename(item, name)
+        explorerInteractor.rename(currentTab, item, name)
     }
 
     private fun onRemoveConfirm(items: List<Node>) {
         controller?.close()
-        explorerInteractor.deleteItems(items)
+        explorerInteractor.deleteItems(currentTab, items)
     }
 
     private fun getRenameData(): RenameDelegate.RenameData? {

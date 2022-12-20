@@ -5,20 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?colorBackground"
     >
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="@dimen/common_margin"
         app:layout_constraintTop_toBottomOf="@+id/explorer_tabs"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
-    <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
-        android:id="@+id/system_ui_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        >
+    </androidx.viewpager2.widget.ViewPager2>
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/explorer_tabs"
         android:layout_width="0dp"
@@ -33,31 +29,19 @@
         >
         <Button
             style="?attr/materialButtonOutlinedStyle"
-            android:id="@+id/button1"
+            android:id="@+id/first_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button 1"
+            android:text="First"
             />
         <Button
             style="?attr/materialButtonOutlinedStyle"
-            android:id="@+id/button3"
+            android:id="@+id/second_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button 3"
+            android:text="Second"
             />
     </com.google.android.material.button.MaterialButtonToggleGroup>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/explorer_tabs"
-        >
-        <app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
-            android:id="@+id/explorer_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            />
-    </FrameLayout>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"

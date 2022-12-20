@@ -29,8 +29,7 @@ class FinderPresenter(
 
     init {
         uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
-        val characters = preferenceStore.specialCharacters.value
-        uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
+        uniqueItems.add(FinderStateItem.SpecialCharactersItem(arrayOf()))
         uniqueItems.add(FinderStateItem.TestItem())
         uniqueItems.add(FinderStateItem.ButtonsItem)
 
@@ -58,14 +57,14 @@ class FinderPresenter(
         }
 
         explorerStore.current.collect(scope) {
-            val checked = explorerStore.checked.value
+            val checked = explorerStore.searchTargets.value
             if (checked.isEmpty()) {
                 scope.launch {
                     viewState.updateTargets(it, checked)
                 }
             }
         }
-        explorerStore.checked.collect(scope) {
+        explorerStore.searchTargets.collect(scope) {
             val currentDir = explorerStore.current.value
             scope.launch {
                 viewState.updateTargets(currentDir, it)

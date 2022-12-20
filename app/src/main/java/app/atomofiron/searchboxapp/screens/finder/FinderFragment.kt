@@ -118,7 +118,13 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
         binding.navigationRail.applyPaddingInsets()
         binding.run {
-            OrientationLayoutDelegate(coordinator, recyclerView, bottomBar, navigationRail, systemUiBackground)
+            OrientationLayoutDelegate(
+                coordinator,
+                recyclerView = recyclerView,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                systemUiView = systemUiBackground,
+            )
         }
     }
 

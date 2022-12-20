@@ -32,4 +32,6 @@ data class NodeChildren(
         names.clear()
         items.forEach { names.add(it.name) }
     }
+
+    fun copy(): NodeChildren = copy(items = items.toMutableList())
 }

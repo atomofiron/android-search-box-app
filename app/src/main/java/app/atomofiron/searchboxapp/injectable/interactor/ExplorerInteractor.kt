@@ -1,63 +1,66 @@
 package app.atomofiron.searchboxapp.injectable.interactor
 
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot
+import app.atomofiron.searchboxapp.model.explorer.NodeTabKey
 
 class ExplorerInteractor(
     private val scope: CoroutineScope,
-    private val service: ExplorerService
+    private val service: ExplorerService,
 ) {
     private val context = Dispatchers.IO
 
-    fun selectRoot(item: NodeRoot) {
+    fun getFlow(tab: NodeTabKey) = service.getOrCreateFlowSync(tab)
+
+    fun selectRoot(tab: NodeTabKey, item: NodeRoot) {
         scope.launch(context) {
-            service.trySelectRoot(item)
+            service.trySelectRoot(tab, item)
         }
     }
 
-    fun checkItem(item: Node, isChecked: Boolean) {
+    fun checkItem(tab: NodeTabKey, item: Node, isChecked: Boolean) {
         scope.launch(context) {
-            service.tryCheckItem(item, isChecked)
+            service.tryCheckItem(tab, item, isChecked)
         }
     }
 
-    fun toggleDir(dir: Node) {
+    fun toggleDir(tab: NodeTabKey, dir: Node) {
         scope.launch(context) {
-            service.tryToggle(dir)
+            service.tryToggle(tab, dir)
         }
     }
 
-    fun updateItem(file: Node) {
+    fun updateItem(tab: NodeTabKey, file: Node) {
         scope.launch(context) {
-            service.tryCacheAsync(file)
+            service.tryCacheAsync(tab, file)
         }
     }
 
-    fun updateRoots() {
+    fun updateRoots(tab: NodeTabKey) {
         scope.launch(context) {
-            service.updateRoots()
+            service.updateRootsAsync(tab)
         }
     }
 
-    fun deleteItems(items: List<Node>) {
+    fun deleteItems(tab: NodeTabKey, items: List<Node>) {
         scope.launch(context) {
-            service.tryDelete(items)
+            service.tryDelete(tab, items)
         }
     }
 
-    fun rename(item: Node, name: String) {
+    fun rename(tab: NodeTabKey, item: Node, name: String) {
         scope.launch(context) {
-            service.tryRename(item, name)
+            service.tryRename(tab, item, name)
         }
     }
 
-    fun create(dir: Node, name: String, directory: Boolean) {
+    fun create(tab: NodeTabKey, dir: Node, name: String, directory: Boolean) {
         scope.launch(context) {
-            service.tryCreate(dir, name, directory)
+            service.tryCreate(tab, dir, name, directory)
         }
     }
 }

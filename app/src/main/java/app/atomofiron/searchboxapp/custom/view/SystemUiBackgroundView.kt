@@ -51,11 +51,6 @@ class SystemUiBackgroundView : View {
         return insets
     }
 
-    private fun Int.only(value: Int): Int = when (this) {
-        value -> this
-        else -> 0
-    }
-
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -77,5 +72,16 @@ class SystemUiBackgroundView : View {
             canvas.drawRect(0f, topInset, leftInset, bottom - bottomInset, paint)
             canvas.drawRect(right - rightInset, topInset, right, bottom - bottomInset, paint)
         }
+    }
+
+    fun update(statusBar: Boolean = drawStatusBar, navigationBar: Boolean = drawNavigationBar) {
+        drawStatusBar = statusBar
+        drawNavigationBar = navigationBar
+        invalidate()
+    }
+
+    private fun Int.only(value: Int): Int = when (this) {
+        value -> this
+        else -> 0
     }
 }
