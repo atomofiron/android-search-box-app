@@ -1,87 +1,26 @@
 package app.atomofiron.searchboxapp.custom.view
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.*
 import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
-import app.atomofiron.searchboxapp.databinding.ItemExplorerSeparatorBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.makeOpenedCurrent
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.ExplorerItemBinderImpl
 
 class ExplorerHeaderView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
-    companion object {
-        fun ItemExplorerSeparatorBinding.makeSeparator() {
-            val background = root.context.findColorByAttr(R.attr.colorOutline)
-            val content = root.context.findColorByAttr(R.attr.colorSurface)
-            val cornerRadius = root.resources.getDimension(R.dimen.explorer_border_corner_radius)
-            val drawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(background, background))
-            drawable.cornerRadii = FloatArray(8) { cornerRadius }
-            root.background = RippleDrawable(ColorStateList.valueOf(content), drawable, null)
-            val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(content, BlendModeCompat.SRC_IN)
-            itemExplorerIvIcon.colorFilter = filter
-            itemExplorerTvTitle.setTextColor(content)
-        }
-
-        fun ItemExplorerBinding.makeOpened() {
-            val background = root.context.findColorByAttr(R.attr.colorOutline)
-            val content = root.context.findColorByAttr(R.attr.colorSurface)
-            val buttonIcon = root.context.findColorByAttr(R.attr.colorOnSurface)
-            makeOpposite(background, content, buttonIcon, topRadius = true, bottomRadius = true)
-        }
-
-        fun ItemExplorerBinding.makeOpenedCurrent() {
-            val background = root.context.findColorByAttr(R.attr.colorSecondary)
-            val content = root.context.findColorByAttr(R.attr.colorSurface)
-            val buttonIcon = root.context.findColorByAttr(R.attr.colorOnSurface)
-            makeOpposite(background, content, buttonIcon, topRadius = true)
-        }
-
-        private fun ItemExplorerBinding.makeOpposite(
-            background: Int,
-            content: Int,
-            buttonIcon: Int,
-            topRadius: Boolean = false,
-            bottomRadius: Boolean = false,
-        ) {
-            val cornerRadius = root.resources.getDimension(R.dimen.explorer_border_corner_radius)
-            val drawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(background, background))
-            drawable.cornerRadii = FloatArray(8) {
-                when {
-                    it < 5 && topRadius -> cornerRadius
-                    it > 4 && bottomRadius -> cornerRadius
-                    else -> 0f
-                }
-            }
-            root.background = RippleDrawable(ColorStateList.valueOf(content), drawable, null)
-            val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(content, BlendModeCompat.SRC_IN)
-            itemExplorerIvIcon.colorFilter = filter
-            itemExplorerCb.buttonTintList = ColorStateList.valueOf(content)
-            itemExplorerCb.buttonIconTintList = ColorStateList.valueOf(buttonIcon)
-            itemExplorerTvTitle.setTextColor(content)
-            itemExplorerTvDate.setTextColor(content)
-            itemExplorerTvSize.setTextColor(content)
-            itemExplorerTvDescription.setTextColor(content)
-            itemExplorerErrorTv.setTextColor(content)
-            itemExplorerPs.setColor(content)
-        }
-    }
 
     private val binder = LayoutInflater.from(context).inflate(R.layout.item_explorer, this).run {
         val binding = ItemExplorerBinding.bind(getChildAt(0))

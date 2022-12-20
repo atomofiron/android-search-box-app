@@ -5,10 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.TAG_EXPLORER_OPENED_ITEM
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.getSortedChildren
 
 class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
@@ -31,7 +31,10 @@ class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
         parent.getSortedChildren().forEach {
             val child = it.value
             if (child.id != R.id.item_explorer) return@forEach
-            val position = parent.getChildLayoutPosition(child)
+            if (child.tag == TAG_EXPLORER_OPENED_ITEM) return@forEach
+
+            val holder = parent.getChildViewHolder(child)
+            val position = holder.bindingAdapterPosition
 
             if (position % 2 == 0) {
                 canvas.drawRect(0f, child.top.toFloat(), parent.width.toFloat(), child.bottom.toFloat(), paint)
