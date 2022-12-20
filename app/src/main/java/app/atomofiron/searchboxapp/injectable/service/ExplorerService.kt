@@ -215,7 +215,12 @@ class ExplorerService(
                     }
                     updateRootSync(updated, key, root)
                 }
-                otherJob ?: tab.render()
+                if (otherJob == null) {
+                    tab.render()
+                    trees.values.forEach { otherTab ->
+                        if (otherTab.key != key) otherTab.render()
+                    }
+                }
             }
         }
     }
@@ -314,7 +319,12 @@ class ExplorerService(
                         val isSelected = it.isSelected && root.item.isCached
                         when (tab.key) {
                             key -> root
-                            else -> it.copy(isSelected = isSelected, item = it.item.updateWith(updated))
+                            else -> it.copy(
+                                thumbnail = root.thumbnail,
+                                thumbnailPath = root.thumbnailPath,
+                                isSelected = isSelected,
+                                item = it.item.updateWith(updated),
+                            )
                         }
                     }
                 }
