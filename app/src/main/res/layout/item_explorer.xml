@@ -21,7 +21,7 @@
         android:paddingEnd="@dimen/common_margin_half"
         android:baseline="18dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@+id/item_explorer_tv_title"
+        app:layout_constraintTop_toTopOf="@+id/item_explorer_tv_title"
         app:layout_constraintEnd_toStartOf="@+id/barrier_start"
         />
     <androidx.appcompat.widget.AppCompatImageView
@@ -58,7 +58,6 @@
         app:layout_constraintStart_toEndOf="@+id/barrier_start"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/item_explorer_cb"
-        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Android"
         />
     <com.google.android.material.textview.MaterialTextView
@@ -86,7 +85,6 @@
         app:layout_goneMarginTop="@dimen/common_margin"
         app:layout_constraintStart_toStartOf="@+id/item_explorer_tv_description"
         app:layout_constraintTop_toBottomOf="@+id/item_explorer_tv_description"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="No such file or directory"
         />
     <androidx.constraintlayout.widget.Barrier
