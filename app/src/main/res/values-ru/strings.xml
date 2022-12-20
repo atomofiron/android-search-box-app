@@ -124,6 +124,8 @@
     <string name="tip">В Проводнике укажите где искать</string>
     <string name="search_here">Ищем здесь:</string>
     <string name="by_default">Цвет по умолчанию</string>
+    <string name="first">Первый</string>
+    <string name="second">Второй</string>
     <plurals name="x_dirs">
         <item quantity="one">%d директория</item>
         <item quantity="few">%d директории</item>

@@ -33,6 +33,8 @@ class ExplorerView(
 
     private val binding = ViewExplorerBinding.inflate(LayoutInflater.from(context), this)
     private val rootAliases = HashMap<Int, String>()
+    var title: String? = null
+        private set
 
     val recyclerView = binding.recyclerView
     val headerView = binding.explorerHeader
@@ -94,6 +96,7 @@ class ExplorerView(
         rootAdapter.submitList(items.roots)
         submitter.trySubmitList(items.items, items.current?.path)
         listDelegate.setCurrentDir(items.current)
+        title = rootAliases[items.current?.uniqueId] ?: items.current?.name
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
