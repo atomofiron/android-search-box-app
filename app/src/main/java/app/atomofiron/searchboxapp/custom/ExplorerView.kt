@@ -22,7 +22,6 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemAc
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.OnScrollIdleSubmitter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.scrollToTop
-import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
 import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
@@ -102,15 +101,9 @@ class ExplorerView(
         explorerAdapter.setComposition(composition)
     }
 
-    private fun onSeparatorClick(item: Node) {
-        val path = item.withoutDot()
-        val index = explorerAdapter.currentList.indexOfFirst { it.path == path }
-        val dir = explorerAdapter.currentList.getOrNull(index)
-        dir ?: return
-        val absolutePosition = index + rootAdapter.itemCount
-        if (!listDelegate.isVisible(absolutePosition)) {
-            listDelegate.scrollTo(dir)
-        }
+    private fun onSeparatorClick(item: Node) = when {
+        listDelegate.isVisible(item) -> Unit
+        else -> listDelegate.scrollTo(item)
     }
 
     private fun initRootAliases(roots: List<NodeRoot>) {

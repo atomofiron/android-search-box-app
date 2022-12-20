@@ -10,6 +10,8 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.Item
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBorderDecorator
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.RootItemMarginDecorator
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
+import kotlin.math.min
 
 class ExplorerListDelegate(
     private val recyclerView: RecyclerView,
@@ -39,15 +41,21 @@ class ExplorerListDelegate(
 
     fun isCurrentDirVisible(): Boolean? {
         val current = currentDir ?: return null
-        val index = nodeAdapter.currentList.indexOfFirst { it.uniqueId == current.uniqueId }
+        return isVisible(current)
+    }
+
+    fun isVisible(item: Node): Boolean {
+        val path = item.withoutDot()
+        val index = nodeAdapter.currentList.indexOfFirst { it.path == path }
         return isVisible(index + rootAdapter.itemCount)
     }
 
     fun isVisible(position: Int): Boolean {
-        if (position < 0) return false
         val firstChild = getFirstChild() ?: return false
-        val topItemPosition = recyclerView.getChildLayoutPosition(firstChild)
-        val bottomItemPosition = recyclerView.getChildLayoutPosition(getLastChild()!!)
+        val lastChild = getLastChild() ?: return false
+        var topItemPosition = recyclerView.getChildLayoutPosition(firstChild)
+        val bottomItemPosition = recyclerView.getChildLayoutPosition(lastChild)
+        if (firstChild.top < 0) topItemPosition = min(bottomItemPosition, topItemPosition.inc())
         return position in topItemPosition..bottomItemPosition
     }
 
@@ -63,8 +71,9 @@ class ExplorerListDelegate(
     }
 
     fun scrollTo(item: Node) {
+        val path = item.withoutDot()
         var lastChild = getLastChild() ?: return
-        var position = nodeAdapter.currentList.indexOfFirst { it.path == item.path }
+        var position = nodeAdapter.currentList.indexOfFirst { it.path == path }
         position += rootAdapter.itemCount
         val lastItemPosition = recyclerView.getChildLayoutPosition(lastChild)
         recyclerView.stopScroll()

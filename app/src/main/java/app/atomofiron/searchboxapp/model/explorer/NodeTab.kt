@@ -1,6 +1,6 @@
 package app.atomofiron.searchboxapp.model.explorer
 
-import kotlinx.coroutines.flow.MutableSharedFlow
+import app.atomofiron.common.util.flow.DataFlow
 import java.util.*
 
 class NodeTabTree(
@@ -11,5 +11,5 @@ class NodeTabTree(
     val roots = mutableListOf<NodeRoot>()
     val tree = mutableListOf<NodeLevel>()
     val checked: MutableList<Int> = LinkedList()
-    val flow = MutableSharedFlow<NodeTabItems>()
+    val flow = DataFlow<NodeTabItems>()
 }
