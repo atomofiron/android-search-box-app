@@ -34,7 +34,6 @@ class ExplorerItemBinderImpl(
     private val ivThumbnail = itemView.findViewById<ImageView>(R.id.item_explorer_iv_thumbnail)
     private val tvName = itemView.findViewById<TextView>(R.id.item_explorer_tv_title)
     private val tvDescription = itemView.findViewById<TextView>(R.id.item_explorer_tv_description)
-    private val tvDate = itemView.findViewById<TextView>(R.id.item_explorer_tv_date)
     private val tvSize = itemView.findViewById<TextView>(R.id.item_explorer_tv_size)
     private val cbBox = itemView.findViewById<MaterialCheckBox>(R.id.item_explorer_cb)
     private val tvError = itemView.findViewById<TextView>(R.id.item_explorer_error_tv)
@@ -118,24 +117,12 @@ class ExplorerItemBinderImpl(
 
     override fun bindComposition(composition: ExplorerItemComposition) {
         val string = StringBuilder()
-        if (composition.visibleAccess) {
-            string.append(item.access).append(SPACE)
-        }
-        if (composition.visibleOwner) {
-            string.append(item.owner).append(SPACE)
-        }
-        if (composition.visibleGroup) {
-            string.append(item.group)
-        }
+        if (composition.visibleDate) string.append(item.date)
+        if (composition.visibleTime) string.append(SPACE).append(item.time)
+        if (composition.visibleAccess) string.append(SPACE).append(item.access)
+        if (composition.visibleOwner) string.append(SPACE).append(item.owner)
+        if (composition.visibleGroup) string.append(SPACE).append(item.group)
         tvDescription.text = string.toString()
-        string.clear()
-        if (composition.visibleDate) {
-            string.append(item.date)
-        }
-        if (composition.visibleTime) {
-            string.append(SPACE).append(item.time)
-        }
-        tvDate.text = string.toString()
         tvSize.text = when {
             !composition.visibleSize -> EMPTY
             !item.isFile -> EMPTY

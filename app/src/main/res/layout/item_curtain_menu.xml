@@ -41,7 +41,7 @@
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/common_margin"
         android:text="@string/confirm"
-        android:backgroundTint="@color/danger_red"
+        android:backgroundTint="?colorError"
         android:textColor="@color/white"
         app:cornerRadius="@dimen/infinity"
         />

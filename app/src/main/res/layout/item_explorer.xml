@@ -31,12 +31,11 @@
         android:layout_marginStart="@dimen/common_margin"
         android:layout_marginEnd="@dimen/common_margin_half"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_explorer_picture"
         android:background="@drawable/clip_item_thumbnail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/barrier_start"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/item_explorer_tv_description"
         app:layout_constraintDimensionRatio="W,1:1"
         />
     <androidx.constraintlayout.widget.Barrier
@@ -50,7 +49,7 @@
         android:id="@+id/item_explorer_tv_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:paddingTop="1dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textSize="18sp"
@@ -60,7 +59,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/item_explorer_cb"
         app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0"
         tools:text="Android"
         />
     <com.google.android.material.textview.MaterialTextView
@@ -68,37 +66,28 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
+        android:paddingBottom="3dp"
         android:textSize="12sp"
         android:typeface="monospace"
         android:maxLines="1"
         android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@+id/barrier_start"
         app:layout_constraintTop_toBottomOf="@id/item_explorer_tv_title"
-        app:layout_constraintEnd_toStartOf="@+id/item_explorer_tv_date"
-        tools:text="-rwxrwxrwx atomofiron everybody"
+        app:layout_constraintEnd_toStartOf="@+id/barrier_end"
+        tools:text="0000-00-00 00:00 -rwxrwxrwx atomofiron everybody"
         />
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_explorer_error_tv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/danger_red"
+        android:layout_marginTop="-3dp"
+        android:layout_marginBottom="@dimen/common_margin_pico"
+        android:textColor="?colorError"
+        app:layout_goneMarginTop="@dimen/common_margin"
         app:layout_constraintStart_toStartOf="@+id/item_explorer_tv_description"
         app:layout_constraintTop_toBottomOf="@+id/item_explorer_tv_description"
-        android:layout_marginBottom="2dp"
-        app:layout_goneMarginBottom="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="No such file or directory"
-        />
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/item_explorer_tv_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:textSize="12sp"
-        android:typeface="monospace"
-        app:layout_constraintTop_toBottomOf="@id/item_explorer_tv_title"
-        app:layout_constraintEnd_toStartOf="@+id/barrier_end"
-        tools:text="0000-00-00 00:00"
         />
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_end"
@@ -109,10 +98,10 @@
         />
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_explorer_tv_size"
-        android:layout_width="@dimen/edge_size"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:paddingEnd="@dimen/common_margin_half"
+        android:paddingEnd="@dimen/common_margin"
         android:textSize="12sp"
         android:typeface="monospace"
         android:gravity="end"

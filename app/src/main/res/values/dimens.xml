@@ -8,6 +8,7 @@
 	<dimen name="common_margin">16dp</dimen>
 	<dimen name="common_margin_half">8dp</dimen>
 	<dimen name="common_margin_nano">4dp</dimen>
+	<dimen name="common_margin_pico">2dp</dimen>
 	<dimen name="edit_text_padding">8dp</dimen>
 	<dimen name="search_button_padding">16dp</dimen>
 	<dimen name="icon_size">24dp</dimen>

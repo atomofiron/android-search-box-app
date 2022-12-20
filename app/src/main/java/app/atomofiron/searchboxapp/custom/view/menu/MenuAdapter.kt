@@ -2,16 +2,12 @@ package app.atomofiron.searchboxapp.custom.view.menu
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.ColorFilter
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 
 @SuppressLint("RestrictedApi")
@@ -52,7 +48,7 @@ class MenuAdapter(context: Context) : RecyclerView.Adapter<MenuHolder>() {
         holder.itemView.setBackgroundResource(backgroundId)
         holder.icon.colorFilter = when (item.itemId) {
             dangerousItemId -> {
-                val color = ContextCompat.getColor(holder.itemView.context, R.color.danger_red)
+                val color = holder.itemView.context.findColorByAttr(R.attr.colorError)
                 BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_IN)
             }
             else -> null

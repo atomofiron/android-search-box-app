@@ -60,7 +60,6 @@ private fun ItemExplorerBinding.makeOpposite(
     itemExplorerCb.buttonTintList = ColorStateList.valueOf(content)
     itemExplorerCb.buttonIconTintList = ColorStateList.valueOf(buttonIcon)
     itemExplorerTvTitle.setTextColor(content)
-    itemExplorerTvDate.setTextColor(content)
     itemExplorerTvSize.setTextColor(content)
     itemExplorerTvDescription.setTextColor(content)
     itemExplorerErrorTv.setTextColor(content)
