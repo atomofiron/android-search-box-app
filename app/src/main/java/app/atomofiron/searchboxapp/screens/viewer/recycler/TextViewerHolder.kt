@@ -15,15 +15,15 @@ import app.atomofiron.searchboxapp.custom.view.style.RoundedBackgroundSpan
 class TextViewerHolder(private val textView: TextView) : GeneralHolder<TextLine>(textView) {
     private val spanPart: RoundedBackgroundSpan
         get() = RoundedBackgroundSpan(
-            context.findColorByAttr(R.attr.colorAccent),
-            ContextCompat.getColor(context, R.color.white),
+            context.findColorByAttr(R.attr.colorSecondary),
+            context.findColorByAttr(R.attr.colorOnSecondary),
             context.resources.getDimension(R.dimen.background_span_corner_radius)
     )
 
     private val spanPartFocus: RoundedBackgroundSpan
         get() = RoundedBackgroundSpan(
-            ContextCompat.getColor(context, R.color.primary_red),
-            ContextCompat.getColor(context, R.color.white),
+            context.findColorByAttr(R.attr.colorTertiary),
+            context.findColorByAttr(R.attr.colorOnTertiary),
             context.resources.getDimension(R.dimen.background_span_corner_radius)
     )
 

@@ -5,14 +5,16 @@ import android.graphics.Paint
 import android.graphics.Paint.FontMetricsInt
 import android.graphics.RectF
 import android.text.style.ReplacementSpan
+import kotlin.math.roundToInt
 
-class RoundedBackgroundSpan(
+class RoundedBackgroundSpan constructor(
     private val backgroundColor: Int,
     private val textColor: Int,
-    private val radius: Float
+    private val radius: Float,
 ) : ReplacementSpan() {
+
     override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: FontMetricsInt?): Int {
-        return paint.measureText(text.subSequence(start, end).toString()).toInt()
+        return paint.measureText(text.subSequence(start, end).toString()).roundToInt()
     }
 
     override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {

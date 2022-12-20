@@ -16,8 +16,8 @@ import java.util.regex.Pattern
 class TestHolder(parent: ViewGroup, layoutId: Int) : GeneralHolder<FinderStateItem>(parent, layoutId), TextWatcher {
     private val editText: EditText
     private val span get() = RoundedBackgroundSpan(
-        context.findColorByAttr(R.attr.colorAccent),
-        ContextCompat.getColor(context, R.color.white),
+        context.findColorByAttr(R.attr.colorTertiary),
+        context.findColorByAttr(R.attr.colorOnTertiary),
         context.resources.getDimension(R.dimen.background_span_corner_radius),
     )
 
