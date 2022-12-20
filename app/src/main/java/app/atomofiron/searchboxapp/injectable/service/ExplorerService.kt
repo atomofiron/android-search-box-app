@@ -404,13 +404,14 @@ class ExplorerService(
         }
     }
 
-    suspend fun tryMarkInstalling(item: Node, installing: Operation.Installing?): Boolean {
-        return garden.withGarden {
+    suspend fun tryMarkInstalling(tab: NodeTabKey, item: Node, installing: Operation.Installing?): Boolean? {
+        return withTab(tab) {
             var state = states.find { it.uniqueId == item.uniqueId }
             if (state?.operation == installing) return false
             state = states.updateState(item.uniqueId) {
                 nextState(item.uniqueId, installing = installing)
             }
+            render()
             state?.operation == installing
         }
     }
@@ -487,7 +488,7 @@ class ExplorerService(
         outputStream.close()
     }
 
-    private suspend inline fun withGarden(block: NodeGarden.() -> Unit) = garden.withGarden(block)
+    private suspend inline fun <R> withGarden(block: NodeGarden.() -> R): R = garden.withGarden(block)
 
     private suspend inline fun withGarden(key: NodeTabKey, block: NodeGarden.(NodeTabTree) -> Unit) {
         garden.withGarden {

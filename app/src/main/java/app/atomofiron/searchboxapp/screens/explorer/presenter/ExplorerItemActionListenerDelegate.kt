@@ -63,7 +63,7 @@ class ExplorerItemActionListenerDelegate(
     private fun openItem(item: Node) {
         when {
             item.isDirectory -> explorerInteractor.toggleDir(currentTab, item)
-            item.content is Apk -> apkInteractor.installApk(item)
+            item.content is Apk -> apkInteractor.installApk(viewState.currentTab.value, item)
             item.isFile -> router.showFile(item)
         }
     }
