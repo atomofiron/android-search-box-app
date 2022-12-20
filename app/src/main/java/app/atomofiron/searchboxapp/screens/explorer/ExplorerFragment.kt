@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
@@ -14,6 +15,7 @@ import app.atomofiron.searchboxapp.custom.ExplorerView
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.recyclerView
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerPagerAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
@@ -53,6 +55,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         binding.navigationRail.menu.removeItem(R.id.stub)
         navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
         navigationRail.isItemActiveIndicatorEnabled = false
+        pager.recyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 presenter.onTabSelected(position)
