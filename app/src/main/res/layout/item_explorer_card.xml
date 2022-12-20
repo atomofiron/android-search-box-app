@@ -21,21 +21,13 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="12dp"
+            android:textSize="12sp"
+            android:textColor="?colorPrimary"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintDimensionRatio="W,1:1"
-            />
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/cart_arc_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="?colorPrimary"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/cart_arc"
-            app:layout_constraintEnd_toEndOf="@+id/cart_arc"
-            app:layout_constraintBottom_toBottomOf="@+id/cart_arc"
             tools:text="128Gb"
             />
         <androidx.appcompat.widget.AppCompatImageView

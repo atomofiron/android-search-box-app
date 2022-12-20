@@ -37,7 +37,6 @@ class RootViewHolder(
     override fun onBind(item: NodeRoot, position: Int) {
         val withArc = item.type is NodeRootType.InternalStorage
         binding.cartArc.isVisible = withArc
-        binding.cartArcLabel.isVisible = withArc
         binding.root.isSelected = item.isSelected
         binding.root.isEnabled = item.item.isCached
         binding.root.alpha = if (item.item.isCached) Const.ALPHA_ENABLED else Const.ALPHA_DISABLED
@@ -51,7 +50,7 @@ class RootViewHolder(
     private fun NodeRoot.bindType() {
         if (type !is NodeRootType.InternalStorage) return
         binding.cartArc.set(type.used, type.used + type.free)
-        binding.cartArcLabel.text = type.used.convert(suffixes, lossless = false, separator = "\u2009")
+        binding.cartArc.text = type.used.convert(suffixes, lossless = false, separator = "\u2009")
     }
 
     private fun NodeRoot.getTitle(): String = rootAliases[item.uniqueId] ?: item.name
