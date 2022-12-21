@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.custom
+package app.atomofiron.searchboxapp.custom.drawable
 
 import android.R.attr.state_activated
 import android.R.attr.state_enabled

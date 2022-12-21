@@ -11,7 +11,7 @@ import androidx.core.view.isVisible
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.NoticeableDrawable
+import app.atomofiron.searchboxapp.custom.drawable.NoticeableDrawable
 import app.atomofiron.searchboxapp.getAttr
 import app.atomofiron.searchboxapp.model.other.AppUpdateState
 
