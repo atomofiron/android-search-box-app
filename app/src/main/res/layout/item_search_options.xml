@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="18dp"
+    android:paddingHorizontal="9dp"
     android:paddingVertical="@dimen/common_margin_half"
     >
     <com.google.android.material.checkbox.MaterialCheckBox

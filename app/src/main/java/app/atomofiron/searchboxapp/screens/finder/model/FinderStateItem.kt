@@ -30,7 +30,7 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
       val excludeDirs: Boolean = false,
       val replaceEnabled: Boolean = false,
       val isLocal: Boolean = false,
-    ) : FinderStateItem(CONFIG_ID, R.layout.item_config)
+    ) : FinderStateItem(CONFIG_ID, R.layout.item_search_options)
 
     object ButtonsItem : FinderStateItem(BUTTONS_ID, R.layout.item_finder_buttons)
 
