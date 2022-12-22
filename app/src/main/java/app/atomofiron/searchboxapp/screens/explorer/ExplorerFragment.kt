@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -75,6 +76,10 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         explorerTabs.setOnClickListener {
             getCurrentTabView().scrollToTop()
         }
+
+        val textColors = ContextCompat.getColorStateList(requireContext(), R.color.redio_text_button_foreground_color_selector)
+        firstButton.setTextColor(textColors)
+        secondButton.setTextColor(textColors)
     }
 
     private fun onNavigationItemSelected(item: MenuItem): Boolean {
