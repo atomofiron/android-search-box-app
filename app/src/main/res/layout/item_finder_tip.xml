@@ -4,9 +4,9 @@
     android:id="@+id/finder_tv_tip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="24dp"
+    android:layout_marginStart="@dimen/title_margin"
     android:layout_marginBottom="@dimen/common_margin_half"
-    android:textSize="@dimen/curtain_title_size"
+    android:textSize="@dimen/title_size"
     android:textColor="?attr/colorContent"
     android:textStyle="bold"
     />

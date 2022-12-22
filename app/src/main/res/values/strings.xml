@@ -32,6 +32,7 @@
     <string name="done">Done</string>
     <string name="stopped">Stopped</string>
     <string name="options">Options</string>
+    <string name="options_title">Options:</string>
     <string name="explorer">Files</string>
     <string name="replace">Replace</string>
     <string name="tasks">Tasks</string>

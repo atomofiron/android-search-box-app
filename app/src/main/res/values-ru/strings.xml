@@ -32,6 +32,7 @@
     <string name="done">Завершено</string>
     <string name="stopped">Остановлено</string>
     <string name="options">Опции</string>
+    <string name="options_title">Опции:</string>
     <string name="explorer">Проводник</string>
     <string name="replace">Заменить</string>
     <string name="tasks">Задачи</string>
