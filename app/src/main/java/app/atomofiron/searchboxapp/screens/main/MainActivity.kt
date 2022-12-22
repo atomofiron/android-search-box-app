@@ -89,7 +89,6 @@ class MainActivity : AppCompatActivity() {
 
         presenter.updateLightNavigationBar(isDarkTheme())
         presenter.updateLightStatusBar(isDarkTheme())
-        setOrientation(viewState.setOrientation.value)
         onCollect()
     }
 

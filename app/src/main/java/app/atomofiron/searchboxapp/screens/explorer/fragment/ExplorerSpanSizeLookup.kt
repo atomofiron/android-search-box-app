@@ -16,7 +16,9 @@ class ExplorerSpanSizeLookup(
     private val spanCount: Int get() = layoutManager.spanCount
 
     init {
-        updateSpanCount(recyclerView)
+        recyclerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            updateSpanCount(recyclerView)
+        }
     }
 
     override fun getSpanSize(position: Int): Int {

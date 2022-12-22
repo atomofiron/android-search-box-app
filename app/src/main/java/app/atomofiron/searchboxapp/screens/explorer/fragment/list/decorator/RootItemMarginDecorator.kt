@@ -14,10 +14,11 @@ class RootItemMarginDecorator : RecyclerView.ItemDecoration() {
 
         if (view.id != R.id.item_explorer_card) return
 
-        val position = parent.getChildLayoutPosition(view)
+        var position = parent.getChildLayoutPosition(view)
         val layoutManager = parent.layoutManager as GridLayoutManager
         val spanCount = layoutManager.spanCount
         val spanSize = layoutManager.spanSizeLookup.getSpanSize(position)
+        position += spanSize.dec()
         val margin = parent.resources.getDimension(R.dimen.content_margin)
         val count = spanCount / spanSize
         val cellIndex = position % count
