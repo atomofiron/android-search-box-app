@@ -25,32 +25,31 @@ class RootViewHolder(
         arrayOf(intArrayOf(android.R.attr.state_selected), intArrayOf(0)),
         intArrayOf(
             context.getColorByAttr(R.attr.colorPrimary),
-            binding.cartTitle.textColors.defaultColor,
+            binding.cardTitle.textColors.defaultColor,
         )
     )
 
     init {
-        binding.cartThumbnail.clipToOutline = true
-        binding.cartTitle.setTextColor(colors)
+        binding.cardTitle.setTextColor(colors)
     }
 
     override fun onBind(item: NodeRoot, position: Int) {
         val withArc = item.type is NodeRootType.InternalStorage
-        binding.cartArc.isVisible = withArc
+        binding.cardArc.isVisible = withArc
         binding.root.isSelected = item.isSelected
         binding.root.isEnabled = item.item.isCached
         binding.root.alpha = if (item.item.isCached) Const.ALPHA_ENABLED else Const.ALPHA_DISABLED
-        binding.cartTitle.text = item.getTitle()
-        binding.cartThumbnail.imageTintList = if (item.withPreview) null else colors
-        binding.cartThumbnail.background = item.getThumbnailBackground()
-        binding.cartThumbnail.setImageDrawable((item.thumbnail ?: item.getIcon()))
+        binding.cardTitle.text = item.getTitle()
+        binding.cardThumbnail.imageTintList = if (item.withPreview) null else colors
+        binding.cardThumbnail.background = item.getThumbnailBackground()
+        binding.cardThumbnail.setImageDrawable((item.thumbnail ?: item.getIcon()))
         item.bindType()
     }
 
     private fun NodeRoot.bindType() {
         if (type !is NodeRootType.InternalStorage) return
-        binding.cartArc.set(type.used, type.used + type.free)
-        binding.cartArc.text = type.used.convert(suffixes, lossless = false, separator = "\u2009")
+        binding.cardArc.set(type.used, type.used + type.free)
+        binding.cardArc.text = type.used.convert(suffixes, lossless = false, separator = "\u2009")
     }
 
     private fun NodeRoot.getTitle(): String = rootAliases[item.uniqueId] ?: item.name

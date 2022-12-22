@@ -16,22 +16,8 @@
         android:duplicateParentState="true"
         android:paddingBottom="@dimen/selected_stroke_width"
         >
-        <app.atomofiron.searchboxapp.custom.view.ArcView
-            android:id="@+id/cart_arc"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_margin="12dp"
-            android:textSize="12sp"
-            android:textColor="?colorPrimary"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintDimensionRatio="W,1:1"
-            tools:text="128Gb"
-            />
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/cart_thumbnail"
+            android:id="@+id/card_thumbnail"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/item_root_thumbnail"
@@ -41,8 +27,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintDimensionRatio="W,1:1"
             />
+        <app.atomofiron.searchboxapp.custom.view.ArcView
+            android:id="@+id/card_arc"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="12dp"
+            android:textSize="12sp"
+            android:textColor="?colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/card_thumbnail"
+            app:layout_constraintTop_toTopOf="@+id/card_thumbnail"
+            app:layout_constraintEnd_toEndOf="@+id/card_thumbnail"
+            app:layout_constraintBottom_toBottomOf="@+id/card_thumbnail"
+            tools:text="128Gb"
+            />
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/cart_title"
+            android:id="@+id/card_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/common_margin_half"
@@ -51,7 +51,7 @@
             android:gravity="center_horizontal"
             android:duplicateParentState="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cart_thumbnail"
+            app:layout_constraintTop_toBottomOf="@+id/card_thumbnail"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Some Root"
             />
