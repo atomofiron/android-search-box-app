@@ -431,4 +431,6 @@ object ExplorerDelegate {
         val wasOpened = oldChildren?.isOpened ?: false
         return item.copy(children = newChildren?.copy(items = items, isOpened = wasOpened))
     }
+
+    fun NodeRoot.getTitle(aliases: Map<Int, String>): String = aliases[item.uniqueId] ?: item.name
 }

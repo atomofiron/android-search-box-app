@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.explorer.fragment.roots
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import app.atomofiron.common.recycler.GeneralHolder
@@ -12,6 +13,7 @@ import app.atomofiron.searchboxapp.getColorByAttr
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getTitle
 import app.atomofiron.searchboxapp.utils.Tool.convert
 
 class RootViewHolder(
@@ -34,13 +36,19 @@ class RootViewHolder(
         binding.cardThumbnail.clipToOutline = true
     }
 
+    fun makeHorizontal() {
+        val set = ConstraintSet()
+        set.clone(context, R.layout.item_explorer_card_horizontal)
+        set.applyTo(binding.cardContent)
+    }
+
     override fun onBind(item: NodeRoot, position: Int) {
         val withArc = item.type is NodeRootType.InternalStorage
         binding.cardArc.isVisible = withArc
         binding.root.isSelected = item.isSelected
         binding.root.isEnabled = item.item.isCached
         binding.root.alpha = if (item.item.isCached) Const.ALPHA_ENABLED else Const.ALPHA_DISABLED
-        binding.cardTitle.text = item.getTitle()
+        binding.cardTitle.text = item.getTitle(rootAliases)
         binding.cardThumbnail.imageTintList = if (item.withPreview) null else colors
         binding.cardThumbnail.background = item.getThumbnailBackground()
         binding.cardThumbnail.setImageDrawable((item.thumbnail ?: item.getIcon()))
@@ -52,8 +60,6 @@ class RootViewHolder(
         binding.cardArc.set(type.used, type.used + type.free)
         binding.cardArc.text = type.used.convert(suffixes, lossless = false, separator = "\u2009")
     }
-
-    private fun NodeRoot.getTitle(): String = rootAliases[item.uniqueId] ?: item.name
 
     private fun NodeRoot.getIcon(): Drawable {
         val resId = when (type) {
@@ -82,7 +88,7 @@ class RootViewHolder(
         }
         return when (resId) {
             0 -> null
-            else ->  ContextCompat.getDrawable(context, resId)
+            else -> ContextCompat.getDrawable(context, resId)
         }
     }
 }

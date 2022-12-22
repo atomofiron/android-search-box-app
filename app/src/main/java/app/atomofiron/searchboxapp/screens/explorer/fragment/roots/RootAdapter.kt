@@ -20,14 +20,31 @@ private class ItemCallbackImpl : DiffUtil.ItemCallback<NodeRoot>() {
 class RootAdapter(
     private val rootAliases: Map<Int, String>,
 ) : ListAdapter<NodeRoot, RootViewHolder>(ItemCallbackImpl()) {
+    companion object {
+        private const val TYPE_VERTICAL = 1
+        private const val TYPE_HORIZONTAL = 2
+    }
 
     var clickListener: RootClickListener? = null
+    var verticalCount: Int = 0
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
 
     init {
         setHasStableIds(true)
     }
 
     override fun getItemId(position: Int): Long = currentList[position].stableId.toLong()
+
+    override fun getItemViewType(position: Int): Int = when {
+        verticalCount == 0 -> TYPE_VERTICAL
+        position < verticalCount -> TYPE_VERTICAL
+        else -> TYPE_HORIZONTAL
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RootViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -37,6 +54,7 @@ class RootAdapter(
             val item = currentList[holder.bindingAdapterPosition]
             clickListener?.onRootClick(item)
         }
+        if (viewType == TYPE_HORIZONTAL) holder.makeHorizontal()
         return holder
     }
 

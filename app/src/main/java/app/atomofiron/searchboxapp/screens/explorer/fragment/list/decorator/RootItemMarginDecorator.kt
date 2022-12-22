@@ -21,8 +21,8 @@ class RootItemMarginDecorator : RecyclerView.ItemDecoration() {
         val margin = parent.resources.getDimension(R.dimen.content_margin)
         val count = spanCount / spanSize
         val cellIndex = position % count
-        val sum = margin * spanCount.inc()
-        val avg = sum / spanCount
+        val sum = margin * count.inc()
+        val avg = sum / count
         val piece = avg - margin
 
         // распредиляем отступы так,

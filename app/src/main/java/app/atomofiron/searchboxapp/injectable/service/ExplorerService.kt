@@ -117,8 +117,8 @@ class ExplorerService(
             NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA")),
             NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA")),
             NodeRoot(NodeRootType.Screenshots, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_PICTURES")),
-            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_DOWNLOAD")),
             NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_BLUETOOTH")),
+            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_DOWNLOAD")),
             NodeRoot(NodeRootType.InternalStorage(), ExplorerDelegate.asRoot(storagePath)),
         )
         this.roots.clear()
@@ -772,6 +772,7 @@ class ExplorerService(
 
     private fun List<NodeLevel>.findIndexed(parentPath: String): Pair<Int, NodeLevel?> = this@findIndexed.findIndexed { it.parentPath == parentPath }
 
+    // todo WTF 'NodeState.getUniqueId()' on a null object reference
     private fun List<NodeState>.findIndexed(uniqueId: Int): Pair<Int, NodeState?> = this@findIndexed.findIndexed { it.uniqueId == uniqueId }
 
     private fun Node.updateContent(): Node {
