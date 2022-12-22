@@ -105,7 +105,7 @@ class ExplorerView(
     }
 
     private fun onSeparatorClick(item: Node) = when {
-        listDelegate.isVisible(item) -> Unit
+        listDelegate.isVisible(item) -> listDelegate.highlight(item)
         else -> listDelegate.scrollTo(item)
     }
 

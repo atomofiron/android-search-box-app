@@ -4,11 +4,13 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.*
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBackgroundDecorator
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBorderDecorator
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.RootItemMarginDecorator
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.withoutDot
 import kotlin.math.min
@@ -93,6 +95,15 @@ class ExplorerListDelegate(
                 }
             }
         }
+    }
+
+    fun highlight(item: Node) {
+        val uniqueId = item.withoutDot().toUniqueId()
+        val dir = nodeAdapter.currentList.find { it.uniqueId == uniqueId }
+        dir ?: return
+        val holder = recyclerView.findViewHolderForItemId(dir.uniqueId.toLong())
+        if (holder !is ExplorerHolder) return
+        holder.highlight()
     }
 
     private inner class HeaderListener : ExplorerItemActionListener {
