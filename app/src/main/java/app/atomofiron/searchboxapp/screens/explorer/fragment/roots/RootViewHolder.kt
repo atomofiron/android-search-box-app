@@ -31,6 +31,7 @@ class RootViewHolder(
 
     init {
         binding.cardTitle.setTextColor(colors)
+        binding.cardThumbnail.clipToOutline = true
     }
 
     override fun onBind(item: NodeRoot, position: Int) {
