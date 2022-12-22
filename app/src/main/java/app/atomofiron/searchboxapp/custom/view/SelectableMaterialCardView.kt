@@ -36,11 +36,6 @@ class SelectableMaterialCardView : MaterialCardView {
     }
 
     override fun onDraw(canvas: Canvas) {
-        //if (isSelected) canvas.drawPath(framePath, framePaint)
-    }
-
-    override fun draw(canvas: Canvas) {
-        super.draw(canvas)
         if (isSelected) canvas.drawPath(framePath, framePaint)
     }
 
@@ -52,7 +47,9 @@ class SelectableMaterialCardView : MaterialCardView {
         innerRect.right = outerRect.right - frameWidth
         innerRect.bottom = outerRect.bottom - frameWidth
         val innerRadius = radius - frameWidth
+        framePath.reset()
         framePath.addRect(outerRect, Path.Direction.CW)
         framePath.addRoundRect(innerRect, innerRadius, innerRadius, Path.Direction.CCW)
+        framePath.close()
     }
 }
