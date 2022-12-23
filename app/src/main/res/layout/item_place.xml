@@ -16,7 +16,7 @@
         android:tint="?attr/colorContent"
         android:paddingStart="@dimen/padding_large"
         android:paddingTop="@dimen/padding_large"
-        android:paddingEnd="@dimen/padding_middle"
+        android:paddingEnd="@dimen/padding_large"
         android:paddingBottom="@dimen/padding_large"
         />
     <com.google.android.material.textview.MaterialTextView

@@ -21,7 +21,7 @@
 
 	<dimen name="padding_micro">2dp</dimen>
 	<dimen name="padding_mini">4dp</dimen>
-	<dimen name="padding_middle">12dp</dimen>
+	<dimen name="padding_middle">8dp</dimen>
 	<dimen name="padding_large">12dp</dimen>
 	<dimen name="padding_xlarge">16dp</dimen>
 	<dimen name="padding_xxlarge">32dp</dimen>
@@ -37,7 +37,7 @@
     <dimen name="item_dir_shadow_size">6dp</dimen>
 	<dimen name="item_dir_separation_size">3.5dp</dimen>
 	<dimen name="title_size">20sp</dimen>
-	<dimen name="title_margin">32dp</dimen>
+	<dimen name="title_margin">48dp</dimen>
 	<dimen name="curtain_title_margin">52dp</dimen>
 	<dimen name="curtain_title_size">@dimen/title_size</dimen>
     <dimen name="background_span_corner_radius">4dp</dimen>

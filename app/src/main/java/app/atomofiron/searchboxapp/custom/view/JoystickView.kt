@@ -28,7 +28,7 @@ class JoystickView @JvmOverloads constructor(
     }
     private val icon = ContextCompat.getDrawable(context, R.drawable.ic_esc)!!
     private val iconSize = resources.getDimensionPixelSize(R.dimen.icon_size)
-    private val padding = resources.getDimensionPixelSize(R.dimen.padding_middle)
+    private val padding = resources.getDimensionPixelSize(R.dimen.padding_large)
 
     private val paintBlur = Paint()
     private val glowingPaint = Paint()
