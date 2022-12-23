@@ -18,6 +18,7 @@ import app.atomofiron.searchboxapp.screens.preferences.PreferenceDependencies
 import app.atomofiron.searchboxapp.screens.result.ResultDependencies
 import app.atomofiron.searchboxapp.screens.main.MainDependencies
 import app.atomofiron.searchboxapp.screens.root.RootDependencies
+import app.atomofiron.searchboxapp.screens.template.TemplateDependencies
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerDependencies
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.work.FinderWorker
@@ -40,7 +41,8 @@ interface AppComponent :
     ExplorerDependencies,
     FinderDependencies,
     ResultDependencies,
-    TextViewerDependencies
+    TextViewerDependencies,
+    TemplateDependencies
 {
 
     @Component.Builder
