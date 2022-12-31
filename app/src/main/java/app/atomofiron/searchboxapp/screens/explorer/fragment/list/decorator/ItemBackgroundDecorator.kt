@@ -1,26 +1,22 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator
 
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.TAG_EXPLORER_OPENED_ITEM
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.getSortedChildren
 
 class ItemBackgroundDecorator : RecyclerView.ItemDecoration() {
-    companion object {
-        fun Context.getExplorerItemBackground(): Int = findColorByAttr(R.attr.topRadioGroupBackground)
-    }
 
     private val paint = Paint()
     var enabled = false
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-        paint.color = parent.context.getExplorerItemBackground()
+        paint.color = ContextCompat.getColor(parent.context, R.color.surface_variant_lite)
     }
 
     override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
