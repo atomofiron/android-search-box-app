@@ -35,7 +35,9 @@ class SelectableMaterialCardView : MaterialCardView {
         updateFramePath()
     }
 
-    override fun onDraw(canvas: Canvas) {
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+        // draw over the card outline
         if (isSelected) canvas.drawPath(framePath, framePaint)
     }
 
