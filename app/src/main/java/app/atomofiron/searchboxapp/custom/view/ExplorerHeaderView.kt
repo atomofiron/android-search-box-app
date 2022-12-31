@@ -35,10 +35,9 @@ class ExplorerHeaderView @JvmOverloads constructor(
     private val paint = Paint()
 
     init {
-        val colorSurface = context.findColorByAttr(R.attr.colorSurface)
-        val colorSurfaceVariant = context.findColorByAttr(R.attr.colorSurfaceVariant)
-        var backgroundColor = ColorUtils.setAlphaComponent(colorSurfaceVariant, Byte.MAX_VALUE.toInt())
-        backgroundColor = ColorUtils.compositeColors(backgroundColor, colorSurface)
+        var backgroundColor = context.findColorByAttr(R.attr.colorBackground)
+        val overlayColor = context.findColorByAttr(R.attr.topRadioGroupBackground)
+        backgroundColor = ColorUtils.compositeColors(overlayColor, backgroundColor)
         setBackgroundColor(backgroundColor)
         insetColor = ColorUtils.setAlphaComponent(backgroundColor, Byte.MAX_VALUE.toInt())
     }
