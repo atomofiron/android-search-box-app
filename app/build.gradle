@@ -32,6 +32,12 @@ android {
             keyPassword "android"
         }
     }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.18.1'
+        }
+    }
     buildTypes {
         debug {
             resValue "string", "app_name", "File Portal D"

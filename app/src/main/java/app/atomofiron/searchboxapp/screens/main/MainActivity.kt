@@ -58,6 +58,8 @@ class MainActivity : AppCompatActivity() {
 
         updateTheme(viewState.setTheme.value)
         onCreateView(savedInstanceState)
+
+        stringFromJNI(100)
     }
 
     private fun onCreateView(savedInstanceState: Bundle?) {
@@ -167,6 +169,15 @@ class MainActivity : AppCompatActivity() {
     private fun setOrientation(orientation: AppOrientation) {
         if (requestedOrientation != orientation.constant) {
             requestedOrientation = orientation.constant
+        }
+    }
+
+    external fun stringFromJNI(dur: Int): String
+
+    companion object {
+        // Used to load the 'toybox-lib' library on application startup.
+        init {
+            System.loadLibrary("toybox-lib")
         }
     }
 }
