@@ -177,6 +177,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         // Used to load the 'native-lib' library on application startup.
         init {
+            System.loadLibrary("toybox")
             System.loadLibrary("native-lib")
         }
     }
