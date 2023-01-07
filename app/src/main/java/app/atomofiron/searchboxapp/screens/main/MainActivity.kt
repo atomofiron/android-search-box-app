@@ -175,9 +175,9 @@ class MainActivity : AppCompatActivity() {
     external fun stringFromJNI(dur: Int): String
 
     companion object {
-        // Used to load the 'toybox-lib' library on application startup.
+        // Used to load the 'native-lib' library on application startup.
         init {
-            System.loadLibrary("toybox-lib")
+            System.loadLibrary("native-lib")
         }
     }
 }
