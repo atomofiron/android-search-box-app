@@ -88,7 +88,7 @@ void check_help(char **arg);
 void toy_singleinit(struct toy_list *which, char *argv[]);
 void toy_init(struct toy_list *which, char *argv[]);
 void toy_exec(char *argv[]);
-void lib_main(int argc, char *argv[]);
+int lib_main(int argc, char *argv[]);
 
 // Array of available commands
 
