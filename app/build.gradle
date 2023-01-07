@@ -7,6 +7,7 @@ android {
     def appId = "app.atomofiron.searchboxapp"
 
     compileSdkVersion 33
+    ndkVersion "25.1.8937393"
 
     buildFeatures {
         viewBinding true
