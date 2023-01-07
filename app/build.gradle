@@ -43,6 +43,11 @@ android {
             version '3.18.1'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['jniLibs/']
+        }
+    }
     buildTypes {
         debug {
             resValue "string", "app_name", "File Portal D"
