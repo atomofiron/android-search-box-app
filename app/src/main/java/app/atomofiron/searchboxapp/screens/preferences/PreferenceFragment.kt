@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
@@ -72,6 +73,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         recyclerView.clipToPadding = false
+        recyclerView.updatePadding(top = resources.getDimensionPixelSize(R.dimen.content_margin_half))
         recyclerView.applyPaddingInsets(start = true, end = true, bottom = true)
         toolbar.setNavigationOnClickListener { presenter.onNavigationClick() }
         viewState.onViewCollect()
