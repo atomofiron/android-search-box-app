@@ -1,10 +1,15 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +26,7 @@ import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
 import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import app.atomofiron.searchboxapp.utils.Shell
+import com.google.android.material.appbar.AppBarLayout
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class PreferenceFragment : PreferenceFragmentCompat(),
@@ -42,30 +48,33 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         }
     }
 
+    @SuppressLint("InlinedApi")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val container = inflater.inflate(R.layout.fragment_preference, container, false)
-        container as ViewGroup
+        val root = inflater.inflate(R.layout.fragment_preference, container, false)
+        root as ViewGroup
         val view = super.onCreateView(inflater, container, savedInstanceState)
-        container.addView(view, 0)
-        return container
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        val listContainer = view.findViewById<FrameLayout>(android.R.id.list_container)
+        listContainer.removeView(recyclerView)
+        recyclerView.layoutParams = CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
+            behavior = AppBarLayout.ScrollingViewBehavior()
+        }
+        root.addView(recyclerView, 1)
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
-        recyclerView.applyPaddingInsets()
         val systemUiView = view.findViewById<SystemUiBackgroundView>(R.id.system_ui_background)
         OrientationLayoutDelegate(view as ViewGroup, recyclerView = recyclerView, systemUiView = systemUiView)
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
-        viewState.onViewCollect()
-    }
-
-    override fun onCreateRecyclerView(inflater: LayoutInflater, parent: ViewGroup, savedInstanceState: Bundle?): RecyclerView {
-        val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         recyclerView.clipToPadding = false
-        recyclerView.applyPaddingInsets()
-        return recyclerView
+        recyclerView.applyPaddingInsets(start = true, end = true, bottom = true)
+        toolbar.setNavigationOnClickListener { presenter.onNavigationClick() }
+        viewState.onViewCollect()
     }
 
     override fun PreferenceViewState.onViewCollect() {
