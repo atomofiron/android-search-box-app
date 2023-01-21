@@ -6,7 +6,7 @@ android {
     def fileProviderName = ".FileProvider"
     def appId = "app.atomofiron.searchboxapp"
 
-    compileSdkVersion 33
+    compileSdk 33
 
     buildFeatures {
         viewBinding true
@@ -17,8 +17,8 @@ android {
     }
     defaultConfig {
         applicationId appId
-        minSdkVersion 21
-        targetSdkVersion 32
+        minSdk 21
+        targetSdk 32
         versionCode 8
         versionName "1.1.2"
 
