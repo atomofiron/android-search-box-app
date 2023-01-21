@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/first"
+            android:text="@string/dash"
             />
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/second"
+            android:text="@string/dash"
             />
     </com.google.android.material.button.MaterialButtonToggleGroup>
     <com.google.android.material.bottomnavigation.BottomNavigationView

@@ -95,12 +95,12 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(firstTabItems) {
             val first = explorerViews.first()
             first.submitList(it)
-            binding.firstButton.text = first.title ?: getString(R.string.first)
+            binding.firstButton.text = first.title ?: getString(R.string.dash)
         }
         viewCollect(secondTabItems) {
             val second = explorerViews.last()
             second.submitList(it)
-            binding.secondButton.text = second.title ?: getString(R.string.second)
+            binding.secondButton.text = second.title ?: getString(R.string.dash)
         }
         viewCollect(itemComposition) { composition ->
             explorerViews.forEach { it.setComposition(composition) }
