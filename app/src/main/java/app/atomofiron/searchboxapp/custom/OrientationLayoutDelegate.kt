@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.Insets
 import androidx.core.view.*
 import androidx.core.view.WindowInsetsCompat.Type
@@ -13,6 +14,8 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.custom.view.JoystickView
 import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.navigationrail.NavigationRailView
@@ -73,9 +76,7 @@ class OrientationLayoutDelegate constructor(
             ViewCompat.dispatchApplyWindowInsets(it.systemUiView, insets)
             it.onInsetsApplied()
         }
-        parent.findViewById<View>(R.id.appbar_layout)?.let {
-            ViewCompat.dispatchApplyWindowInsets(it, insets)
-        }
+        parent.applyToAppbar(insets)
         return WindowInsetsCompat.CONSUMED
     }
 
@@ -89,28 +90,32 @@ class OrientationLayoutDelegate constructor(
     }
 
     private fun WindowInsetsCompat.getRecyclerViewInsets(): WindowInsetsCompat {
-        return WindowInsetsCompat.Builder(this)
-            .setInsets(insetsType, getInsets(insetsType).editForRecyclerView())
-            .setInsets(Type.ime(), getInsets(Type.ime()).editForRecyclerView())
-            .build()
+        return custom {
+            setInsets(insetsType, getInsets(insetsType).editForRecyclerView())
+            setInsets(Type.ime(), getInsets(Type.ime()).editForRecyclerView())
+        }
     }
 
     private fun WindowInsetsCompat.getTabLayoutInsets(): WindowInsetsCompat {
-        return WindowInsetsCompat.Builder(this)
-            .setInsets(insetsType, getInsets(insetsType).editForTabLayout())
-            .build()
+        return custom {
+            setInsets(insetsType, getInsets(insetsType).editForTabLayout())
+        }
     }
 
     private fun WindowInsetsCompat.getRailViewInsets(): WindowInsetsCompat {
-        return WindowInsetsCompat.Builder(this)
-            .setInsets(insetsType, getInsets(insetsType).editForRailView(joystickSize))
-            .build()
+        return custom {
+            setInsets(insetsType, getInsets(insetsType).editForRailView(joystickSize))
+        }
     }
 
     private fun WindowInsetsCompat.getHeaderViewInsets(): WindowInsetsCompat {
-        return WindowInsetsCompat.Builder(this)
-            .setInsets(insetsType, getInsets(insetsType).editForHeaderView())
-            .build()
+        return custom {
+            setInsets(insetsType, getInsets(insetsType).editForHeaderView())
+        }
+    }
+
+    private inline fun WindowInsetsCompat.custom(action: WindowInsetsCompat.Builder.() -> Unit): WindowInsetsCompat {
+        return WindowInsetsCompat.Builder(this).apply(action).build()
     }
 
     private fun Insets.editForRecyclerView(): Insets {
@@ -172,6 +177,36 @@ class OrientationLayoutDelegate constructor(
             Side.Left, Side.Right -> top
         }
         return Insets.of(left, top, right, bottom)
+    }
+
+    private fun View.applyToAppbar(insets: WindowInsetsCompat) {
+        val appbarLayout: AppBarLayout? = findViewById(R.id.appbar_layout)
+        appbarLayout ?: return
+        ViewCompat.dispatchApplyWindowInsets(appbarLayout, insets)
+
+        val collapsingLayout: CollapsingToolbarLayout? = appbarLayout.findViewById(R.id.collapsing_layout)
+        collapsingLayout ?: return
+        val custom = insets.getAppbarLayoutInsets()
+        val defaultMargin = resources.getDimensionPixelSize(R.dimen.m3_appbar_expanded_title_margin_horizontal)
+        collapsingLayout.expandedTitleMarginStart = custom.left + defaultMargin
+        collapsingLayout.expandedTitleMarginEnd = custom.right + defaultMargin
+
+        val toolbar: Toolbar? = collapsingLayout.findViewById(R.id.toolbar)
+        toolbar ?: return
+        toolbar.updatePadding(left = custom.left, right = custom.right)
+    }
+
+    private fun WindowInsetsCompat.getAppbarLayoutInsets(): Insets {
+        val cutout = getInsets(Type.displayCutout())
+        val bars = getInsets(Type.navigationBars())
+        var fab = Insets.of(
+            if (side == Side.Left) railSize else 0,
+            0,
+            if (side == Side.Right) railSize else 0,
+            if (side == Side.Bottom) bottomSize else 0,
+        )
+        fab = Insets.add(bars, fab)
+        return Insets.max(fab, cutout)
     }
 
     companion object {
