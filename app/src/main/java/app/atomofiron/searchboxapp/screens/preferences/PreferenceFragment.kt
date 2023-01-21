@@ -76,6 +76,12 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         recyclerView.updatePadding(top = resources.getDimensionPixelSize(R.dimen.content_margin_half))
         recyclerView.applyPaddingInsets(start = true, end = true, bottom = true)
         toolbar.setNavigationOnClickListener { presenter.onNavigationClick() }
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.pref_about -> presenter.onAboutClick()
+            }
+            true
+        }
         viewState.onViewCollect()
     }
 

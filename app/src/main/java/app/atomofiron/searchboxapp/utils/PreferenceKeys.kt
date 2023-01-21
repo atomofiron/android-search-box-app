@@ -20,7 +20,6 @@ object PreferenceKeys {
     val KeyJoystick = intPreferencesKey("pref_joystick")
     val KeyToybox = stringSetPreferencesKey("pref_toybox")
 
-    const val PREF_ABOUT = "pref_about"
     const val PREF_EXPORT_IMPORT = "pref_export_import"
     const val PREF_LEAK_CANARY = "pref_leak_canary"
     const val PREF_CATEGORY_DEBUG = "pref_category_debug"
