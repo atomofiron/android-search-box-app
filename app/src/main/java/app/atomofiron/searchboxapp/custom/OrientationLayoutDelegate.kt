@@ -48,7 +48,7 @@ class OrientationLayoutDelegate constructor(
         }
     }
 
-    override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+    override fun onApplyWindowInsets(parent: View, insets: WindowInsetsCompat): WindowInsetsCompat {
         headerView?.run {
             ViewCompat.dispatchApplyWindowInsets(this, insets.getHeaderViewInsets())
         }
@@ -72,6 +72,9 @@ class OrientationLayoutDelegate constructor(
             ViewCompat.dispatchApplyWindowInsets(it.recyclerView, insets.getRecyclerViewInsets())
             ViewCompat.dispatchApplyWindowInsets(it.systemUiView, insets)
             it.onInsetsApplied()
+        }
+        parent.findViewById<View>(R.id.appbar_layout)?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets)
         }
         return WindowInsetsCompat.CONSUMED
     }
