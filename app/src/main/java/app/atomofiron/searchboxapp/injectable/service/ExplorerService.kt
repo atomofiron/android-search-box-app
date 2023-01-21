@@ -519,6 +519,7 @@ class ExplorerService(
 
     private suspend inline fun NodeTabTree.render() {
         states.replace {
+            // todo NullPointerException
             if (it.withoutState) null else it
         }
         tree.dropClosedLevels()
@@ -715,6 +716,7 @@ class ExplorerService(
         val new = state.block()
         when {
             state == null && new != null -> add(new)
+            // todo IndexOutOfBoundsException: Index: 1, Size: 1
             state != null && new == null -> removeAt(index)
             state != null && new != null -> set(index, new)
         }
