@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.color.MaterialColors
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.setFabSideListener
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainContentDelegate
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainNode
@@ -81,6 +82,13 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         transitionAnimator = TransitionAnimator(binding, ::updateUi)
 
         binding.root.insetsProxying()
+        binding.root.setFabSideListener { side ->
+            val padding = when {
+                side.isBottom -> resources.getDimensionPixelSize(R.dimen.navigation_view_size)
+                else -> 0
+            }
+            binding.curtainSheet.updatePadding(bottom = padding)
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.curtainSheet, insetsCalculator)
 
         onViewCollect()

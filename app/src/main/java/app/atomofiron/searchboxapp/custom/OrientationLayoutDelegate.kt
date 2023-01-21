@@ -28,8 +28,8 @@ class OrientationLayoutDelegate constructor(
     private val tabLayout: MaterialButtonToggleGroup? = null,
     private val headerView: ExplorerHeaderView? = null,
 ) : OnApplyWindowInsetsListener {
-    enum class Side {
-        Left, Bottom, Right,
+    enum class Side(val isBottom: Boolean = false) {
+        Left, Bottom(isBottom = true), Right,
     }
 
     private val resources = parent.resources
@@ -41,8 +41,7 @@ class OrientationLayoutDelegate constructor(
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parent, this)
-        parent.setSideListener {
-            val side = if (it) Side.Bottom else Side.Right
+        parent.setFabSideListener { side ->
             this.side = side
             setLayout(side != Side.Bottom)
             parent.requestApplyInsets()
@@ -175,27 +174,28 @@ class OrientationLayoutDelegate constructor(
     companion object {
         private val insetsType = Type.systemBars() or Type.displayCutout()
 
-        fun ViewGroup.setSideListener(callback: (bottom: Boolean) -> Unit) {
+        fun ViewGroup.setFabSideListener(callback: (side: Side) -> Unit) {
             val maxSize = resources.getDimensionPixelSize(R.dimen.bottom_bar_max_width)
             addOnLayoutChangeListener { _, left, top, right, bottom, _, _, _, _ ->
                 val width = right - left
                 val height = bottom - top
+                val atTheBottom = width < height && width < maxSize
                 when {
-                    width < height && width < maxSize -> callback(true)
-                    else -> callback(false)
+                    atTheBottom -> callback(Side.Bottom)
+                    else -> callback(Side.Right)
                 }
             }
         }
 
         fun JoystickView.syncOrientation(root: FrameLayout) {
-            root.setSideListener { bottom ->
+            root.setFabSideListener { side ->
                 updateLayoutParams<FrameLayout.LayoutParams> {
-                    val flags = when {
-                        bottom -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                    val flags = when (side) {
+                        Side.Bottom -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
                         else -> Gravity.END or Gravity.TOP
                     }
                     when (gravity and flags) {
-                        flags -> return@setSideListener
+                        flags -> return@setFabSideListener
                         else -> gravity = flags
                     }
                 }
