@@ -11,13 +11,6 @@ class ExplorerViewModel : BaseViewModel<ExplorerComponent, ExplorerFragment, Exp
     override lateinit var viewState: ExplorerViewState
     @Inject
     override lateinit var presenter: ExplorerPresenter
-    @Inject
-    lateinit var router: ExplorerRouter
-
-    override fun setView(view: ExplorerFragment) {
-        super.setView(view)
-        router.permissions.registerForActivityResult(view)
-    }
 
     override fun component(view: ExplorerFragment) = DaggerExplorerComponent
         .builder()

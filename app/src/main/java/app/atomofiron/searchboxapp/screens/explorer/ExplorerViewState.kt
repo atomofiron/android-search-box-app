@@ -25,7 +25,6 @@ class ExplorerViewState(
     val oneFileOptions = listOf(R.id.menu_remove, R.id.menu_rename, R.id.menu_share, R.id.menu_open_with)
     val manyFilesOptions = listOf(R.id.menu_remove, R.id.menu_share)
 
-    val permissionRequiredWarning = ChannelFlow<Unit>()
     val scrollTo = ChannelFlow<Node>()
     val itemComposition = DeferredStateFlow<ExplorerItemComposition>()
     val current: StateFlow<Node?> = explorerStore.current
@@ -38,10 +37,6 @@ class ExplorerViewState(
 
     val firstTabItems = explorerInteractor.getFlow(firstTab)
     val secondTabItems = explorerInteractor.getFlow(secondTab)
-
-    fun showPermissionRequiredWarning() {
-        permissionRequiredWarning(scope)
-    }
 
     fun scrollTo(item: Node) {
         scrollTo[scope] = item

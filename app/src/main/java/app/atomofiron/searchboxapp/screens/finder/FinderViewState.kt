@@ -28,6 +28,11 @@ class FinderViewState(
     val snackbar = ChannelFlow<String>()
     val history = ChannelFlow<String>()
     val showHistory = EventFlow<Unit>()
+    val permissionRequiredWarning = ChannelFlow<Unit>()
+
+    fun showPermissionRequiredWarning() {
+        permissionRequiredWarning(scope)
+    }
 
     fun updateTargets(currentDir: Node?, checked: List<Node>) {
         targetItems.clear()

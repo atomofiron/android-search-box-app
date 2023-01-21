@@ -105,7 +105,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
         viewCollect(itemComposition) { composition ->
             explorerViews.forEach { it.setComposition(composition) }
         }
-        viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
         viewCollect(scrollTo) { item ->
             getCurrentTabView().scrollTo(item)
         }
@@ -140,19 +139,10 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
     private fun getCurrentTabView(): ExplorerView = explorerViews[binding.pager.currentItem]
 
-    private fun showPermissionRequiredWarning(unit: Unit) {
-        val view = view ?: return
-        Snackbar.make(view, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
-            .setAnchorView(view)
-            .setAction(R.string.allow) { presenter.onAllowStorageClick() }
-            .show()
-    }
-
     private fun showAlert(error: NodeError) {
         val view = view ?: return
         Snackbar.make(view, resources.getString(error), Snackbar.LENGTH_LONG)
             .setAnchorView(view)
-            .setAction(R.string.allow) { presenter.onAllowStorageClick() }
             .show()
     }
 }

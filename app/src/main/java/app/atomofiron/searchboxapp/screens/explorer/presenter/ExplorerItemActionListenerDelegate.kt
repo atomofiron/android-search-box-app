@@ -1,9 +1,5 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
-import android.Manifest
-import android.os.Build.VERSION.SDK_INT
-import android.os.Environment
-import app.atomofiron.common.util.Android
 import app.atomofiron.searchboxapp.injectable.interactor.ApkInteractor
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -42,23 +38,7 @@ class ExplorerItemActionListenerDelegate(
         menuListenerDelegate.showOptions(options)
     }
 
-    override fun onItemClick(item: Node) {
-        val useSu = preferenceStore.useSu.value
-        when {
-            useSu -> openItem(item)
-            SDK_INT < Android.R -> {
-                router.permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    .granted {
-                        openItem(item)
-                    }
-                    .denied { _, _ ->
-                        viewState.showPermissionRequiredWarning()
-                    }
-            }
-            Environment.isExternalStorageManager() -> openItem(item)
-            else -> router.showSystemPermissionsAppSettings()
-        }
-    }
+    override fun onItemClick(item: Node) = openItem(item)
 
     private fun openItem(item: Node) {
         when {

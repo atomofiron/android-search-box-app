@@ -2,6 +2,9 @@ package app.atomofiron.common.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,3 +88,7 @@ fun ViewGroup.moveChildrenFrom(layoutId: Int) {
 }
 
 fun Context.isDarkTheme(): Boolean = findBooleanByAttr(R.attr.isDarkTheme)
+
+fun Context.isGranted(permission: String): Boolean {
+    return SDK_INT < VERSION_CODES.M || checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+}

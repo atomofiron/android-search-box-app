@@ -24,7 +24,6 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.Util.getSize
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class FinderFragment : Fragment(R.layout.fragment_finder),
     BaseFragment<FinderFragment, FinderViewState, FinderPresenter> by BaseFragmentImpl()
@@ -111,6 +110,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         viewCollect(replaceQuery, collector = ::onReplaceQuery)
         viewCollect(snackbar, collector = ::onShowSnackbar)
         viewCollect(showHistory) { binding.verticalDock.open() }
+        viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
     }
 
     override fun onApplyInsets(root: View) {
@@ -153,5 +153,13 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
                 ?.apply {
                     text.replace(selectionStart, selectionEnd, value)
                 }
+    }
+
+    private fun showPermissionRequiredWarning(unit: Unit) {
+        val view = view ?: return
+        Snackbar.make(view, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
+            .setAnchorView(view)
+            .setAction(R.string.allow) { presenter.onAllowStorageClick() }
+            .show()
     }
 }

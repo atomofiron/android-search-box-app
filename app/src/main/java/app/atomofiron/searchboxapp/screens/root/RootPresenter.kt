@@ -13,4 +13,11 @@ class RootPresenter(
     override fun onSubscribeData() = Unit
 
     fun onBack() = router.onBack()
+
+    fun onChildrenCreated() {
+
+        if (!router.granted) {
+            router.showFinder()
+        }
+    }
 }

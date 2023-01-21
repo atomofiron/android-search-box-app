@@ -1,7 +1,12 @@
 package app.atomofiron.searchboxapp.screens.root
 
+import android.Manifest
+import android.os.Build
+import android.os.Environment
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseRouter
+import app.atomofiron.common.util.Android
+import app.atomofiron.common.util.isGranted
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -17,12 +22,18 @@ import kotlinx.coroutines.withContext
 class RootRouter(
     property: WeakProperty<out Fragment>,
     scope: CoroutineScope,
-    preferenceStore: PreferenceStore,
+    private val preferenceStore: PreferenceStore,
 ) : BaseRouter(property) {
 
     override val currentDestinationId = R.id.rootFragment
 
-    private lateinit var homeScreen: HomeScreen
+    private var homeScreen: HomeScreen = HomeScreen.Search
+        get() = if (granted) field else HomeScreen.Search
+
+    val granted: Boolean get() = when {
+        Build.VERSION.SDK_INT >= Android.R -> Environment.isExternalStorageManager()
+        else -> context?.isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) == true
+    }
 
     init {
         scope.launch {
@@ -33,6 +44,12 @@ class RootRouter(
             preferenceStore.homeScreen.collect {
                 homeScreen = it
             }
+        }
+    }
+
+    fun showFinder() {
+        fragment {
+            childFragmentManager.switchScreen { it is FinderFragment }
         }
     }
 

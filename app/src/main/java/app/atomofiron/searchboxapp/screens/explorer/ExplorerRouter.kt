@@ -1,13 +1,10 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import android.os.Build.VERSION.SDK_INT
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseRouter
-import app.atomofiron.common.util.Android
 import app.atomofiron.common.util.permission.PermissionDelegate
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.android.Intents
 import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegate
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
@@ -37,15 +34,6 @@ class ExplorerRouter(
             navigate(R.id.textViewerFragment, arguments)
         } else {
             openWith(item)
-        }
-    }
-
-    fun showSystemPermissionsAppSettings() {
-        activity {
-            when {
-                SDK_INT >= Android.R -> startActivity(Intents.storagePermissionIntent)
-                else -> startActivity(Intents.settingsIntent)
-            }
         }
     }
 }

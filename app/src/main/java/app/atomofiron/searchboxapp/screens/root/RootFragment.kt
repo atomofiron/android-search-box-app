@@ -20,6 +20,7 @@ class RootFragment : Fragment(R.layout.fragment_root),
         super.onViewCreated(view, savedInstanceState)
 
         view.insetsProxying()
+        presenter.onChildrenCreated()
     }
 
     override fun onBack(): Boolean = presenter.onBack()

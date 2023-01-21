@@ -61,11 +61,13 @@ abstract class BaseRouter(
 
     val activity: FragmentActivity? by activityProperty
 
+    val context: Context? get() = fragment?.context ?: activity
+
     fun <R> fragment(action: Fragment.() -> R): R? = fragment?.run(action)
 
     fun <R> activity(action: FragmentActivity.() -> R): R? = activity?.run(action)
 
-    fun <R> context(action: Context.() -> R): R? = (fragment?.context ?: activity)?.run(action)
+    fun <R> context(action: Context.() -> R): R? = context?.run(action)
 
     fun <T> navigation(action: NavController.() -> T): T? {
         return activity?.run {
@@ -91,12 +93,11 @@ abstract class BaseRouter(
     protected fun FragmentManager.switchScreen(predicate: (Fragment) -> Boolean) {
         val lastVisible = fragments.findLastVisibleFragment()
         val target = fragments.find(predicate)
+        target ?: return
         if (lastVisible === target) return
         beginTransaction()
-            .apply {
-                lastVisible?.let { hide(it as Fragment) }
-            }
-            .show(target!!)
+            .apply { lastVisible?.let { hide(it as Fragment) } }
+            .show(target)
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .commit()
     }

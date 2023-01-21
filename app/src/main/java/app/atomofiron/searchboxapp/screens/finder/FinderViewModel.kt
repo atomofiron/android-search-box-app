@@ -11,6 +11,13 @@ class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderVie
     override lateinit var presenter: FinderPresenter
     @Inject
     override lateinit var viewState: FinderViewState
+    @Inject
+    lateinit var router: FinderRouter
+
+    override fun setView(view: FinderFragment) {
+        super.setView(view)
+        router.permissions.registerForActivityResult(view)
+    }
 
     override fun component(view: FinderFragment) = DaggerFinderComponent
         .builder()

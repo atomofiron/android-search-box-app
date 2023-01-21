@@ -1,6 +1,10 @@
 package app.atomofiron.searchboxapp.screens.finder
 
+import android.Manifest
+import android.os.Build
+import android.os.Environment
 import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.util.Android
 import app.atomofiron.common.util.flow.collect
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
@@ -79,11 +83,23 @@ class FinderPresenter(
 
     fun onDockGravityChange(gravity: Int) = preferenceStore { setDockGravity(gravity) }
 
-    fun onExplorerOptionSelected() = router.showExplorer()
-
-    fun onConfigOptionSelected() = viewState.switchConfigItemVisibility()
+    fun onExplorerOptionSelected() {
+        when {
+            Build.VERSION.SDK_INT < Android.R -> {
+                router.permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .granted { router.showExplorer() }
+                    .denied { _, _ ->
+                        viewState.showPermissionRequiredWarning()
+                    }
+            }
+            Environment.isExternalStorageManager() -> router.showExplorer()
+            else -> router.showSystemPermissionsAppSettings()
+        }
+    }
 
     fun onSettingsOptionSelected() = router.showSettings()
 
     fun onHistoryItemClick(node: String) = viewState.replaceQuery(node)
+
+    fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
 }
