@@ -26,6 +26,7 @@ import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
+import com.google.android.material.color.DynamicColors
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -154,6 +155,8 @@ class MainActivity : AppCompatActivity() {
             else -> setTheme(R.style.CompatTheme)
         }
         presenter.onThemeApplied(isDarkTheme())
+        // necessary to apply to the 'amoled' theme
+        DynamicColors.applyToActivityIfAvailable(this)
     }
 
     private fun onEscClick() {
