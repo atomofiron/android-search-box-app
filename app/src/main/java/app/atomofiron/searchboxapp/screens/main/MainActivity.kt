@@ -21,6 +21,7 @@ import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.joystickNeeded
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.syncOrientation
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
@@ -31,6 +32,7 @@ import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
 import com.google.android.material.color.DynamicColors
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
+import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class MainActivity : AppCompatActivity() {
@@ -39,8 +41,7 @@ class MainActivity : AppCompatActivity() {
     private val rooFragment: Fragment get() = binding.navHostFragment.getFragment()
 
     private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
-        Snackbar.make(binding.root, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.root.findViewById(R.id.bottom_bar))
+        Snackbar.make(binding.snackbarContainer, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
             .setAction(R.string.exit) { presenter.onExitClick() }
             .addCallback(SnackbarCallbackFragmentDelegate(presenter))
     }
@@ -114,9 +115,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyInsets() {
-        binding.root.insetsProxying()
+        val delegate = OrientationLayoutDelegate(binding.root, snackbarContainer = binding.snackbarContainer)
+        binding.root.insetsProxying { view, insets ->
+            delegate.onApplyWindowInsets(view, insets)
+        }
         binding.navHostFragment.insetsProxying()
         binding.joystick.applyMarginInsets()
+        binding.snackbarContainer.applyPaddingInsets()
     }
 
     override fun onNewIntent(intent: Intent?) {

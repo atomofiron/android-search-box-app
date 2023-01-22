@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.*
 import androidx.core.view.WindowInsetsCompat.Type
@@ -31,6 +32,7 @@ class OrientationLayoutDelegate constructor(
     private val systemUiView: SystemUiBackgroundView? = null,
     private val tabLayout: MaterialButtonToggleGroup? = null,
     private val headerView: ExplorerHeaderView? = null,
+    private val snackbarContainer: CoordinatorLayout? = null,
     private val joystickVisibilityCallback: ((Boolean) -> Unit)? = null,
 ) : OnApplyWindowInsetsListener {
     enum class Side(val isBottom: Boolean = false) {
@@ -49,7 +51,9 @@ class OrientationLayoutDelegate constructor(
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parent, this)
+        setLayout(side != Side.Bottom)
         parent.setFabSideListener { side ->
+            if (this.side == side) return@setFabSideListener
             this.side = side
             setLayout(side != Side.Bottom)
             parent.requestApplyInsets()
@@ -59,29 +63,32 @@ class OrientationLayoutDelegate constructor(
     override fun onApplyWindowInsets(parent: View, insets: WindowInsetsCompat): WindowInsetsCompat {
         withJoystick = insets.joystickNeeded()
         joystickVisibilityCallback?.invoke(withJoystick)
-        headerView?.run {
-            ViewCompat.dispatchApplyWindowInsets(this, insets.getHeaderViewInsets())
+        headerView?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets.getHeaderViewInsets())
         }
-        recyclerView?.run {
-            ViewCompat.dispatchApplyWindowInsets(this, insets.getRecyclerViewInsets())
+        recyclerView?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets.getRecyclerViewInsets())
         }
-        railView?.run {
-            ViewCompat.dispatchApplyWindowInsets(this, insets.getRailViewInsets())
+        railView?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets.getRailViewInsets())
         }
-        tabLayout?.run {
-            ViewCompat.dispatchApplyWindowInsets(this, insets.getTabLayoutInsets())
+        tabLayout?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets.getTabLayoutInsets())
         }
-        systemUiView?.run {
-            ViewCompat.dispatchApplyWindowInsets(this, insets)
+        systemUiView?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets)
         }
-        bottomView?.run {
-            ViewCompat.dispatchApplyWindowInsets(this, insets)
+        bottomView?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets)
         }
         explorerViews?.forEach {
             ViewCompat.dispatchApplyWindowInsets(it.headerView, insets.getHeaderViewInsets())
             ViewCompat.dispatchApplyWindowInsets(it.recyclerView, insets.getRecyclerViewInsets())
             ViewCompat.dispatchApplyWindowInsets(it.systemUiView, insets)
             it.onInsetsApplied()
+        }
+        snackbarContainer?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets.getRecyclerViewInsets())
         }
         parent.applyToAppbar(insets)
         return WindowInsetsCompat.CONSUMED
