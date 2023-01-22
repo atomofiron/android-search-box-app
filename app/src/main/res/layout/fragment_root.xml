@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/main_fl_root"
+	android:id="@+id/root_fl_root"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_gravity="center_horizontal"
 	android:background="?attr/colorBackground"
-	/>
+	>
+	<FrameLayout
+		android:id="@+id/root_fl_container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		/>
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
+		android:id="@+id/snackbar_container"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:clickable="false"
+		android:focusable="false"
+		/>
+</FrameLayout>

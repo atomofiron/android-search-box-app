@@ -76,8 +76,8 @@ class RootRouter(
                     else -> finder to explorer
                 }
                 childFragmentManager.beginTransaction()
-                    .add(R.id.main_fl_root, home)
-                    .add(R.id.main_fl_root, second)
+                    .add(R.id.root_fl_container, home)
+                    .add(R.id.root_fl_container, second)
                     .hide(second)
                     .commit()
             }
@@ -88,6 +88,12 @@ class RootRouter(
         return when (homeScreen) {
             HomeScreen.Explorer -> any is ExplorerFragment
             HomeScreen.Search -> any is FinderFragment
+        }
+    }
+
+    fun closeApp() {
+        activity {
+            finish()
         }
     }
 }

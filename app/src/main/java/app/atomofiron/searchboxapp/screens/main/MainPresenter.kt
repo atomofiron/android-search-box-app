@@ -37,10 +37,7 @@ class MainPresenter(
 
     override fun onSubscribeData() = Unit
 
-    fun onEscClick() = when {
-        router.onBack() -> Unit
-        else -> viewState.showExitSnackbar()
-    }
+    fun onEscClick() = router.onBack()
 
     fun onExitClick() = router.closeApp()
 

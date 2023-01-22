@@ -54,7 +54,7 @@ class RootModule {
 
     @Provides
     @RootScope
-    fun viewState(): RootViewState = RootViewState()
+    fun viewState(scope: CoroutineScope): RootViewState = RootViewState(scope)
 }
 
 interface RootDependencies {

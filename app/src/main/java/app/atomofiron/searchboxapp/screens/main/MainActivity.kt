@@ -19,20 +19,16 @@ import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
-import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.joystickNeeded
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.syncOrientation
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
-import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
-import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
+import app.atomofiron.searchboxapp.screens.root.RootViewModel
 import com.google.android.material.color.DynamicColors
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
-import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class MainActivity : AppCompatActivity() {
@@ -40,15 +36,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val rooFragment: Fragment get() = binding.navHostFragment.getFragment()
 
-    private val sbExit: SnackbarWrapper = SnackbarWrapper(this) {
-        Snackbar.make(binding.snackbarContainer, R.string.click_back_to_exit, Snackbar.LENGTH_SHORT)
-            .setAction(R.string.exit) { presenter.onExitClick() }
-            .addCallback(SnackbarCallbackFragmentDelegate(presenter))
-    }
-
     private lateinit var viewState: MainViewState
     private lateinit var presenter: MainPresenter
     private var isFirstStart = true
+    private val rootViewModel: RootViewModel by lazy { ViewModelProvider(this)[RootViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         binding.joystick.syncOrientation(binding.root)
 
         viewState.showExitSnackbar.collect(lifecycleScope) {
-            sbExit.show()
+            rootViewModel.showExitSnackbar(presenter)
         }
         if (savedInstanceState == null) onIntent(intent)
 
@@ -115,13 +106,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyInsets() {
-        val delegate = OrientationLayoutDelegate(binding.root, snackbarContainer = binding.snackbarContainer)
-        binding.root.insetsProxying { view, insets ->
-            delegate.onApplyWindowInsets(view, insets)
-        }
+        binding.root.insetsProxying()
         binding.navHostFragment.insetsProxying()
         binding.joystick.applyMarginInsets()
-        binding.snackbarContainer.applyPaddingInsets()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -173,10 +160,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun onEscClick() {
         val viewWithFocus = binding.root.findFocus() as? EditText
-        val consumed = viewWithFocus?.hideKeyboard() == true
-        if (!consumed) {
-            presenter.onEscClick()
-        }
+        var consumed = viewWithFocus?.hideKeyboard() == true
+        if (!consumed) consumed = presenter.onEscClick()
+        if (!consumed) rootViewModel.showExitSnackbar(presenter)
     }
 
     private fun setOrientation(orientation: AppOrientation) {

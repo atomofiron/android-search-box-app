@@ -20,4 +20,6 @@ class RootPresenter(
             router.showFinder()
         }
     }
+
+    fun onExitClick() = router.closeApp()
 }

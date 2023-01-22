@@ -11,7 +11,7 @@ class BaseFragmentImpl<F : Fragment, S : Any, P : BasePresenter<*,*>> : BaseFrag
     override lateinit var viewState: S
 
     override fun initViewModel(fragment: F, viewModelClass: KClass<out BaseViewModel<*,F,S,P>>, state: Bundle?) {
-        val viewModel = ViewModelProvider(fragment)[viewModelClass.java]
+        val viewModel = ViewModelProvider(fragment.requireActivity())[viewModelClass.java]
         viewModel.setView(fragment)
         presenter = viewModel.presenter
         viewState = viewModel.viewState
