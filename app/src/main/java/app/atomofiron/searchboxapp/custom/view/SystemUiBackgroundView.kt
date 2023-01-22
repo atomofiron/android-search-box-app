@@ -31,7 +31,7 @@ class SystemUiBackgroundView : View {
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         paint.color = context.getColorByAttr(R.attr.colorBackground)
-        paint.color = ColorUtils.setAlphaComponent(paint.color, Const.ALPHA_50_PERCENT)
+        paint.color = ColorUtils.setAlphaComponent(paint.color, Const.ALPHA_67_PERCENT)
 
         context.obtainStyledAttributes(attrs, R.styleable.SystemUiBackgroundView, defStyleAttr) {
             drawStatusBar = getBoolean(R.styleable.SystemUiBackgroundView_statusBar, drawStatusBar)
@@ -62,15 +62,16 @@ class SystemUiBackgroundView : View {
         val bottomInset = bottomInset.toFloat()
 
         val right = width.toFloat()
-        val bottom = bottom.toFloat()
+        val bottom = height.toFloat()
 
         if (drawStatusBar) {
             canvas.drawRect(0f, 0f, right, topInset, paint)
-            canvas.drawRect(0f, bottom - bottomInset, right, bottom, paint)
         }
         if (drawNavigationBar) {
-            canvas.drawRect(0f, topInset, leftInset, bottom - bottomInset, paint)
-            canvas.drawRect(right - rightInset, topInset, right, bottom - bottomInset, paint)
+            val navigationTop = if (drawStatusBar) topInset else 0f
+            canvas.drawRect(0f, navigationTop, leftInset, bottom - bottomInset, paint)
+            canvas.drawRect(right - rightInset, navigationTop, right, bottom - bottomInset, paint)
+            canvas.drawRect(0f, bottom - bottomInset, right, bottom, paint)
         }
     }
 

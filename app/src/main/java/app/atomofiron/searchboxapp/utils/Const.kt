@@ -33,6 +33,7 @@ object Const {
     const val ALPHA_12_PERCENT = 31
     const val ALPHA_30_PERCENT = 80
     const val ALPHA_50_PERCENT = 128
+    const val ALPHA_67_PERCENT = 170
     const val ALPHA_80_PERCENT = 200
     const val ALPHA_90_PERCENT = 225
     const val RIPPLE_ALPHA = 64

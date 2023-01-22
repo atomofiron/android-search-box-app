@@ -34,6 +34,7 @@
         android:id="@+id/system_ui_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:elevation="@dimen/design_appbar_elevation"
         app:statusBar="false"
         />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
