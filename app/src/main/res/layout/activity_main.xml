@@ -27,6 +27,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_gravity="bottom"
+		android:clickable="false"
+		android:focusable="false"
 		/>
 	<app.atomofiron.searchboxapp.custom.view.JoystickView
 		android:id="@+id/joystick"
