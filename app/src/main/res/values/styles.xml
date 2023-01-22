@@ -72,6 +72,8 @@
 		<item name="materialCardViewStyle">@style/CardViewStyle.Amoled</item>
 		<item name="bottomNavigationStyle">@style/BottomNavigationStyle.Amoled</item>
 		<item name="navigationRailStyle">@style/NavigationRailStyle.Amoled</item>
+		<item name="appBarLayoutStyle">@style/AppBarLayoutStyle.Amoled</item>
+		<item name="collapsingToolbarLayoutStyle">@style/CollapsingToolbarLayoutStyle.Amoled</item>
 	</style>
 
 	<style name="AppTheme.Amoled.Legacy" parent="@style/AppTheme.Legacy">
@@ -85,6 +87,8 @@
 		<item name="materialCardViewStyle">@style/CardViewStyle.Amoled</item>
 		<item name="bottomNavigationStyle">@style/BottomNavigationStyle.Amoled</item>
 		<item name="navigationRailStyle">@style/NavigationRailStyle.Amoled</item>
+		<item name="appBarLayoutStyle">@style/AppBarLayoutStyle.Amoled</item>
+		<item name="collapsingToolbarLayoutStyle">@style/CollapsingToolbarLayoutStyle.Amoled</item>
 	</style>
 
 	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.Material3.Dark" />
@@ -98,6 +102,10 @@
 	<style name="BottomNavigationStyle.Amoled" parent="@style/Widget.Material3.BottomNavigationView" />
 
 	<style name="NavigationRailStyle.Amoled" parent="@style/Widget.Material3.NavigationRailView" />
+
+	<style name="AppBarLayoutStyle.Amoled" parent="@style/Widget.Design.AppBarLayout" />
+
+	<style name="CollapsingToolbarLayoutStyle.Amoled" parent="@style/Widget.Material3.CollapsingToolbar.Large" />
 
 	<style name="OutlinedButtonStyle" parent="@style/Widget.Material3.Button.OutlinedButton" />
 

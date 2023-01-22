@@ -44,6 +44,14 @@
         <item name="android:background">@color/black</item>
     </style>
 
+    <style name="AppBarLayoutStyle.Amoled" parent="@style/Widget.Material3.AppBarLayout">
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="CollapsingToolbarLayoutStyle.Amoled" parent="@style/Widget.Material3.CollapsingToolbar.Large">
+        <item name="contentScrim">@color/black</item>
+    </style>
+
     <style name="OutlinedButtonStyle" parent="@style/Widget.Material3.Button.OutlinedButton">
         <item name="strokeColor">?colorSurfaceVariant</item>
     </style>
