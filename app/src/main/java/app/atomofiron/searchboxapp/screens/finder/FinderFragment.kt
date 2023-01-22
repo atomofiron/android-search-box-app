@@ -124,7 +124,9 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
                 bottomView = bottomBar,
                 railView = navigationRail,
                 systemUiView = systemUiBackground,
-            )
+            ) {
+                binding.bottomBar.menu.findItem(R.id.stub).isVisible = it
+            }
         }
     }
 
