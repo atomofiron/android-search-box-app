@@ -14,6 +14,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.custom.view.JoystickView
 import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+import app.atomofiron.searchboxapp.isRtl
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -188,8 +189,14 @@ class OrientationLayoutDelegate constructor(
         collapsingLayout ?: return
         val custom = insets.getAppbarLayoutInsets()
         val defaultMargin = resources.getDimensionPixelSize(R.dimen.m3_appbar_expanded_title_margin_horizontal)
-        collapsingLayout.expandedTitleMarginStart = custom.left + defaultMargin
-        collapsingLayout.expandedTitleMarginEnd = custom.right + defaultMargin
+        collapsingLayout.run {
+            val start = defaultMargin + if (resources.isRtl()) custom.right else custom.left
+            val end = defaultMargin + if (resources.isRtl()) custom.left else custom.right
+            if (expandedTitleMarginStart != start)
+                expandedTitleMarginStart = start
+            if (expandedTitleMarginEnd != end)
+                expandedTitleMarginEnd = end
+        }
 
         val toolbar: Toolbar? = collapsingLayout.findViewById(R.id.toolbar)
         toolbar ?: return
