@@ -7,37 +7,12 @@
         </shape>
     </item>
     <item>
-        <selector>
-            <item android:state_focused="true">
-                <shape android:shape="rectangle">
-                    <corners android:radius="@dimen/infinity" />
-                    <stroke
-                        android:color="?attr/colorPrimary"
-                        android:width="2dp"
-                        />
-                    <padding
-                        android:left="1dp"
-                        android:top="1dp"
-                        android:right="1dp"
-                        android:bottom="1dp"
-                        />
-                </shape>
-            </item>
-            <item>
-                <shape android:shape="rectangle">
-                    <corners android:radius="@dimen/infinity" />
-                    <stroke
-                        android:color="?colorOutline"
-                        android:width="2dp"
-                        />
-                    <padding
-                        android:left="1dp"
-                        android:top="1dp"
-                        android:right="1dp"
-                        android:bottom="1dp"
-                        />
-                </shape>
-            </item>
-        </selector>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/infinity" />
+            <stroke
+                android:color="@color/preference_text_field_stroke"
+                android:width="2dp"
+                />
+        </shape>
     </item>
 </layer-list>
