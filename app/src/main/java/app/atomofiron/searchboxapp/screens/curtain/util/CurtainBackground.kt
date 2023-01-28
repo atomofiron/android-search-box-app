@@ -5,6 +5,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.getColorByAttr
@@ -16,9 +17,11 @@ open class CurtainBackground(context: Context) : Drawable() {
         private const val MAX_SATURATION = 200
     }
     private val cornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius)
-    private val curtainColor = context.getColorByAttr(android.R.attr.colorBackground)
+    private val curtainColor = context.getColorByAttr(R.attr.colorBackground)
+    private val strokeWidth = context.resources.getDimension(R.dimen.stroke_width)
     private val overlayColor = context.getColorByAttr(R.attr.colorOverlay)
     private val latchColor = ContextCompat.getColor(context, R.color.latch)
+    private val strokeColor = if (context.findBooleanByAttr(R.attr.isBlackDeep)) latchColor else Color.TRANSPARENT
     private val latchRect = RectF()
     private val paint = Paint()
 
@@ -57,12 +60,20 @@ open class CurtainBackground(context: Context) : Drawable() {
 
     override fun draw(canvas: Canvas) {
         canvas.drawColor(saturationColor)
-        paint.color = curtainColor
+
         val radius = transitCornerRadius.toFloat()
         val left = trueBounds.left.toFloat()
         val top = trueBounds.top.toFloat()
         val right = trueBounds.right.toFloat()
         val bottom = trueBounds.bottom.toFloat()
+
+        paint.color = strokeColor
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = strokeWidth * 2
+        canvas.drawRoundRect(left, top, right, bottom, radius, radius, paint)
+
+        paint.color = curtainColor
+        paint.style = Paint.Style.FILL
         canvas.drawRoundRect(left, top, right, bottom, radius, radius, paint)
 
         paint.color = latchColor
