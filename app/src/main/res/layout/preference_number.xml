@@ -4,4 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/number"
+    android:background="@drawable/preference_text_field"
+    android:paddingVertical="6dp"
+    android:paddingHorizontal="12dp"
     />
