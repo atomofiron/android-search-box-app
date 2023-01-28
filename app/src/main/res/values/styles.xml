@@ -18,6 +18,7 @@
 		<item name="colorBone">@color/day_night_bone</item>
 		<item name="colorOverlay">@color/overlay_black</item>
 		<item name="topRadioGroupBackground">@color/surface_variant_lite</item>
+		<item name="isBlackDeep">false</item>
 
 		<item name="android:statusBarColor">@color/status_bar</item>
 		<item name="android:navigationBarColor">@color/navigation_bar</item>
@@ -68,6 +69,7 @@
 		<item name="colorFieldBackground">@color/day_night_card_background_amoled</item>
 		<item name="colorFieldDivider">@color/day_night_field_divider_amoled</item>
 		<item name="topRadioGroupBackground">@color/black</item>
+		<item name="isBlackDeep">true</item>
 
 		<item name="materialCardViewStyle">@style/CardViewStyle.Amoled</item>
 		<item name="bottomNavigationStyle">@style/BottomNavigationStyle.Amoled</item>
@@ -83,6 +85,7 @@
 		<item name="colorFieldBackground">@color/day_night_card_background_amoled</item>
 		<item name="colorFieldDivider">@color/day_night_field_divider_amoled</item>
 		<item name="topRadioGroupBackground">@color/black</item>
+		<item name="isBlackDeep">true</item>
 
 		<item name="materialCardViewStyle">@style/CardViewStyle.Amoled</item>
 		<item name="bottomNavigationStyle">@style/BottomNavigationStyle.Amoled</item>
