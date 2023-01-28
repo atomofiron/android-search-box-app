@@ -21,7 +21,7 @@ class ExplorerItemDelegate(
     private val dir = Node(
         path = "/sdcard/Android/",
         parentPath = "/sdcard/",
-        properties = NodeProperties("drwxrwx---", "atomofiron", "everybody", "4KB", "19-01-2038", "03:14", "Android"),
+        properties = NodeProperties("drwxrwx---", "atomofiron", "everybody", "4K", "19-01-2038", "03:14", "Android"),
         content = NodeContent.Directory(),
     )
 
@@ -82,7 +82,7 @@ class ExplorerItemDelegate(
                 R.id.preference_bg -> composition.copy(visibleBg = isChecked)
                 else -> throw Exception()
             }
-            holder.bindComposition(composition)
+            holder.bindComposition(composition, preview = true)
             holder.setGreyBackgroundColor(composition.visibleBg)
             preferenceStore { setExplorerItemComposition(composition) }
         }

@@ -115,17 +115,17 @@ class ExplorerItemBinderImpl(
         onItemActionListener = listener
     }
 
-    override fun bindComposition(composition: ExplorerItemComposition) {
+    override fun bindComposition(composition: ExplorerItemComposition, preview: Boolean) {
         val string = StringBuilder()
-        if (composition.visibleDate) string.append(item.date)
-        if (composition.visibleTime) string.append(SPACE).append(item.time)
-        if (composition.visibleAccess) string.append(SPACE).append(item.access)
-        if (composition.visibleOwner) string.append(SPACE).append(item.owner)
-        if (composition.visibleGroup) string.append(SPACE).append(item.group)
+        if (composition.visibleDate) string.append(item.date).append(SPACE)
+        if (composition.visibleTime) string.append(item.time).append(SPACE)
+        if (composition.visibleAccess) string.append(item.access).append(SPACE)
+        if (composition.visibleOwner) string.append(item.owner).append(SPACE)
+        if (composition.visibleGroup) string.append(item.group).append(SPACE)
         tvDescription.text = string.toString()
         tvSize.text = when {
             !composition.visibleSize -> EMPTY
-            !item.isFile -> EMPTY
+            !item.isFile && !preview -> EMPTY
             item.size.isBlank() -> EMPTY
             else -> item.size + BYTE_LETTER
         }
