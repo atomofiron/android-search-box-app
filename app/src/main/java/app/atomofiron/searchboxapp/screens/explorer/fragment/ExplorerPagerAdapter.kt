@@ -15,7 +15,7 @@ class ExplorerPagerAdapter(
     output: ExplorerView.ExplorerViewOutput,
 ) : RecyclerView.Adapter<PageHolder>() {
 
-    val items = Array(2) {
+    val items = Array(1/*2*/) {
         val view = ExplorerView(viewPager.context, output)
         view.tag = it.toString()
         view.layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)

@@ -124,7 +124,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
                 explorerViews,
                 bottomView = bottomBar,
                 railView = navigationRail,
-                tabLayout = explorerTabs,
+                tabLayout = null/*explorerTabs*/,
             ) {
                 binding.bottomBar.menu.findItem(R.id.stub).isVisible = it
             }

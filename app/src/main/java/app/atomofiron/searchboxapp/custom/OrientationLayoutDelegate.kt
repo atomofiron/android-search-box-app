@@ -188,7 +188,7 @@ class OrientationLayoutDelegate constructor(
             Side.Left, Side.Bottom -> right
         }
         val top = when (side) {
-            Side.Bottom -> 0
+            Side.Bottom -> if (tabLayout == null) top else 0
             Side.Left, Side.Right -> top
         }
         return Insets.of(left, top, right, bottom)

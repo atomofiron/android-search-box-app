@@ -22,6 +22,7 @@
         android:gravity="center_horizontal"
         android:background="?topRadioGroupBackground"
         android:paddingHorizontal="@dimen/common_margin"
+        android:visibility="gone"
         app:singleSelection="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
