@@ -4,11 +4,9 @@ import android.view.View
 import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.databinding.ItemExplorerSeparatorBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootViewHolder.Companion.getTitle
 
-class ExplorerSeparatorHolder(
-    itemView: View,
-    private val rootAliases: Map<Int, String>,
-) : GeneralHolder<Node>(itemView) {
+class ExplorerSeparatorHolder(itemView: View) : GeneralHolder<Node>(itemView) {
 
     private val binding = ItemExplorerSeparatorBinding.bind(itemView)
     private var clickListener: ((Node) -> Unit)? = null
@@ -20,7 +18,7 @@ class ExplorerSeparatorHolder(
     }
 
     override fun onBind(item: Node, position: Int) {
-        binding.itemExplorerTvTitle.text = rootAliases[item.uniqueId] ?: item.name
+        binding.itemExplorerTvTitle.text = item.getTitle(itemView.resources)
     }
 
     fun setOnClickListener(listener: (Node) -> Unit) {

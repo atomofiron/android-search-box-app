@@ -1,6 +1,7 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment.roots
 
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
@@ -10,16 +11,27 @@ import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ItemExplorerCardBinding
 import app.atomofiron.searchboxapp.getColorByAttr
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.ExplorerDelegate.getTitle
 import app.atomofiron.searchboxapp.utils.Tool.convert
 
-class RootViewHolder(
-    itemView: View,
-    private val rootAliases: Map<Int, String>,
-) : GeneralHolder<NodeRoot>(itemView) {
+class RootViewHolder(itemView: View) : GeneralHolder<NodeRoot>(itemView) {
+    companion object {
+        fun Node.getTitle(resources: Resources): String = content.rootType?.getTitle(resources) ?: name
+
+        fun NodeRootType.getTitle(resources: Resources): String? = when (this) {
+            is NodeRootType.Photos -> resources.getString(R.string.root_photos)
+            is NodeRootType.Videos -> resources.getString(R.string.root_videos)
+            is NodeRootType.Camera -> resources.getString(R.string.root_camera)
+            is NodeRootType.Screenshots -> resources.getString(R.string.root_screenshots)
+            is NodeRootType.Downloads -> resources.getString(R.string.root_downloads)
+            is NodeRootType.Bluetooth -> resources.getString(R.string.root_bluetooth)
+            is NodeRootType.InternalStorage -> resources.getString(R.string.internal_storage)
+            is NodeRootType.Favorite -> null
+        }
+    }
 
     private val suffixes = itemView.resources.getStringArray(R.array.size_suffix_arr)
     private val binding = ItemExplorerCardBinding.bind(itemView)
@@ -48,7 +60,7 @@ class RootViewHolder(
         binding.root.isSelected = item.isSelected
         binding.root.isEnabled = item.item.isCached
         binding.root.alpha = if (item.item.isCached) Const.ALPHA_ENABLED else Const.ALPHA_DISABLED
-        binding.cardTitle.text = item.getTitle(rootAliases)
+        binding.cardTitle.text = item.type.getTitle(itemView.resources)
         binding.cardThumbnail.imageTintList = if (item.withPreview) null else colors
         binding.cardThumbnail.background = item.getThumbnailBackground()
         binding.cardThumbnail.setImageDrawable((item.thumbnail ?: item.getIcon()))

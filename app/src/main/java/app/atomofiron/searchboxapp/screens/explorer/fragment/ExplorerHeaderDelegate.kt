@@ -15,7 +15,6 @@ class ExplorerHeaderDelegate(
     private val recyclerView: RecyclerView,
     private val headerView: ExplorerHeaderView,
     private val adapter: ExplorerAdapter,
-    private val rootAliases: Map<Int, String>,
 ) : RecyclerView.OnScrollListener(), View.OnLayoutChangeListener {
 
     private var currentDir: Node? = null
@@ -25,7 +24,6 @@ class ExplorerHeaderDelegate(
     private var bindingRequired = true
 
     init {
-        headerView.setRootAliases(rootAliases)
         recyclerView.addOnScrollListener(this)
         recyclerView.addOnLayoutChangeListener(this)
     }

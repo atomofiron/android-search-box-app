@@ -18,9 +18,7 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.RecycleIt
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
 import java.util.LinkedList
 
-class ExplorerAdapter(
-    private val rootAliases: Map<Int, String>,
-) : ListAdapter<Node, GeneralHolder<Node>>(AsyncDifferConfig.Builder(NodeCallback()).build()) {
+class ExplorerAdapter : ListAdapter<Node, GeneralHolder<Node>>(AsyncDifferConfig.Builder(NodeCallback()).build()) {
 
     lateinit var itemActionListener: ExplorerItemActionListener
     lateinit var separatorClickListener: (Node) -> Unit
@@ -67,7 +65,7 @@ class ExplorerAdapter(
         }
         val enum = ExplorerItemViewFactory.values()[viewType]
         val view = viewFactory.getOrCreate(enum.layoutId, parent)
-        return enum.createHolder(view, rootAliases)
+        return enum.createHolder(view)
     }
 
     override fun onBindViewHolder(holder: GeneralHolder<Node>, position: Int) {

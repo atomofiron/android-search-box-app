@@ -114,12 +114,12 @@ class ExplorerService(
     private fun NodeTabTree.initRoots() {
         val storagePath = internalStoragePath
         val roots = listOf(
-            NodeRoot(NodeRootType.Photos, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA")),
-            NodeRoot(NodeRootType.Videos, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA")),
-            NodeRoot(NodeRootType.Screenshots, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_PICTURES")),
-            NodeRoot(NodeRootType.Bluetooth, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_BLUETOOTH")),
-            NodeRoot(NodeRootType.Downloads, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_DOWNLOAD")),
-            NodeRoot(NodeRootType.InternalStorage(), ExplorerDelegate.asRoot(storagePath)),
+            NodeRootType.Photos.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA", it)) },
+            NodeRootType.Videos.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA", it)) },
+            NodeRootType.Screenshots.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_PICTURES", it)) },
+            NodeRootType.Bluetooth.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_BLUETOOTH", it)) },
+            NodeRootType.Downloads.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_DOWNLOAD", it)) },
+            NodeRootType.InternalStorage().let { NodeRoot(it, ExplorerDelegate.asRoot(storagePath, it)) },
         )
         this.roots.clear()
         this.roots.addAll(roots)
@@ -237,8 +237,9 @@ class ExplorerService(
     private fun NodeGarden.updateBluetoothSync(key: NodeTabKey, root: NodeRoot) {
         val storagePath = internalStoragePath
         var current = root.item
-        var bluetooth = ExplorerDelegate.asRoot("$storagePath$SUB_PATH_BLUETOOTH")
-        var downloadBluetooth = ExplorerDelegate.asRoot("$storagePath$SUB_PATH_DOWNLOAD_BLUETOOTH")
+        val rootType = NodeRootType.Bluetooth
+        var bluetooth = ExplorerDelegate.asRoot("$storagePath$SUB_PATH_BLUETOOTH", rootType)
+        var downloadBluetooth = ExplorerDelegate.asRoot("$storagePath$SUB_PATH_DOWNLOAD_BLUETOOTH", rootType)
         current = current.update(config).sortByDate()
         bluetooth = if (current.error == null) bluetooth.update(config).sortByDate() else bluetooth
         downloadBluetooth = if (current.error == null) downloadBluetooth.update(config).sortByDate() else downloadBluetooth

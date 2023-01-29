@@ -21,11 +21,10 @@ class ExplorerListDelegate(
     private val nodeAdapter: ExplorerAdapter,
     headerView: ExplorerHeaderView,
     private val output: ExplorerItemActionListener,
-    private val rootAliases: Map<Int, String>,
 ) {
     private var currentDir: Node? = null
 
-    private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, nodeAdapter, rootAliases)
+    private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, nodeAdapter)
     private val rootMarginDecorator = RootItemMarginDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
     private val borderDecorator = ItemBorderDecorator(nodeAdapter, headerView, headerDelegate::onDecoratorDraw)

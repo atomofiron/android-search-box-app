@@ -9,28 +9,28 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 
 enum class ExplorerItemViewFactory(val layoutId: Int) {
     NodeItem(R.layout.item_explorer) {
-        override fun createHolder(itemView: View, rootAliases: Map<Int, String>): ExplorerHolder {
-            return ExplorerHolder(itemView, rootAliases)
+        override fun createHolder(itemView: View): ExplorerHolder {
+            return ExplorerHolder(itemView)
         }
     },
     OpenedNodeItem(R.layout.item_explorer) {
-        override fun createHolder(itemView: View, rootAliases: Map<Int, String>): ExplorerHolder {
+        override fun createHolder(itemView: View): ExplorerHolder {
             ItemExplorerBinding.bind(itemView).makeOpened()
-            return ExplorerHolder(itemView, rootAliases)
+            return ExplorerHolder(itemView)
         }
     },
     CurrentOpenedNodeItem(R.layout.item_explorer) {
-        override fun createHolder(itemView: View, rootAliases: Map<Int, String>): ExplorerHolder {
+        override fun createHolder(itemView: View): ExplorerHolder {
             ItemExplorerBinding.bind(itemView).makeOpenedCurrent()
-            return ExplorerHolder(itemView, rootAliases)
+            return ExplorerHolder(itemView)
         }
     },
     SeparatorNodeItem(R.layout.item_explorer_separator) {
-        override fun createHolder(itemView: View, rootAliases: Map<Int, String>): ExplorerSeparatorHolder {
+        override fun createHolder(itemView: View): ExplorerSeparatorHolder {
             ItemExplorerSeparatorBinding.bind(itemView).makeSeparator()
-            return ExplorerSeparatorHolder(itemView, rootAliases)
+            return ExplorerSeparatorHolder(itemView)
         }
     };
 
-    abstract fun createHolder(itemView: View, rootAliases: Map<Int, String>): GeneralHolder<Node>
+    abstract fun createHolder(itemView: View): GeneralHolder<Node>
 }

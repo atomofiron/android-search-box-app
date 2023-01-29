@@ -116,12 +116,12 @@ object ExplorerDelegate {
         }
     }
 
-    fun asRoot(path: String): Node {
+    fun asRoot(path: String, type: NodeRoot.NodeRootType): Node {
         return Node(
             path = path,
             parentPath = ROOT_PARENT_PATH,
             properties = NodeProperties(name = path.name()),
-            content = NodeContent.Unknown,
+            content = NodeContent.Directory(rootType = type),
         )
     }
 
@@ -297,7 +297,7 @@ object ExplorerDelegate {
         }
         return copy(
             children = NodeChildren(items, isOpened = children?.isOpened == true),
-            content = NodeContent.Directory(directoryType),
+            content = NodeContent.Directory(directoryType, content.rootType),
         )
     }
 

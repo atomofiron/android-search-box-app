@@ -42,8 +42,6 @@ class ExplorerHeaderView @JvmOverloads constructor(
         insetColor = ColorUtils.setAlphaComponent(backgroundColor, Byte.MAX_VALUE.toInt())
     }
 
-    fun setRootAliases(map: Map<Int, String>) = binder.setRootAliases(map)
-
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {
         binder.onItemActionListener = listener
     }

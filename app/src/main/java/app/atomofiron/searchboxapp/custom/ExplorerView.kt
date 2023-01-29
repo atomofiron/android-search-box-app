@@ -4,14 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.annotation.StringRes
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
-import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ViewExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.explorer.Node.Companion.toUniqueId
-import app.atomofiron.searchboxapp.model.explorer.NodeRoot
 import app.atomofiron.searchboxapp.model.explorer.NodeTabItems
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerListDelegate
@@ -21,8 +17,8 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerAdapte
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.OnScrollIdleSubmitter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
+import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootViewHolder.Companion.getTitle
 import app.atomofiron.searchboxapp.scrollToTop
-import app.atomofiron.searchboxapp.utils.Tool.endingDot
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 @SuppressLint("ViewConstructor")
@@ -32,7 +28,6 @@ class ExplorerView(
 ) : FrameLayout(context) {
 
     private val binding = ViewExplorerBinding.inflate(LayoutInflater.from(context), this)
-    private val rootAliases = HashMap<Int, String>()
     var title: String? = null
         private set
 
@@ -40,8 +35,8 @@ class ExplorerView(
     val headerView = binding.explorerHeader
     val systemUiView = binding.systemUiBackground
 
-    private val rootAdapter = RootAdapter(rootAliases)
-    private val explorerAdapter = ExplorerAdapter(rootAliases)
+    private val rootAdapter = RootAdapter()
+    private val explorerAdapter = ExplorerAdapter()
 
     private lateinit var listDelegate: ExplorerListDelegate
     private lateinit var spanSizeLookup: ExplorerSpanSizeLookup
@@ -74,7 +69,6 @@ class ExplorerView(
             explorerAdapter,
             explorerHeader,
             output,
-            rootAliases,
         )
     }
 
@@ -92,11 +86,10 @@ class ExplorerView(
     fun isCurrentDirVisible(): Boolean? = listDelegate.isCurrentDirVisible()
 
     fun submitList(items: NodeTabItems) {
-        initRootAliases(items.roots)
         rootAdapter.submitList(items.roots)
         submitter.trySubmitList(items.items, items.current?.path)
         listDelegate.setCurrentDir(items.current)
-        title = rootAliases[items.current?.uniqueId] ?: items.current?.name
+        title = items.current?.getTitle(resources)
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
@@ -107,28 +100,6 @@ class ExplorerView(
     private fun onSeparatorClick(item: Node) = when {
         listDelegate.isVisible(item) -> listDelegate.highlight(item)
         else -> listDelegate.scrollTo(item)
-    }
-
-    private fun initRootAliases(roots: List<NodeRoot>) {
-        if (rootAliases.isNotEmpty()) return
-        for (root in roots) {
-            when (root.type) {
-                is NodeRoot.NodeRootType.Photos -> addRootAlias(root.item.path, R.string.root_photos)
-                is NodeRoot.NodeRootType.Videos -> addRootAlias(root.item.path, R.string.root_photos)
-                is NodeRoot.NodeRootType.Camera -> addRootAlias(root.item.path, R.string.root_camera)
-                is NodeRoot.NodeRootType.Downloads -> addRootAlias(root.item.path, R.string.root_downloads)
-                is NodeRoot.NodeRootType.Bluetooth -> addRootAlias(root.item.path, R.string.root_bluetooth)
-                is NodeRoot.NodeRootType.Screenshots -> addRootAlias(root.item.path, R.string.root_screenshots)
-                is NodeRoot.NodeRootType.InternalStorage -> addRootAlias(root.item.path, R.string.internal_storage)
-                is NodeRoot.NodeRootType.Favorite -> Unit
-            }
-        }
-    }
-
-    private fun addRootAlias(path: String, @StringRes alias: Int) {
-        val string = resources.getString(alias)
-        rootAliases[path.toUniqueId()] = string
-        rootAliases[path.endingDot().toUniqueId()] = string
     }
 
     interface ExplorerViewOutput : ExplorerItemActionListener, RootAdapter.RootClickListener

@@ -8,11 +8,15 @@ sealed class NodeContent(
     // поэтому тут null
     val mimeType: String? = null,
 ) {
+    open val rootType: NodeRoot.NodeRootType? = null
 
     object Unknown : NodeContent()
     object Link : NodeContent()
 
-    data class Directory(val type: Type = Type.Ordinary) : NodeContent() {
+    data class Directory(
+        val type: Type = Type.Ordinary,
+        override val rootType: NodeRoot.NodeRootType? = null,
+    ) : NodeContent() {
         enum class Type {
             Ordinary, Android, Camera, Download, Movies, Music, Pictures,
         }

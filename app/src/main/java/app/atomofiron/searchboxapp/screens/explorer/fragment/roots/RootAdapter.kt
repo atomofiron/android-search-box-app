@@ -17,9 +17,7 @@ private class ItemCallbackImpl : DiffUtil.ItemCallback<NodeRoot>() {
     }
 }
 
-class RootAdapter(
-    private val rootAliases: Map<Int, String>,
-) : ListAdapter<NodeRoot, RootViewHolder>(ItemCallbackImpl()) {
+class RootAdapter : ListAdapter<NodeRoot, RootViewHolder>(ItemCallbackImpl()) {
     companion object {
         private const val TYPE_VERTICAL = 1
         private const val TYPE_HORIZONTAL = 2
@@ -49,7 +47,7 @@ class RootAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RootViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val itemView = inflater.inflate(R.layout.item_explorer_card, parent, false)
-        val holder = RootViewHolder(itemView, rootAliases)
+        val holder = RootViewHolder(itemView)
         itemView.setOnClickListener {
             val item = currentList[holder.bindingAdapterPosition]
             clickListener?.onRootClick(item)

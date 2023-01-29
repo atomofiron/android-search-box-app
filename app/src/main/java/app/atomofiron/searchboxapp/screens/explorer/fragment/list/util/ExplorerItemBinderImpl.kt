@@ -15,12 +15,12 @@ import app.atomofiron.searchboxapp.custom.view.BallsView
 import app.atomofiron.searchboxapp.model.explorer.*
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootViewHolder.Companion.getTitle
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.getString
 
 class ExplorerItemBinderImpl(
     private val itemView: View,
-    private var rootAliases: Map<Int, String> = mapOf(),
 ) : ExplorerItemBinder {
     companion object {
         private const val BYTE_LETTER = "B"
@@ -86,7 +86,7 @@ class ExplorerItemBinderImpl(
         ivThumbnail.setImageDrawable(thumbnail)
 
         tvName.text = when {
-            item.isRoot -> rootAliases[item.uniqueId] ?: item.name
+            item.isRoot -> item.getTitle(itemView.resources)
             else -> item.name
         }
         tvName.typeface = if (item.isDirectory) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
@@ -105,10 +105,6 @@ class ExplorerItemBinderImpl(
             item.withOperation -> cbBox.isInvisible = true
             else -> cbBox.isVisible = true
         }
-    }
-
-    fun setRootAliases(map: Map<Int, String>) {
-        rootAliases = map
     }
 
     override fun setOnItemActionListener(listener: ExplorerItemActionListener?) {

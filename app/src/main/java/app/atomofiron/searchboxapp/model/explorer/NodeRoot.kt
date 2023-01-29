@@ -28,7 +28,7 @@ data class NodeRoot(
         object Screenshots : NodeRootType()
         object Downloads : NodeRootType()
         object Bluetooth : NodeRootType()
-        data class InternalStorage(
+        data class InternalStorage constructor(
             val used: Long = 0,
             val free: Long = 0,
         ) : NodeRootType()
