@@ -36,7 +36,7 @@ class ExplorerViewState(
     val currentTab = MutableStateFlow(firstTab)
 
     val firstTabItems = explorerInteractor.getFlow(firstTab)
-    val secondTabItems = explorerInteractor.getFlow(secondTab)
+    //val secondTabItems = explorerInteractor.getFlow(secondTab)
 
     fun scrollTo(item: Node) {
         scrollTo[scope] = item
@@ -45,7 +45,7 @@ class ExplorerViewState(
     fun getCurrentDir(): Node? {
         return when (currentTab.value) {
             firstTab -> firstTabItems.valueOrNull?.current
-            else -> secondTabItems.valueOrNull?.current
+            else -> null//secondTabItems.valueOrNull?.current
         }
     }
 }

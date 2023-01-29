@@ -97,11 +97,11 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             first.submitList(it)
             binding.firstButton.text = first.title ?: getString(R.string.dash)
         }
-        viewCollect(secondTabItems) {
+        /*viewCollect(secondTabItems) {
             val second = explorerViews.last()
             second.submitList(it)
             binding.secondButton.text = second.title ?: getString(R.string.dash)
-        }
+        }*/
         viewCollect(itemComposition) { composition ->
             explorerViews.forEach { it.setComposition(composition) }
         }
