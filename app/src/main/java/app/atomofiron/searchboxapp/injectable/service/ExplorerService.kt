@@ -469,6 +469,7 @@ class ExplorerService(
                         null -> explorerStore.actions.emit(NodeAction.Removed(item.uniqueId))
                         else -> explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
                     }
+                    tab.render()
                 }
             }
         }
@@ -747,8 +748,11 @@ class ExplorerService(
             wasOpened -> level.children[index] = item
             else -> level.children[index] = item.copy(children = item.children?.copy(isOpened = wasOpened))
         }
-        // далее заменяем/удаляем айтем в родительской ноде
         val parent = upLevel?.children?.find { it.path == parentPath }
+        if (level.children === parent?.children?.items) {
+            return true
+        }
+        // далее заменяем/удаляем айтем в родительской ноде
         val cached = parent?.children?.findIndexed { it.uniqueId == uniqueId }
         val cachedIndex = cached?.first ?: -1
         val cachedItem = cached?.second
