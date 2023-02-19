@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewState: MainViewState
     private lateinit var presenter: MainPresenter
     private var isFirstStart = true
-    private val rootViewModel: RootViewModel by lazy { ViewModelProvider(this)[RootViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,9 +72,7 @@ class MainActivity : AppCompatActivity() {
         binding.joystick.setOnClickListener { onEscClick() }
         binding.joystick.syncOrientation(binding.root)
 
-        viewState.showExitSnackbar.collect(lifecycleScope) {
-            rootViewModel.showExitSnackbar(presenter)
-        }
+        viewState.showExitSnackbar.collect(lifecycleScope) { showExitSnackbar() }
         if (savedInstanceState == null) onIntent(intent)
 
         val manager = getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -162,12 +159,19 @@ class MainActivity : AppCompatActivity() {
         val viewWithFocus = binding.root.findFocus() as? EditText
         var consumed = viewWithFocus?.hideKeyboard() == true
         if (!consumed) consumed = presenter.onEscClick()
-        if (!consumed) rootViewModel.showExitSnackbar(presenter)
+        if (!consumed) showExitSnackbar()
     }
 
     private fun setOrientation(orientation: AppOrientation) {
         if (requestedOrientation != orientation.constant) {
             requestedOrientation = orientation.constant
         }
+    }
+
+    private fun showExitSnackbar() {
+        val navHostFragment = supportFragmentManager.fragments.firstOrNull()
+        val rootFragment = navHostFragment?.childFragmentManager?.fragments?.firstOrNull()
+        rootFragment ?: return
+        ViewModelProvider(rootFragment)[RootViewModel::class.java].showExitSnackbar(presenter)
     }
 }
