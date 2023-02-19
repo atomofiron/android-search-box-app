@@ -46,12 +46,17 @@ class MenuAdapter(context: Context) : RecyclerView.Adapter<MenuHolder>() {
             else -> R.drawable.item_menu
         }
         holder.itemView.setBackgroundResource(backgroundId)
-        holder.icon.colorFilter = when (item.itemId) {
+        val context = holder.itemView.context
+        when (item.itemId) {
             dangerousItemId -> {
-                val color = holder.itemView.context.findColorByAttr(R.attr.colorError)
-                BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_IN)
+                val color = context.findColorByAttr(R.attr.colorError)
+                holder.icon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_IN)
+                holder.title.setTextColor(color)
             }
-            else -> null
+            else -> {
+                holder.icon.colorFilter = null
+                holder.title.setTextColor(context.findColorByAttr(R.attr.colorContent))
+            }
         }
     }
 }
