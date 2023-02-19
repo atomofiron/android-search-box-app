@@ -98,9 +98,10 @@ class OrientationLayoutDelegate constructor(
         bottomView?.isVisible = !landscape
         railView?.isVisible = landscape
         tabLayout?.isVisible = !landscape
+        /* нужно только когда есть табы
         explorerViews?.forEach {
             it.systemUiView.update(statusBar = landscape)
-        }
+        }*/
     }
 
     private fun WindowInsetsCompat.getRecyclerViewInsets(): WindowInsetsCompat {
