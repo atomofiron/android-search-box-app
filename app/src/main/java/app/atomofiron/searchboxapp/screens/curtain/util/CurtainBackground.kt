@@ -21,7 +21,10 @@ open class CurtainBackground(context: Context) : Drawable() {
     private val strokeWidth = context.resources.getDimension(R.dimen.stroke_width)
     private val overlayColor = context.getColorByAttr(R.attr.colorOverlay)
     private val latchColor = ContextCompat.getColor(context, R.color.latch)
-    private val strokeColor = if (context.findBooleanByAttr(R.attr.isBlackDeep)) latchColor else Color.TRANSPARENT
+    private val strokeColor = when {
+        context.findBooleanByAttr(R.attr.isBlackDeep) -> ColorUtils.compositeColors(latchColor, curtainColor)
+        else -> Color.TRANSPARENT
+    }
     private val latchRect = RectF()
     private val paint = Paint()
 
