@@ -69,9 +69,7 @@ class OrientationLayoutDelegate constructor(
         recyclerView?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets.getRecyclerViewInsets())
         }
-        railView?.let {
-            ViewCompat.dispatchApplyWindowInsets(it, insets.getRailViewInsets())
-        }
+        railView?.applyToRail(insets)
         tabLayout?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets.getTabLayoutInsets())
         }
@@ -117,13 +115,6 @@ class OrientationLayoutDelegate constructor(
         }
     }
 
-    private fun WindowInsetsCompat.getRailViewInsets(): WindowInsetsCompat {
-        return custom {
-            val topInset = if (withJoystick) currentRailSize else 0
-            setInsets(insetsType, getInsets(insetsType).editForRailView(topInset))
-        }
-    }
-
     private fun WindowInsetsCompat.getHeaderViewInsets(): WindowInsetsCompat {
         return custom {
             setInsets(insetsType, getInsets(insetsType).editForHeaderView())
@@ -166,18 +157,6 @@ class OrientationLayoutDelegate constructor(
         return Insets.of(left, top, right, bottom)
     }
 
-    private fun Insets.editForRailView(top: Int = 0): Insets {
-        val left = when (side) {
-            Side.Left, Side.Bottom -> left
-            Side.Right -> 0
-        }
-        val right = when (side) {
-            Side.Right, Side.Bottom -> right
-            Side.Left -> 0
-        }
-        return Insets.of(left, this.top + top, right, bottom)
-    }
-
     private fun Insets.editForHeaderView(): Insets {
         val left = when (side) {
             Side.Left -> left + currentRailSize
@@ -216,6 +195,20 @@ class OrientationLayoutDelegate constructor(
         val toolbar: Toolbar? = collapsingLayout.findViewById(R.id.toolbar)
         toolbar ?: return
         toolbar.updatePadding(left = custom.left, right = custom.right)
+    }
+
+    private fun NavigationRailView.applyToRail(windowInsets: WindowInsetsCompat) {
+        val insets = windowInsets.getInsets(insetsType)
+        val topInset = if (withJoystick) currentRailSize else 0
+        val left = when (side) {
+            Side.Left, Side.Bottom -> insets.left
+            Side.Right -> 0
+        }
+        val right = when (side) {
+            Side.Right, Side.Bottom -> insets.right
+            Side.Left -> 0
+        }
+        updatePadding(left, insets.top + topInset, right, insets.bottom)
     }
 
     private fun WindowInsetsCompat.getAppbarLayoutInsets(): Insets {
