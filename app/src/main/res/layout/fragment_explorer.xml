@@ -20,7 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:background="?topRadioGroupBackground"
+        android:background="@drawable/top_radio_group_background"
         android:paddingHorizontal="@dimen/common_margin"
         android:visibility="gone"
         app:singleSelection="true"
