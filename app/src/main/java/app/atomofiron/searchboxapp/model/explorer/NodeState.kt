@@ -13,6 +13,8 @@ data class NodeState(
     val isCaching: Boolean = cachingJob != null
     val isDeleting: Boolean = operation is Operation.Deleting
     override val withOperation: Boolean = operation !is Operation.None
+
+    override fun toString(): String = "NodeState{caching=${cachingJob != null},operation=${operation.javaClass.simpleName}}"
 }
 
 sealed class Operation {
