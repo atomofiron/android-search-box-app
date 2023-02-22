@@ -10,5 +10,6 @@ enum class FinderItemType(val id: Int) {
     BUTTONS(R.layout.item_finder_buttons),
     PROGRESS(R.layout.item_progress),
     TARGET(R.layout.item_finder_target),
-    TIP(R.layout.item_finder_tip)
+    TIP(R.layout.item_finder_tip),
+    DISCLAIMER(R.layout.item_finder_disclaimer),
 }

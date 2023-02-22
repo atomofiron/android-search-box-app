@@ -23,6 +23,7 @@ class FinderItemsStateDelegate : FinderItemsState {
             targetItems.isEmpty() -> items.add(FinderStateItem.TipItem(R.string.tip))
             else -> items.add(FinderStateItem.TipItem(R.string.search_here))
         }
+        items.add(FinderStateItem.DisclaimerItem)
         searchItems.value = items
     }
 

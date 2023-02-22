@@ -52,6 +52,8 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         @StringRes val titleId: Int,
     ) : FinderStateItem(titleId.hashCode().toLong(), R.layout.item_finder_tip)
 
+    object DisclaimerItem : FinderStateItem(500.hashCode().toLong(), R.layout.item_finder_disclaimer)
+
     override fun equals(other: Any?): Boolean = when (other) {
         !is FinderStateItem -> false
         is SpecialCharactersItem -> when (this) {
@@ -70,5 +72,6 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         is ProgressItem -> finderTask.hashCode()
         is TargetItem -> stableId.toInt()
         is TipItem -> stableId.toInt()
+        is DisclaimerItem -> stableId.toInt()
     }
 }
