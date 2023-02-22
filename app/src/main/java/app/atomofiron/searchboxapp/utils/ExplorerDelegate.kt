@@ -202,7 +202,9 @@ object ExplorerDelegate {
         val output = Shell.exec(Shell[Shell.FILE_B].format(path), config.useSu)
         var content = content
         content = when {
-            !output.success || output.output.isBlank() -> path.resolveFileType()
+            !output.success ||
+            output.output.isBlank() ||
+            output.output.startsWith(FILE_EMPTY) -> path.resolveFileType()
             output.output.startsWith(FILE_PNG) -> content.ifEmpty { NodeContent.File.Picture.Png(path.getThumbnail(config)) }
             output.output.startsWith(FILE_JPEG) -> content.ifEmpty { NodeContent.File.Picture.Jpeg(path.getThumbnail(config)) }
             output.output.startsWith(FILE_ZIP) -> when {
@@ -216,7 +218,6 @@ object ExplorerDelegate {
             output.output.startsWith(FILE_UTF8_TEXT) ||
             output.output.startsWith(FILE_ASCII_TEXT) -> NodeContent.File.Text.Plain
             output.output.startsWith(FILE_DATA) -> path.resolveFileType(content)
-            output.output.startsWith(FILE_EMPTY) -> NodeContent.File.Other
             output.output.startsWith(FILE_BOOTING) ||
             output.output.startsWith(FILE_BOOT_IMAGE) -> NodeContent.File.DataImage
             output.output.startsWith(FILE_OGG) -> content.ifEmpty { NodeContent.File.Music() }
