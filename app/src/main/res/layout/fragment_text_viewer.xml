@@ -16,7 +16,9 @@
         android:paddingBottom="@dimen/joystick_size"
         android:clipToPadding="false"
         />
+    <!-- todo search doesn't work -->
     <FrameLayout
+        android:visibility="gone"
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

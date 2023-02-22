@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.viewer
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
@@ -76,6 +78,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         binding.recyclerView.applyPaddingInsets()
         binding.bottomAppBar.insetsProxying()
         binding.bottomBar.applyPaddingInsets(bottom = true)
+        OrientationLayoutDelegate(root as ViewGroup, recyclerView = binding.recyclerView)
     }
 
     private fun setLoading(visible: Boolean) {
