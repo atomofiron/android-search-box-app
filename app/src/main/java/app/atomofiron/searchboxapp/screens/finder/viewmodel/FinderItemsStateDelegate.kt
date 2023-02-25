@@ -1,5 +1,7 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.S
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +25,7 @@ class FinderItemsStateDelegate : FinderItemsState {
             targetItems.isEmpty() -> items.add(FinderStateItem.TipItem(R.string.tip))
             else -> items.add(FinderStateItem.TipItem(R.string.search_here))
         }
-        items.add(FinderStateItem.DisclaimerItem)
+        if (SDK_INT >= S) items.add(FinderStateItem.DisclaimerItem)
         searchItems.value = items
     }
 
