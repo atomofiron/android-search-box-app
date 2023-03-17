@@ -16,7 +16,7 @@ class CurtainSearchDelegate(
     output: FinderAdapterOutput,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
-    private lateinit var xFile: Node
+    private lateinit var node: Node
     private lateinit var composition: ExplorerItemComposition
 
     private val finderAdapter = FinderAdapter()
@@ -29,7 +29,7 @@ class CurtainSearchDelegate(
         val binding = CurtainTextViewerSearchBinding.inflate(inflater, container, false)
 
         val holder = ExplorerHolder(binding.itemExplorer.root)
-        holder.bind(xFile)
+        holder.bind(node)
         holder.bindComposition(composition)
         holder.disableClicks()
         holder.hideCheckBox()
@@ -44,9 +44,9 @@ class CurtainSearchDelegate(
         return CurtainApi.ViewHolder(binding.root)
     }
 
-    fun set(items: List<FinderStateItem>, xFile: Node, composition: ExplorerItemComposition) {
+    fun set(items: List<FinderStateItem>, node: Node, composition: ExplorerItemComposition) {
         finderAdapter.submitList(items)
-        this.xFile = xFile
+        this.node = node
         this.composition = composition
     }
 }

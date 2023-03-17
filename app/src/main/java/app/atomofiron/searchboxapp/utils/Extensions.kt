@@ -6,12 +6,20 @@ import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES
 import android.os.Build.VERSION_CODES.M
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.ImageView
+import androidx.core.content.ContextCompat
+import androidx.core.view.forEachIndexed
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.drawable.BallsDrawable.Companion.setBallsDrawable
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainPresenterParams
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 fun String.escapeQuotes(): String = this.replace(Const.QUOTE, "\\" + Const.QUOTE)
 
@@ -47,5 +55,35 @@ fun Resources.getString(error: NodeError, content: NodeContent? = null): String 
         is NodeError.Unknown -> getString(R.string.unknown_error)
         is NodeError.Multiply -> getString(R.string.a_lot_of_errors)
         is NodeError.Message -> error.message
+    }
+}
+
+const val DEFAULT_FREQUENCY = 60
+
+fun Context.getFrequency(): Int {
+    val refreshRate = when {
+        SDK_INT >= VERSION_CODES.R -> display?.refreshRate
+        else -> {
+            val manager = getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+            manager?.defaultDisplay?.refreshRate
+        }
+    }
+    return refreshRate?.toInt() ?: DEFAULT_FREQUENCY
+}
+
+fun BottomNavigationView.setProgressItem(itemId: Int, iconId: Int, title: String?) {
+    val menuView = getChildAt(0) as ViewGroup
+    menu.forEachIndexed { index, item ->
+        if (item.itemId != itemId) return@forEachIndexed
+        val itemView = menuView.getChildAt(index)
+        val drawable = when (iconId) {
+            R.drawable.progress_loop -> {
+                val icon = itemView.findViewById<ImageView>(R.id.navigation_bar_item_icon_view)
+                icon.setBallsDrawable()
+            }
+            else -> ContextCompat.getDrawable(context, iconId)
+        }
+        item.icon = drawable
+        item.title = title
     }
 }

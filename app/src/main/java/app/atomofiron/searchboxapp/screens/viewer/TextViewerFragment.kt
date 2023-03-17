@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
@@ -16,6 +15,7 @@ import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import app.atomofiron.searchboxapp.utils.setProgressItem
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -49,7 +49,6 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             adapter = viewerAdapter
             itemAnimator = null
         }
-        binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener { item ->
@@ -76,13 +75,18 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     override fun onApplyInsets(root: View) {
         root.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.insetsProxying()
-        binding.bottomBar.applyPaddingInsets(bottom = true)
-        OrientationLayoutDelegate(root as ViewGroup, recyclerView = binding.recyclerView)
+        OrientationLayoutDelegate(
+            root as ViewGroup,
+            recyclerView = binding.recyclerView,
+            bottomView = binding.bottomBar,
+            railView = null,
+        )
     }
 
     private fun setLoading(visible: Boolean) {
-        binding.ballsView.isInvisible = !visible
+        if (!visible) {
+            binding.bottomBar.setProgressItem(R.id.menu_progress, R.drawable.ic_circle_check, null)
+        }
         onMatchCounterChanged(viewState.matchesCounter.value)
     }
 
@@ -90,7 +94,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     private fun onMatchCounterChanged(counter: Long?) {
         var index: Int? = null
         var count: Int? = null
-        binding.tvCounter.text = when (counter) {
+        val text = when (counter) {
             null -> null
             else -> {
                 index = counter.shr(32).toInt()
@@ -98,8 +102,9 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
                 "$index / $count"
             }
         }
+        binding.bottomBar.setProgressItem(R.id.menu_progress, R.drawable.progress_loop, text)
         val loading = viewState.loading.value
-        binding.bottomBar.menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index!! > 1
+        binding.bottomBar.menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index > 1
         binding.bottomBar.menu.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
     }
 

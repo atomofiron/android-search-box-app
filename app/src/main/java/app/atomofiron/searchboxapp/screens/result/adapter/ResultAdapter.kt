@@ -53,7 +53,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
 
     override fun getItemCount(): Int = items.size.inc()
 
-    override fun getDiffUtilCallback(old: List<FinderResultItem>, new: List<FinderResultItem>): DiffUtil.Callback? {
+    override fun getDiffUtilCallback(old: List<FinderResultItem>, new: List<FinderResultItem>): DiffUtil.Callback {
         return ResultDiffUtilCallback(old, new)
     }
 
