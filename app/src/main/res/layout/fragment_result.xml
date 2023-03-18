@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/result_cl"
@@ -14,67 +14,18 @@
         android:maxWidth="@dimen/card_max_width"
         android:paddingBottom="@dimen/joystick_size"
         />
-
-    <FrameLayout
-        android:id="@+id/bottom_app_bar"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:layout_behavior="app.atomofiron.searchboxapp.custom.view.FixedHideBottomViewOnScrollBehavior"
-        >
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:menu="@menu/nav_result"
-            app:itemTextColor="?android:textColorPrimary"
-            app:itemIconTint="?android:textColorPrimary"
-            app:labelVisibilityMode="labeled"
-            />
-        <LinearLayout
-            android:id="@+id/status_ll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                >
-                <app.atomofiron.searchboxapp.custom.view.BallsView
-                    android:id="@+id/balls_view"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_status"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_search_status"
-                    android:tint="@color/ic_search_status"
-                    android:visibility="gone"
-                    />
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_counter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textColor="?attr/colorContent"
-                    />
-            </LinearLayout>
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="4"
-                />
-        </LinearLayout>
-    </FrameLayout>
-
+        app:menu="@menu/nav_result"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:labelVisibilityMode="labeled"
+        />
     <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

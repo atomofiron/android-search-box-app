@@ -2,11 +2,12 @@ package app.atomofiron.searchboxapp.screens.result
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
@@ -15,11 +16,14 @@ import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
 import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import app.atomofiron.searchboxapp.utils.setProgressItem
+import app.atomofiron.searchboxapp.utils.setState
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -28,6 +32,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
 {
 
     private lateinit var binding: FragmentResultBinding
+    private lateinit var statusDrawable: Drawable
 
     private val resultAdapter = ResultAdapter()
     private val errorSnackbar by lazy(LazyThreadSafetyMode.NONE) {
@@ -42,6 +47,8 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         initViewModel(this, ResultViewModel::class, savedInstanceState)
 
         resultAdapter.itemActionListener = presenter
+        statusDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_search_status)!!
+        statusDrawable.setTintList(ContextCompat.getColorStateList(requireContext(), R.color.ic_search_status))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +61,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             layoutManager = LinearLayoutManager(requireContext())
             adapter = resultAdapter
         }
-        binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
@@ -78,10 +84,15 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     }
 
     override fun onApplyInsets(root: View) {
+        binding.recyclerView.applyPaddingInsets()
         root.insetsProxying()
         binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.insetsProxying()
-        binding.bottomBar.applyPaddingInsets(bottom = true)
+        OrientationLayoutDelegate(
+            root as ViewGroup,
+            recyclerView = binding.recyclerView,
+            bottomView = binding.bottomBar,
+            railView = null,
+        )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -91,14 +102,16 @@ class ResultFragment : Fragment(R.layout.fragment_result),
 
     @SuppressLint("RestrictedApi")
     private fun onTaskChange(task: FinderTask) {
-        binding.ballsView.isVisible = task.inProgress
-        binding.ivStatus.run {
-            isGone = task.inProgress
-            isActivated = task.isDone
-            isEnabled = task.error == null
-        }
-        binding.tvCounter.text = "${task.results.size}/${task.count}"
         binding.bottomBar.run {
+            val label = "${task.results.size}/${task.count}"
+            val enabled = task.error == null
+            when {
+                task.inProgress -> setProgressItem(R.id.menu_progress, R.drawable.progress_loop, label, enabled)
+                else -> {
+                    statusDrawable.setState(enabled = enabled, activated = task.isDone)
+                    setProgressItem(R.id.menu_progress, statusDrawable, label, enabled)
+                }
+            }
             var item = menu.findItem(R.id.menu_stop)
             if (item.isEnabled != task.inProgress) {
                 item.isEnabled = task.inProgress
