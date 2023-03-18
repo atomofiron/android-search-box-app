@@ -23,6 +23,7 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
 import app.atomofiron.searchboxapp.utils.setProgressItem
 import app.atomofiron.searchboxapp.utils.setState
+import com.google.android.material.navigation.NavigationBarView
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
@@ -62,6 +63,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         }
         binding.navigationRail.menu.removeItem(R.id.stub)
         binding.navigationRail.isItemActiveIndicatorEnabled = false
+        binding.navigationRail.setOnItemSelectedListener(::onBottomMenuItemClick)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
         viewState.onViewCollect()
@@ -104,34 +106,36 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         resultAdapter.notifyItemChanged(0)
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun onTaskChange(task: FinderTask) {
-        binding.bottomBar.run {
-            val label = "${task.results.size}/${task.count}"
-            val enabled = task.error == null
-            when {
-                task.inProgress -> setProgressItem(R.id.menu_progress, R.drawable.progress_loop, label, enabled)
-                else -> {
-                    statusDrawable.setState(enabled = enabled, activated = task.isDone)
-                    setProgressItem(R.id.menu_progress, statusDrawable, label, enabled)
-                }
-            }
-            var item = menu.findItem(R.id.menu_stop)
-            if (item.isEnabled != task.inProgress) {
-                item.isEnabled = task.inProgress
-            }
-            item = menu.findItem(R.id.menu_export)
-            if (item.isEnabled != task.results.isNotEmpty()) {
-                item.isEnabled = task.results.isNotEmpty()
+    private fun NavigationBarView.onTaskChange(task: FinderTask) {
+        val label = "${task.results.size}/${task.count}"
+        val enabled = task.error == null
+        when {
+            task.inProgress -> setProgressItem(R.id.menu_progress, R.drawable.progress_loop, label, enabled)
+            else -> {
+                statusDrawable.setState(enabled = enabled, activated = task.isDone)
+                setProgressItem(R.id.menu_progress, statusDrawable, label, enabled)
             }
         }
+        var item = menu.findItem(R.id.menu_stop)
+        if (item.isEnabled != task.inProgress) {
+            item.isEnabled = task.inProgress
+        }
+        item = menu.findItem(R.id.menu_export)
+        if (item.isEnabled != task.results.isNotEmpty()) {
+            item.isEnabled = task.results.isNotEmpty()
+        }
+    }
+
+    private fun onTaskChange(task: FinderTask) {
+        binding.bottomBar.onTaskChange(task)
+        binding.navigationRail.onTaskChange(task)
+
         resultAdapter.setResults(task.results)
 
         if (task.results.isNotEmpty()) {
             // fix first item offset
             resultAdapter.notifyItemChanged(0)
         }
-
         if (task.error != snackbarError) {
             errorSnackbar.setText(task.error!!).show()
         }

@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.viewer
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -50,15 +51,9 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
         binding.navigationRail.menu.removeItem(R.id.stub)
         binding.navigationRail.isItemActiveIndicatorEnabled = false
+        binding.navigationRail.setOnItemSelectedListener(::onBottomMenuItemClick)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
-        binding.bottomBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_search -> presenter.onSearchClick()
-                R.id.menu_previous -> presenter.onPreviousClick()
-                R.id.menu_next -> presenter.onNextClick()
-            }
-            false
-        }
+        binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
         viewState.onViewCollect()
         onApplyInsets(view)
     }
@@ -88,6 +83,15 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
     }
 
+    private fun onBottomMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_search -> presenter.onSearchClick()
+            R.id.menu_previous -> presenter.onPreviousClick()
+            R.id.menu_next -> presenter.onNextClick()
+        }
+        return false
+    }
+
     private fun setLoading(visible: Boolean) {
         if (!visible) {
             binding.bottomBar.setProgressItem(R.id.menu_progress, R.drawable.ic_circle_check, null)
@@ -104,10 +108,15 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             count = counter.toInt()
             "$index / $count"
         }
-        binding.bottomBar.setProgressItem(R.id.menu_progress, R.drawable.progress_loop, text)
-        val loading = viewState.loading.value
-        binding.bottomBar.menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index > 1
-        binding.bottomBar.menu.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
+        binding.run {
+            bottomBar.setProgressItem(R.id.menu_progress, R.drawable.progress_loop, text)
+            navigationRail.setProgressItem(R.id.menu_progress, R.drawable.progress_loop, text)
+            val loading = viewState.loading.value
+            arrayOf(bottomBar.menu, navigationRail.menu).forEach {
+                it.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index > 1
+                it.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
+            }
+        }
     }
 
     private fun onMatchCursorChanged(cursor: Long?) {

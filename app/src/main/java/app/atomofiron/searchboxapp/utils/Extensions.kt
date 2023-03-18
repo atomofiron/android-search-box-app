@@ -20,7 +20,7 @@ import app.atomofiron.searchboxapp.custom.drawable.BallsDrawable.Companion.setBa
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainPresenterParams
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
 
 fun String.escapeQuotes(): String = this.replace(Const.QUOTE, "\\" + Const.QUOTE)
 
@@ -72,15 +72,15 @@ fun Context.getFrequency(): Int {
     return refreshRate?.toInt() ?: DEFAULT_FREQUENCY
 }
 
-fun BottomNavigationView.setProgressItem(itemId: Int, iconId: Int, title: String?, enabled: Boolean? = null) {
+fun NavigationBarView.setProgressItem(itemId: Int, iconId: Int, title: String?, enabled: Boolean? = null) {
     setProgressItem(itemId, iconId, null, title, enabled)
 }
 
-fun BottomNavigationView.setProgressItem(itemId: Int, icon: Drawable, title: String?, enabled: Boolean? = null) {
+fun NavigationBarView.setProgressItem(itemId: Int, icon: Drawable, title: String?, enabled: Boolean? = null) {
     setProgressItem(itemId, 0, icon, title, enabled)
 }
 
-private fun BottomNavigationView.setProgressItem(itemId: Int, iconId: Int, icon: Drawable?, title: String?, enabled: Boolean?) {
+private fun NavigationBarView.setProgressItem(itemId: Int, iconId: Int, icon: Drawable?, title: String?, enabled: Boolean?) {
     val menuView = getChildAt(0) as ViewGroup
     menu.forEachIndexed { index, item ->
         if (item.itemId != itemId) return@forEachIndexed
