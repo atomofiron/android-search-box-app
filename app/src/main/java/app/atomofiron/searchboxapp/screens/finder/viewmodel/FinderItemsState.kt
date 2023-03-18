@@ -17,8 +17,9 @@ interface FinderItemsState {
     val targetItems: MutableList<FinderStateItem.TargetItem>
 
     val searchItems: MutableStateFlow<List<FinderStateItem>>
+    val isLocal: Boolean
 
-    fun updateState(isLocal: Boolean = false)
+    fun updateState()
     fun updateSearchQuery(value: String)
     fun updateConfig(item: FinderStateItem.ConfigItem)
 

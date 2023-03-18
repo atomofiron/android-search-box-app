@@ -2,24 +2,25 @@ package app.atomofiron.searchboxapp.screens.viewer
 
 import app.atomofiron.common.util.flow.ChannelFlow
 import app.atomofiron.common.util.flow.set
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.finder.FinderTask
-import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.model.textviewer.LineIndexMatches
 import app.atomofiron.searchboxapp.model.textviewer.TextLine
 import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsState
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsStateDelegate
+import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class TextViewerViewState(
+    params: TextViewerParams,
     private val scope: CoroutineScope,
-) : FinderItemsState by FinderItemsStateDelegate() {
-    companion object {
-        const val UNDEFINED = -1
-    }
+    preferenceStore: PreferenceStore,
+) : FinderItemsState by FinderItemsStateDelegate(isLocal = true) {
 
     val insertInQuery = ChannelFlow<String>()
 
@@ -31,8 +32,8 @@ class TextViewerViewState(
     /** line index -> line match index */
     val matchesCursor = MutableStateFlow<Long?>(null)
     val loading = MutableStateFlow(true)
-    lateinit var composition: ExplorerItemComposition
-    lateinit var item: Node
+    val composition = preferenceStore.explorerItemComposition.value
+    val item = Node(params.path, content = NodeContent.File.Other)
 
     private var matchesIndex = -1
     /** line index -> line matches */
@@ -89,7 +90,7 @@ class TextViewerViewState(
         val items = tasks.map { FinderStateItem.ProgressItem(it) }
         progressItems.clear()
         progressItems.addAll(items)
-        updateState(isLocal = true)
+        updateState()
     }
 
     fun sendInsertInQuery(value: String) {

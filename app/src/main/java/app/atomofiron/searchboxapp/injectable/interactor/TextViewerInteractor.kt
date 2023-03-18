@@ -15,10 +15,9 @@ class TextViewerInteractor(
 ) {
     private val context = Dispatchers.IO
 
-    fun loadFile(item: Node, params: FinderQueryParams?, callback: () -> Unit) {
+    fun loadFile(item: Node, params: FinderQueryParams?) {
         scope.launch(context) {
             textViewerService.primarySearch(item, params)
-            callback()
         }
     }
 

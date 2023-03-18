@@ -2,27 +2,31 @@ package app.atomofiron.searchboxapp.screens.viewer.presenter.curtain
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.databinding.CurtainTextViewerSearchBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
-import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
+import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState
+import kotlinx.coroutines.CoroutineScope
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class CurtainSearchDelegate(
     output: FinderAdapterOutput,
+    viewState: TextViewerViewState,
+    scope: CoroutineScope,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
-    private lateinit var node: Node
-    private lateinit var composition: ExplorerItemComposition
+    private val node: Node = viewState.item
+    private val composition = viewState.composition
 
     private val finderAdapter = FinderAdapter()
 
     init {
         finderAdapter.output = output
+        viewState.searchItems.collect(scope, collector = finderAdapter::submitList)
     }
 
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
@@ -42,11 +46,5 @@ class CurtainSearchDelegate(
         binding.sheetViewerSearchRv.applyPaddingInsets(bottom = true)
 
         return CurtainApi.ViewHolder(binding.root)
-    }
-
-    fun set(items: List<FinderStateItem>, node: Node, composition: ExplorerItemComposition) {
-        finderAdapter.submitList(items)
-        this.node = node
-        this.composition = composition
     }
 }

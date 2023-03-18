@@ -14,7 +14,7 @@ import app.atomofiron.searchboxapp.utils.showCurtain
 import kotlinx.coroutines.CoroutineScope
 
 class SearchAdapterPresenterDelegate(
-    private val scope: CoroutineScope,
+    scope: CoroutineScope,
     private val viewState: TextViewerViewState,
     private val router: TextViewerRouter,
     private val interactor: TextViewerInteractor,
@@ -22,7 +22,7 @@ class SearchAdapterPresenterDelegate(
     curtainChannel: CurtainChannel,
 ) : Recipient, FinderAdapterOutput {
 
-    private val curtainDelegate = CurtainSearchDelegate(this)
+    private val curtainDelegate = CurtainSearchDelegate(this, viewState, scope)
 
     init {
         viewState.run {
@@ -31,10 +31,9 @@ class SearchAdapterPresenterDelegate(
             uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
             uniqueItems.add(FinderStateItem.ConfigItem(isLocal = true))
             uniqueItems.add(FinderStateItem.TestItem())
-            updateState(isLocal = true)
+            updateState()
         }
         curtainChannel.flow.collectForMe(scope) { controller ->
-            curtainDelegate.set(viewState.searchItems.value, viewState.item, viewState.composition)
             curtainDelegate.setController(controller)
         }
     }

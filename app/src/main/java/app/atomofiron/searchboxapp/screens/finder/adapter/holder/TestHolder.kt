@@ -5,7 +5,6 @@ import android.text.Spannable
 import android.text.TextWatcher
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.content.ContextCompat
 import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R

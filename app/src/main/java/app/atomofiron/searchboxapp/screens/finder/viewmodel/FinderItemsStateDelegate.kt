@@ -7,15 +7,14 @@ import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.reflect.KClass
 
-class FinderItemsStateDelegate : FinderItemsState {
+class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState {
     override val uniqueItems = mutableListOf<FinderStateItem>()
     override val progressItems = mutableListOf<FinderStateItem.ProgressItem>()
     override val targetItems = mutableListOf<FinderStateItem.TargetItem>()
-
     override val searchItems = MutableStateFlow<List<FinderStateItem>>(listOf())
 
     // todo add state machine
-    override fun updateState(isLocal: Boolean) {
+    override fun updateState() {
         val items = ArrayList<FinderStateItem>()
         items.addAll(uniqueItems)
         items.addAll(progressItems)
@@ -75,10 +74,10 @@ class FinderItemsStateDelegate : FinderItemsState {
 
     override fun <I : FinderStateItem> updateUniqueItem(kClass: KClass<I>, action: (I) -> I) {
         val index = uniqueItems.indexOfFirst { it::class == kClass }
-        val removed = uniqueItems.removeAt(index)
+        var item = uniqueItems[index]
         @Suppress("UNCHECKED_CAST")
-        val item = action(removed as I)
-        uniqueItems.add(index, item)
+        item = action(item as I)
+        uniqueItems[index] = item
         updateState()
     }
 }

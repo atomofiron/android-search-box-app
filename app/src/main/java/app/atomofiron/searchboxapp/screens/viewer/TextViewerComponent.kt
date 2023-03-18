@@ -51,7 +51,6 @@ class TextViewerModule {
         router: TextViewerRouter,
         searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
         textViewerInteractor: TextViewerInteractor,
-        preferenceStore: PreferenceStore,
         textViewerChannel: TextViewerChannel
     ): TextViewerPresenter {
         return TextViewerPresenter(
@@ -61,7 +60,6 @@ class TextViewerModule {
             router,
             searchAdapterPresenterDelegate,
             textViewerInteractor,
-            preferenceStore,
             textViewerChannel,
         )
     }
@@ -103,7 +101,11 @@ class TextViewerModule {
 
     @Provides
     @TextViewerScope
-    fun viewerViewState(scope: CoroutineScope): TextViewerViewState = TextViewerViewState(scope)
+    fun viewerViewState(
+        params: TextViewerParams,
+        scope: CoroutineScope,
+        preferenceStore: PreferenceStore,
+    ): TextViewerViewState = TextViewerViewState(params, scope, preferenceStore)
 }
 
 interface TextViewerDependencies {

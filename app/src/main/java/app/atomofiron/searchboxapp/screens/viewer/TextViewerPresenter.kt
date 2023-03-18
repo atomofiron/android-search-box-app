@@ -5,9 +5,6 @@ import app.atomofiron.common.util.flow.collect
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
@@ -23,7 +20,6 @@ class TextViewerPresenter(
     router: TextViewerRouter,
     private val searchDelegate: SearchAdapterPresenterDelegate,
     private val interactor: TextViewerInteractor,
-    preferenceStore: PreferenceStore,
     textViewerChannel: TextViewerChannel
 ) : BasePresenter<TextViewerViewModel, TextViewerRouter>(scope, router),
     TextViewerAdapter.TextViewerListener,
@@ -64,15 +60,11 @@ class TextViewerPresenter(
                 viewState.setTasks(it)
             }
         }
-        viewState.composition = preferenceStore.explorerItemComposition.value
 
         val queryParams = params.query?.let {
             FinderQueryParams(params.query, params.useRegex, params.ignoreCase)
         }
-        val item = Node(params.path, content = NodeContent.File.Other)
-        interactor.loadFile(item, queryParams) {
-            viewState.item = item
-        }
+        interactor.loadFile(viewState.item, queryParams)
     }
 
     override fun onSubscribeData() = Unit

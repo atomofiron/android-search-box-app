@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class FinderViewState(
     private val scope: CoroutineScope,
-) : FinderItemsState by FinderItemsStateDelegate() {
+) : FinderItemsState by FinderItemsStateDelegate(isLocal = false) {
 
     private var configItem = FinderStateItem.ConfigItem()
 
