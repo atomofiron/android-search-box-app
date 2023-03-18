@@ -52,10 +52,10 @@ android {
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
         }
     }
-    lintOptions {
+    lint {
         checkReleaseBuilds false
-        //abortOnError false
     }
+    namespace 'app.atomofiron.searchboxapp'
 }
 
 repositories {
