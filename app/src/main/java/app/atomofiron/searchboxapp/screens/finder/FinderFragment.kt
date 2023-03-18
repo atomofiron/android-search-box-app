@@ -100,7 +100,10 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     }
 
     override fun FinderViewState.onViewCollect() {
-        viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
+        viewCollect(historyDrawerGravity) {
+            binding.verticalDock.gravity = it
+            binding.verticalDock.requestApplyInsets()
+        }
         viewCollect(reloadHistory, collector = historyAdapter::reload)
         viewCollect(history, collector = historyAdapter::add)
         viewCollect(insertInQuery, collector = ::onInsertInQuery)
@@ -122,6 +125,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
                 bottomView = bottomBar,
                 railView = navigationRail,
                 systemUiView = systemUiBackground,
+                sideDock = verticalDock,
             ) {
                 bottomBar.menu.findItem(R.id.stub).isVisible = it
             }

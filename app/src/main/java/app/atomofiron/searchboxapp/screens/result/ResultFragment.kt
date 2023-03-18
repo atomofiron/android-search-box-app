@@ -86,7 +86,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
         binding.run {
             recyclerView.applyPaddingInsets()
             OrientationLayoutDelegate(

@@ -69,7 +69,6 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     override fun onApplyInsets(root: View) {
         binding.run {
-            root.insetsProxying()
             recyclerView.applyPaddingInsets()
             OrientationLayoutDelegate(
                 root as ViewGroup,

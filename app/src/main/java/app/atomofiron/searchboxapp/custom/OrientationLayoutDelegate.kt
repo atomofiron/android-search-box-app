@@ -10,17 +10,21 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.*
 import androidx.core.view.WindowInsetsCompat.Type
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.custom.view.JoystickView
 import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+import app.atomofiron.searchboxapp.isLayoutRtl
 import app.atomofiron.searchboxapp.isRtl
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.navigationrail.NavigationRailView
+import lib.atomofiron.android_window_insets_compat.consumeInsets
 
 @SuppressLint("PrivateResource")
 class OrientationLayoutDelegate constructor(
@@ -31,6 +35,7 @@ class OrientationLayoutDelegate constructor(
     private val railView: NavigationRailView? = null,
     private val systemUiView: SystemUiBackgroundView? = null,
     private val tabLayout: MaterialButtonToggleGroup? = null,
+    private val sideDock: NavigationView? = null,
     private val headerView: ExplorerHeaderView? = null,
     private val snackbarContainer: CoordinatorLayout? = null,
     private val joystickVisibilityCallback: ((Boolean) -> Unit)? = null,
@@ -58,6 +63,8 @@ class OrientationLayoutDelegate constructor(
             setLayout(side != Side.Bottom)
             parent.requestApplyInsets()
         }
+        railView?.consumeInsets()
+        sideDock?.consumeInsets()
     }
 
     override fun onApplyWindowInsets(parent: View, insets: WindowInsetsCompat): WindowInsetsCompat {
@@ -70,6 +77,7 @@ class OrientationLayoutDelegate constructor(
             ViewCompat.dispatchApplyWindowInsets(it, insets.getRecyclerViewInsets())
         }
         railView?.applyToRail(insets)
+        sideDock?.applyToSideDock(insets)
         tabLayout?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets.getTabLayoutInsets())
         }
@@ -209,6 +217,34 @@ class OrientationLayoutDelegate constructor(
             Side.Left -> 0
         }
         updatePadding(left, insets.top + topInset, right, insets.bottom)
+    }
+
+    private fun NavigationView.applyToSideDock(windowInsets: WindowInsetsCompat) {
+        var gravity = (layoutParams as? DrawerLayout.LayoutParams)?.gravity
+        gravity = when {
+            gravity == Gravity.END && isLayoutRtl -> Gravity.LEFT
+            gravity == Gravity.END -> Gravity.RIGHT
+            gravity == Gravity.START && isLayoutRtl -> Gravity.RIGHT
+            gravity == Gravity.START -> Gravity.LEFT
+            else -> gravity
+        }
+        val insets = windowInsets.getInsets(insetsType)
+        val currentRailSize = if (withJoystick) currentRailSize else 0
+        val left = when {
+            gravity != Gravity.LEFT -> 0
+            side == Side.Left -> insets.left + currentRailSize
+            else -> insets.left
+        }
+        val right = when {
+            gravity != Gravity.RIGHT -> 0
+            side == Side.Right -> insets.right + currentRailSize
+            else -> insets.right
+        }
+        updateLayoutParams {
+            val minWidth = resources.getDimensionPixelSize(R.dimen.design_navigation_max_width)
+            width = minWidth + left + right
+        }
+        updatePadding(left, insets.top, right, insets.bottom)
     }
 
     private fun WindowInsetsCompat.getAppbarLayoutInsets(): Insets {

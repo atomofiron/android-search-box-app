@@ -52,6 +52,8 @@ inline fun Context.obtainStyledAttributes(
     styled.recycle()
 }
 
+val View.isLayoutRtl: Boolean get() = layoutDirection == View.LAYOUT_DIRECTION_RTL
+
 fun View.isRtl(): Boolean = resources.isRtl()
 
 fun Resources.isRtl(): Boolean = configuration.layoutDirection == LayoutDirection.RTL
