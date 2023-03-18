@@ -14,7 +14,6 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.setProgressItem
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
@@ -49,7 +48,8 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             adapter = viewerAdapter
             itemAnimator = null
         }
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.navigationRail.menu.removeItem(R.id.stub)
+        binding.navigationRail.isItemActiveIndicatorEnabled = false
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -73,14 +73,19 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
-        binding.recyclerView.applyPaddingInsets()
-        OrientationLayoutDelegate(
-            root as ViewGroup,
-            recyclerView = binding.recyclerView,
-            bottomView = binding.bottomBar,
-            railView = null,
-        )
+        binding.run {
+            root.insetsProxying()
+            recyclerView.applyPaddingInsets()
+            OrientationLayoutDelegate(
+                root as ViewGroup,
+                recyclerView = recyclerView,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                systemUiView = systemUiBackground,
+            ) {
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
+            }
+        }
     }
 
     private fun setLoading(visible: Boolean) {
@@ -94,13 +99,10 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     private fun onMatchCounterChanged(counter: Long?) {
         var index: Int? = null
         var count: Int? = null
-        val text = when (counter) {
-            null -> null
-            else -> {
-                index = counter.shr(32).toInt()
-                count = counter.toInt()
-                "$index / $count"
-            }
+        val text = if (counter == null) null else {
+            index = counter.shr(32).toInt()
+            count = counter.toInt()
+            "$index / $count"
         }
         binding.bottomBar.setProgressItem(R.id.menu_progress, R.drawable.progress_loop, text)
         val loading = viewState.loading.value

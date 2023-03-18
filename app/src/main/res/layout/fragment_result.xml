@@ -25,7 +25,19 @@
         app:labelVisibilityMode="labeled"
         />
     <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+        android:id="@+id/system_ui_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        />
+    <com.google.android.material.navigationrail.NavigationRailView
+        android:id="@+id/navigation_rail"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        app:menu="@menu/nav_result"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:labelVisibilityMode="unlabeled"
+        app:elevation="3dp"
         />
 </FrameLayout>

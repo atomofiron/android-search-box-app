@@ -19,7 +19,6 @@ import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.recyclerView
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerPagerAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.getString
 import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -50,7 +49,6 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
 
     private fun FragmentExplorerBinding.initView() {
         pager.adapter = pagerAdapter
-        bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         bottomBar.isItemActiveIndicatorEnabled = false
         bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.menu.removeItem(R.id.stub)
@@ -115,18 +113,18 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
     }
 
     override fun onApplyInsets(root: View) {
-        binding.explorerTabs.applyPaddingInsets(start = true, top = true, end = true)
-        binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
-        binding.navigationRail.applyPaddingInsets()
         binding.run {
+            explorerTabs.applyPaddingInsets(start = true, top = true, end = true)
+            bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
+            navigationRail.applyPaddingInsets()
             OrientationLayoutDelegate(
-                binding.root,
+                this.root,
                 explorerViews,
                 bottomView = bottomBar,
                 railView = navigationRail,
                 tabLayout = null/*explorerTabs*/,
             ) {
-                binding.bottomBar.menu.findItem(R.id.stub).isVisible = it
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
             }
         }
     }

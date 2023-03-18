@@ -21,7 +21,6 @@ import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.setProgressItem
 import app.atomofiron.searchboxapp.utils.setState
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -61,7 +60,8 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             layoutManager = LinearLayoutManager(requireContext())
             adapter = resultAdapter
         }
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.navigationRail.menu.removeItem(R.id.stub)
+        binding.navigationRail.isItemActiveIndicatorEnabled = false
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
         viewState.onViewCollect()
@@ -84,15 +84,19 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     }
 
     override fun onApplyInsets(root: View) {
-        binding.recyclerView.applyPaddingInsets()
         root.insetsProxying()
-        binding.recyclerView.applyPaddingInsets()
-        OrientationLayoutDelegate(
-            root as ViewGroup,
-            recyclerView = binding.recyclerView,
-            bottomView = binding.bottomBar,
-            railView = null,
-        )
+        binding.run {
+            recyclerView.applyPaddingInsets()
+            OrientationLayoutDelegate(
+                root as ViewGroup,
+                recyclerView = recyclerView,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                systemUiView = systemUiBackground,
+            ) {
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
+            }
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

@@ -21,7 +21,6 @@ import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderSpanSizeLookup
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import app.atomofiron.searchboxapp.utils.Util.getSize
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
@@ -61,7 +60,6 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             adapter = finderAdapter
         }
 
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
         binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
         binding.navigationRail.menu.removeItem(R.id.stub)
@@ -114,10 +112,10 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
     }
 
     override fun onApplyInsets(root: View) {
-        binding.recyclerView.applyPaddingInsets()
-        binding.bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
-        binding.navigationRail.applyPaddingInsets()
         binding.run {
+            recyclerView.applyPaddingInsets()
+            bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
+            navigationRail.applyPaddingInsets()
             OrientationLayoutDelegate(
                 coordinator,
                 recyclerView = recyclerView,
@@ -125,7 +123,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
                 railView = navigationRail,
                 systemUiView = systemUiBackground,
             ) {
-                binding.bottomBar.menu.findItem(R.id.stub).isVisible = it
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
             }
         }
     }
