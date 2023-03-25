@@ -21,11 +21,10 @@ import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
-import app.atomofiron.searchboxapp.utils.setProgressItem
+import app.atomofiron.searchboxapp.utils.updateItem
 import app.atomofiron.searchboxapp.utils.setState
 import com.google.android.material.navigation.NavigationBarView
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class ResultFragment : Fragment(R.layout.fragment_result),
     BaseFragment<ResultFragment, ResultViewState, ResultPresenter> by BaseFragmentImpl()
@@ -109,10 +108,10 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         val label = "${task.results.size}/${task.count}"
         val enabled = task.error == null
         when {
-            task.inProgress -> setProgressItem(R.id.menu_progress, R.drawable.progress_loop, label, enabled)
+            task.inProgress -> updateItem(R.id.menu_status, R.drawable.progress_loop, label, enabled)
             else -> {
                 statusDrawable.setState(enabled = enabled, activated = task.isDone)
-                setProgressItem(R.id.menu_progress, statusDrawable, label, enabled)
+                updateItem(R.id.menu_status, statusDrawable, label, enabled)
             }
         }
         var item = menu.findItem(R.id.menu_stop)

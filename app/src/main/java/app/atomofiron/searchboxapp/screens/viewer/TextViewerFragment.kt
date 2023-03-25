@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.viewer
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -15,7 +14,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
-import app.atomofiron.searchboxapp.utils.setProgressItem
+import app.atomofiron.searchboxapp.utils.updateItem
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
@@ -99,8 +98,8 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
         val iconId = if (status.loading) R.drawable.progress_loop else R.drawable.ic_circle_check
         binding.run {
-            bottomBar.setProgressItem(R.id.menu_progress, iconId, text)
-            navigationRail.setProgressItem(R.id.menu_progress, iconId, text)
+            bottomBar.updateItem(R.id.menu_status, iconId, text)
+            navigationRail.updateItem(R.id.menu_status, iconId, text)
             arrayOf(bottomBar.menu, navigationRail.menu).forEach {
                 it.findItem(R.id.menu_previous).isEnabled = !status.loading && index != null && index > 1
                 it.findItem(R.id.menu_next).isEnabled = !status.loading && count != null && index != count

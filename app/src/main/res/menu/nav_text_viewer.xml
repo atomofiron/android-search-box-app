@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="app.atomofiron.searchboxapp.MainActivity">
     <item
-        android:id="@+id/menu_progress"
+        android:id="@+id/menu_status"
         android:icon="@drawable/ic_circle_check"
         android:checkable="false"
         />

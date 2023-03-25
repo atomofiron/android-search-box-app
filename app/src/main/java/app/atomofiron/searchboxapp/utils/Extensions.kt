@@ -72,15 +72,15 @@ fun Context.getFrequency(): Int {
     return refreshRate?.toInt() ?: DEFAULT_FREQUENCY
 }
 
-fun NavigationBarView.setProgressItem(itemId: Int, iconId: Int, title: String?, enabled: Boolean? = null) {
-    setProgressItem(itemId, iconId, null, title, enabled)
+fun NavigationBarView.updateItem(itemId: Int, iconId: Int, title: String?, enabled: Boolean? = null) {
+    updateItem(itemId, iconId, null, title, enabled)
 }
 
-fun NavigationBarView.setProgressItem(itemId: Int, icon: Drawable, title: String?, enabled: Boolean? = null) {
-    setProgressItem(itemId, 0, icon, title, enabled)
+fun NavigationBarView.updateItem(itemId: Int, icon: Drawable, title: String?, enabled: Boolean? = null) {
+    updateItem(itemId, 0, icon, title, enabled)
 }
 
-private fun NavigationBarView.setProgressItem(itemId: Int, iconId: Int, icon: Drawable?, title: String?, enabled: Boolean?) {
+private fun NavigationBarView.updateItem(itemId: Int, iconId: Int, icon: Drawable?, title: String?, enabled: Boolean?) {
     val menuView = getChildAt(0) as ViewGroup
     menu.forEachIndexed { index, item ->
         if (item.itemId != itemId) return@forEachIndexed
