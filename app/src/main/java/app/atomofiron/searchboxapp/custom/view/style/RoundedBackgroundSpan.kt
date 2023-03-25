@@ -14,7 +14,7 @@ class RoundedBackgroundSpan constructor(
 ) : ReplacementSpan() {
 
     override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: FontMetricsInt?): Int {
-        return paint.measureText(text.subSequence(start, end).toString()).roundToInt()
+        return paint.measureText(text.subSequence(start, end).toString()).toInt()
     }
 
     override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
