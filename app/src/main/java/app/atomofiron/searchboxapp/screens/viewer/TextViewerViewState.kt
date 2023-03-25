@@ -22,16 +22,20 @@ class TextViewerViewState(
     preferenceStore: PreferenceStore,
 ) : FinderItemsState by FinderItemsStateDelegate(isLocal = true) {
 
+    data class Status(
+        val loading: Boolean = false,
+        val counter: Long = 0,
+    )
+
     val insertInQuery = ChannelFlow<String>()
 
     val textLines = MutableStateFlow<List<TextLine>>(listOf())
     /** line index -> line matches */
     val matchesMap = MutableStateFlow<Map<Int, List<TextLineMatch>>>(hashMapOf())
     /** match counter -> matches quantity */
-    val matchesCounter = MutableStateFlow<Long?>(null)
+    val status = MutableStateFlow(Status())
     /** line index -> line match index */
     val matchesCursor = MutableStateFlow<Long?>(null)
-    val loading = MutableStateFlow(true)
     val composition = preferenceStore.explorerItemComposition.value
     val item = Node(params.path, content = NodeContent.File.Other)
 
@@ -76,13 +80,13 @@ class TextViewerViewState(
                 }
             }
         }
-        val counter = matchesCounter.value!!
+        val counter = status.value.counter
         val index = when {
             increment -> counter.shr(32).inc().shl(32)
             else -> counter.shr(32).dec().shl(32)
         }
         val count = counter.toInt().toLong()
-        matchesCounter.value = index + count
+        status.run { value = value.copy(counter = index + count) }
         return true
     }
 
@@ -95,5 +99,11 @@ class TextViewerViewState(
 
     fun sendInsertInQuery(value: String) {
         insertInQuery[scope] = value
+    }
+
+    fun updateStatus(loading: Boolean? = null, counter: Long? = null) {
+        status.run {
+            value = value.copy(loading = loading ?: value.loading, counter = counter ?: value.counter)
+        }
     }
 }

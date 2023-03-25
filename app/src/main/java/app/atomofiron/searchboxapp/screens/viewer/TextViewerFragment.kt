@@ -17,7 +17,6 @@ import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.utils.setProgressItem
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     BaseFragment<TextViewerFragment, TextViewerViewState, TextViewerPresenter> by BaseFragmentImpl()
@@ -59,11 +58,10 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     }
 
     override fun TextViewerViewState.onViewCollect() {
-        viewCollect(loading, collector = ::setLoading)
         viewCollect(textLines, collector = viewerAdapter::setItems)
         viewCollect(matchesMap, collector = viewerAdapter::setMatches)
         viewCollect(matchesCursor, collector = ::onMatchCursorChanged)
-        viewCollect(matchesCounter, collector = ::onMatchCounterChanged)
+        viewCollect(status, collector = ::onStatusChanged)
         viewCollect(insertInQuery, collector = ::insertInQuery)
     }
 
@@ -91,29 +89,21 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         return false
     }
 
-    private fun setLoading(visible: Boolean) {
-        if (!visible) {
-            binding.bottomBar.setProgressItem(R.id.menu_progress, R.drawable.ic_circle_check, null)
-        }
-        onMatchCounterChanged(viewState.matchesCounter.value)
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun onMatchCounterChanged(counter: Long?) {
+    private fun onStatusChanged(status: TextViewerViewState.Status) {
         var index: Int? = null
         var count: Int? = null
-        val text = if (counter == null) null else {
-            index = counter.shr(32).toInt()
-            count = counter.toInt()
+        val text = if (status.counter == 0L) null else {
+            index = status.counter.shr(32).toInt()
+            count = status.counter.toInt()
             "$index / $count"
         }
+        val iconId = if (status.loading) R.drawable.progress_loop else R.drawable.ic_circle_check
         binding.run {
-            bottomBar.setProgressItem(R.id.menu_progress, R.drawable.progress_loop, text)
-            navigationRail.setProgressItem(R.id.menu_progress, R.drawable.progress_loop, text)
-            val loading = viewState.loading.value
+            bottomBar.setProgressItem(R.id.menu_progress, iconId, text)
+            navigationRail.setProgressItem(R.id.menu_progress, iconId, text)
             arrayOf(bottomBar.menu, navigationRail.menu).forEach {
-                it.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index > 1
-                it.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
+                it.findItem(R.id.menu_previous).isEnabled = !status.loading && index != null && index > 1
+                it.findItem(R.id.menu_next).isEnabled = !status.loading && count != null && index != count
             }
         }
     }

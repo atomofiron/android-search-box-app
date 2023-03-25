@@ -46,13 +46,13 @@ class TextViewerPresenter(
         textViewerChannel.matchesCount.collect(scope) {
             scope.launch {
                 matchesCount = it
-                viewState.matchesCounter.value = matchesCount?.toLong()
+                viewState.updateStatus(counter = matchesCount?.toLong() ?: 0)
                 viewState.matchesCursor.value = null
             }
         }
         textViewerChannel.textFromFileLoading.collect(scope) {
             scope.launch {
-                viewState.loading.value = it
+                viewState.updateStatus(it)
             }
         }
         textViewerChannel.tasks.collect(scope) {
@@ -83,7 +83,7 @@ class TextViewerPresenter(
                     viewState.changeCursor(increment = true)
                 }
             }
-            viewState.loading.value = true
+            viewState.updateStatus(true)
         }
     }
 }
