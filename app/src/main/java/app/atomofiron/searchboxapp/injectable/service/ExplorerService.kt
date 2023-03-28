@@ -207,18 +207,12 @@ class ExplorerService(
 
     private fun updateRootAsync(key: NodeTabKey, root: NodeRoot) {
         scope.launch {
-            withGarden(key) { tab ->
+            withGarden {
                 withCachingState(root.stableId) {
-                    launch {
-                        val updated = root.item.update(config).run {
-                            if (root.withPreview) sortByDate() else sortByName()
-                        }
-                        updateRootSync(updated, key, root)
-                        tab.render()
-                        trees.values.forEach { otherTab ->
-                            if (otherTab.key != key) otherTab.render()
-                        }
+                    val updated = root.item.update(config).run {
+                        if (root.withPreview) sortByDate() else sortByName()
                     }
+                    updateRootSync(updated, key, root)
                 }
             }
         }
@@ -280,7 +274,7 @@ class ExplorerService(
         }
     }
 
-    private fun NodeGarden.updateRootSync(updated: Node, key: NodeTabKey, targetRoot: NodeRoot) {
+    private suspend fun updateRootSync(updated: Node, key: NodeTabKey, targetRoot: NodeRoot) {
         val onlyPhotos = targetRoot.type == NodeRootType.Photos || targetRoot.type == NodeRootType.Screenshots
         val onlyVideos = targetRoot.type == NodeRootType.Videos
         val onlyMedia = targetRoot.type == NodeRootType.Camera
@@ -307,27 +301,32 @@ class ExplorerService(
                 targetRoot.copy(item = updated, thumbnail = content?.thumbnail, thumbnailPath = newestChild.path)
             }
         }
-        states.updateState(root.stableId) {
-            nextState(root.stableId, cachingJob = null)
-        }
-        trees.values.forEach { tab ->
-            tab.roots.replace {
-                when {
-                    it.stableId != targetRoot.stableId -> it
-                    else -> {
-                        if (it.isSelected && !root.item.isCached) tab.tree.clear()
-                        val isSelected = it.isSelected && root.item.isCached
-                        when (tab.key) {
-                            key -> root
-                            else -> it.copy(
+        withGarden(key) { currentTab ->
+            states.updateState(root.stableId) {
+                nextState(root.stableId, cachingJob = null)
+            }
+            trees.values.forEach { tab ->
+                tab.roots.replace {
+                    when (it.stableId) {
+                        targetRoot.stableId -> {
+                            if (it.isSelected && !root.item.isCached) {
+                                tab.tree.clear()
+                            }
+                            val isSelected = it.isSelected && root.item.isCached
+                            if (tab.key == key) root else it.copy(
                                 thumbnail = root.thumbnail,
                                 thumbnailPath = root.thumbnailPath,
                                 isSelected = isSelected,
                                 item = it.item.updateWith(updated),
                             )
                         }
+                        else -> it
                     }
                 }
+            }
+            currentTab.render()
+            trees.values.forEach { otherTab ->
+                if (otherTab.key != key) otherTab.render()
             }
         }
     }
