@@ -72,3 +72,9 @@ sealed class NodeContent(
         object Unknown : File()
     }
 }
+
+fun NodeContent.isPicture(): Boolean = this is NodeContent.File.Picture
+
+fun NodeContent.isMovie(): Boolean = this is NodeContent.File.Movie
+
+fun NodeContent.isMedia(): Boolean = isPicture() || isMovie()

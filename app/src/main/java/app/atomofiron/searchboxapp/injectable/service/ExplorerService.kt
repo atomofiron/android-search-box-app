@@ -288,9 +288,9 @@ class ExplorerService(
             updated.children?.update {
                 replace {
                     when {
-                        onlyPhotos && it.content !is NodeContent.File.Picture -> null
-                        onlyVideos && it.content !is NodeContent.File.Movie -> null
-                        onlyMedia && it.content !is NodeContent.File.Movie && it.content !is NodeContent.File.Picture -> null
+                        onlyPhotos && !it.content.isPicture() -> null
+                        onlyVideos && !it.content.isMovie() -> null
+                        onlyMedia && !it.content.isMedia() -> null
                         else -> it
                     }
                 }
