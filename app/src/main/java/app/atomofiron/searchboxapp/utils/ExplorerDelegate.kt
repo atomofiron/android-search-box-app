@@ -24,6 +24,7 @@ object ExplorerDelegate {
 
     private const val FILE_PNG = "PNG image data"
     private const val FILE_JPEG = "JPEG image data"
+    private const val FILE_GIF = "GIF image data"
     private const val FILE_ZIP = "Zip archive data"
     private const val FILE_GZIP = "gzip compressed data"
     private const val FILE_BZIP2 = "bzip2 compressed data"
@@ -207,6 +208,7 @@ object ExplorerDelegate {
             output.output.startsWith(FILE_EMPTY) -> path.resolveFileType()
             output.output.startsWith(FILE_PNG) -> content.ifEmpty { NodeContent.File.Picture.Png(path.getThumbnail(config)) }
             output.output.startsWith(FILE_JPEG) -> content.ifEmpty { NodeContent.File.Picture.Jpeg(path.getThumbnail(config)) }
+            output.output.startsWith(FILE_GIF) -> content.ifEmpty { NodeContent.File.Picture.Gif(path.getThumbnail(config)) }
             output.output.startsWith(FILE_ZIP) -> when {
                 path.endsWith(EXT_APK, ignoreCase = true) -> content.ifEmpty { NodeContent.File.Apk() }
                 else -> content.ifEmpty { NodeContent.File.Archive.Zip() }
