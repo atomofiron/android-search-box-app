@@ -207,18 +207,17 @@ class ExplorerService(
 
     private fun updateRootAsync(key: NodeTabKey, root: NodeRoot) {
         scope.launch {
-            var otherJob: Job?
             withGarden(key) { tab ->
-                otherJob = withCachingState(root.stableId) {
-                    val updated = root.item.update(config).run {
-                        if (root.withPreview) sortByDate() else sortByName()
-                    }
-                    updateRootSync(updated, key, root)
-                }
-                if (otherJob == null) {
-                    tab.render()
-                    trees.values.forEach { otherTab ->
-                        if (otherTab.key != key) otherTab.render()
+                withCachingState(root.stableId) {
+                    launch {
+                        val updated = root.item.update(config).run {
+                            if (root.withPreview) sortByDate() else sortByName()
+                        }
+                        updateRootSync(updated, key, root)
+                        tab.render()
+                        trees.values.forEach { otherTab ->
+                            if (otherTab.key != key) otherTab.render()
+                        }
                     }
                 }
             }
