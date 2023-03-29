@@ -68,6 +68,7 @@ sealed class NodeContent(
         object Pdf : File("application/pdf")
         object DB : File()
         object DataImage : File()
+        object Elf : File()
         object Other : File()
         object Unknown : File()
     }

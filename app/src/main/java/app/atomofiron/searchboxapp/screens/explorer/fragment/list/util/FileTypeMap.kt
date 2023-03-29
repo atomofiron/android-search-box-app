@@ -15,7 +15,8 @@ fun NodeContent.File.getIcon(): Int = when (this) {
     is NodeContent.File.Pdf -> R.drawable.ic_explorer_pdf
     is NodeContent.File.DataImage -> R.drawable.ic_explorer_dt
     is NodeContent.File.DB -> R.drawable.ic_explorer_db
-    is NodeContent.File.Other -> R.drawable.ic_file_circle
+    is NodeContent.File.Elf,
+    is NodeContent.File.Other,
     is NodeContent.File.Unknown -> R.drawable.ic_file_circle
 }
 

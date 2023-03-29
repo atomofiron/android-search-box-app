@@ -37,6 +37,7 @@ object ExplorerDelegate {
     private const val FILE_BOOT_IMAGE = "Android boot image v2" // img
     private const val FILE_SH_SCRIPT = "/bin/sh script" // sh
     private const val FILE_OGG = "Ogg data, opus audio" // oga
+    private const val FILE_ELF = "ELF executable"
 
     private const val EXT_PNG = ".png"
     private const val EXT_JPG = ".jpg"
@@ -223,6 +224,7 @@ object ExplorerDelegate {
             output.output.startsWith(FILE_BOOTING) ||
             output.output.startsWith(FILE_BOOT_IMAGE) -> NodeContent.File.DataImage
             output.output.startsWith(FILE_OGG) -> content.ifEmpty { NodeContent.File.Music() }
+            output.output.startsWith(FILE_ELF) -> content.ifEmpty { NodeContent.File.Elf }
             else -> {
                 Log.e("searchboxapp", "$path ${output.output}")
                 NodeContent.File.Other
