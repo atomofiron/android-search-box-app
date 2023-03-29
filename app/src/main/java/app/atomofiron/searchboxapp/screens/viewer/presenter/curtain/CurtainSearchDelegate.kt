@@ -2,7 +2,9 @@ package app.atomofiron.searchboxapp.screens.viewer.presenter.curtain
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.EditText
 import app.atomofiron.common.util.flow.collect
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainTextViewerSearchBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
@@ -27,6 +29,7 @@ class CurtainSearchDelegate(
     init {
         finderAdapter.output = output
         viewState.searchItems.collect(scope, collector = finderAdapter::submitList)
+        viewState.insertInQuery.collect(scope, collector = ::insertInQuery)
     }
 
     override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
@@ -46,5 +49,15 @@ class CurtainSearchDelegate(
         binding.sheetViewerSearchRv.applyPaddingInsets(bottom = true)
 
         return CurtainApi.ViewHolder(binding.root)
+    }
+
+    private fun insertInQuery(value: String) {
+        holder<CurtainApi.ViewHolder> {
+            view.findViewById<EditText>(R.id.item_find_rt_find)
+                ?.takeIf { it.isFocused }
+                ?.apply {
+                    text.replace(selectionStart, selectionEnd, value)
+                }
+        }
     }
 }

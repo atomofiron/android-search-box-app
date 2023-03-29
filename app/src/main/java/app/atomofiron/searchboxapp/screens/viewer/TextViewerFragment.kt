@@ -61,7 +61,6 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         viewCollect(matchesMap, collector = viewerAdapter::setMatches)
         viewCollect(matchesCursor, collector = ::onMatchCursorChanged)
         viewCollect(status, collector = ::onStatusChanged)
-        viewCollect(insertInQuery, collector = ::insertInQuery)
     }
 
     override fun onApplyInsets(root: View) {
@@ -107,15 +106,5 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
     }
 
-    private fun onMatchCursorChanged(cursor: Long?) {
-        viewerAdapter.setCursor(cursor)
-    }
-
-    private fun insertInQuery(value: String) {
-        view?.findViewById<EditText>(R.id.item_find_rt_find)
-            ?.takeIf { it.isFocused }
-            ?.apply {
-                text.replace(selectionStart, selectionEnd, value)
-            }
-    }
+    private fun onMatchCursorChanged(cursor: Long?) = viewerAdapter.setCursor(cursor)
 }
