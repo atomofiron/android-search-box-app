@@ -62,7 +62,7 @@ class FinderViewState(
                 progressItems.addAll(items)
             }
             is FinderTaskChange.Drop -> {
-                val index = progressItems.indexOfFirst { it.finderTask.id == change.task.id }
+                val index = progressItems.indexOfFirst { it.task.id == change.task.id }
                 // todo wtf
                 progressItems.removeAt(index)
             }

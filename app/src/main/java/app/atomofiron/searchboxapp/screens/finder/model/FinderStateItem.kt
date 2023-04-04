@@ -41,8 +41,8 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
     ) : FinderStateItem(TEST_ID, R.layout.item_test)
 
     class ProgressItem(
-        val finderTask: FinderTask,
-    ) : FinderStateItem(finderTask.id, R.layout.item_progress)
+        val task: FinderTask,
+    ) : FinderStateItem(task.id, R.layout.item_progress)
 
     class TargetItem(
         val target: Node,
@@ -69,7 +69,7 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         is ConfigItem -> stableId.toInt()
         is TestItem -> stableId.toInt()
         is ButtonsItem -> stableId.toInt()
-        is ProgressItem -> finderTask.hashCode()
+        is ProgressItem -> task.hashCode()
         is TargetItem -> stableId.toInt()
         is TipItem -> stableId.toInt()
         is DisclaimerItem -> stableId.toInt()

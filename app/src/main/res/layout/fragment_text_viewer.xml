@@ -13,8 +13,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:maxWidth="@dimen/card_max_width"
-        android:paddingBottom="@dimen/joystick_size"
         android:clipToPadding="false"
+        android:padding="@dimen/content_margin"
         />
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_bar"

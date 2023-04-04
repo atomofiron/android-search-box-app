@@ -1,3 +1,7 @@
 package app.atomofiron.searchboxapp.model.textviewer
 
-data class TextLine(val text: String)
+class TextLine(
+    val byteOffset: Int,
+    val byteCount: Int,
+    val text: String,
+)

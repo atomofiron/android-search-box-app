@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
@@ -13,6 +12,7 @@ import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.utils.updateItem
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -22,9 +22,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 {
     companion object {
         const val KEY_PATH = "KEY_PATH"
-        const val KEY_QUERY = "KEY_QUERY"
-        const val KEY_USE_REGEX = "KEY_USE_REGEX"
-        const val KEY_IGNORE_CASE = "KEY_IGNORE_CASE"
+        const val KEY_TASK_ID = "KEY_TASK_ID"
     }
 
     private lateinit var binding: FragmentTextViewerBinding
@@ -58,7 +56,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     override fun TextViewerViewState.onViewCollect() {
         viewCollect(textLines, collector = viewerAdapter::setItems)
-        viewCollect(matchesMap, collector = viewerAdapter::setMatches)
+        viewCollect(currentTask, collector = ::onTaskChanged)
         viewCollect(matchesCursor, collector = ::onMatchCursorChanged)
         viewCollect(status, collector = ::onStatusChanged)
     }
@@ -87,12 +85,16 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         return false
     }
 
+    private fun onTaskChanged(task: SearchTask.Done?) {
+        viewerAdapter.setMatches(task?.matchesMap)
+    }
+
     private fun onStatusChanged(status: TextViewerViewState.Status) {
         var index: Int? = null
         var count: Int? = null
-        val text = if (status.counter == 0L) null else {
-            index = status.counter.shr(32).toInt()
-            count = status.counter.toInt()
+        val text = if (status.countMax == 0) null else {
+            index = status.count
+            count = status.countMax
             "$index / $count"
         }
         val iconId = if (status.loading) R.drawable.progress_loop else R.drawable.ic_circle_check
@@ -106,5 +108,5 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         }
     }
 
-    private fun onMatchCursorChanged(cursor: Long?) = viewerAdapter.setCursor(cursor)
+    private fun onMatchCursorChanged(cursor: TextViewerViewState.MatchCursor) = viewerAdapter.setCursor(cursor)
 }

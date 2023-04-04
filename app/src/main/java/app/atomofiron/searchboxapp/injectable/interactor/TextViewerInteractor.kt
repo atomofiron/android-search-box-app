@@ -6,46 +6,29 @@ import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.finder.FinderTask
-import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
+import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
 
 class TextViewerInteractor(
     private val scope: CoroutineScope,
-    private val textViewerService: TextViewerService
+    private val textViewerService: TextViewerService,
 ) {
     private val context = Dispatchers.IO
 
-    fun loadFile(item: Node, params: FinderQueryParams?) {
+    fun fetchFileSession(path: String): TextViewerSession = textViewerService.getFileSession(path)
+
+    fun fetchTask(item: Node, taskId: Long) = textViewerService.fetchTask(item, taskId)
+
+    /** invoke the callback after success */
+    fun readFileToLine(item: Node, index: Int, callback: (() -> Unit)? = null) {
         scope.launch(context) {
-            textViewerService.primarySearch(item, params)
+            val success = textViewerService.readFile(item, index)
+            if (success) callback?.invoke()
         }
     }
 
-    fun onLineVisible(index: Int) {
-        scope.launch(context) {
-            textViewerService.onLineVisible(index)
-        }
-    }
+    fun search(item: Node, params: FinderQueryParams) = textViewerService.search(item, params)
 
-    fun loadFileUpToLine(prevIndex: Int?, callback: () -> Unit) {
-        scope.launch(context) {
-            textViewerService.loadFileUpToLine(prevIndex)
-            callback()
-        }
-    }
+    fun removeTask(item: Node, taskId: Long) = textViewerService.removeTask(item, taskId)
 
-    fun search(query: String, ignoreCase: Boolean, useRegex: Boolean) {
-        scope.launch(context) {
-            val params = FinderQueryParams(query, useRegex, ignoreCase)
-            textViewerService.secondarySearch(params)
-        }
-    }
-
-    fun showTask(task: FinderTask) {
-        scope.launch(context) {
-            textViewerService.showTask(task as MutableFinderTask)
-        }
-    }
-
-    fun removeTask(task: FinderTask) = textViewerService.removeTask(task as MutableFinderTask)
+    fun closeSession(item: Node) = textViewerService.closeSession(item)
 }

@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.utils.Const
 
@@ -30,8 +29,8 @@ class ResultRouter(property: WeakProperty<out Fragment>) : BaseRouter(property) 
         return success
     }
 
-    fun openFile(path: String, params: FinderQueryParams?) {
-        val arguments = TextViewerParams.arguments(path, params)
+    fun openFile(path: String, taskId: Long) {
+        val arguments = TextViewerParams.arguments(path, taskId)
         navigate(R.id.textViewerFragment, arguments)
     }
 }

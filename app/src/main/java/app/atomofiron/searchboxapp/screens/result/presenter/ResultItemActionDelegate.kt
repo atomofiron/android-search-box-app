@@ -19,8 +19,8 @@ class ResultItemActionDelegate(
 ) : ResultItemActionListener {
     override fun onItemClick(item: Node) {
         if (item.isFile && item.content is NodeContent.File.Text) {
-            val params = viewModel.task.value.params
-            router.openFile(item.path, params)
+            val task = viewModel.task.value
+            router.openFile(item.path, task.id)
         } else {
             // todo open dir
         }

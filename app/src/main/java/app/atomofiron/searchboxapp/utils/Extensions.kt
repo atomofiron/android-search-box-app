@@ -126,3 +126,15 @@ private fun getStateMut(
 }
 
 fun Boolean.toInt(): Int = if (this) 1 else -1
+
+fun <E> MutableList<E>.removeOneIf(predicate: (E) -> Boolean): E? {
+    val each = listIterator()
+    while (each.hasNext()) {
+        val item = each.next()
+        if (predicate(item)) {
+            each.remove()
+            return item
+        }
+    }
+    return null
+}

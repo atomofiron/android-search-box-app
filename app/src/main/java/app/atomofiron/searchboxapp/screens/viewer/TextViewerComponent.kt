@@ -8,10 +8,10 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
-import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
 import app.atomofiron.searchboxapp.screens.viewer.presenter.SearchAdapterPresenterDelegate
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import javax.inject.Scope
@@ -51,7 +51,7 @@ class TextViewerModule {
         router: TextViewerRouter,
         searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
         textViewerInteractor: TextViewerInteractor,
-        textViewerChannel: TextViewerChannel
+        session: TextViewerSession,
     ): TextViewerPresenter {
         return TextViewerPresenter(
             params,
@@ -60,7 +60,7 @@ class TextViewerModule {
             router,
             searchAdapterPresenterDelegate,
             textViewerInteractor,
-            textViewerChannel,
+            session,
         )
     }
 
@@ -79,21 +79,10 @@ class TextViewerModule {
 
     @Provides
     @TextViewerScope
-    fun textViewerService(
-        textViewerChannel: TextViewerChannel,
-        preferenceStore: PreferenceStore
-    ): TextViewerService = TextViewerService(textViewerChannel, preferenceStore)
-
-    @Provides
-    @TextViewerScope
     fun textViewerInteractor(
         scope: CoroutineScope,
-        textViewerService: TextViewerService
+        textViewerService: TextViewerService,
     ): TextViewerInteractor = TextViewerInteractor(scope, textViewerService)
-
-    @Provides
-    @TextViewerScope
-    fun textViewerChannel(): TextViewerChannel = TextViewerChannel()
 
     @Provides
     @TextViewerScope
@@ -101,14 +90,22 @@ class TextViewerModule {
 
     @Provides
     @TextViewerScope
-    fun viewerViewState(
+    fun textViewerSession(
         params: TextViewerParams,
+        interactor: TextViewerInteractor,
+    ): TextViewerSession = interactor.fetchFileSession(params.path)
+
+    @Provides
+    @TextViewerScope
+    fun viewerViewState(
         scope: CoroutineScope,
+        session: TextViewerSession,
         preferenceStore: PreferenceStore,
-    ): TextViewerViewState = TextViewerViewState(params, scope, preferenceStore)
+    ): TextViewerViewState = TextViewerViewState(scope, session, preferenceStore)
 }
 
 interface TextViewerDependencies {
     fun preferenceStore(): PreferenceStore
     fun curtainChannel(): CurtainChannel
+    fun textViewerService(): TextViewerService
 }

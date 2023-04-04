@@ -17,11 +17,11 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class CurtainSearchDelegate(
     output: FinderAdapterOutput,
-    viewState: TextViewerViewState,
+    private val viewState: TextViewerViewState,
     scope: CoroutineScope,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
-    private val node: Node = viewState.item
+    private val node: Node get() = viewState.item.value
     private val composition = viewState.composition
 
     private val finderAdapter = FinderAdapter()

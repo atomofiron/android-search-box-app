@@ -25,7 +25,7 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
             view.isEnabled = false
 
             val item = item as FinderStateItem.ProgressItem
-            if (item.finderTask.inProgress)
+            if (item.task.inProgress)
                 listener.onProgressStopClick(item)
             else
                 listener.onProgressRemoveClick(item)
@@ -34,7 +34,7 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
 
     override fun onBind(item: FinderStateItem, position: Int) {
         item as FinderStateItem.ProgressItem
-        val task = item.finderTask
+        val task = item.task
         val text = when {
             task.isLocal -> task.count.toString()
             else -> "${task.results.size}/${task.count}"

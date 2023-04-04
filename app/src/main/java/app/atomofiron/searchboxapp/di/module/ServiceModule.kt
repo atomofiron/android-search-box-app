@@ -13,6 +13,7 @@ import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.service.*
 import app.atomofiron.searchboxapp.injectable.store.*
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -62,4 +63,13 @@ open class ServiceModule {
         packageInstaller: PackageInstaller,
         contentResolver: ContentResolver,
     ): ApkService = ApkService(appStore.context, packageInstaller, contentResolver)
+
+    @Provides
+    @Singleton
+    fun textViewerService(
+        scope: CoroutineScope,
+        preferenceStore: PreferenceStore,
+        textViewerStore: TextViewerStore,
+        finderStore: FinderStore,
+    ): TextViewerService = TextViewerService(scope, preferenceStore, textViewerStore, finderStore)
 }

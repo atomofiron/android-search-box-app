@@ -20,6 +20,10 @@ open class StoreModule {
 
     @Provides
     @Singleton
+    open fun provideTextViewerStore(): TextViewerStore = TextViewerStore()
+
+    @Provides
+    @Singleton
     open fun provideExplorerStore(): ExplorerStore = ExplorerStore()
 
     @Provides

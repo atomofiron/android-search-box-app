@@ -41,6 +41,7 @@
 	<dimen name="curtain_title_margin">52dp</dimen>
 	<dimen name="curtain_title_size">@dimen/title_size</dimen>
     <dimen name="background_span_corner_radius">4dp</dimen>
+    <dimen name="background_span_border_thickness">1dp</dimen>
 
 
 	<dimen name="column_min_width">120dp</dimen>

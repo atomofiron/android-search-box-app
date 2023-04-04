@@ -26,6 +26,7 @@ object MediaDelegate {
         }
 
         val size = config.thumbnailSize
+        if (size <= 0) return null
         val width = if (picture.width < picture.height) size else picture.width * size / picture.height
         val height = if (picture.height < picture.width) size else picture.height * size / picture.width
         val bitmap = ThumbnailUtils.extractThumbnail(picture, width, height)

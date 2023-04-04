@@ -10,7 +10,6 @@ import java.io.OutputStream
 object Shell {
     private const val SU = "su"
     private const val SH = "sh"
-    private const val SUCCESS = 0
 
     private const val TOYBOX = "{toybox}"
     lateinit var toyboxPath: String
@@ -64,7 +63,7 @@ object Shell {
     operator fun get(template: String, toyboxPath: String = Shell.toyboxPath): String = template.replace(TOYBOX, toyboxPath)
 
     fun checkSu(): Output {
-        var success: Boolean
+        var code = -1
         var error = ""
         var process: Process? = null
         var outputStream: OutputStream? = null
@@ -80,10 +79,9 @@ object Shell {
             osw.flush()
             osw.close()
 
-            success = process.waitFor() == 0
+            code = process.waitFor()
             error = errorStream.reader().readText()
         } catch (e: Exception) {
-            success = false
             error = e.message ?: e.toString()
         } finally {
             try {
@@ -92,12 +90,12 @@ object Shell {
                 process?.destroy()
             } catch (e: Exception) { }
         }
-        return Output(success, "", error)
+        return Output(code, "", error)
     }
 
     fun exec(command: String, su: Boolean, processObserver: ((Process) -> Unit)? = null, forEachLine: ((String) -> Unit)? = null): Output {
         logI("exec $command")
-        var success: Boolean
+        var code = -1
         var output = ""
         var error: String
 
@@ -125,13 +123,13 @@ object Shell {
                 else -> InputStreamReader(inputStream, Charsets.UTF_8).forEachLine(forEachLine)
             }
             error = errorStream.reader().readText()
-            success = process.waitFor() == SUCCESS
+            code = process.waitFor()
 
-            logI("waitFor ${System.currentTimeMillis() - tik} $command")
+            logI("waitFor $code, ${System.currentTimeMillis() - tik}ms $command")
         } catch (e: Exception) {
             logE(e.toString())
+            e.printStackTrace()
             error = e.toString()
-            success = false
         } finally {
             try {
                 inputStream?.close()
@@ -141,12 +139,14 @@ object Shell {
             } catch (e: Exception) {
             }
         }
-        return Output(success, output, error)
+        return Output(code, output, error)
     }
 
     class Output(
-        val success: Boolean,
+        val code: Int,
         val output: String,
         val error: String,
-    )
+    ) {
+        val success: Boolean = code == 0
+    }
 }

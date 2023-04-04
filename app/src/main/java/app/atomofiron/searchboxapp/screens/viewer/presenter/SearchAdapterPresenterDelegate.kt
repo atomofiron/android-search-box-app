@@ -5,10 +5,13 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerRouter
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState
+import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState.MatchCursor
 import app.atomofiron.searchboxapp.screens.viewer.presenter.curtain.CurtainSearchDelegate
 import app.atomofiron.searchboxapp.utils.showCurtain
 import kotlinx.coroutines.CoroutineScope
@@ -52,19 +55,25 @@ class SearchAdapterPresenterDelegate(
 
     override fun onSearchClick(value: String) {
         val config = viewState.getUniqueItem(FinderStateItem.ConfigItem::class)
-        interactor.search(value, config.ignoreCase, config.useRegex)
-        curtainDelegate.controller?.close()
+        val params = FinderQueryParams(value, config.ignoreCase, config.useRegex)
+        interactor.search(viewState.item.value, params)
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
-        if (item.finderTask.count > 0) {
+        if (item.task is SearchTask.Done && item.task.count > 0) {
             curtainDelegate.controller?.close()
-            interactor.showTask(item.finderTask)
+            viewState.matchesCursor.value = MatchCursor()
+            viewState.currentTask.value = item.task
+            viewState.status.run {
+                value = value.copy(count = 0, countMax = item.task.count)
+            }
         }
     }
 
     override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {
-        interactor.removeTask(item.finderTask)
+        interactor.removeTask(viewState.item.value, item.task.id)
+        viewState.matchesCursor.value = MatchCursor()
+        viewState.currentTask.value = null
     }
 
     override fun onReplaceClick(value: String) = Unit

@@ -23,15 +23,15 @@ class FinderAdapterPresenterDelegate(
     override fun onSearchChange(value: String) = viewState.updateSearchQuery(value)
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
-        router.showResult(item.finderTask.id)
+        router.showResult(item.task.id)
     }
 
     override fun onProgressStopClick(item: FinderStateItem.ProgressItem) {
-        interactor.stop(item.finderTask.uuid)
+        interactor.stop(item.task.uuid)
     }
 
     override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {
-        interactor.drop(item.finderTask)
+        interactor.drop(item.task)
     }
 
     override fun onReplaceClick(value: String) {

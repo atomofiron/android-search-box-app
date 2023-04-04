@@ -15,7 +15,7 @@ class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState
 
     // todo add state machine
     override fun updateState() {
-        val items = ArrayList<FinderStateItem>()
+        val items = mutableListOf<FinderStateItem>()
         items.addAll(uniqueItems)
         items.addAll(progressItems)
         items.addAll(targetItems)

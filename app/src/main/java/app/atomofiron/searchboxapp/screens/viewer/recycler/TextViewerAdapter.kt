@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.searchboxapp.model.textviewer.TextLine
 import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
+import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState.MatchCursor
 
 class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
     var textViewerListener: TextViewerListener? = null
-    private var matches: Map<Int, List<TextLineMatch>> = HashMap()
+    private var matches: Map<Int, List<TextLineMatch>> = mapOf()
 
-    private var cursor: Long? = null
-    private val cursorLineIndex: Int? get() = cursor?.shr(32)?.toInt()
-    private val cursorMatchIndex: Int? get() = cursor?.toInt()
+    private var cursor = MatchCursor()
 
     private var recyclerView: RecyclerView? = null
 
@@ -24,23 +23,22 @@ class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
         setHasStableIds(true)
     }
 
-    fun setMatches(items: Map<Int, List<TextLineMatch>>) {
-        matches = items
+    fun setMatches(items: Map<Int, List<TextLineMatch>>?) {
+        matches = items ?: mapOf()
+        cursor = MatchCursor()
         notifyDataSetChanged()
     }
 
-    fun setCursor(lineNumIndex: Long?) {
-        val cursorLineIndexWas = cursorLineIndex
-        cursor = lineNumIndex
-
-        if (cursorLineIndexWas != null) {
-            notifyItemChanged(cursorLineIndexWas)
+    fun setCursor(cursor: MatchCursor) {
+        if (this.cursor.lineIndex > 0) {
+            notifyItemChanged(this.cursor.lineIndex)
         }
-        val cursorLineIndex = cursorLineIndex
-        if (cursorLineIndex != null) {
-            notifyItemChanged(cursorLineIndex)
+        this.cursor = cursor
+
+        if (cursor.lineIndex > 0) {
+            notifyItemChanged(cursor.lineIndex)
             recyclerView?.post {
-                recyclerView?.scrollToPosition(cursorLineIndex)
+                recyclerView?.scrollToPosition(cursor.lineIndex)
             }
         }
     }
@@ -63,7 +61,7 @@ class TextViewerAdapter : GeneralAdapter<TextViewerHolder, TextLine>() {
 
     override fun onBindViewHolder(holder: TextViewerHolder, position: Int) {
         val indexFocus = when (position) {
-            cursorLineIndex -> cursorMatchIndex
+            cursor.lineIndex -> cursor.lineMatchIndex
             else -> null
         }
         holder.onBind(items[position], matches[position], indexFocus)
