@@ -72,8 +72,7 @@ class SearchAdapterPresenterDelegate(
 
     override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {
         interactor.removeTask(viewState.item.value, item.task.id)
-        viewState.matchesCursor.value = MatchCursor()
-        viewState.currentTask.value = null
+        viewState.dropTask()
     }
 
     override fun onReplaceClick(value: String) = Unit

@@ -87,6 +87,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
                 side.isBottom -> resources.getDimensionPixelSize(R.dimen.navigation_view_size)
                 else -> 0
             }
+            // todo forward bottom inset for joystick
             binding.curtainSheet.updatePadding(bottom = padding)
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.curtainSheet, insetsCalculator)

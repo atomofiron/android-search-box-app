@@ -35,6 +35,7 @@ class OrientationLayoutDelegate constructor(
     private val railView: NavigationRailView? = null,
     private val systemUiView: SystemUiBackgroundView? = null,
     private val tabLayout: MaterialButtonToggleGroup? = null,
+    private val appbarLayout: AppBarLayout? = null,
     private val sideDock: NavigationView? = null,
     private val headerView: ExplorerHeaderView? = null,
     private val snackbarContainer: CoordinatorLayout? = null,
@@ -85,6 +86,9 @@ class OrientationLayoutDelegate constructor(
             ViewCompat.dispatchApplyWindowInsets(it, insets)
         }
         bottomView?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets)
+        }
+        appbarLayout?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets)
         }
         explorerViews?.forEach {

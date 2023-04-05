@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
@@ -15,6 +17,7 @@ import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.utils.updateItem
+import com.google.android.material.appbar.AppBarLayout
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
@@ -38,23 +41,35 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentTextViewerBinding.bind(view)
-
-        binding.recyclerView.run {
-            layoutManager = LinearLayoutManager(context)
-            adapter = viewerAdapter
-            itemAnimator = null
+        binding = FragmentTextViewerBinding.bind(view).apply {
+            recyclerView.run {
+                layoutManager = LinearLayoutManager(context)
+                adapter = viewerAdapter
+                itemAnimator = null
+            }
+            (recyclerView.layoutParams as CoordinatorLayout.LayoutParams).run {
+                behavior = AppBarLayout.ScrollingViewBehavior()
+            }
+            navigationRail.menu.removeItem(R.id.stub)
+            navigationRail.isItemActiveIndicatorEnabled = false
+            navigationRail.setOnItemSelectedListener(::onBottomMenuItemClick)
+            bottomBar.isItemActiveIndicatorEnabled = false
+            bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
+            toolbar.setNavigationOnClickListener { presenter.onNavigationClick() }
+            toolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.menu_edit -> Unit
+                    R.id.menu_save -> Unit
+                }
+                true
+            }
         }
-        binding.navigationRail.menu.removeItem(R.id.stub)
-        binding.navigationRail.isItemActiveIndicatorEnabled = false
-        binding.navigationRail.setOnItemSelectedListener(::onBottomMenuItemClick)
-        binding.bottomBar.isItemActiveIndicatorEnabled = false
-        binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
         viewState.onViewCollect()
         onApplyInsets(view)
     }
 
     override fun TextViewerViewState.onViewCollect() {
+        viewCollect(item) { binding.toolbar.title = it.name }
         viewCollect(textLines, collector = viewerAdapter::setItems)
         viewCollect(currentTask, collector = ::onTaskChanged)
         viewCollect(matchesCursor, collector = ::onMatchCursorChanged)
@@ -63,18 +78,21 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     override fun onApplyInsets(root: View) {
         binding.run {
-            recyclerView.applyPaddingInsets()
+            appbarLayout.applyPaddingInsets(start = true, top = true)
+            recyclerView.applyPaddingInsets(horizontal = true)
             OrientationLayoutDelegate(
                 root as ViewGroup,
                 recyclerView = recyclerView,
                 bottomView = bottomBar,
                 railView = navigationRail,
-                systemUiView = systemUiBackground,
+                appbarLayout = appbarLayout,
             ) {
                 bottomBar.menu.findItem(R.id.stub).isVisible = it
             }
         }
     }
+
+    override fun onBack(): Boolean = presenter.onBackClick() || super.onBack()
 
     private fun onBottomMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -87,6 +105,8 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     private fun onTaskChanged(task: SearchTask.Done?) {
         viewerAdapter.setMatches(task?.matchesMap)
+        val iconId = if (task == null) R.drawable.ic_back else R.drawable.ic_cross
+        binding.toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), iconId)
     }
 
     private fun onStatusChanged(status: TextViewerViewState.Status) {

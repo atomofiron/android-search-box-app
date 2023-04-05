@@ -26,7 +26,7 @@ class NoticeableDrawable(
 
     private val dotRadius: Float get() = bounds.width().toFloat() / 6
     private val holeRadius: Float get() = bounds.width().toFloat() / 4
-    private var dotAlpha = Const.ALPHA_ENABLED_INT
+    private var dotAlpha = Const.ALPHA_VISIBLE_INT
     private val holeX: Float get() = bounds.right - dotRadius
     private val holeY: Float get() = dotRadius
 
@@ -62,7 +62,7 @@ class NoticeableDrawable(
         drawDot = state.contains(state_activated)
         val isEnabled = state.contains(state_enabled)
         dotAlpha = when {
-            isEnabled -> Const.ALPHA_ENABLED_INT
+            isEnabled -> Const.ALPHA_VISIBLE_INT
             else -> Const.ALPHA_DISABLED_INT
         }
         if (overrideAlpha) {

@@ -13,7 +13,7 @@ abstract class BasePresenter<M : ViewModel, R : BaseRouter> constructor(
 
     abstract fun onSubscribeData()
 
-    fun onNavigationClick() = router.navigateBack()
+    open fun onNavigationClick() = router.navigateBack()
 
     open fun setRecipient(recipient: String) = Unit
 

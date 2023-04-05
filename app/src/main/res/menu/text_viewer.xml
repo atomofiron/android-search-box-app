@@ -1,0 +1,19 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/menu_edit"
+        android:title="@string/edit"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_edit"
+        android:visible="false"
+        />
+    <item
+        android:id="@+id/menu_save"
+        android:title="@string/save"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_save"
+        android:visible="false"
+        />
+</menu>

@@ -23,7 +23,10 @@ class TextViewerViewState(
         val loading: Boolean = false,
         val count: Int = 0,
         val countMax: Int = 0,
-    )
+    ) {
+        fun clear(): Status = copy(count = 0, countMax = 0)
+    }
+
     @JvmInline
     value class MatchCursor(val value: Long = -1) {
         val isEmpty get() = value < 0
@@ -106,5 +109,11 @@ class TextViewerViewState(
         status.run {
             value = value.copy(loading = loading)
         }
+    }
+
+    fun dropTask() {
+        matchesCursor.value = MatchCursor()
+        status.value = status.value.clear()
+        currentTask.value = null
     }
 }

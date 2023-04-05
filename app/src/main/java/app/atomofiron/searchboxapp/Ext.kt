@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import app.atomofiron.searchboxapp.utils.Const
 import kotlin.math.max
 
 val Fragment.anchorView: View get() = requireActivity().findViewById(R.id.joystick)
@@ -95,4 +96,6 @@ fun Context.updateNotificationChannel(
 }
 
 val ViewPager2.recyclerView: RecyclerView get() = getChildAt(0) as RecyclerView
+
+fun Float.toIntAlpha(): Int = (Const.ALPHA_VISIBLE_INT * this).toInt().coerceIn(0, 255)
 

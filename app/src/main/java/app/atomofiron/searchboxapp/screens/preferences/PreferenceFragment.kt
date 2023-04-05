@@ -118,6 +118,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
 
     private fun showOutputError(output: Shell.Output) {
         val view = view ?: return
+        val anchorView = anchorView
         Snackbar.make(view, R.string.error, Snackbar.LENGTH_SHORT).apply {
             if (output.error.isNotEmpty()) {
                 setAction(R.string.more) {
@@ -126,7 +127,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
                             .show()
                 }
             }
-            anchorView = anchorView
+            this.anchorView = anchorView
             show()
         }
     }
