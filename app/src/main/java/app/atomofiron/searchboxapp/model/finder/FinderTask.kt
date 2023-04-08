@@ -6,7 +6,7 @@ interface FinderTask {
     val id: Long
     val uuid: UUID
     val params: FinderQueryParams
-    val results: List<FinderResult>
+    val results: List<SearchResult>
     val count: Int
     val inProgress: Boolean
     val isLocal: Boolean

@@ -1,7 +1,7 @@
 package app.atomofiron.searchboxapp.injectable.store
 
 import app.atomofiron.common.util.flow.*
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
@@ -34,7 +34,7 @@ class FinderStore(
         notifications[scope] = FinderTaskChange.Update(tasks)
     }
 
-    fun deleteResultFromTask(item: FinderResult, uuid: UUID) {
+    fun deleteResultFromTask(item: SearchResult, uuid: UUID) {
         val task = mutableTasks.find { it.uuid == uuid }
         task ?: return
         task.results.remove(item)

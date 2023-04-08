@@ -8,7 +8,7 @@ import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.injectable.store.ResultStore
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import java.util.*
 
@@ -24,8 +24,8 @@ class ResultService(
 
     fun dropTaskError(taskId: Long) = finderStore.dropTaskError(taskId)
 
-    fun copyToClipboard(finderResult: FinderResult) {
-        val clip = ClipData.newPlainText(finderResult.name, finderResult.completedPath)
+    fun copyToClipboard(searchResult: SearchResult) {
+        val clip = ClipData.newPlainText(searchResult.name, searchResult.path)
         clipboardManager.setPrimaryClip(clip)
     }
 

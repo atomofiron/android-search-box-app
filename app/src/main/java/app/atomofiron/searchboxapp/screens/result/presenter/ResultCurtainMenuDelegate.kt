@@ -9,7 +9,7 @@ import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
@@ -47,7 +47,7 @@ class ResultCurtainMenuDelegate(
         val items = data.items
         when (id) {
             R.id.menu_copy_path -> {
-                interactor.copyToClipboard(items.first() as FinderResult)
+                interactor.copyToClipboard(items.first() as SearchResult)
                 viewState.sendAlert(resources.getString(R.string.copied))
             }
             R.id.menu_remove -> interactor.deleteItems(items, viewState.task.value.uuid)

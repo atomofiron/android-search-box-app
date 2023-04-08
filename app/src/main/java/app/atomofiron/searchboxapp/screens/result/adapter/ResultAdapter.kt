@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBackgroundDecorator
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemGravityDecorator
@@ -26,7 +26,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
 
     private val header = FinderResultItem.Header(0, 0)
 
-    fun setResults(results: List<FinderResult>) {
+    fun setResults(results: List<SearchResult>) {
         val items = results.map { FinderResultItem.Item(it) }
         super.setItems(items)
 

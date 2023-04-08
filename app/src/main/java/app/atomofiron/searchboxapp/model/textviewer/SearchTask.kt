@@ -1,7 +1,7 @@
 package app.atomofiron.searchboxapp.model.textviewer
 
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.finder.FinderTask
 import java.util.*
 
@@ -55,7 +55,7 @@ sealed class SearchTask(val queryId: Long) : FinderTask {
     }
 
     override val uuid: UUID = UUID.randomUUID()
-    override val results: List<FinderResult> = listOf()
+    override val results: List<SearchResult> = listOf()
     override val error: String? = null
 
     override fun copyTask(): FinderTask = this

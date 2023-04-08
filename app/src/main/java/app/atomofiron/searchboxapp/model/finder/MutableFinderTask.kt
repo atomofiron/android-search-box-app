@@ -4,27 +4,20 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class MutableFinderTask private constructor(
-        override val uuid: UUID,
-        override val id: Long,
-        override val params: FinderQueryParams,
-        override val results: MutableList<FinderResult> = ArrayList(),
-        override var count: Int = 0,
-        override var inProgress: Boolean = true,
-        override var isDone: Boolean = false,
-        override var isLocal: Boolean = false,
-        override var isRemovable: Boolean = true,
-        override var error: String? = null
+    override val uuid: UUID,
+    override val id: Long,
+    override val params: FinderQueryParams,
+    override val results: MutableList<SearchResult> = ArrayList(),
+    override var count: Int = 0,
+    override var inProgress: Boolean = true,
+    override var isDone: Boolean = false,
+    override var isLocal: Boolean = false,
+    override var isRemovable: Boolean = true,
+    override var error: String? = null
 ) : FinderTask {
     companion object {
         private var lastId = 0L
         private fun nextId(): Long = lastId++
-
-        fun local(isRemovable: Boolean, params: FinderQueryParams): MutableFinderTask {
-            return MutableFinderTask(
-                    UUID.randomUUID(), nextId(), params,
-                    inProgress = false, isDone = true, isLocal = true, isRemovable = isRemovable
-            )
-        }
     }
 
     constructor(uuid: UUID, params: FinderQueryParams) : this(uuid, nextId(), params)

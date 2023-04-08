@@ -20,7 +20,7 @@ import app.atomofiron.searchboxapp.logI
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
 import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.updateNotificationChannel
@@ -165,7 +165,7 @@ class FinderWorker(
 
     private fun addToResults(path: String, count: Int = 0) {
         val xFile = Node(path, content = NodeContent.File.Other)
-        val result = FinderResult(xFile, count)
+        val result = SearchResult(xFile, count)
         task.results.add(result)
     }
 
@@ -208,9 +208,6 @@ class FinderWorker(
         }
 
         val data = try {
-            if (true) {
-                Thread.sleep(10000)
-            } else
             when {
                 forContent -> searchForContent(where)
                 else -> searchForName(where)

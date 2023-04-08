@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.ResultService
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
 import java.util.*
 
@@ -19,7 +19,7 @@ class ResultInteractor(
 
     fun dropTaskError(taskId: Long) = resultService.dropTaskError(taskId)
 
-    fun copyToClipboard(finderResult: FinderResult) = resultService.copyToClipboard(finderResult)
+    fun copyToClipboard(searchResult: SearchResult) = resultService.copyToClipboard(searchResult)
 
     fun deleteItems(items: List<Node>, uuid: UUID) {
         scope.launch(context) {

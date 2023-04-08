@@ -28,17 +28,17 @@ class FinderPresenter(
 ) : BasePresenter<FinderViewModel, FinderRouter>(scope, router),
         FinderAdapterOutput by finderAdapterDelegate
 {
-    private val uniqueItems: MutableList<FinderStateItem> get() = viewState.uniqueItems
-    private val progressItems: MutableList<FinderStateItem.ProgressItem> get() = viewState.progressItems
 
     init {
-        uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
-        uniqueItems.add(FinderStateItem.SpecialCharactersItem(arrayOf()))
-        uniqueItems.add(FinderStateItem.TestItem())
-        uniqueItems.add(FinderStateItem.ButtonsItem)
+        viewState.run {
+            uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
+            uniqueItems.add(FinderStateItem.SpecialCharactersItem(arrayOf()))
+            uniqueItems.add(FinderStateItem.TestItem())
+            uniqueItems.add(FinderStateItem.ButtonsItem)
+        }
 
         finderStore.tasks.forEach {
-            progressItems.add(FinderStateItem.ProgressItem(it))
+            viewState.progressItems.add(FinderStateItem.ProgressItem(it))
         }
 
         onSubscribeData()
