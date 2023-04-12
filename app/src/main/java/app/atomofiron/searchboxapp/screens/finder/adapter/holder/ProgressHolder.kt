@@ -35,7 +35,7 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
     override fun onBind(item: FinderStateItem, position: Int) {
         item as FinderStateItem.ProgressItem
         val task = item.task
-        tvStatus.text = task.result.getProgress() + task.javaClass.simpleName
+        tvStatus.text = task.result.getProgress()
         btnAction.isActivated = !task.inProgress
         btnAction.isEnabled = true
         bView.isInvisible = !task.inProgress
