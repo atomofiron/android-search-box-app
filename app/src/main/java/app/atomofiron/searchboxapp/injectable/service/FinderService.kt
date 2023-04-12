@@ -11,10 +11,11 @@ import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.work.FinderWorker
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 class FinderService(
-    scope: CoroutineScope,
+    private val scope: CoroutineScope,
     private val workManager: WorkManager,
     private val notificationManager: NotificationManager,
     private val finderStore: FinderStore,
@@ -45,7 +46,9 @@ class FinderService(
     fun stop(uuid: UUID) = workManager.cancelWorkById(uuid)
 
     fun drop(task: SearchTask) {
-        finderStore.drop(task)
+        scope.launch {
+            finderStore.drop(task)
+        }
         notificationManager.cancel(task.uniqueId)
     }
 }

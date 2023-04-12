@@ -9,11 +9,9 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.work.Data
-import androidx.work.ForegroundInfo
-import androidx.work.Worker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import app.atomofiron.searchboxapp.*
+import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
@@ -28,19 +26,18 @@ import app.atomofiron.searchboxapp.model.textviewer.toDone
 import app.atomofiron.searchboxapp.model.textviewer.toError
 import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.Const.UNDEFINEDL
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 class FinderWorker(
     private val context: Context,
     workerParams: WorkerParameters,
-) : Worker(context, workerParams) {
+) : CoroutineWorker(context, workerParams) {
     companion object {
         @SuppressLint("InlinedApi")
         private const val UPDATING_FLAG = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -61,33 +58,31 @@ class FinderWorker(
         private const val KEY_MAX_DEPTH = "KEY_MAX_DEPTH"
         private const val KEY_WHERE_PATHS = "KEY_WHERE_PATHS"
 
-        fun inputData(query: String, useSu: Boolean, useRegex: Boolean, maxSize: Int,
-                      ignoreCase: Boolean, excludeDirs: Boolean, isMultiline: Boolean,
-                      forContent: Boolean, maxDepth: Int, where: Array<String>): Data {
-            val builder = Data.Builder()
-                    .putString(KEY_QUERY, query)
-                    .putBoolean(KEY_USE_SU, useSu)
-                    .putBoolean(KEY_USE_REGEX, useRegex)
-                    .putInt(KEY_MAX_SIZE, maxSize)
-                    .putBoolean(KEY_CASE_INSENSITIVE, ignoreCase)
-                    .putBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
-                    .putBoolean(KEY_MULTILINE, isMultiline)
-                    .putBoolean(KEY_FOR_CONTENT, forContent)
-                    .putInt(KEY_MAX_DEPTH, maxDepth)
-                    .putStringArray(KEY_WHERE_PATHS, where)
-
-            return builder.build()
-        }
+        fun inputData(
+            query: String, useSu: Boolean, useRegex: Boolean, maxSize: Int, ignoreCase: Boolean, excludeDirs: Boolean,
+            isMultiline: Boolean, forContent: Boolean, maxDepth: Int, where: Array<String>,
+        ) = Data.Builder()
+            .putString(KEY_QUERY, query)
+            .putBoolean(KEY_USE_SU, useSu)
+            .putBoolean(KEY_USE_REGEX, useRegex)
+            .putInt(KEY_MAX_SIZE, maxSize)
+            .putBoolean(KEY_CASE_INSENSITIVE, ignoreCase)
+            .putBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
+            .putBoolean(KEY_MULTILINE, isMultiline)
+            .putBoolean(KEY_FOR_CONTENT, forContent)
+            .putInt(KEY_MAX_DEPTH, maxDepth)
+            .putStringArray(KEY_WHERE_PATHS, where)
+            .build()
     }
-    private var useSu = false
-    private var useRegex = false
+    private val useSu = inputData.getBoolean(KEY_USE_SU, false)
+    private val useRegex = inputData.getBoolean(KEY_USE_REGEX, false)
     private val query: String = inputData.getString(KEY_QUERY) ?: ""
     private lateinit var pattern: Pattern
-    private var maxSize = UNDEFINED.toLong()
-    private var ignoreCase = false
-    private var excludeDirs = false
-    private var forContent = false
-    private var maxDepth = UNDEFINED
+    private val maxSize = inputData.getLong(KEY_MAX_SIZE, UNDEFINEDL)
+    private val ignoreCase = inputData.getBoolean(KEY_CASE_INSENSITIVE, false)
+    private val excludeDirs = inputData.getBoolean(KEY_EXCLUDE_DIRS, false)
+    private val forContent = inputData.getBoolean(KEY_FOR_CONTENT, false)
+    private val maxDepth = inputData.getInt(KEY_MAX_DEPTH, UNDEFINED)
 
     private var task: SearchTask = SearchTask.Progress(
         id, isLocal = false,
@@ -108,17 +103,19 @@ class FinderWorker(
     lateinit var preferenceStore: PreferenceStore
 
     init {
+        if (useRegex && !forContent) {
+            var flags = 0
+            val isMultiline = inputData.getBoolean(KEY_MULTILINE, false)
+            if (isMultiline) flags += Pattern.MULTILINE
+            if (ignoreCase) flags += Pattern.CASE_INSENSITIVE
+            pattern = Pattern.compile(query, flags)
+        }
         DaggerInjector.appComponent.inject(this)
-    }
-
-    override fun onStopped() {
-        super.onStopped()
-        process?.destroy()
     }
 
     private val processObserver: (Process) -> Unit = { process = it }
 
-    private fun searchForContent(where: List<Node>) {
+    private suspend fun searchForContent(where: List<Node>) {
         forLoop@for (item in where) {
             if (isStopped) {
                 return
@@ -149,7 +146,7 @@ class FinderWorker(
         }
     }
 
-    private fun updateTask(now: Boolean = false, action: SearchTask.() -> SearchTask) {
+    private suspend fun updateTask(now: Boolean = false, action: SearchTask.() -> SearchTask) {
         task = task.action()
         if (now) {
             delayedJob?.cancel()
@@ -163,16 +160,21 @@ class FinderWorker(
     }
 
     private val forContentLineListener: (String) -> Unit = { line ->
-        val index = line.lastIndexOf(':')
-        val count = line.substring(index.inc()).toInt()
-        if (count > 0) {
-            val path = line.substring(0, index)
-            addToResults(path, count)
+        scope.launch {
+            val index = line.lastIndexOf(':')
+            val count = line.substring(index.inc()).toInt()
+            if (count > 0) {
+                val path = line.substring(0, index)
+                addToResults(path, count)
+            }
         }
     }
 
-    private fun searchForName(where: List<Node>) {
+    private suspend fun searchForName(where: List<Node>) {
         for (item in where) {
+            if (isStopped) {
+                return
+            }
             val template = when {
                 excludeDirs -> Shell[Shell.FIND_F]
                 else -> Shell[Shell.FIND_FD]
@@ -189,13 +191,15 @@ class FinderWorker(
     }
 
     private val forNameLineListener: (String) -> Unit = { line ->
-        when {
-            useRegex && pattern.matcher(line).find() -> addToResults(line)
-            !useRegex && line.contains(query, ignoreCase) -> addToResults(line)
+        scope.launch {
+            when {
+                useRegex && pattern.matcher(line).find() -> addToResults(line)
+                !useRegex && line.contains(query, ignoreCase) -> addToResults(line)
+            }
         }
     }
 
-    private fun addToResults(path: String, count: Int = -1) {
+    private suspend fun addToResults(path: String, count: Int = -1) {
         val item = Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
         val itemCounter = ItemCounter(item, count)
         var result = task.result as FinderResult
@@ -205,7 +209,7 @@ class FinderWorker(
         }
     }
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         logI("doWork")
 
         context.updateNotificationChannel(
@@ -220,28 +224,11 @@ class FinderWorker(
             return Result.success()
         }
 
-        useSu = inputData.getBoolean(KEY_USE_SU, useSu)
-        useRegex = inputData.getBoolean(KEY_USE_REGEX, useRegex)
-        maxSize = inputData.getLong(KEY_MAX_SIZE, UNDEFINED.toLong())
-        ignoreCase = inputData.getBoolean(KEY_CASE_INSENSITIVE, ignoreCase)
-        excludeDirs = inputData.getBoolean(KEY_EXCLUDE_DIRS, excludeDirs)
-        val isMultiline = inputData.getBoolean(KEY_MULTILINE, false)
-        forContent = inputData.getBoolean(KEY_FOR_CONTENT, forContent)
-        maxDepth = inputData.getInt(KEY_MAX_DEPTH, UNDEFINED)
-
         finderStore.add(task)
 
         val where = inputData.getStringArray(KEY_WHERE_PATHS)!!.map { path ->
             Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
         }
-
-        if (useRegex && !forContent) {
-            var flags = 0
-            if (isMultiline) flags += Pattern.MULTILINE
-            if (ignoreCase) flags += Pattern.CASE_INSENSITIVE
-            pattern = Pattern.compile(query, flags)
-        }
-
         val data = try {
             when {
                 forContent -> searchForContent(where)
