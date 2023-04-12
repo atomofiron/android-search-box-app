@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
+import app.atomofiron.searchboxapp.model.finder.SearchParams
 import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
 
 class TextViewerInteractor(
@@ -16,8 +16,6 @@ class TextViewerInteractor(
 
     fun fetchFileSession(path: String): TextViewerSession = textViewerService.getFileSession(path)
 
-    fun fetchTask(item: Node, taskId: Long) = textViewerService.fetchTask(item, taskId)
-
     /** invoke the callback after success */
     fun readFileToLine(item: Node, index: Int, callback: (() -> Unit)? = null) {
         scope.launch(context) {
@@ -26,9 +24,9 @@ class TextViewerInteractor(
         }
     }
 
-    fun search(item: Node, params: FinderQueryParams) = textViewerService.search(item, params)
+    fun search(item: Node, params: SearchParams) = textViewerService.search(item, params)
 
-    fun removeTask(item: Node, taskId: Long) = textViewerService.removeTask(item, taskId)
+    fun removeTask(item: Node, taskId: Int) = textViewerService.removeTask(item, taskId)
 
     fun closeSession(item: Node) = textViewerService.closeSession(item)
 }

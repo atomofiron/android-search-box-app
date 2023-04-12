@@ -3,15 +3,11 @@ package app.atomofiron.searchboxapp.screens.result
 import androidx.core.os.ConfigurationCompat
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
-import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
-import app.atomofiron.searchboxapp.injectable.store.AppStore
-import app.atomofiron.searchboxapp.injectable.store.FinderStore
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.injectable.store.ResultStore
+import app.atomofiron.searchboxapp.injectable.store.*
 import app.atomofiron.searchboxapp.logE
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultCurtainMenuDelegate
@@ -26,51 +22,41 @@ class ResultPresenter(
     params: ResultPresenterParams,
     scope: CoroutineScope,
     private val viewState: ResultViewState,
-    private val resultStore: ResultStore,
     private val finderStore: FinderStore,
     private val preferenceStore: PreferenceStore,
     private val interactor: ResultInteractor,
     router: ResultRouter,
-    private val resultChannel: ResultChannel,
     appStore: AppStore,
     itemActionDelegate: ResultItemActionDelegate,
     private val curtainMenuDelegate: ResultCurtainMenuDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(scope, router),
     ResultItemActionListener by itemActionDelegate {
     companion object {
-        private const val UNDEFINED = -1L
+        private const val UNDEFINED = -1
     }
     private val taskId = params.taskId
 
     private val resources by appStore.resourcesProperty
 
     init {
-        onSubscribeData()
-
-        val task = finderStore.tasks.find { it.id == taskId }
+        val task = finderStore.tasks.value.find { it.uniqueId == taskId }
         if (task == null) {
             logE("No task found!")
             router.navigateBack()
         } else {
-            viewState.task.value = task.copyTask()
+            viewState.task.value = task
         }
+        onSubscribeData()
     }
 
     override fun onSubscribeData() {
-        finderStore.notifications.collect(scope) { update ->
-            if (taskId != UNDEFINED) {
-                scope.launch {
-                    viewState.updateState(update)
-                }
-            }
+        if (taskId != UNDEFINED) finderStore.tasks.collect(scope) { tasks ->
+            val task = tasks.find { it.uniqueId == taskId }
+            task ?: return@collect
+            viewState.task.value = task
         }
         preferenceStore.explorerItemComposition.collect(scope) {
             viewState.composition.value = it
-        }
-        resultStore.itemsShellBeDeleted.collect(scope) {
-            scope.launch {
-                viewState.updateState()
-            }
         }
     }
 
@@ -87,22 +73,14 @@ class ResultPresenter(
 
     fun onExportClick() {
         val task = viewState.task.value
-
-        val data = StringBuilder()
-        for (result in task.results) {
-            data.append(result.toMarkdown())
-        }
+        val data = (task.result as SearchResult.FinderResult).toMarkdown()
         val locale = ConfigurationCompat.getLocales(resources.configuration)[0]
         val date = SimpleDateFormat(Const.DATE_PATTERN, locale).format(Date())
         val title = "search_$date.md.txt";
 
-        if (!router.shareFile(title, data.toString())) {
+        if (!router.shareFile(title, data)) {
             viewState.sendAlert(resources.getString(R.string.no_activity))
         }
-    }
-
-    fun onDropTaskErrorClick() {
-        interactor.dropTaskError(taskId)
     }
 }
 

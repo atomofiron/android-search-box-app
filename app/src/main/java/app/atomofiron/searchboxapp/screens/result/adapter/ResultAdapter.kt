@@ -11,7 +11,7 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBackgroundDecorator
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemGravityDecorator
 
-class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
+class ResultAdapter : GeneralAdapter<ResultsHolder, ResultItem>() {
     companion object {
         private const val POSITION_HEADER = 0
         private const val TYPE_HEADER = 2
@@ -24,10 +24,10 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator()
 
-    private val header = FinderResultItem.Header(0, 0)
+    private val header = ResultItem.Header(0, 0)
 
-    fun setResults(results: List<SearchResult>) {
-        val items = results.map { FinderResultItem.Item(it) }
+    fun setResult(results: SearchResult.FinderResult) {
+        val items = results.tuples.map { ResultItem.Item(it) }
         super.setItems(items)
 
         header.dirsCount = 0
@@ -53,7 +53,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
 
     override fun getItemCount(): Int = items.size.inc()
 
-    override fun getDiffUtilCallback(old: List<FinderResultItem>, new: List<FinderResultItem>): DiffUtil.Callback {
+    override fun getDiffUtilCallback(old: List<ResultItem>, new: List<ResultItem>): DiffUtil.Callback {
         return ResultDiffUtilCallback(old, new)
     }
 
@@ -89,7 +89,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
             holder.setOnItemActionListener(itemActionListener)
             super.onBindViewHolder(holder, position.dec())
             holder.bindComposition(composition)
-            itemActionListener.onItemVisible(items[position.dec()] as FinderResultItem.Item)
+            itemActionListener.onItemVisible(items[position.dec()] as ResultItem.Item)
         }
     }
 }

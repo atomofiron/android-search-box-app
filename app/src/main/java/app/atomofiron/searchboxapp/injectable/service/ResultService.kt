@@ -3,35 +3,28 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.work.WorkManager
-import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
-import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.injectable.store.ResultStore
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.SearchResult
-import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
+import app.atomofiron.searchboxapp.screens.result.adapter.ResultItem
 import java.util.*
 
 class ResultService(
     private val workManager: WorkManager,
-    private val resultChannel: ResultChannel,
-    private val resultStore: ResultStore,
-    private val finderStore: FinderStore,
     private val preferenceStore: PreferenceStore,
-    private val clipboardManager: ClipboardManager
+    private val clipboardManager: ClipboardManager,
 ) {
+
     fun stop(uuid: UUID) = workManager.cancelWorkById(uuid)
 
-    fun dropTaskError(taskId: Long) = finderStore.dropTaskError(taskId)
-
-    fun copyToClipboard(searchResult: SearchResult) {
-        val clip = ClipData.newPlainText(searchResult.name, searchResult.path)
+    fun copyToClipboard(item: Node) {
+        val clip = ClipData.newPlainText(item.name, item.path)
         clipboardManager.setPrimaryClip(clip)
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun deleteItems(items: List<Node>, uuid: UUID) {
-        /*items.forEach {
+    fun deleteItems(items: List<Node>, taskId: UUID) {
+        /* todo go to ExplorerService
+        items.forEach {
             it.setDeleting()
         }
         resultStore.itemsShellBeDeleted.invoke()
@@ -44,7 +37,7 @@ class ResultService(
         }*/
     }
 
-    fun cacheFile(item: FinderResultItem.Item) {
+    fun cacheFile(item: ResultItem.Item) {
         val useSu = preferenceStore.useSu.value
         if (!item.item.isCached) {
             item.item.updateCache(useSu)

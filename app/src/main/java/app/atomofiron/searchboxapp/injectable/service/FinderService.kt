@@ -3,19 +3,29 @@ package app.atomofiron.searchboxapp.injectable.service
 import android.app.NotificationManager
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.atomofiron.common.util.flow.collect
+import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.FinderTask
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.work.FinderWorker
+import kotlinx.coroutines.CoroutineScope
 import java.util.*
 
 class FinderService(
+    scope: CoroutineScope,
     private val workManager: WorkManager,
     private val notificationManager: NotificationManager,
     private val finderStore: FinderStore,
     private val preferenceStore: PreferenceStore,
+    explorerStore: ExplorerStore,
 ) {
+    init {
+        explorerStore.removed.collect(scope) {
+            finderStore.deleteResultFromTasks(it)
+        }
+    }
     fun search(query: String, where: List<Node>, ignoreCase: Boolean, useRegex: Boolean, isMultiline: Boolean, forContent: Boolean) {
         val maxSize = preferenceStore.maxFileSizeForSearch.value
         val maxDepth = preferenceStore.maxDepthForSearch.value
@@ -27,15 +37,15 @@ class FinderService(
             maxDepth, where.map { it.path }.toTypedArray(),
         )
         val request = OneTimeWorkRequest.Builder(FinderWorker::class.java)
-                .setInputData(inputData)
-                .build()
+            .setInputData(inputData)
+            .build()
         workManager.beginWith(request).enqueue()
     }
 
     fun stop(uuid: UUID) = workManager.cancelWorkById(uuid)
 
-    fun drop(task: FinderTask) {
+    fun drop(task: SearchTask) {
         finderStore.drop(task)
-        notificationManager.cancel(task.id.toInt())
+        notificationManager.cancel(task.uniqueId)
     }
 }

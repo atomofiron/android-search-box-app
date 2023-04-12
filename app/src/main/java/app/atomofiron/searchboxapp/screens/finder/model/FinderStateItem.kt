@@ -3,25 +3,36 @@ package app.atomofiron.searchboxapp.screens.finder.model
 import androidx.annotation.StringRes
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.FinderTask
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
+import java.util.Objects
 
-sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
+// all children mast be 'data classes'
+sealed class FinderStateItem(val stableId: Int, val layoutId: Int) {
     companion object {
-        private const val SEARCH_ID = 1L
-        private const val CHARACTERS_ID = 2L
-        private const val CONFIG_ID = 3L
-        private const val BUTTONS_ID = 4L
-        private const val TEST_ID = 5L
+        private const val SEARCH_ID = 1
+        private const val CHARACTERS_ID = 2
+        private const val CONFIG_ID = 3
+        private const val BUTTONS_ID = 4
+        private const val TEST_ID = 5
+        private const val DISCLAIMER_ID = 6
     }
+
     data class SearchAndReplaceItem(
         var query: String = "", // mutable field
         val replaceEnabled: Boolean = false,
         val useRegex: Boolean = false,
     ) : FinderStateItem(SEARCH_ID, R.layout.item_field_search)
 
-    class SpecialCharactersItem(
+    data class SpecialCharactersItem(
         val characters: Array<String>,
-    ) : FinderStateItem(CHARACTERS_ID, R.layout.item_characters)
+    ) : FinderStateItem(CHARACTERS_ID, R.layout.item_characters) {
+        override fun equals(other: Any?): Boolean = when {
+            this === other -> true
+            other !is SpecialCharactersItem -> false
+            else -> characters.contentEquals(other.characters)
+        }
+        override fun hashCode(): Int = Objects.hash(this::class, characters)
+    }
 
     data class ConfigItem(
       val ignoreCase: Boolean = false,
@@ -40,38 +51,17 @@ sealed class FinderStateItem(val stableId: Long, val layoutId: Int) {
         val ignoreCase: Boolean = true,
     ) : FinderStateItem(TEST_ID, R.layout.item_test)
 
-    class ProgressItem(
-        val task: FinderTask,
-    ) : FinderStateItem(task.id, R.layout.item_progress)
+    data class ProgressItem(
+        val task: SearchTask,
+    ) : FinderStateItem(task.uniqueId, R.layout.item_progress)
 
-    class TargetItem(
+    data class TargetItem(
         val target: Node,
-    ) : FinderStateItem(target.hashCode().toLong(), R.layout.item_finder_target)
+    ) : FinderStateItem(target.hashCode(), R.layout.item_finder_target)
 
-    class TipItem(
+    data class TipItem(
         @StringRes val titleId: Int,
-    ) : FinderStateItem(titleId.hashCode().toLong(), R.layout.item_finder_tip)
+    ) : FinderStateItem(titleId.hashCode(), R.layout.item_finder_tip)
 
-    object DisclaimerItem : FinderStateItem(500.hashCode().toLong(), R.layout.item_finder_disclaimer)
-
-    override fun equals(other: Any?): Boolean = when (other) {
-        !is FinderStateItem -> false
-        is SpecialCharactersItem -> when (this) {
-            is SpecialCharactersItem -> other.characters.contentEquals(characters)
-            else -> false
-        }
-        else -> other.stableId == stableId
-    }
-
-    override fun hashCode(): Int = when (this) {
-        is SearchAndReplaceItem -> stableId.toInt()
-        is SpecialCharactersItem -> characters.hashCode()
-        is ConfigItem -> stableId.toInt()
-        is TestItem -> stableId.toInt()
-        is ButtonsItem -> stableId.toInt()
-        is ProgressItem -> task.hashCode()
-        is TargetItem -> stableId.toInt()
-        is TipItem -> stableId.toInt()
-        is DisclaimerItem -> stableId.toInt()
-    }
+    object DisclaimerItem : FinderStateItem(DISCLAIMER_ID, R.layout.item_finder_disclaimer)
 }

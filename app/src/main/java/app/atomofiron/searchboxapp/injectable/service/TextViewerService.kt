@@ -5,12 +5,9 @@ import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
-import app.atomofiron.searchboxapp.model.textviewer.SearchTask
-import app.atomofiron.searchboxapp.model.textviewer.TextLine
-import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
-import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
+import app.atomofiron.searchboxapp.model.finder.SearchParams
+import app.atomofiron.searchboxapp.model.finder.SearchResult
+import app.atomofiron.searchboxapp.model.textviewer.*
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.Shell
@@ -46,15 +43,7 @@ class TextViewerService(
         return session
     }
 
-    fun fetchTask(item: Node, taskId: Long) {
-        val session = findSession(item) ?: return
-        var task = session.tasks.value.find { it.id == taskId }
-        if (task != null) return
-        val finderTask = finderStore.tasks.find { it.id == taskId } as MutableFinderTask?
-        finderTask ?: return logE("Finder task not found for ${item.path}")
-        val result = finderTask.results.find { it.item.path == item.path }
-        result ?: return logE("Finder task result not found for ${item.path}")
-        // todo task = TextViewerTask.Done(taskId, isRemovable = false, )
+    fun fetchTask(item: Node, params: SearchParams) {
     }
 
     /** @return true if success */
@@ -72,14 +61,14 @@ class TextViewerService(
         session?.reader?.close()
     }
 
-    fun removeTask(item: Node, taskId: Long) {
+    fun removeTask(item: Node, taskId: Int) {
         val session = findSession(item) ?: return
         val tasks = session.tasks.value.toMutableList()
-        tasks.removeOneIf { it.id == taskId }
+        tasks.removeOneIf { it.uniqueId == taskId }
         session.tasks.value = tasks
     }
 
-    fun search(item: Node, params: FinderQueryParams) {
+    fun search(item: Node, params: SearchParams) {
         val session = findSession(item) ?: return
         val taskProgress = session.addProgressTask(params)
         val taskDone = session.searchInside(taskProgress)
@@ -118,8 +107,8 @@ class TextViewerService(
         return true
     }
 
-    private fun TextViewerSession.addProgressTask(params: FinderQueryParams): SearchTask.Progress {
-        val task = SearchTask.Progress(params)
+    private fun TextViewerSession.addProgressTask(params: SearchParams): SearchTask.Progress {
+        val task = SearchTask.Progress(isLocal = true, params, SearchResult.TextSearchResult())
         tasks.run {
             val tasks = value.toMutableList()
             tasks.add(0, task)
@@ -155,16 +144,17 @@ class TextViewerService(
         }
         return if (output.success || output.code == 1 && output.error.isEmpty()) {
             val indexes = lineIndexToMatches.keys.sorted()
-            SearchTask.Done(task.queryId, isRemovable = true, params, count, lineIndexToMatches, indexes)
+            val result = SearchResult.TextSearchResult(count, lineIndexToMatches, indexes)
+            task.toDone(isCompleted = true, result)
         } else  {
             logE("searchInFile !success, error: ${output.error}")
-            SearchTask.Error(task.queryId, params, output.error)
+            task.toError(output.error)
         }
     }
 
     private fun TextViewerSession.finishTask(task: SearchTask.Ended) {
         tasks.run {
-            val index = value.indexOfFirst { it.queryId == task.queryId }
+            val index = value.indexOfFirst { it.uuid == task.uuid }
             if (index < 0) return logE("No Progress task with query ${task.params.query}")
             val tasks = value.toMutableList()
             tasks[index] = task

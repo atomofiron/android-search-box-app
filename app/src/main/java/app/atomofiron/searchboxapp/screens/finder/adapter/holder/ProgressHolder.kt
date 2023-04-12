@@ -5,10 +5,10 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
 class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListener) : CardViewHolder(parent, layoutId) {
@@ -35,26 +35,20 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
     override fun onBind(item: FinderStateItem, position: Int) {
         item as FinderStateItem.ProgressItem
         val task = item.task
-        val text = when {
-            task.isLocal -> task.count.toString()
-            else -> "${task.results.size}/${task.count}"
-        }
-        tvStatus.text = text
+        tvStatus.text = task.result.getProgress() + task.javaClass.simpleName
         btnAction.isActivated = !task.inProgress
         btnAction.isEnabled = true
         bView.isInvisible = !task.inProgress
 
-        val idLabel = when {
-            task.inProgress -> R.string.look
-            task.error != null -> R.string.error
-            task.isDone -> R.string.done
-            else -> R.string.stopped
+        val idLabel = when (task) {
+            is SearchTask.Progress -> R.string.look
+            is SearchTask.Error -> R.string.error
+            is SearchTask.Done -> if (task.isCompleted) R.string.done else R.string.stopped
         }
-        val colorLabel = when {
-            task.inProgress -> context.findColorByAttr(R.attr.colorAccent)
-            task.error != null -> ContextCompat.getColor(context, R.color.accent_red)
-            task.isDone -> context.findColorByAttr(R.attr.colorAccent)
-            else ->  ContextCompat.getColor(context, R.color.accent_yellow)
+        val colorLabel = when (task) {
+            is SearchTask.Progress -> context.findColorByAttr(R.attr.colorAccent)
+            is SearchTask.Error -> ContextCompat.getColor(context, R.color.accent_red)
+            is SearchTask.Done -> if (task.isCompleted) context.findColorByAttr(R.attr.colorAccent) else ContextCompat.getColor(context, R.color.accent_yellow)
         }
         tvLabel.setText(idLabel)
         tvLabel.setTextColor(colorLabel)
@@ -64,7 +58,7 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
             else -> R.string.remove
         }
         btnAction.setText(idAction)
-        btnAction.isVisible = !task.isDone || task.isRemovable
+        //btnAction.isVisible = !task.isDone || task.isRemovable
     }
 
     interface OnActionListener {

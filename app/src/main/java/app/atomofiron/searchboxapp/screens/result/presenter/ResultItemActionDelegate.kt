@@ -7,7 +7,7 @@ import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
 import app.atomofiron.searchboxapp.screens.result.ResultViewState
-import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
+import app.atomofiron.searchboxapp.screens.result.adapter.ResultItem
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
 
 class ResultItemActionDelegate(
@@ -20,7 +20,7 @@ class ResultItemActionDelegate(
     override fun onItemClick(item: Node) {
         if (item.isFile && item.content is NodeContent.File.Text) {
             val task = viewModel.task.value
-            router.openFile(item.path, task.id)
+            router.openFile(item.path, task.uniqueId)
         } else {
             // todo open dir
         }
@@ -43,5 +43,5 @@ class ResultItemActionDelegate(
         viewModel.enableOptions.value = viewModel.checked.isNotEmpty()
     }
 
-    override fun onItemVisible(item: FinderResultItem.Item) = interactor.cacheFile(item)
+    override fun onItemVisible(item: ResultItem.Item) = interactor.cacheItem(item)
 }

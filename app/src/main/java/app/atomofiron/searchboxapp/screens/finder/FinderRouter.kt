@@ -25,7 +25,7 @@ class FinderRouter(fragment: WeakProperty<out Fragment>) : BaseRouter(fragment) 
 
     fun showSettings() = navigate(R.id.preferenceFragment)
 
-    fun showResult(taskId: Long) = navigate(R.id.resultFragment, ResultPresenterParams.arguments(taskId))
+    fun showResult(taskId: Int) = navigate(R.id.resultFragment, ResultPresenterParams.arguments(taskId))
 
     fun showSystemPermissionsAppSettings() {
         activity {

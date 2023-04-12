@@ -29,7 +29,7 @@ class ResultRouter(property: WeakProperty<out Fragment>) : BaseRouter(property) 
         return success
     }
 
-    fun openFile(path: String, taskId: Long) {
+    fun openFile(path: String, taskId: Int) {
         val arguments = TextViewerParams.arguments(path, taskId)
         navigate(R.id.textViewerFragment, arguments)
     }

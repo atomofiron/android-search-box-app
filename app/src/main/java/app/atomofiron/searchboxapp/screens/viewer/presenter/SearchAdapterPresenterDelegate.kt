@@ -5,7 +5,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
+import app.atomofiron.searchboxapp.model.finder.SearchParams
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
@@ -55,7 +55,7 @@ class SearchAdapterPresenterDelegate(
 
     override fun onSearchClick(value: String) {
         val config = viewState.getUniqueItem(FinderStateItem.ConfigItem::class)
-        val params = FinderQueryParams(value, config.ignoreCase, config.useRegex)
+        val params = SearchParams(value, config.ignoreCase, config.useRegex)
         interactor.search(viewState.item.value, params)
     }
 
@@ -71,7 +71,7 @@ class SearchAdapterPresenterDelegate(
     }
 
     override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {
-        interactor.removeTask(viewState.item.value, item.task.id)
+        interactor.removeTask(viewState.item.value, item.task.uniqueId)
         viewState.dropTask()
     }
 

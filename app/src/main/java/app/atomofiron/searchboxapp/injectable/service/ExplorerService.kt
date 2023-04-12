@@ -8,6 +8,7 @@ import android.os.Environment
 import android.os.StatFs
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.set
+import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
@@ -391,7 +392,6 @@ class ExplorerService(
                     level.children.add(index, item)
                 }
             }
-            explorerStore.actions.emit(NodeAction.Inserted(item.uniqueId))
         }
     }
 
@@ -433,6 +433,10 @@ class ExplorerService(
         return makeChecked
     }
 
+    suspend fun deleteEveryWhere(items: List<Node>) {
+        // todo deleteEveryWhere
+    }
+
     suspend fun tryDelete(key: NodeTabKey, its: List<Node>) {
         var mediaRootAffected: NodeRoot? = null
         val items = mutableListOf<Node>()
@@ -458,15 +462,12 @@ class ExplorerService(
         }
         val jobs = items.map { item ->
             scope.launch {
-                delay(1000)
+                if (BuildConfig.DEBUG) delay(1000)
                 val result = item.delete(config.useSu)
                 withGarden(key) { tab ->
                     tab.tree.replaceItem(item.uniqueId, item.parentPath, result)
                     states.updateState(item.uniqueId) { null }
-                    when (result) {
-                        null -> explorerStore.actions.emit(NodeAction.Removed(item.uniqueId))
-                        else -> explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
-                    }
+                    explorerStore.removed.emit(item)
                     tab.render()
                 }
             }
@@ -679,7 +680,6 @@ class ExplorerService(
                 updated = updated.copy(children = updated.children?.copy(isOpened = current.isOpened))
             }
             if (!predicate(updated)) return updated
-            explorerStore.actions.emit(NodeAction.Updated(item.uniqueId))
         }
         return updated
     }

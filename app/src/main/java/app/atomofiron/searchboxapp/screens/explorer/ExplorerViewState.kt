@@ -28,7 +28,6 @@ class ExplorerViewState(
     val scrollTo = ChannelFlow<Node>()
     val itemComposition = DeferredStateFlow<ExplorerItemComposition>()
     val current: StateFlow<Node?> = explorerStore.current
-    val actions: Flow<NodeAction> = explorerStore.actions
     val alerts: Flow<NodeError> = explorerStore.alerts
 
     val firstTab = NodeTabKey(FIRST_TAB, index = 0)

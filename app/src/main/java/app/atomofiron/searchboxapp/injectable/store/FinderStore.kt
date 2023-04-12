@@ -1,43 +1,63 @@
 package app.atomofiron.searchboxapp.injectable.store
 
-import app.atomofiron.common.util.flow.*
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.SearchResult
-import app.atomofiron.searchboxapp.model.finder.FinderTask
-import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
-import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import kotlinx.coroutines.CoroutineScope
-import java.util.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class FinderStore(
     private val scope: CoroutineScope,
 ) {
-    private val mutableTasks = mutableListOf<MutableFinderTask>()
-    val tasks: List<FinderTask> = mutableTasks
-    val notifications = ChannelFlow<FinderTaskChange>()
+    private val mutex = Mutex()
+    private val mutableTasks = MutableStateFlow(listOf<SearchTask>())
+    val tasks: StateFlow<List<SearchTask>> = mutableTasks
 
-    fun add(item: MutableFinderTask) {
-        mutableTasks.add(item)
-        notifications[scope] = FinderTaskChange.Add(item)
+    fun add(item: SearchTask) {
+        mutableTasks.updateList {
+            add(item)
+        }
     }
 
-    fun drop(item: FinderTask) {
-        mutableTasks.remove(item)
-        notifications[scope] = FinderTaskChange.Drop(item)
+    fun drop(item: SearchTask) {
+        mutableTasks.updateList {
+            remove(item)
+        }
     }
 
-    fun dropTaskError(taskId: Long) {
-        val task = mutableTasks.find { it.id == taskId }
-        task?.dropError()
+    fun addOrUpdate(item: SearchTask) {
+        mutableTasks.updateList {
+            when (val index = indexOfFirst { it.uuid == item.uuid }) {
+                -1 -> add(item)
+                else -> set(index, item)
+            }
+        }
     }
 
-    fun notifyObservers() {
-        notifications[scope] = FinderTaskChange.Update(tasks)
+    fun deleteResultFromTasks(item: Node) {
+        mutableTasks.updateList {
+            forEachIndexed { index, task ->
+                val result = task.result as? SearchResult.FinderResult
+                result ?: return@forEachIndexed
+                val new = result.removeItem(item)
+                if (new !== result) {
+                    this[index] = task.copyWith(result)
+                }
+            }
+        }
     }
 
-    fun deleteResultFromTask(item: SearchResult, uuid: UUID) {
-        val task = mutableTasks.find { it.uuid == uuid }
-        task ?: return
-        task.results.remove(item)
-        notifications[scope] = FinderTaskChange.Update(listOf(task))
+    private fun <T> MutableStateFlow<List<T>>.updateList(action: MutableList<T>.(current: List<T>) -> Unit) {
+        scope.launch {
+            mutex.withLock {
+                value = value.toMutableList().apply {
+                    action(value)
+                }
+            }
+        }
     }
 }

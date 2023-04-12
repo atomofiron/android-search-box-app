@@ -15,7 +15,7 @@ class FinderAdapter : ListAdapter<FinderStateItem, GeneralHolder<FinderStateItem
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int): Long = currentList[position].stableId
+    override fun getItemId(position: Int): Long = currentList[position].stableId.toLong()
 
     override fun getItemViewType(position: Int): Int = currentList[position].layoutId
 

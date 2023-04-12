@@ -47,10 +47,10 @@ class ResultCurtainMenuDelegate(
         val items = data.items
         when (id) {
             R.id.menu_copy_path -> {
-                interactor.copyToClipboard(items.first() as SearchResult)
+                interactor.copyToClipboard(items.first())
                 viewState.sendAlert(resources.getString(R.string.copied))
             }
-            R.id.menu_remove -> interactor.deleteItems(items, viewState.task.value.uuid)
+            R.id.menu_remove -> interactor.deleteItems(items)
         }
     }
 

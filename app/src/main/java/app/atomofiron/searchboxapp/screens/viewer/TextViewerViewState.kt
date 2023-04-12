@@ -3,7 +3,7 @@ package app.atomofiron.searchboxapp.screens.viewer
 import app.atomofiron.common.util.flow.ChannelFlow
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.finder.FinderTask
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
@@ -56,10 +56,12 @@ class TextViewerViewState(
     fun changeCursor(increment: Boolean): Int {
         val none = -1
         val cursor = matchesCursor.value
-        val task = currentTask.value ?: return none
-        val matchesMap = currentTask.value?.matchesMap ?: return none
+        val result = currentTask.value?.result as SearchResult.TextSearchResult?
+        result ?: return none
+        val matchesMap = result.matchesMap
+        val indexes = result.indexes
         if (cursor.isEmpty) {
-            matchesCursor.value = MatchCursor(lineIndex = task.indexes.first(), matchIndex = 0)
+            matchesCursor.value = MatchCursor(lineIndex = indexes.first(), matchIndex = 0)
             status.value = status.value.copy(count = 1)
             return none
         }
@@ -70,17 +72,17 @@ class TextViewerViewState(
             matchIndex++
             val matches = matchesMap[lineIndex] ?: return none
             if (matchIndex == matches.size) {
-                val index = task.indexes.indexOf(lineIndex)
-                if (index == task.indexes.lastIndex) return none
-                lineIndex = task.indexes[index.inc()]
+                val index = indexes.indexOf(lineIndex)
+                if (index == indexes.lastIndex) return none
+                lineIndex = indexes[index.inc()]
                 matchIndex = 0
             }
         } else {
             matchIndex--
             if (matchIndex < 0) {
-                val index = task.indexes.indexOf(lineIndex)
+                val index = indexes.indexOf(lineIndex)
                 if (index <= 0) return none
-                lineIndex = task.indexes[index.dec()]
+                lineIndex = indexes[index.dec()]
                 matchIndex = matchesMap[lineIndex]!!.lastIndex
             }
         }
@@ -94,7 +96,7 @@ class TextViewerViewState(
         return none
     }
 
-    fun setTasks(tasks: List<FinderTask>) {
+    fun setTasks(tasks: List<SearchTask>) {
         val items = tasks.map { FinderStateItem.ProgressItem(it) }
         progressItems.clear()
         progressItems.addAll(items)

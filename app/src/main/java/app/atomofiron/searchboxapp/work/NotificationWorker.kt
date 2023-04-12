@@ -29,7 +29,6 @@ class NotificationWorker(
 
         while (!isStopped) {
             Thread.sleep(PERIOD)
-            finderStore.notifyObservers()
         }
 
         return Result.success()

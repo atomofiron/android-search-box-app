@@ -14,6 +14,7 @@ import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.utils.updateItem
@@ -104,7 +105,8 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     }
 
     private fun onTaskChanged(task: SearchTask.Done?) {
-        viewerAdapter.setMatches(task?.matchesMap)
+        val matches = (task?.result as SearchResult.TextSearchResult?)?.matchesMap
+        viewerAdapter.setMatches(matches)
         val iconId = if (task == null) R.drawable.ic_back else R.drawable.ic_cross
         binding.toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), iconId)
     }

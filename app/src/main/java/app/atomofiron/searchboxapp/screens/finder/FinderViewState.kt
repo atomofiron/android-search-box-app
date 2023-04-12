@@ -6,7 +6,6 @@ import app.atomofiron.common.util.flow.EventFlow
 import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsState
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsStateDelegate
@@ -45,26 +44,6 @@ class FinderViewState(
             currentDir != null -> {
                 targetItems.add(FinderStateItem.TargetItem(currentDir))
                 targets.add(currentDir)
-            }
-        }
-        updateState()
-    }
-
-    fun onFinderTaskUpdate(change: FinderTaskChange) {
-        when (change) {
-            is FinderTaskChange.Add -> {
-                val item = FinderStateItem.ProgressItem(change.task)
-                progressItems.add(item)
-            }
-            is FinderTaskChange.Update -> {
-                val items = change.tasks.map { FinderStateItem.ProgressItem(it) }
-                progressItems.clear()
-                progressItems.addAll(items)
-            }
-            is FinderTaskChange.Drop -> {
-                val index = progressItems.indexOfFirst { it.task.id == change.task.id }
-                // todo wtf
-                progressItems.removeAt(index)
             }
         }
         updateState()

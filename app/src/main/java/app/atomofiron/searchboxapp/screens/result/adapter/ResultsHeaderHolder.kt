@@ -7,8 +7,8 @@ import app.atomofiron.searchboxapp.R
 class ResultsHeaderHolder(itemView: View) : ResultsHolder(itemView) {
     private val tvTitle = itemView.findViewById<TextView>(R.id.item_tv_title)
 
-    override fun onBind(item: FinderResultItem, position: Int) {
-        item as FinderResultItem.Header
+    override fun onBind(item: ResultItem, position: Int) {
+        item as ResultItem.Header
 
         val string = StringBuilder()
         if (item.dirsCount > 0) {

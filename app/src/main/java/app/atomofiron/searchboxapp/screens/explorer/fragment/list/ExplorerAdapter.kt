@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.explorer.NodeAction
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerItemViewFactory
@@ -16,7 +15,6 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.Explore
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.NodeCallback
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.RecycleItemViewFactory
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isDot
-import java.util.LinkedList
 
 class ExplorerAdapter : ListAdapter<Node, GeneralHolder<Node>>(AsyncDifferConfig.Builder(NodeCallback()).build()) {
 
@@ -85,11 +83,5 @@ class ExplorerAdapter : ListAdapter<Node, GeneralHolder<Node>>(AsyncDifferConfig
         if (holder.bindingAdapterPosition > 0) {
             itemActionListener.onItemVisible(getItem(holder.bindingAdapterPosition))
         }
-    }
-
-    private val actions = LinkedList<NodeAction>()
-
-    fun onAction(action: NodeAction) {
-        actions.add(action)
     }
 }

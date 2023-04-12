@@ -1,41 +1,52 @@
 package app.atomofiron.searchboxapp.work
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.work.Data
+import androidx.work.ForegroundInfo
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import app.atomofiron.common.util.ServiceConnectionImpl
-import app.atomofiron.common.util.findColorByAttr
-import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.android.ForegroundService
+import app.atomofiron.searchboxapp.*
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
-import app.atomofiron.searchboxapp.logE
-import app.atomofiron.searchboxapp.logI
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.finder.SearchResult
-import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
+import app.atomofiron.searchboxapp.model.finder.ItemCounter
+import app.atomofiron.searchboxapp.model.finder.SearchParams
+import app.atomofiron.searchboxapp.model.finder.SearchResult.FinderResult
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
+import app.atomofiron.searchboxapp.model.textviewer.toDone
+import app.atomofiron.searchboxapp.model.textviewer.toError
 import app.atomofiron.searchboxapp.screens.main.MainActivity
-import app.atomofiron.searchboxapp.updateNotificationChannel
 import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 class FinderWorker(
     private val context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : Worker(context, workerParams) {
     companion object {
+        @SuppressLint("InlinedApi")
+        private const val UPDATING_FLAG = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+
         private const val UNDEFINED = -1
+        private const val PERIOD = 100L
 
         private const val KEY_EXCEPTION = "KEY_EXCEPTION"
 
@@ -70,7 +81,7 @@ class FinderWorker(
     }
     private var useSu = false
     private var useRegex = false
-    private lateinit var query: String
+    private val query: String = inputData.getString(KEY_QUERY) ?: ""
     private lateinit var pattern: Pattern
     private var maxSize = UNDEFINED.toLong()
     private var ignoreCase = false
@@ -78,17 +89,23 @@ class FinderWorker(
     private var forContent = false
     private var maxDepth = UNDEFINED
 
-    private val task: MutableFinderTask by lazy(LazyThreadSafetyMode.NONE) {
-        val params = FinderQueryParams(query, useRegex, ignoreCase)
-        MutableFinderTask(id, params)
-    }
-    private val connection = ServiceConnectionImpl()
+    private var task: SearchTask = SearchTask.Progress(
+        id, isLocal = false,
+        SearchParams(query, useRegex, ignoreCase),
+        if (forContent) FinderResult.forContent() else FinderResult.forNames(),
+    )
     private var process: Process? = null
+    private var delayedJob: Job? = null
+    private val cacheConfig by lazy(LazyThreadSafetyMode.NONE) { CacheConfig(preferenceStore.useSu.value) }
 
     @Inject
     lateinit var finderStore: FinderStore
     @Inject
     lateinit var notificationManager: NotificationManager
+    @Inject
+    lateinit var scope: CoroutineScope
+    @Inject
+    lateinit var preferenceStore: PreferenceStore
 
     init {
         DaggerInjector.appComponent.inject(this)
@@ -125,7 +142,22 @@ class FinderWorker(
             val output = Shell.exec(command, useSu, processObserver, forContentLineListener)
             if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
-                task.error = output.error
+                updateTask {
+                    toError(output.error)
+                }
+            }
+        }
+    }
+
+    private fun updateTask(now: Boolean = false, action: SearchTask.() -> SearchTask) {
+        task = task.action()
+        if (now) {
+            delayedJob?.cancel()
+            finderStore.addOrUpdate(task)
+        } else if (delayedJob?.isActive != true) {
+            delayedJob = scope.launch {
+                sleep(PERIOD)
+                finderStore.addOrUpdate(task)
             }
         }
     }
@@ -137,7 +169,6 @@ class FinderWorker(
             val path = line.substring(0, index)
             addToResults(path, count)
         }
-        task.count++
     }
 
     private fun searchForName(where: List<Node>) {
@@ -150,7 +181,9 @@ class FinderWorker(
             val output = Shell.exec(command, useSu, processObserver, forNameLineListener)
             if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
-                task.error = output.error
+                updateTask {
+                    toError(output.error)
+                }
             }
         }
     }
@@ -160,25 +193,32 @@ class FinderWorker(
             useRegex && pattern.matcher(line).find() -> addToResults(line)
             !useRegex && line.contains(query, ignoreCase) -> addToResults(line)
         }
-        task.count++
     }
 
-    private fun addToResults(path: String, count: Int = 0) {
-        val xFile = Node(path, content = NodeContent.File.Other)
-        val result = SearchResult(xFile, count)
-        task.results.add(result)
+    private fun addToResults(path: String, count: Int = -1) {
+        val item = Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
+        val itemCounter = ItemCounter(item, count)
+        var result = task.result as FinderResult
+        result = result.add(itemCounter, dCountMax = 1)
+        updateTask {
+            copyWith(result)
+        }
     }
 
     override fun doWork(): Result {
         logI("doWork")
 
-        val queryString = inputData.getString(KEY_QUERY)
+        context.updateNotificationChannel(
+            Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
+            context.getString(R.string.foreground_notification_name),
+        )
+        val info = ForegroundInfo(Const.FOREGROUND_NOTIFICATION_ID, foregroundNotification())
+        setForegroundAsync(info)
 
-        if (queryString.isNullOrEmpty()) {
+        if (query.isEmpty()) {
             logE("Query is empty.")
             return Result.success()
         }
-        query = queryString
 
         useSu = inputData.getBoolean(KEY_USE_SU, useSu)
         useRegex = inputData.getBoolean(KEY_USE_REGEX, useRegex)
@@ -190,21 +230,16 @@ class FinderWorker(
         maxDepth = inputData.getInt(KEY_MAX_DEPTH, UNDEFINED)
 
         finderStore.add(task)
-        val intent = Intent(applicationContext, ForegroundService::class.java)
-        applicationContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
-        val where = ArrayList<Node>()
-        val paths = inputData.getStringArray(KEY_WHERE_PATHS)!!
-        for (i in paths.indices) {
-            val item = Node(paths[i], content = NodeContent.File.Other)
-            where.add(item)
+        val where = inputData.getStringArray(KEY_WHERE_PATHS)!!.map { path ->
+            Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
         }
 
         if (useRegex && !forContent) {
             var flags = 0
             if (isMultiline) flags += Pattern.MULTILINE
             if (ignoreCase) flags += Pattern.CASE_INSENSITIVE
-            pattern = Pattern.compile(queryString, flags)
+            pattern = Pattern.compile(query, flags)
         }
 
         val data = try {
@@ -212,38 +247,39 @@ class FinderWorker(
                 forContent -> searchForContent(where)
                 else -> searchForName(where)
             }
+            updateTask(now = true) {
+                toDone(isCompleted = !isStopped)
+            }
             Data.Builder().build()
         } catch (e: Exception) {
             logI("$e")
-            task.error = e.toString()
+            updateTask(now = true) {
+                toError(e.toString())
+            }
             Data.Builder().putString(KEY_EXCEPTION, e.toString()).build()
         }
 
-        task.isDone = !isStopped
-        task.inProgress = false
-        finderStore.notifyObservers()
-
         showNotification()
-        applicationContext.unbindService(connection)
 
         return Result.success(data)
     }
 
     private fun showNotification() {
-        val id = task.id.toInt()
+        val id = task.uniqueId
         val intent = Intent(context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(context, id, intent, UPDATING_FLAG)
+        val error = (task as? SearchTask.Error)?.error
         val icon = when {
-            task.error != null -> R.drawable.ic_notification_error
+            error != null -> R.drawable.ic_notification_error
             task.isDone -> R.drawable.ic_notification_done
             else -> R.drawable.ic_notification_stopped
         }
         val notification = NotificationCompat.Builder(context, Const.RESULT_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
-                .setContentTitle(context.getString(R.string.search_completed, task.results.size, task.count))
-                .setContentText(task.error)
+                .setContentTitle(context.getString(R.string.search_completed, task.result.getProgress()))
+                .setContentText(error)
                 .setSmallIcon(icon)
-                .setColor(context.findColorByAttr(R.attr.colorPrimary))
+                .setColor(ContextCompat.getColor(context, R.color.day_night_primary))
                 .setContentIntent(pendingIntent)
                 .build()
 
@@ -252,9 +288,21 @@ class FinderWorker(
         context.updateNotificationChannel(
             Const.RESULT_NOTIFICATION_CHANNEL_ID,
             context.getString(R.string.result_notification_name),
-            NotificationManager.IMPORTANCE_DEFAULT,
+            NotificationManagerCompat.IMPORTANCE_DEFAULT,
         )
 
         notificationManager.notify(id, notification)
+    }
+
+    private fun foregroundNotification(): Notification {
+        val intent = Intent(context, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(context, Const.FOREGROUND_INTENT_REQUEST_CODE, intent, UPDATING_FLAG)
+        return NotificationCompat.Builder(context, Const.FOREGROUND_NOTIFICATION_CHANNEL_ID)
+            .setDefaults(Notification.DEFAULT_ALL)
+            .setContentTitle(context.getString(R.string.searching))
+            .setSmallIcon(R.drawable.ic_notification)
+            .setColor(ContextCompat.getColor(context, R.color.day_night_primary))
+            .setContentIntent(pendingIntent)
+            .build()
     }
 }

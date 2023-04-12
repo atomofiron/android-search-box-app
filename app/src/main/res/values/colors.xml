@@ -67,6 +67,8 @@
 	<color name="item_explorer_background_intensive">#80a0a0a0</color>
 
 
+	<color name="day_night_primary">@color/md_theme_light_primary</color>
+
 	<color name="md_theme_light_primary">#006A66</color>
 	<color name="md_theme_light_onPrimary">#FFFFFF</color>
 	<color name="md_theme_light_primaryContainer">#70F7F0</color>

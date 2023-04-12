@@ -1,69 +1,81 @@
 package app.atomofiron.searchboxapp.model.textviewer
 
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
+import app.atomofiron.searchboxapp.model.finder.SearchParams
 import app.atomofiron.searchboxapp.model.finder.SearchResult
-import app.atomofiron.searchboxapp.model.finder.FinderTask
 import java.util.*
 
-sealed class SearchTask(val queryId: Long) : FinderTask {
-    companion object {
-        private fun getInstantId(): Long = System.currentTimeMillis()
-    }
+sealed class SearchTask {
 
-    override val id: Long = getInstantId()
-    override val isLocal = true
+    abstract val uuid: UUID
+    val uniqueId: Int get() = uuid.hashCode()
 
-    class Progress(
-        override val params: FinderQueryParams,
-    ) : SearchTask(queryId = getInstantId()) {
-        override val isRemovable = false
+    abstract val params: SearchParams
+    abstract val result: SearchResult
+    abstract val isLocal: Boolean
+
+    open val inProgress: Boolean get() = false
+    open val isDone: Boolean get() = false
+    open val isError: Boolean get() = false
+
+    val count: Int get() = result.count
+
+    data class Progress(
+        override val uuid: UUID,
+        override val isLocal: Boolean,
+        override val params: SearchParams,
+        override val result: SearchResult,
+    ) : SearchTask() {
         override val inProgress = true
-        override val isDone = false
-        override val count: Int = 0
 
-        override fun areContentsTheSame(other: FinderTask): Boolean = other is Progress
+        constructor(isLocal: Boolean, params: SearchParams, result: SearchResult) : this(UUID.randomUUID(), isLocal, params, result)
+
+        override fun copyWith(result: SearchResult): SearchTask = copy(result = result)
     }
 
-    sealed class Ended(queryId: Long) : SearchTask(queryId) {
-        override val inProgress = false
+    sealed class Ended : SearchTask()
+
+    data class Error(
+        override val uuid: UUID,
+        val error: String,
+        override val isLocal: Boolean,
+        override val params: SearchParams,
+        override val result: SearchResult,
+    ) : Ended() {
+        override val isError = true
+
+        override fun copyWith(result: SearchResult): SearchTask = copy(result = result)
     }
 
-    class Error(
-        queryId: Long,
-        override val params: FinderQueryParams,
-        override val error: String,
-    ) : Ended(queryId) {
-        override val isRemovable = true
-        override val isDone = false
-        override val count: Int = 0
-
-        override fun areContentsTheSame(other: FinderTask): Boolean = other is Error
-    }
-
-    class Done(
-        queryId: Long,
-        override val isRemovable: Boolean,
-        override val params: FinderQueryParams,
-        override val count: Int = 0,
-        /** line index -> matches byteOffset+length */
-        val matchesMap: Map<Int, List<TextLineMatch>>,
-        val indexes: List<Int>,
-    ) : Ended(queryId) {
+    data class Done(
+        override val uuid: UUID,
+        val isCompleted: Boolean,
+        override val isLocal: Boolean,
+        override val params: SearchParams,
+        override val result: SearchResult,
+    ) : Ended() {
         override val isDone = true
 
-        override fun areContentsTheSame(other: FinderTask): Boolean = other is Done
+        override fun copyWith(result: SearchResult): SearchTask = copy(result = result)
     }
 
-    override val uuid: UUID = UUID.randomUUID()
-    override val results: List<SearchResult> = listOf()
-    override val error: String? = null
+    abstract fun copyWith(result: SearchResult): SearchTask
 
-    override fun copyTask(): FinderTask = this
-
-    override fun hashCode(): Int = Objects.hash(this::class, id)
+    override fun hashCode(): Int = Objects.hash(this::class, result.hashCode(), uuid)
 
     override fun equals(other: Any?): Boolean = when {
+        other === this -> true
         other !is SearchTask -> false
-        else -> other.id == id
+        other::class != this::class -> false
+        other.result.count != result.count -> false
+        other.result.countMax != result.countMax -> false
+        else -> other.uuid == uuid
     }
+}
+
+fun SearchTask.toError(error: String, result: SearchResult = this.result): SearchTask.Error {
+    return SearchTask.Error(uuid, error, isLocal, params, result)
+}
+
+fun SearchTask.toDone(isCompleted: Boolean, result: SearchResult = this.result): SearchTask.Done {
+    return SearchTask.Done(uuid, isCompleted, isLocal, params, result)
 }

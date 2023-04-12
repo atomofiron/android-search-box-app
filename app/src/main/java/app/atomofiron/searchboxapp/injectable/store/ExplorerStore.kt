@@ -10,6 +10,5 @@ class ExplorerStore {
     val current = MutableStateFlow<Node?>(null)
     val searchTargets = MutableStateFlow<List<Node>>(listOf())
     val alerts = EventFlow<NodeError>()
-    // todo move
-    val actions = EventFlow<NodeAction>()
+    val removed = EventFlow<Node>()
 }

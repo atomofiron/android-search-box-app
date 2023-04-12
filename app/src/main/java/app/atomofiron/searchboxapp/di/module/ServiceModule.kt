@@ -33,22 +33,21 @@ open class ServiceModule {
     @Provides
     @Singleton
     fun finderService(
+        scoope: CoroutineScope,
         workManager: WorkManager,
         notificationManager: NotificationManager,
         finderStore: FinderStore,
         preferenceStore: PreferenceStore,
-    ): FinderService = FinderService(workManager, notificationManager, finderStore, preferenceStore)
+        explorerStore: ExplorerStore,
+    ): FinderService = FinderService(scoope, workManager, notificationManager, finderStore, preferenceStore, explorerStore)
 
     @Provides
     @Singleton
     fun resultService(
         workManager: WorkManager,
-        resultChannel: ResultChannel,
-        resultStore: ResultStore,
-        finderStore: FinderStore,
         preferenceStore: PreferenceStore,
         clipboardManager: ClipboardManager,
-    ): ResultService = ResultService(workManager, resultChannel, resultStore , finderStore, preferenceStore, clipboardManager)
+    ): ResultService = ResultService(workManager, preferenceStore, clipboardManager)
 
     @Provides
     @Singleton

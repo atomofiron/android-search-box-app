@@ -2,7 +2,7 @@ package app.atomofiron.searchboxapp.injectable.interactor
 
 import app.atomofiron.searchboxapp.injectable.service.FinderService
 import app.atomofiron.searchboxapp.model.explorer.Node
-import app.atomofiron.searchboxapp.model.finder.FinderTask
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import java.util.*
 
 class FinderInteractor(private val finderService: FinderService) {
@@ -12,5 +12,5 @@ class FinderInteractor(private val finderService: FinderService) {
 
     fun stop(uuid: UUID) = finderService.stop(uuid)
 
-    fun drop(task: FinderTask) = finderService.drop(task)
+    fun drop(task: SearchTask) = finderService.drop(task)
 }

@@ -23,8 +23,8 @@ class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
         binder.onItemActionListener = listener
     }
 
-    override fun onBind(item: FinderResultItem, position: Int) {
-        item as FinderResultItem.Item
+    override fun onBind(item: ResultItem, position: Int) {
+        item as ResultItem.Item
         val result = item.item
         binder.onBind(result.item)
         tvCounter.isVisible = result.count > 0

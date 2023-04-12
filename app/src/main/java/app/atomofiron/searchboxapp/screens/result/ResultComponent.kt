@@ -10,6 +10,7 @@ import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.injectable.service.ResultService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
@@ -52,12 +53,10 @@ class ResultModule {
         params: ResultPresenterParams,
         scope: CoroutineScope,
         viewState: ResultViewState,
-        resultStore: ResultStore,
         finderStore: FinderStore,
         preferenceStore: PreferenceStore,
         interactor: ResultInteractor,
         router: ResultRouter,
-        resultChannel: ResultChannel,
         appStore: AppStore,
         itemActionDelegate: ResultItemActionDelegate,
         menuListenerDelegate: ResultCurtainMenuDelegate,
@@ -66,12 +65,10 @@ class ResultModule {
             params,
             scope,
             viewState,
-            resultStore,
             finderStore,
             preferenceStore,
             interactor,
             router,
-            resultChannel,
             appStore,
             itemActionDelegate,
             menuListenerDelegate,
@@ -105,8 +102,12 @@ class ResultModule {
 
     @Provides
     @ResultScope
-    fun interactor(scope: CoroutineScope, resultService: ResultService): ResultInteractor {
-        return ResultInteractor(scope, resultService)
+    fun interactor(
+        scope: CoroutineScope,
+        resultService: ResultService,
+        explorerService: ExplorerService,
+    ): ResultInteractor {
+        return ResultInteractor(scope, resultService, explorerService)
     }
 
     @Provides
@@ -115,16 +116,14 @@ class ResultModule {
 
     @Provides
     @ResultScope
-    fun viewState(
-        params: ResultPresenterParams,
-        scope: CoroutineScope,
-    ): ResultViewState = ResultViewState(params, scope)
+    fun viewState(scope: CoroutineScope): ResultViewState = ResultViewState(scope)
 }
 
 interface ResultDependencies {
     fun finderStore(): FinderStore
     fun preferenceStore(): PreferenceStore
     fun resultService(): ResultService
+    fun explorerService(): ExplorerService
     fun resultStore(): ResultStore
     fun resultChannel(): ResultChannel
     fun appStore(): AppStore

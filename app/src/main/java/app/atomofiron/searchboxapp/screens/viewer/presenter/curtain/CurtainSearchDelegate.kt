@@ -11,6 +11,7 @@ import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
+import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState
 import kotlinx.coroutines.CoroutineScope
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -29,6 +30,9 @@ class CurtainSearchDelegate(
     init {
         finderAdapter.output = output
         viewState.searchItems.collect(scope, collector = finderAdapter::submitList)
+        viewState.searchItems.collect(scope) {
+            val it = it.find { it is FinderStateItem.ProgressItem } as? FinderStateItem.ProgressItem
+        }
         viewState.insertInQuery.collect(scope, collector = ::insertInQuery)
     }
 

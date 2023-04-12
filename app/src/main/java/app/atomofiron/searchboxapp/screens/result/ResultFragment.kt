@@ -18,8 +18,9 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
-import app.atomofiron.searchboxapp.model.finder.FinderTask
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
 import app.atomofiron.searchboxapp.utils.updateItem
 import app.atomofiron.searchboxapp.utils.setState
@@ -37,7 +38,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     private val errorSnackbar by lazy(LazyThreadSafetyMode.NONE) {
         Snackbar.make(requireView(), "", Snackbar.LENGTH_INDEFINITE)
             .setAnchorView(anchorView)
-            .setAction(R.string.dismiss) { presenter.onDropTaskErrorClick() }
+            .setAction(R.string.got_it) { }
     }
     private var snackbarError: String? = null
 
@@ -104,9 +105,9 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         resultAdapter.notifyItemChanged(0)
     }
 
-    private fun NavigationBarView.onTaskChange(task: FinderTask) {
-        val label = "${task.results.size}/${task.count}"
-        val enabled = task.error == null
+    private fun NavigationBarView.onTaskChange(task: SearchTask) {
+        val label = task.result.getProgress()
+        val enabled = !task.isError
         when {
             task.inProgress -> updateItem(R.id.menu_status, R.drawable.progress_loop, label, enabled)
             else -> {
@@ -119,23 +120,26 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             item.isEnabled = task.inProgress
         }
         item = menu.findItem(R.id.menu_export)
-        if (item.isEnabled != task.results.isNotEmpty()) {
-            item.isEnabled = task.results.isNotEmpty()
+        if (item.isEnabled != !task.result.isEmpty) {
+            item.isEnabled = !task.result.isEmpty
         }
     }
 
-    private fun onTaskChange(task: FinderTask) {
+    private fun onTaskChange(task: SearchTask) {
         binding.bottomBar.onTaskChange(task)
         binding.navigationRail.onTaskChange(task)
 
-        resultAdapter.setResults(task.results)
+        resultAdapter.setResult(task.result as SearchResult.FinderResult)
 
-        if (task.results.isNotEmpty()) {
+        if (!task.result.isEmpty) {
             // fix first item offset
             resultAdapter.notifyItemChanged(0)
         }
-        if (task.error != snackbarError) {
-            errorSnackbar.setText(task.error!!).show()
+        if (task is SearchTask.Error && task.error != snackbarError) {
+            snackbarError = task.error
+            errorSnackbar.setText(task.error).show()
+        } else {
+            snackbarError = null
         }
     }
 

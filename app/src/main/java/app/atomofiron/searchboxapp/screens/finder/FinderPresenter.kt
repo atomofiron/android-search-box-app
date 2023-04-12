@@ -36,11 +36,6 @@ class FinderPresenter(
             uniqueItems.add(FinderStateItem.TestItem())
             uniqueItems.add(FinderStateItem.ButtonsItem)
         }
-
-        finderStore.tasks.forEach {
-            viewState.progressItems.add(FinderStateItem.ProgressItem(it))
-        }
-
         onSubscribeData()
         viewState.switchConfigItemVisibility()
     }
@@ -74,10 +69,10 @@ class FinderPresenter(
                 viewState.updateTargets(currentDir, it)
             }
         }
-        finderStore.notifications.collect(scope) {
-            scope.launch {
-                viewState.onFinderTaskUpdate(it)
-            }
+        finderStore.tasks.collect(scope) { tasks ->
+            viewState.progressItems.clear()
+            viewState.progressItems.addAll(tasks.map { FinderStateItem.ProgressItem(it) })
+            viewState.updateState()
         }
     }
 

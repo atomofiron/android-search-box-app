@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder.adapter
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
@@ -11,10 +12,7 @@ class FinderDiffUtilCallback : DiffUtil.ItemCallback<FinderStateItem>() {
         else -> true
     }
 
-    override fun areContentsTheSame(oldItem: FinderStateItem, newItem: FinderStateItem): Boolean {
-        return when (oldItem) {
-            is FinderStateItem.ProgressItem -> false
-            else -> oldItem.hashCode() == newItem.hashCode()
-        }
-    }
+    @SuppressLint("DiffUtilEquals")
+    // all child classes are 'data classes'
+    override fun areContentsTheSame(oldItem: FinderStateItem, newItem: FinderStateItem): Boolean = oldItem == newItem
 }
