@@ -118,9 +118,10 @@ object Shell {
 
             val tik = System.currentTimeMillis()
 
+            val reader = inputStream.reader()
             when (forEachLine) {
-                null -> output = inputStream.reader().readText().replace(oneByteNbps, twoBytesNbps)
-                else -> InputStreamReader(inputStream, Charsets.UTF_8).forEachLine(forEachLine)
+                null -> output = reader.readText().replace(oneByteNbps, twoBytesNbps)
+                else -> reader.forEachLine(forEachLine)
             }
             error = errorStream.reader().readText()
             code = process.waitFor()
