@@ -210,6 +210,18 @@ class FinderWorker(
     }
 
     override suspend fun doWork(): Result {
+        return coroutineScope {
+            async {
+                work()
+            }.also { job ->
+                job.invokeOnCompletion { throwable ->
+                    if (throwable is CancellationException) process?.destroy()
+                }
+            }.await()
+        }
+    }
+
+    private suspend fun CoroutineScope.work(): Result {
         logI("doWork")
 
         context.updateNotificationChannel(
@@ -220,16 +232,15 @@ class FinderWorker(
         setForegroundAsync(info)
 
         if (query.isEmpty()) {
-            logE("Query is empty.")
+            logE("Query is empty")
             return Result.success()
         }
-
-        finderStore.add(task)
-
-        val where = inputData.getStringArray(KEY_WHERE_PATHS)!!.map { path ->
-            Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
-        }
         val data = try {
+            finderStore.add(task)
+
+            val where = inputData.getStringArray(KEY_WHERE_PATHS)!!.map { path ->
+                Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
+            }
             when {
                 forContent -> searchForContent(where)
                 else -> searchForName(where)
@@ -237,6 +248,12 @@ class FinderWorker(
             updateTask(now = true) {
                 toDone(isCompleted = !isStopped)
             }
+            Data.Builder().build()
+        } catch (e: CancellationException) {
+            updateTask(now = true) {
+                toDone(isCompleted = false)
+            }
+            process?.destroy()
             Data.Builder().build()
         } catch (e: Exception) {
             logI("$e")
