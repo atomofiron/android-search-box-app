@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.textview.MaterialTextView
-    android:id="@+id/result_tv_count"
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom|start"
-    android:layout_marginStart="2dp"
-    android:layout_marginBottom="2dp"
-    />
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
+    >
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/result_tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginEnd="@dimen/common_margin_three_quarter"
+        app:layout_constraintEnd_toEndOf="@+id/item_explorer_iv_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+</merge>

@@ -12,12 +12,10 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.ExplorerI
 class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
     private val binder = ExplorerItemBinderImpl(itemView)
 
-    init {
-        itemView as ViewGroup
-        LayoutInflater.from(itemView.context).inflate(R.layout.item_result_count, itemView)
-    }
-
-    private val tvCounter = itemView.findViewById<TextView>(R.id.result_tv_count)
+    private val tvCounter = LayoutInflater
+        .from(itemView.context)
+        .inflate(R.layout.item_result_count, itemView as ViewGroup)
+        .findViewById<TextView>(R.id.result_tv_count)
 
     fun setOnItemActionListener(listener: ExplorerItemBinderImpl.ExplorerItemBinderActionListener?) {
         binder.onItemActionListener = listener
