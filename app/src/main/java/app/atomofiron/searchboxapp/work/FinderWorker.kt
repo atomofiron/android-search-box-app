@@ -130,10 +130,9 @@ class FinderWorker(
                 !useRegex && ignoreCase -> Shell[Shell.GREP_CS_I]
                 else -> Shell[Shell.GREP_CS]
             }
-            val isTextFile = item.isFile && item.content is NodeContent.File.Text
             val command = when {
                 item.isDirectory -> template.format(item.path, maxDepth, query.escapeQuotes())
-                isTextFile -> template.format(query.escapeQuotes(), item.path)
+                item.isFile -> template.format(query.escapeQuotes(), item.path)
                 else -> continue@forLoop
             }
             val output = Shell.exec(command, useSu, processObserver, forContentLineListener)

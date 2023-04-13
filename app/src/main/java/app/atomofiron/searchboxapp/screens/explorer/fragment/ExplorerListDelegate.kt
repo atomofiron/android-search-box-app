@@ -26,7 +26,7 @@ class ExplorerListDelegate(
 
     private val headerDelegate = ExplorerHeaderDelegate(recyclerView, headerView, nodeAdapter)
     private val rootMarginDecorator = RootItemMarginDecorator()
-    private val backgroundDecorator = ItemBackgroundDecorator()
+    private val backgroundDecorator = ItemBackgroundDecorator(evenNumbered = true)
     private val borderDecorator = ItemBorderDecorator(nodeAdapter, headerView, headerDelegate::onDecoratorDraw)
 
     init {

@@ -27,18 +27,19 @@ sealed class SearchResult(
     }
 
     class FinderResult private constructor(
-        count: Int,
-        val tuples: List<ItemCounter>,
-        countMax: Int,
+        val forContent: Boolean,
+        count: Int = 0,
+        val tuples: List<ItemCounter> = listOf(),
+        countMax: Int = 0,
     ) : SearchResult(if (count < 0) tuples.size else count, countMax) {
         companion object {
-            fun forContent() = FinderResult(0, listOf(), 0)
-            fun forNames() = FinderResult(-1, listOf(), 0)
+            fun forContent() = FinderResult(forContent = true)
+            fun forNames() = FinderResult(forContent = false)
         }
 
-        override fun getProgress(): String = when (count < 0) {
-            true -> "${tuples.size}/$countMax"
-            else -> "$count/${tuples.size}/$countMax"
+        override fun getProgress(): String = when {
+            forContent -> "$count/${tuples.size}/$countMax"
+            else -> "${tuples.size}/$countMax"
         }
 
         fun toMarkdown(): String {
@@ -57,14 +58,14 @@ sealed class SearchResult(
             val items = tuples.toMutableList()
             val removed = items.removeAt(index)
             val count = count - removed.count
-            return FinderResult(count, items, countMax.dec())
+            return FinderResult(forContent, count, items, countMax.dec())
         }
 
         fun add(itemCounter: ItemCounter, dCountMax: Int): FinderResult {
             val items = tuples.toMutableList()
             val count = count + itemCounter.count
             items.add(itemCounter)
-            return FinderResult(count, items, countMax + dCountMax)
+            return FinderResult(forContent, count, items, countMax + dCountMax)
         }
     }
 
@@ -82,7 +83,7 @@ sealed class SearchResult(
 
 class ItemCounter(
     val item: Node,
-    val count: Int = -1,
+    val count: Int = 1,
 ) {
     val path = item.path
     val isDirectory: Boolean = item.isDirectory

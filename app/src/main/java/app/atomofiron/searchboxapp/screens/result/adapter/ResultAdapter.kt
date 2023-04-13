@@ -22,7 +22,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, ResultItem>() {
     private lateinit var composition: ExplorerItemComposition
 
     private val gravityDecorator = ItemGravityDecorator()
-    private val backgroundDecorator = ItemBackgroundDecorator()
+    private val backgroundDecorator = ItemBackgroundDecorator(evenNumbered = false)
 
     private val header = ResultItem.Header(0, 0)
 
