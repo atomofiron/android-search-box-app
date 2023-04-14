@@ -4,8 +4,7 @@
     android:id="@+id/item_ll_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/common_margin"
-    android:paddingVertical="@dimen/common_margin_half"
+    android:padding="@dimen/common_margin_half"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     >

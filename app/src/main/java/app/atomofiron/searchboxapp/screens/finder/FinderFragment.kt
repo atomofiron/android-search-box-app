@@ -16,12 +16,10 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentFinderBinding
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
-import app.atomofiron.searchboxapp.model.Screen
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderSpanSizeLookup
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import app.atomofiron.searchboxapp.utils.Util.getSize
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class FinderFragment : Fragment(R.layout.fragment_finder),
@@ -74,7 +72,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         val columnWidth = resources.getDimensionPixelSize(R.dimen.finder_column_width)
         binding.recyclerView.addOnLayoutChangeListener { recyclerView, left, _, right, _, _, _, _, _ ->
             val width = right - left - recyclerView.paddingStart - recyclerView.paddingEnd
-            layoutManager.spanCount = width / columnWidth
+            layoutManager.spanCount = (width / columnWidth).coerceAtLeast(1)
         }
 
         viewState.onViewCollect()

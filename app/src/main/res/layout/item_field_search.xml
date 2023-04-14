@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/common_margin"
-    android:layout_marginHorizontal="@dimen/common_margin"
+    android:layout_marginTop="@dimen/common_margin_half"
+    android:layout_marginHorizontal="@dimen/common_margin_half"
     app:cardCornerRadius="@dimen/common_half_size"
     app:cardElevation="4dp"
     >
