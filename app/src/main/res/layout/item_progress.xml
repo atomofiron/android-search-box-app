@@ -5,29 +5,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/common_margin_half">
+    android:paddingVertical="@dimen/common_margin_three_quarter"
+    android:paddingHorizontal="@dimen/common_margin_extra"
+    >
 
     <app.atomofiron.searchboxapp.custom.view.BallsView
         android:id="@+id/item_explorer_ps"
         android:layout_width="@dimen/common_size"
         android:layout_height="@dimen/common_size"
         app:oneBall="false"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/progress_tv_counter"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/progress_tv_counter"
         app:layout_constraintBottom_toBottomOf="parent"
         />
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/progress_tv_counter"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="36/96"
-        android:textSize="12dp"
+        android:text="[ ]144 [ ]36 [ ]96"
+        android:textSize="@dimen/item_progress_status_counter_size"
         android:gravity="center_horizontal"
         android:textColor="?attr/colorContent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/progress_tv_label"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/progress_btn_action"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="SpUsage"
         />
@@ -37,9 +39,9 @@
         android:layout_height="wrap_content"
         android:text="@string/look"
         android:textColor="?attr/colorAccent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/item_explorer_ps"
         app:layout_constraintBottom_toBottomOf="parent"
         />
     <com.google.android.material.button.MaterialButton
@@ -48,9 +50,8 @@
         android:layout_height="wrap_content"
         android:text="@string/stop"
         android:paddingHorizontal="@dimen/common_margin"
-        app:layout_constraintLeft_toRightOf="@+id/item_explorer_ps"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

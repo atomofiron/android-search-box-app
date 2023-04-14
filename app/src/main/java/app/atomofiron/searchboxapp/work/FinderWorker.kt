@@ -277,9 +277,10 @@ class FinderWorker(
             task.isDone -> R.drawable.ic_notification_done
             else -> R.drawable.ic_notification_stopped
         }
+        val title = task.result.getCounters().joinToString(separator = " / ") { it.toString() }
         val notification = NotificationCompat.Builder(context, Const.RESULT_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
-                .setContentTitle(context.getString(R.string.search_completed, task.result.getProgress()))
+                .setContentTitle(title)
                 .setContentText(error)
                 .setSmallIcon(icon)
                 .setColor(ContextCompat.getColor(context, R.color.day_night_primary))

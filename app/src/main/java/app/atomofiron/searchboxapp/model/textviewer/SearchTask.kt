@@ -16,6 +16,7 @@ sealed class SearchTask {
     open val inProgress: Boolean get() = false
     open val isDone: Boolean get() = false
     open val isError: Boolean get() = false
+    open val isRemovable: Boolean get() = false
 
     val count: Int get() = result.count
 
@@ -49,6 +50,7 @@ sealed class SearchTask {
     data class Done(
         override val uuid: UUID,
         val isCompleted: Boolean,
+        override val isRemovable: Boolean,
         override val isLocal: Boolean,
         override val params: SearchParams,
         override val result: SearchResult,
@@ -76,6 +78,10 @@ fun SearchTask.toError(error: String, result: SearchResult = this.result): Searc
     return SearchTask.Error(uuid, error, isLocal, params, result)
 }
 
-fun SearchTask.toDone(isCompleted: Boolean, result: SearchResult = this.result): SearchTask.Done {
-    return SearchTask.Done(uuid, isCompleted, isLocal, params, result)
+fun SearchTask.toDone(
+    isCompleted: Boolean,
+    isRemovable: Boolean = true,
+    result: SearchResult = this.result,
+): SearchTask.Done {
+    return SearchTask.Done(uuid, isCompleted, isRemovable, isLocal, params, result)
 }

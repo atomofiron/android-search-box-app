@@ -54,10 +54,11 @@ private fun ItemExplorerBinding.makeOpposite(
             else -> 0f
         }
     }
-    root.background = RippleDrawable(ColorStateList.valueOf(content), drawable, null)
+    val contentColorList = ColorStateList.valueOf(content)
+    root.background = RippleDrawable(contentColorList, drawable, null)
     val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(content, BlendModeCompat.SRC_IN)
     itemExplorerIvIcon.colorFilter = filter
-    itemExplorerCb.buttonTintList = ColorStateList.valueOf(content)
+    itemExplorerCb.buttonTintList = contentColorList
     itemExplorerCb.buttonIconTintList = ColorStateList.valueOf(buttonIcon)
     itemExplorerTvTitle.setTextColor(content)
     itemExplorerTvSize.setTextColor(content)

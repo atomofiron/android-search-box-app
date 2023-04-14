@@ -71,9 +71,10 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             recyclerView.adapter = historyAdapter
         }
 
-        binding.root.addOnLayoutChangeListener { _, left, _, right, _, _, _, _, _ ->
-            val size = resources.getSize(right - left)
-            layoutManager.spanCount = if (size == Screen.Expanded) 2 else 1
+        val columnWidth = resources.getDimensionPixelSize(R.dimen.finder_column_width)
+        binding.recyclerView.addOnLayoutChangeListener { recyclerView, left, _, right, _, _, _, _, _ ->
+            val width = right - left - recyclerView.paddingStart - recyclerView.paddingEnd
+            layoutManager.spanCount = width / columnWidth
         }
 
         viewState.onViewCollect()

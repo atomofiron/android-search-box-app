@@ -106,7 +106,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     }
 
     private fun NavigationBarView.onTaskChange(task: SearchTask) {
-        val label = task.result.getProgress()
+        /*val label = task.result.getCounters()
         val enabled = !task.isError
         when {
             task.inProgress -> updateItem(R.id.menu_status, R.drawable.progress_loop, label, enabled)
@@ -114,7 +114,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
                 statusDrawable.setState(enabled = enabled, activated = task.isDone)
                 updateItem(R.id.menu_status, statusDrawable, label, enabled)
             }
-        }
+        }*/
         var item = menu.findItem(R.id.menu_stop)
         if (item.isEnabled != task.inProgress) {
             item.isEnabled = task.inProgress

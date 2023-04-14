@@ -10,7 +10,7 @@ class TextViewerSession(node: Node) {
     val item = MutableStateFlow(node)
     val reader = File(node.path).inputStream().reader().buffered()
     val textLines = MutableStateFlow<List<TextLine>>(listOf())
-    val textLoading = MutableStateFlow(true)
+    val textLoading = MutableStateFlow(false)
     val tasks = MutableStateFlow<List<SearchTask>>(listOf())
 
     var isFullyRead: Boolean = false

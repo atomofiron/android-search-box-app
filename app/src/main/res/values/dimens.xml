@@ -4,6 +4,7 @@
 	<dimen name="infinity">999dp</dimen>
 	<dimen name="fab_margin">16dp</dimen>
 	<dimen name="corner_radius">16dp</dimen>
+	<dimen name="common_margin_extra">32dp</dimen>
 	<dimen name="common_margin_large">24dp</dimen>
 	<dimen name="common_margin">16dp</dimen>
 	<dimen name="common_margin_three_quarter">12dp</dimen>
@@ -52,6 +53,7 @@
 	<dimen name="bottom_bar_max_width">480dp</dimen>
 	<dimen name="screen_compact">480dp</dimen>
 	<dimen name="screen_medium">600dp</dimen>
+	<dimen name="finder_column_width">320dp</dimen>
 	<dimen name="curtain_max_width">480dp</dimen>
 	<dimen name="curtain_padding_top">24dp</dimen>
 	<dimen name="curtain_padding_bottom">48dp</dimen>
@@ -70,4 +72,5 @@
 	<dimen name="explorer_border_corner_radius">16dp</dimen>
 	<dimen name="curtain_elevation">16dp</dimen>
 	<dimen name="item_root_title">20sp</dimen>
+    <dimen name="item_progress_status_counter_size">12dp</dimen>
 </resources>

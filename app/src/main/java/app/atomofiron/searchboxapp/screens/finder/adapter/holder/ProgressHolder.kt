@@ -1,9 +1,12 @@
 package app.atomofiron.searchboxapp.screens.finder.adapter.holder
 
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ImageSpan
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
@@ -35,7 +38,7 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
     override fun onBind(item: FinderStateItem, position: Int) {
         item as FinderStateItem.ProgressItem
         val task = item.task
-        tvStatus.text = task.result.getProgress()
+        tvStatus.setStatus(task)
         btnAction.isActivated = !task.inProgress
         btnAction.isEnabled = true
         bView.isInvisible = !task.inProgress
@@ -46,9 +49,9 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
             is SearchTask.Done -> if (task.isCompleted) R.string.done else R.string.stopped
         }
         val colorLabel = when (task) {
-            is SearchTask.Progress -> context.findColorByAttr(R.attr.colorAccent)
-            is SearchTask.Error -> ContextCompat.getColor(context, R.color.accent_red)
-            is SearchTask.Done -> if (task.isCompleted) context.findColorByAttr(R.attr.colorAccent) else ContextCompat.getColor(context, R.color.accent_yellow)
+            is SearchTask.Progress,
+            is SearchTask.Done -> context.findColorByAttr(R.attr.colorAccent)
+            is SearchTask.Error -> context.findColorByAttr(R.attr.colorError)
         }
         tvLabel.setText(idLabel)
         tvLabel.setTextColor(colorLabel)
@@ -58,7 +61,23 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
             else -> R.string.remove
         }
         btnAction.setText(idAction)
-        //btnAction.isVisible = !task.isDone || task.isRemovable
+        btnAction.isGone = task.isDone && !task.isRemovable
+    }
+
+    private fun TextView.setStatus(task: SearchTask) {
+        val counters = task.result.getCounters()
+        val status = SpannableStringBuilder(" ")
+        counters.reverse()
+        counters.forEachIndexed { index, it ->
+            status.insert(0, " *$it")
+            val resId = when (index) {
+                0 -> R.drawable.ic_status_file_all
+                1 -> R.drawable.ic_status_file_found
+                else -> R.drawable.ic_status_entry
+            }
+            status.setSpan(ImageSpan(context, resId, ImageSpan.ALIGN_BASELINE), 1, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        text = status
     }
 
     interface OnActionListener {

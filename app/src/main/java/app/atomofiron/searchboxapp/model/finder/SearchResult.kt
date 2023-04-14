@@ -12,7 +12,7 @@ sealed class SearchResult(
 
     val isEmpty: Boolean = count == 0
 
-    abstract fun getProgress(): String
+    abstract fun getCounters(): IntArray
 
     class TextSearchResult(
         count: Int,
@@ -23,7 +23,7 @@ sealed class SearchResult(
 
         constructor() : this(0, mapOf(), listOf())
 
-        override fun getProgress(): String = "$count"
+        override fun getCounters(): IntArray = intArrayOf(count)
     }
 
     class FinderResult private constructor(
@@ -37,9 +37,9 @@ sealed class SearchResult(
             fun forNames() = FinderResult(forContent = false)
         }
 
-        override fun getProgress(): String = when {
-            forContent -> "$count/${tuples.size}/$countMax"
-            else -> "${tuples.size}/$countMax"
+        override fun getCounters(): IntArray = when {
+            forContent -> intArrayOf(count, tuples.size, countMax)
+            else -> intArrayOf(tuples.size, countMax)
         }
 
         fun toMarkdown(): String {
