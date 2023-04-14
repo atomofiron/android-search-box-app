@@ -66,6 +66,10 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
 
     private fun TextView.setStatus(task: SearchTask) {
         val counters = task.result.getCounters()
+        if (counters.size == 1) {
+            text = counters.first().toString()
+            return
+        }
         val status = SpannableStringBuilder(" ")
         counters.reverse()
         counters.forEachIndexed { index, it ->

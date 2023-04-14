@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.setView(this)
         presenter = viewModel.presenter
         viewState = viewModel.viewState
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = presenter.onBackButtonClick()
         })
 
