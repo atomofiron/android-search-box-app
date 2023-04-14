@@ -19,8 +19,9 @@ class TextViewerInteractor(
     /** invoke the callback after success */
     fun readFileToLine(item: Node, index: Int, callback: (() -> Unit)? = null) {
         scope.launch(context) {
-            val success = textViewerService.readFile(item, index)
-            if (success) callback?.invoke()
+            textViewerService.readFile(item, index) { success ->
+                if (success) callback?.invoke()
+            }
         }
     }
 

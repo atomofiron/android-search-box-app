@@ -15,7 +15,9 @@ import app.atomofiron.searchboxapp.utils.escapeQuotes
 import app.atomofiron.searchboxapp.utils.removeOneIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
 
 class TextViewerService(
     private val scope: CoroutineScope,
@@ -47,12 +49,23 @@ class TextViewerService(
     }
 
     /** @return true if success */
-    fun readFile(item: Node, targetLineIndex: Int = 0): Boolean {
-        val session = findSession(item) ?: return false
-        val paginationThreshold = session.textLines.value.size - Const.TEXT_FILE_PAGINATION_STEP_OFFSET
-        return when {
-            targetLineIndex < paginationThreshold -> false
-            else -> session.readNextLines()
+    fun readFile(item: Node, targetLineIndex: Int = 0, callback: ((Boolean) -> Unit)? = null) {
+        val session = findSession(item)
+        if (session == null) {
+            callback?.invoke(false)
+            return
+        }
+        scope.launch(Dispatchers.IO) {
+            session.mutex.withLock {
+                val paginationThreshold = session.textLines.value.size - Const.TEXT_FILE_PAGINATION_STEP_OFFSET
+                when {
+                    session.textLoading.value -> callback?.invoke(false)
+                    session.isFullyRead -> callback?.invoke(false)
+                    targetLineIndex < paginationThreshold -> callback?.invoke(false)
+                    else -> session.readNextLines()
+                }
+                callback?.invoke(true)
+            }
         }
     }
 
@@ -63,16 +76,22 @@ class TextViewerService(
 
     fun removeTask(item: Node, taskId: Int) {
         val session = findSession(item) ?: return
-        val tasks = session.tasks.value.toMutableList()
-        tasks.removeOneIf { it.uniqueId == taskId }
-        session.tasks.value = tasks
+        scope.launch {
+            session.mutex.withLock {
+                val tasks = session.tasks.value.toMutableList()
+                tasks.removeOneIf { it.uniqueId == taskId }
+                session.tasks.value = tasks
+            }
+        }
     }
 
     fun search(item: Node, params: SearchParams) {
         val session = findSession(item) ?: return
-        val taskProgress = session.addProgressTask(params)
-        val taskDone = session.searchInside(taskProgress)
-        session.finishTask(taskDone)
+        scope.launch(Dispatchers.IO) {
+            val taskProgress = session.addProgressTask(params)
+            val taskDone = session.searchInside(taskProgress)
+            session.finishTask(taskDone)
+        }
     }
 
     private fun findSession(item: Node): TextViewerSession? {
@@ -81,9 +100,9 @@ class TextViewerService(
         }
     }
 
-    private fun TextViewerSession.readNextLines(): Boolean {
-        if (isFullyRead || !mutex.tryLock()) return false
+    private suspend fun TextViewerSession.readNextLines() {
         textLoading.value = true
+        delay(3000)
         val lines = ArrayList<TextLine>(Const.TEXT_FILE_PAGINATION_STEP)
         var byteOffset = textLines.value.lastOrNull()?.run { byteOffset + byteCount.inc() } ?: 0
         while (lines.size < Const.TEXT_FILE_PAGINATION_STEP) {
@@ -99,20 +118,20 @@ class TextViewerService(
                 }
             }
         }
-        val textLines = textLines.value.toMutableList()
-        textLines.addAll(lines)
-        this.textLines.value = textLines
+        val text = textLines.value.toMutableList()
+        text.addAll(lines)
+        textLines.value = text
         textLoading.value = false
-        mutex.unlock()
-        return true
     }
 
-    private fun TextViewerSession.addProgressTask(params: SearchParams): SearchTask.Progress {
+    private suspend fun TextViewerSession.addProgressTask(params: SearchParams): SearchTask.Progress {
         val task = SearchTask.Progress(isLocal = true, params, SearchResult.TextSearchResult())
-        tasks.run {
-            val tasks = value.toMutableList()
-            tasks.add(0, task)
-            value = tasks
+        mutex.withLock {
+            tasks.run {
+                val tasks = value.toMutableList()
+                tasks.add(0, task)
+                value = tasks
+            }
         }
         return task
     }
@@ -145,20 +164,22 @@ class TextViewerService(
         return if (output.success || output.code == 1 && output.error.isEmpty()) {
             val indexes = lineIndexToMatches.keys.sorted()
             val result = SearchResult.TextSearchResult(count, lineIndexToMatches, indexes)
-            task.toDone(isCompleted = true, result)
+            task.toDone(isCompleted = true, result = result)
         } else  {
             logE("searchInFile !success, error: ${output.error}")
             task.toError(output.error)
         }
     }
 
-    private fun TextViewerSession.finishTask(task: SearchTask.Ended) {
-        tasks.run {
-            val index = value.indexOfFirst { it.uuid == task.uuid }
-            if (index < 0) return logE("No Progress task with query ${task.params.query}")
-            val tasks = value.toMutableList()
-            tasks[index] = task
-            value = tasks
+    private suspend fun TextViewerSession.finishTask(task: SearchTask.Ended) {
+        mutex.withLock {
+            tasks.run {
+                val index = value.indexOfFirst { it.uuid == task.uuid }
+                if (index < 0) return@run logE("No Progress task with query ${task.params.query}")
+                val tasks = value.toMutableList()
+                tasks[index] = task
+                value = tasks
+            }
         }
     }
 }
