@@ -276,17 +276,19 @@ class OrientationLayoutDelegate constructor(
             }
         }
 
-        fun ViewGroup.setFabSideListener(callback: (side: Side) -> Unit) {
-            val maxSize = resources.getDimensionPixelSize(R.dimen.bottom_bar_max_width)
-            addOnLayoutChangeListener { _, left, top, right, bottom, _, _, _, _ ->
-                val width = right - left
-                val height = bottom - top
-                val atTheBottom = width < height && width < maxSize
-                when {
-                    atTheBottom -> callback(Side.Bottom)
-                    else -> callback(Side.Right)
-                }
+        fun View.setFabSideListener(callback: (side: Side) -> Unit) {
+            var sideWas: Side? = null
+            addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                val side = getFabSide()
+                if (sideWas != side) callback(side)
+                sideWas = side
             }
+        }
+
+        fun View.getFabSide(): Side {
+            val maxSize = resources.getDimensionPixelSize(R.dimen.bottom_bar_max_width)
+            val atTheBottom = width < height && width < maxSize
+            return if (atTheBottom) Side.Bottom else Side.Right
         }
 
         fun JoystickView.syncOrientation(root: FrameLayout) {

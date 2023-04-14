@@ -15,7 +15,6 @@
         android:textSize="@dimen/curtain_title_size"
         android:textColor="?attr/colorContent"
         android:textStyle="bold"
-        android:typeface="monospace"
         android:text="@string/create_a_new"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,7 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/common_margin"
         android:imeOptions="actionDone"
-        android:inputType="textNoSuggestions"
         app:layout_constraintTop_toBottomOf="@+id/explorer_create_tv"
         />
     <com.google.android.material.button.MaterialButton

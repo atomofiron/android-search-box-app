@@ -28,7 +28,6 @@
 
 	<color name="shadow_light">#22000000</color>
 	<color name="shadow_dark">#77000000</color>
-	<color name="latch">#55999999</color>
 
 	<color name="accent_red">#ffad7874</color>
 	<color name="accent_yellow">#ffada874</color>

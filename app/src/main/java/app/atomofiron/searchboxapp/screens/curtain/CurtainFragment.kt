@@ -1,29 +1,38 @@
 package app.atomofiron.searchboxapp.screens.curtain
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.Insets
 import androidx.core.view.*
+import androidx.core.view.WindowInsetsCompat.Type
 import androidx.fragment.app.DialogFragment
 import app.atomofiron.common.arch.*
+import app.atomofiron.common.util.findColorByAttr
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.color.MaterialColors
 import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.common.util.isDarkTheme
+import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.getFabSide
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.setFabSideListener
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Side
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
+import app.atomofiron.searchboxapp.getColorByAttr
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainContentDelegate
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainNode
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.curtain.fragment.TransitionAnimator
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainBackground
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.dispatchChildrenWindowInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 import java.lang.ref.WeakReference
 import kotlin.math.max
 import kotlin.math.min
@@ -33,21 +42,22 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
     TranslucentFragment {
     companion object {
         private const val SAVED_STACK = "SAVED_STACK"
+        private const val MAX_OVERLAY_SATURATION = 200
     }
     private lateinit var binding: FragmentCurtainBinding
     private lateinit var behavior: BottomSheetBehavior<View>
-    private lateinit var curtainBackground: CurtainBackground
     private val stack: MutableList<CurtainNode> = ArrayList()
-    private val insetsCalculator = SheetInsetsCalculator()
     private lateinit var contentDelegate: CurtainContentDelegate
     private lateinit var transitionAnimator: TransitionAnimator
     private var snackbarView = WeakReference<View>(null)
+    private var overlayColor = 0
 
     override val isLightStatusBar: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewModel(this, CurtainViewModel::class, savedInstanceState)
+        overlayColor = requireContext().getColorByAttr(R.attr.colorOverlay)
 
         when (savedInstanceState) {
             null -> stack.add(CurtainNode(viewState.initialLayoutId, view = null, isCancelable = true))
@@ -58,41 +68,72 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        curtainBackground = CurtainBackground(requireContext())
-
-        binding = FragmentCurtainBinding.bind(view)
-        binding.curtainSheet.clipToOutline = true
-        binding.curtainSheet.background = curtainBackground.outline
-        binding.root.background = curtainBackground
-        binding.root.setOnClickListener {
-            tryHide()
-        }
-        binding.root.addOnLayoutChangeListener { root, left, _, right, _, _, _, _, _ ->
-            onRootLayoutChange(root, rootWidth = right - left)
-        }
-
-        val layoutParams = binding.curtainSheet.layoutParams as CoordinatorLayout.LayoutParams
-        behavior = layoutParams.behavior as BottomSheetBehavior
-        behavior.addBottomSheetCallback(BottomSheetCallbackImpl(binding.curtainSheet))
-        behavior.state = BottomSheetBehavior.STATE_HIDDEN
-
-        transitionAnimator = TransitionAnimator(binding, ::updateUi)
-
-        binding.root.insetsProxying()
-        binding.root.setFabSideListener { side ->
-            val padding = when {
-                side.isBottom -> resources.getDimensionPixelSize(R.dimen.navigation_view_size)
-                else -> 0
+        binding = FragmentCurtainBinding.bind(view).apply {
+            curtainSheet.clipToOutline = true
+            curtainSheet.background = CurtainBackground(requireContext())
+            curtainSheet.setOnClickListener { /* intercept clicks */ }
+            root.setOnClickListener {
+                root.setOnClickListener(null)
+                root.setOnLongClickListener(null)
+                root.isClickable = false
+                root.isLongClickable = false
+                tryHide()
             }
-            // todo forward bottom inset for joystick
-            binding.curtainSheet.updatePadding(bottom = padding)
-        }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.curtainSheet, insetsCalculator)
+            root.setOnLongClickListener { true }
+            root.isHapticFeedbackEnabled = false
+            root.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateSnackbarTranslation() }
+            curtainParent.addOnLayoutChangeListener { parent, left, _, right, _, _, _, _, _ ->
+                onCurtainParentChange(parent, rootWidth = right - left)
+            }
+            val layoutParams = curtainSheet.layoutParams as CoordinatorLayout.LayoutParams
+            behavior = layoutParams.behavior as BottomSheetBehavior
+            behavior.addBottomSheetCallback(BottomSheetCallbackImpl(curtainSheet))
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-        onViewCollect()
+            onApplyInsets()
+        }
+        transitionAnimator = TransitionAnimator(binding, ::updateUi)
+        viewState.onViewCollect()
+
+        if (BuildConfig.DEBUG) {
+            showSnackbar {
+                Snackbar.make(it, "Test", Snackbar.LENGTH_INDEFINITE).setAction("Dismiss") {}
+            }
+        }
+    }
+
+    private fun FragmentCurtainBinding.onApplyInsets() {
+        val joystickSize = resources.getDimensionPixelSize(R.dimen.joystick_size)
+        val topPadding = resources.getDimensionPixelSize(R.dimen.curtain_padding_top)
+        root.setFabSideListener { root.requestApplyInsets() }
+        ViewCompat.setOnApplyWindowInsetsListener(root) { root, windowInsets ->
+            val builder = WindowInsetsCompat.Builder()
+            var insets = windowInsets.getInsets(Type.navigationBars())
+            val side = root.getFabSide()
+            if (side.isBottom) {
+                insets = Insets.of(0, 0, 0, insets.bottom + joystickSize)
+            }
+            builder.setInsets(Type.navigationBars(), insets)
+            builder.setInsets(Type.statusBars(), Insets.of(0, topPadding, 0, 0))
+            curtainSheet.dispatchChildrenWindowInsets(builder.build())
+
+            insets = windowInsets.getInsets(Type.systemBars() or Type.displayCutout() or Type.ime())
+            val horizontal = when (side) {
+                Side.Bottom -> 0 to 0
+                Side.Left -> joystickSize to 0
+                Side.Right -> 0 to joystickSize
+            }
+            root.updatePadding(
+                left = insets.left + horizontal.first,
+                top = insets.top,
+                right = insets.right + horizontal.second,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -121,24 +162,21 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         }
     }
 
-    private fun onRootLayoutChange(rootView: View, rootWidth: Int) {
+    private fun onCurtainParentChange(parentView: View, rootWidth: Int) {
         val maxWidth = resources.getDimensionPixelSize(R.dimen.curtain_max_width)
         val width = min(maxWidth, rootWidth)
         val padding = (rootWidth - width) / 2
         val curtainSheet = binding.curtainSheet
-        if (rootView.paddingStart != padding || rootView.paddingEnd != padding) {
-            rootView.updatePaddingRelative(start = padding, end = padding)
+        if (parentView.paddingStart != padding || parentView.paddingEnd != padding) {
+            parentView.updatePaddingRelative(start = padding, end = padding)
             curtainSheet.requestLayout()
-        }
-        if (!transitionAnimator.ignoreLayoutChanges) {
-            updateUi()
         }
     }
 
-    private fun onViewCollect() {
-        viewCollect(viewState.adapter, collector = ::onAdapterCollect)
-        viewCollect(viewState.cancelable, collector = behavior::setHideable)
-        viewCollect(viewState.action, collector = ::onActionCollect)
+    override fun CurtainViewState.onViewCollect() {
+        viewCollect(adapter, collector = ::onAdapterCollect)
+        viewCollect(cancelable, collector = behavior::setHideable)
+        viewCollect(action, collector = ::onActionCollect)
     }
 
     private fun onAdapterCollect(adapter: CurtainApi.Adapter<*>) {
@@ -158,69 +196,49 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
     private fun showSnackbar(provider: CurtainApi.SnackbarProvider) {
         val context = context ?: return
-        val colorSurface = ContextCompat.getColor(context, R.color.colorSurface)
-        val colorOnSurface = ContextCompat.getColor(context, R.color.colorOnSurface)
-        val colorPrimary = ContextCompat.getColor(context, R.color.primary_day)
-        val alpha = ResourcesCompat.getFloat(resources, R.dimen.mtrl_snackbar_background_overlay_color_alpha)
-        val backgroundColor = MaterialColors.layer(colorOnSurface, colorSurface, alpha)
-        provider.getSnackbar(binding.root)
-            .setBackgroundTint(backgroundColor)
-            .setTextColor(colorOnSurface)
-            .setActionTextColor(colorPrimary)
-            .apply {
-                view.elevation = binding.curtainSheet.elevation
-                snackbarView = WeakReference(view)
-                ViewCompat.setOnApplyWindowInsetsListener(view) { _, _ ->
-                    WindowInsetsCompat.CONSUMED
-                }
-            }
-            .show()
+        val snackbar = provider.getSnackbar(binding.root)
+        if (!context.isDarkTheme()) {
+            val colorSurface = context.findColorByAttr(R.attr.colorSurface)
+            val colorOnSurface = context.findColorByAttr(R.attr.colorOnSurface)
+            val colorPrimaryDark = context.findColorByAttr(R.attr.colorPrimaryDark)
+            val alpha = ResourcesCompat.getFloat(resources, R.dimen.mtrl_snackbar_background_overlay_color_alpha)
+            val backgroundColor = MaterialColors.layer(colorOnSurface, colorSurface, alpha)
+            snackbar
+                .setBackgroundTint(backgroundColor)
+                .setTextColor(colorOnSurface)
+                .setActionTextColor(colorPrimaryDark)
+        }
+        snackbarView = WeakReference(snackbar.view)
+        snackbar.view.doOnNextLayout { updateSnackbarTranslation() }
+        snackbar.show()
     }
 
     private fun updateUi() {
         updateSaturation()
         updateSnackbarTranslation()
-        updateCurtainBackground()
     }
 
     private fun updateSaturation() {
         if (transitionAnimator.ignoreLayoutChanges) {
             return
         }
-        val curtainRoot = binding.curtainRoot
-        val curtainSheet = binding.curtainSheet
-        val peekHeight = when {
-            behavior.peekHeight > 0 -> behavior.peekHeight
-            else -> curtainSheet.height
-        }
-        val slidePeekHeight = (curtainRoot.height - curtainSheet.top).toFloat()
-        var saturation = max(0f, slidePeekHeight / peekHeight)
-        saturation = min(1f, saturation)
-        curtainBackground.setSaturation(saturation)
+        val sheet = binding.curtainSheet
+        val parent = sheet.parent as View
+        val alpha = (1f - (sheet.bottom - parent.height) / sheet.height.toFloat()).coerceIn(0f, 1f)
+        val overlayAlpha = (MAX_OVERLAY_SATURATION * alpha).toInt()
+        val overlayColor = ColorUtils.setAlphaComponent(overlayColor, overlayAlpha)
+        binding.root.setBackgroundColor(overlayColor)
+        snackbarView.get()?.alpha = alpha
     }
 
     private fun updateSnackbarTranslation() {
-        val curtainRoot = binding.curtainRoot
-        val curtainSheet = binding.curtainSheet
         val snackbarView = snackbarView.get() ?: return
         val params = snackbarView.layoutParams as ViewGroup.MarginLayoutParams
-        var limit = snackbarView.height + params.topMargin + params.bottomMargin
-        limit += insetsCalculator.insetTop
-        limit -= curtainRoot.height
-        var slidePeekHeight = curtainRoot.height - curtainSheet.top - insetsCalculator.insetTop
-        if (slidePeekHeight < snackbarView.height) {
-            slidePeekHeight -= snackbarView.height - slidePeekHeight
-        }
-        snackbarView.translationY = max(limit, -slidePeekHeight).toFloat()
-    }
-
-    private fun updateCurtainBackground() {
-        curtainBackground.updateTrueBounds(
-            insetsCalculator.insetTop,
-            binding.curtainSheet.top,
-            max(binding.curtainRoot.height, binding.curtainSheet.bottom) - insetsCalculator.insetBottom,
-            binding.curtainRoot.paddingStart,
-        )
+        val minBottom = binding.root.paddingTop + params.topMargin + snackbarView.height
+        val minOffset = minBottom - binding.root.height
+        val bottomInset = params.bottomMargin - params.topMargin
+        val offset = binding.curtainSheet.top - binding.curtainSheet.height + bottomInset
+        snackbarView.translationY = max(minOffset, offset).toFloat()
     }
 
     private fun expand() {
@@ -250,29 +268,5 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
         // slideOffset is broken
         override fun onSlide(bottomSheet: View, slideOffset: Float) = updateUi()
-    }
-
-    private class SheetInsetsCalculator : OnApplyWindowInsetsListener {
-        var insetTop = 0
-            private set
-        var insetBottom = 0
-            private set
-        var paddingTop = 0
-            private set
-
-        override fun onApplyWindowInsets(view: View, insets: WindowInsetsCompat): WindowInsetsCompat {
-            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-            var statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            insetBottom = ime.bottom
-            insetTop = statusBars.top
-            paddingTop = view.resources.getDimensionPixelSize(R.dimen.curtain_padding_top)
-            val top = paddingTop + statusBars.top
-            statusBars = Insets.of(statusBars.left, top, statusBars.right, statusBars.bottom)
-            val new = WindowInsetsCompat.Builder(insets)
-                .setInsets(WindowInsetsCompat.Type.statusBars(), statusBars)
-                .build()
-            (view as ViewGroup).dispatchChildrenWindowInsets(new)
-            return WindowInsetsCompat.CONSUMED
-        }
     }
 }
