@@ -5,6 +5,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import app.atomofiron.searchboxapp.R
@@ -28,10 +29,13 @@ class CreateDelegate(
         root.applyPaddingInsets(vertical = true)
         root.requestApplyInsets()
         explorerCreateEt.text?.clear()
-        explorerCreateEt.addTextChangedListener(ButtonState(dirFiles, explorerCreateDirBtn))
-        explorerCreateEt.addTextChangedListener(ButtonState(dirFiles, explorerCreateFileBtn))
-        explorerCreateDirBtn.setOnClickListener(ButtonClick(dir, explorerCreateEt))
-        explorerCreateFileBtn.setOnClickListener(ButtonClick(dir, explorerCreateEt))
+        explorerCreateEt.inputType = EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        val textListener = ButtonState(dirFiles, arrayOf(explorerCreateDirBtn, explorerCreateFileBtn))
+        explorerCreateEt.addTextChangedListener(textListener)
+        explorerCreateEt.addTextChangedListener(textListener)
+        val clickListener = ButtonClick(dir, explorerCreateEt)
+        explorerCreateDirBtn.setOnClickListener(clickListener)
+        explorerCreateFileBtn.setOnClickListener(clickListener)
     }
 
     private inner class ButtonClick(
@@ -50,13 +54,18 @@ class CreateDelegate(
 
     private inner class ButtonState(
         private val dirFiles: List<String>,
-        private val button: Button,
+        private val buttons: Array<Button>,
     ) : TextWatcher {
+
+        init {
+            buttons.forEach { it.isEnabled = false }
+        }
+
         override fun afterTextChanged(s: Editable?) = Unit
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
         override fun onTextChanged(sequence: CharSequence, start: Int, before: Int, count: Int) {
             val allow = sequence.isNotEmpty() && !dirFiles.contains(sequence.toString())
-            button.isEnabled = allow
+            buttons.forEach { it.isEnabled = allow }
         }
     }
 }
