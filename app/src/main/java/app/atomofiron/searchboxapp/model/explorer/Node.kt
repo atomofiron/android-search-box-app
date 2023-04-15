@@ -34,6 +34,7 @@ data class Node constructor(
     val isCached: Boolean get() = children != null
     val isEmpty: Boolean get() = children?.isEmpty() == true
     val isOpened: Boolean get() = children?.isOpened == true
+    val childCount: Int get() = children?.size ?: 0
 
     fun areContentsTheSame(other: Node?): Boolean = when {
         other == null -> false

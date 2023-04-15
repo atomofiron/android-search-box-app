@@ -9,7 +9,7 @@ class NodeTabTree(
 ) {
 
     val roots = mutableListOf<NodeRoot>()
-    val tree = mutableListOf<NodeLevel>()
+    val tree = mutableListOf<Node>()
     val checked: MutableList<Int> = LinkedList()
     val flow = DataFlow<NodeTabItems>()
 }

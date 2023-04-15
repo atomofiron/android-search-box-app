@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.first
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
+import kotlin.math.min
 
 class ExplorerService(
     context: Context,
@@ -141,12 +142,10 @@ class ExplorerService(
             val root = roots[index]
             var item = root.item.copy(children = root.item.children?.copy(isOpened = true))
             roots[index] = root.copy(item = item, isSelected = true)
-            tree.add(NodeLevel(item.parentPath, mutableListOf(item)))
+            //tree.add(NodeLevel(item.parentPath, mutableListOf(item)))
             while (true) {
-                val children = item.children?.items ?: mutableListOf()
-                val level = NodeLevel(item.path, children)
-                tree.add(level)
-                item = level.getOpened() ?: break
+                tree.add(item)
+                item = item.getOpened() ?: break
             }
         }
     }
@@ -154,35 +153,24 @@ class ExplorerService(
     suspend fun tryToggle(key: NodeTabKey, it: Node) {
         renderTab(key) {
             var item = tree.findNode(it.uniqueId)
-            item = when {
-                item?.isCached != true -> return
-                item.isOpened -> item.children?.find { it.isOpened } ?: item
-                else -> item
-            }
-            val (levelIndex, level) = tree.findIndexed(item.parentPath)
-            if (levelIndex < 0 || level == null) return
+            if (item?.isCached != true) return
+            item = item.getOpened() ?: item
 
-            val targetIndex = level.children.indexOfFirst { it.uniqueId == item.uniqueId }
-            if (targetIndex < 0) return
+            val (levelIndex, parent) = tree.findIndexed(item.parentPath)
 
-            val openedIndex = level.getOpenedIndex()
-            if (openedIndex >= 0 && openedIndex != targetIndex) {
-                val opened = level.children[openedIndex]
-                level.children[openedIndex] = opened.close()
-            }
-            for (i in levelIndex.inc()..tree.lastIndex) {
-                tree.removeAt(tree.lastIndex)
-            }
-            val target = level.children[targetIndex]
-            val children = item.children
-            level.children[targetIndex] = when {
-                target.isOpened -> target.close()
-                children == null -> return
-                else -> {
-                    tree.add(NodeLevel(target.path, children.items))
-                    target.open()
+            if (!item.isOpened && parent?.children != null) {
+                val anotherOpenedIndex = parent.getOpenedIndex()
+                if (anotherOpenedIndex > 0) {
+                    val anotherOpened = parent.children[anotherOpenedIndex]
+                    parent.children.items[anotherOpenedIndex] = anotherOpened.close()
                 }
             }
+            val toggled = if (item.isOpened) item.close() else item.open()
+            val index = parent?.children?.indexOfFirst { it.uniqueId == item.uniqueId } ?: -1
+            if (index >= 0) {
+                parent?.children?.items?.set(index, toggled)
+            }
+            tree.add(levelIndex.inc(), toggled)
         }
     }
 
@@ -375,7 +363,7 @@ class ExplorerService(
             val (_, level) = tree.findIndexed(item.parentPath)
             val index = level?.children?.indexOfFirst { it.uniqueId == item.uniqueId }
             if (index == null || index < 0) return
-            level.children[index] = renamed
+            level.children.items[index] = renamed
         }
     }
 
@@ -385,11 +373,11 @@ class ExplorerService(
             val (_, level) = tree.findIndexed(dir.path)
             level?.children ?: return
             when {
-                item.isDirectory -> level.children.add(0, item)
+                item.isDirectory -> level.children.items.add(0, item)
                 else -> {
                     var index = level.children.indexOfFirst { it.isFile }
                     if (index < 0) index = level.children.size
-                    level.children.add(index, item)
+                    level.children.items.add(index, item)
                 }
             }
         }
@@ -525,7 +513,7 @@ class ExplorerService(
         }
         tree.dropClosedLevels()
         updateDirectoryTypes()
-        val currentDir = getCurrentDir()
+        val currentDir = tree.lastOrNull()?.takeIf { it.isOpened }
         val items = renderNodes()
         val tabItems = NodeTabItems(roots.toMutableList(), items, currentDir)
         flow.emit(tabItems)
@@ -538,21 +526,11 @@ class ExplorerService(
         explorerStore.setCurrentItems(items)
     }
 
-    private fun MutableList<NodeLevel>.dropClosedLevels() {
-        var parentPath = ExplorerDelegate.ROOT_PARENT_PATH
-        var chained = true
-        for (i in indices) {
-            when {
-                !chained -> removeLast()
-                get(i).parentPath != parentPath -> {
-                    chained = false
-                    removeLast()
-                }
-                else -> when (val opened = get(i).getOpened()) {
-                    null -> chained = false
-                    else -> parentPath = opened.path
-                }
-            }
+    private fun MutableList<Node>.dropClosedLevels() {
+        val index = indexOfFirst { !it.hasOpened() }
+        if (index < 0) return
+        while (index.inc() != size) {
+            removeLast()
         }
     }
 
@@ -586,15 +564,32 @@ class ExplorerService(
 
     private fun NodeTabTree.renderNodes(): List<Node> {
         var isEmpty = false
-        val count = tree.sumOf { it.count }
+        var count = min(1, tree.size)
+        count += tree.sumOf {
+            if (it.isOpened) it.childCount else 0
+        }
         val items = ArrayList<Node>(count)
+        val root = tree.firstOrNull()?.let {
+            when {
+                !it.isOpened -> it
+                else -> it.copy(isCurrent = !it.hasOpened())
+            }
+        }?.also {
+            items.add(it)
+        }
+        if (root?.isOpened != true) {
+            return items
+        }
         for (i in tree.indices) {
             val level = tree[i]
             for (j in 0..level.getOpenedIndex()) {
-                var item = updateStateFor(level.children[j])
-                if (item.isOpened && i == tree.lastIndex.dec()) {
-                    item = item.copy(isCurrent = true)
-                    isEmpty = item.isEmpty
+                var item = updateStateFor(level.children!![j])
+                if (item.isOpened) {
+                    val isDeepest = i == tree.lastIndex.dec()
+                    item = item.copy(isCurrent = isDeepest, children = item.children?.copy())
+                    if (isDeepest) {
+                        isEmpty = item.isEmpty
+                    }
                 }
                 items.add(item)
             }
@@ -611,8 +606,8 @@ class ExplorerService(
                     items.add(item)
                 }
             }
-            for (j in level.getOpenedIndex().inc() until level.count) {
-                items.add(updateStateFor(level.children[j]))
+            for (j in level.getOpenedIndex().inc() until level.childCount) {
+                items.add(updateStateFor(level.children!![j]))
             }
         }
         return items
@@ -630,8 +625,8 @@ class ExplorerService(
 
     private fun NodeTabTree.updateDirectoryTypes() {
         val defaultStoragePath = internalStoragePath
-        val (_, level) = tree.findIndexed(defaultStoragePath)
-        level ?: return
+        val (_, level) = tree.findIndexed { it.parentPath == defaultStoragePath }
+        level?.children ?: return
         for (i in level.children.indices) {
             val item = level.children[i]
             val content = item.content as? NodeContent.Directory
@@ -639,13 +634,8 @@ class ExplorerService(
             if (content.type != Type.Ordinary) continue
             val type = ExplorerDelegate.getDirectoryType(item.name)
             if (type == Type.Ordinary) continue
-            level.children[i] = item.copy(content = content.copy(type = type))
+            level.children.items[i] = item.copy(content = content.copy(type = type))
         }
-    }
-
-    private fun NodeTabTree.getCurrentDir(): Node? {
-        val item = tree.findLast { it.getOpened() != null }?.getOpened()
-        return item?.let { updateStateFor(it) }
     }
 
     /** @return already existing caching job */
@@ -733,9 +723,9 @@ class ExplorerService(
         }
     }
 
-    private fun List<NodeLevel>.replaceItem(item: Node) = replaceItem(item.uniqueId, item.parentPath, item)
+    private fun List<Node>.replaceItem(item: Node) = replaceItem(item.uniqueId, item.parentPath, item)
 
-    private fun List<NodeLevel>.replaceItem(uniqueId: Int, parentPath: String, item: Node?): Boolean {
+    private fun List<Node>.replaceItem(uniqueId: Int, parentPath: String, item: Node?): Boolean {
         val (levelIndex, level) = findIndexed(parentPath)
         val index = level?.children?.indexOfFirst { it.uniqueId == uniqueId }
         if (index == null || index < 0) return false
@@ -744,12 +734,12 @@ class ExplorerService(
         if (prev.areContentsTheSame(item)) return false
         val upLevel = getOrNull(levelIndex.dec())
         when (item?.isOpened) {
-            null -> level.children.removeAt(index)
-            wasOpened -> level.children[index] = item
-            else -> level.children[index] = item.copy(children = item.children?.copy(isOpened = wasOpened))
+            null -> level.children.items.removeAt(index)
+            wasOpened -> level.children.items[index] = item
+            else -> level.children.items[index] = item.copy(children = item.children?.copy(isOpened = wasOpened))
         }
         val parent = upLevel?.children?.find { it.path == parentPath }
-        if (level.children === parent?.children?.items) {
+        if (level.children === parent?.children) {
             return true
         }
         // далее заменяем/удаляем айтем в родительской ноде
@@ -766,9 +756,13 @@ class ExplorerService(
         return true
     }
 
-    private fun List<NodeLevel>.findNode(uniqueId: Int): Node? {
+    private fun List<Node>.findNode(uniqueId: Int): Node? {
+        val root = firstOrNull()
+        if (root?.uniqueId == uniqueId) {
+            return root
+        }
         for (i in indices.reversed()) {
-            get(i).children.find {
+            get(i).children?.find {
                 it.uniqueId == uniqueId
             }?.let { item ->
                 return item
@@ -777,7 +771,7 @@ class ExplorerService(
         return null
     }
 
-    private fun List<NodeLevel>.findIndexed(parentPath: String): Pair<Int, NodeLevel?> = this@findIndexed.findIndexed { it.parentPath == parentPath }
+    private fun List<Node>.findIndexed(path: String): Pair<Int, Node?> = this@findIndexed.findIndexed { it.path == path }
 
     // todo WTF 'NodeState.getUniqueId()' on a null object reference
     private fun List<NodeState>.findIndexed(uniqueId: Int): Pair<Int, NodeState?> = this@findIndexed.findIndexed { it.uniqueId == uniqueId }
@@ -825,4 +819,10 @@ class ExplorerService(
             file.setExecutable(true, true)
         }
     }
+
+    private fun Node.getOpenedIndex(): Int = children?.indexOfFirst { it.isOpened } ?: -1
+
+    private fun Node.getOpened(): Node? = getOpenedIndex().takeIf { it >= 0 }?.let { children?.get(it) }
+
+    private fun Node.hasOpened(): Boolean = getOpenedIndex() >= 0
 }
