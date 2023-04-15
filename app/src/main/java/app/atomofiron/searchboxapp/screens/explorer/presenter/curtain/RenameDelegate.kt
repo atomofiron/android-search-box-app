@@ -5,6 +5,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerRenameBinding
 import app.atomofiron.searchboxapp.model.explorer.Node
@@ -33,6 +34,7 @@ class RenameDelegate(
         holder.disableClicks()
         holder.setGreyBackgroundColor()
         holder.hideCheckBox()
+        explorerRenameEt.inputType = EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
         explorerRenameEt.setText(data.item.name)
         explorerRenameEt.addTextChangedListener(ButtonClick(data, explorerRenameBtn))
         explorerRenameBtn.setOnClickListener {

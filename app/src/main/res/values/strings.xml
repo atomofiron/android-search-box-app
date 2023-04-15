@@ -103,6 +103,7 @@
     <string name="empty_check_box">Empty check box</string>
     <string name="item_explorer_background">Striped background</string>
     <string name="create_a_new">Create a new</string>
+    <string name="a_name">Name</string>
     <string name="a_file">File</string>
     <string name="a_directory">Directory</string>
     <string name="inverse_glowing">Inverse highlight</string>
