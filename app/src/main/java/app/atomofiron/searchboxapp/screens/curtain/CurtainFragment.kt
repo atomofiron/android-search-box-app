@@ -31,6 +31,7 @@ import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.curtain.fragment.TransitionAnimator
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainBackground
 import com.google.android.material.snackbar.Snackbar
+import lib.atomofiron.android_window_insets_compat.defaultTypeMask
 import lib.atomofiron.android_window_insets_compat.dispatchChildrenWindowInsets
 import java.lang.ref.WeakReference
 import kotlin.math.max
@@ -119,8 +120,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
             builder.setInsets(Type.navigationBars(), insets)
             builder.setInsets(Type.statusBars(), Insets.of(0, topPadding, 0, 0))
             curtainSheet.dispatchChildrenWindowInsets(builder.build())
-
-            insets = windowInsets.getInsets(Type.systemBars() or Type.displayCutout() or Type.ime())
+            insets = windowInsets.getInsets(defaultTypeMask)
             val horizontal = when (side) {
                 Side.Bottom -> 0 to 0
                 Side.Left -> joystickSize to 0
@@ -130,6 +130,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
                 left = insets.left + horizontal.first,
                 top = insets.top,
                 right = insets.right + horizontal.second,
+                bottom = windowInsets.getInsets(Type.ime()).bottom,
             )
             WindowInsetsCompat.CONSUMED
         }
