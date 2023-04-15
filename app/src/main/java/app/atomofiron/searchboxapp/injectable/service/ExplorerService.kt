@@ -535,6 +535,7 @@ class ExplorerService(
         updateChecked(items)
         val checked = items.filter { it.isChecked }
         explorerStore.searchTargets.set(checked)
+        explorerStore.setCurrentItems(items)
     }
 
     private fun MutableList<NodeLevel>.dropClosedLevels() {
