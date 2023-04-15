@@ -42,6 +42,7 @@
         android:layout_marginEnd="@dimen/common_margin"
         android:text="@string/confirm"
         android:backgroundTint="?colorError"
+        android:textColor="?colorOnError"
         app:cornerRadius="@dimen/infinity"
         />
 </FrameLayout>
