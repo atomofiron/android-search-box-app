@@ -160,7 +160,7 @@ class ExplorerService(
 
             if (!item.isOpened && parent?.children != null) {
                 val anotherOpenedIndex = parent.getOpenedIndex()
-                if (anotherOpenedIndex > 0) {
+                if (anotherOpenedIndex >= 0) {
                     val anotherOpened = parent.children[anotherOpenedIndex]
                     parent.children.items[anotherOpenedIndex] = anotherOpened.close()
                 }
