@@ -37,7 +37,7 @@ object Const {
     const val ALPHA_80_PERCENT = 200
     const val ALPHA_90_PERCENT = 225
     const val RIPPLE_ALPHA = 64
-    const val COMMON_DURATION = 256L
+    const val COMMON_DURATION = 512L
     const val COMMON_DELAY = 256L
     const val CONFIRM_DELAY = 2000L
 

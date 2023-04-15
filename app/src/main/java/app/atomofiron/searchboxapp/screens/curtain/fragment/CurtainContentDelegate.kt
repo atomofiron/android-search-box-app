@@ -28,6 +28,8 @@ class CurtainContentDelegate(
     fun showNext(layoutId: Int) {
         val holder = getHolder(layoutId)
         holder ?: return
+        if (transitionAnimator.transitionIsRunning) return
+
         val view = holder.view
         val node = CurtainNode(layoutId, view, holder.isCancelable)
         stack.add(node)
@@ -39,6 +41,8 @@ class CurtainContentDelegate(
 
     fun showPrev(): Boolean {
         if (stack.size < 2) return false
+        if (transitionAnimator.transitionIsRunning) return false
+
         val last = stack.removeLast()
         adapter.drop(last.layoutId)
 

@@ -5,23 +5,26 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
 import app.atomofiron.searchboxapp.utils.Const
+import kotlin.math.abs
 
 class TransitionAnimator(
     private val binding: FragmentCurtainBinding,
     private val transitionCallback: () -> Unit,
 ) : View.OnLayoutChangeListener, ValueAnimator.AnimatorUpdateListener {
-    var ignoreLayoutChanges = false
+    companion object {
+        private const val START_VALUE = 0f
+        private const val END_VALUE = 1f
+    }
+    var transitionIsRunning = false
         private set
 
     private var forward = true
-    private val start = 0f
-    private val end = 1f
     private var from = 0
     private var to = 0
-    private lateinit var left: View
-    private lateinit var right: View
+    private lateinit var leftView: View
+    private lateinit var rightView: View
 
-    private val animator = ValueAnimator.ofFloat(start, end)
+    private val animator = ValueAnimator.ofFloat(START_VALUE, END_VALUE)
 
     init {
         animator.interpolator = DecelerateInterpolator()
@@ -30,42 +33,51 @@ class TransitionAnimator(
 
     fun startTransition(forward: Boolean) {
         this.forward = forward
-        ignoreLayoutChanges = true
+        transitionIsRunning = true
         binding.curtainSheet.addOnLayoutChangeListener(this)
     }
 
     override fun onLayoutChange(view: View, l: Int, t: Int, r: Int, b: Int, oL: Int, oT: Int, oR: Int, oB: Int) {
         view.removeOnLayoutChangeListener(this)
-        ignoreLayoutChanges = false
-        left = binding.curtainSheet.getChildAt(0) ?: return
-        right = binding.curtainSheet.getChildAt(1) ?: return
-        ignoreLayoutChanges = true
-        from = if (forward) left.height else right.height
-        to = if (forward) right.height else left.height
+        transitionIsRunning = false
+        leftView = binding.curtainSheet.getChildAt(0) ?: return
+        rightView = binding.curtainSheet.getChildAt(1) ?: return
+        transitionIsRunning = true
+        from = if (forward) leftView.height else rightView.height
+        to = if (forward) rightView.height else leftView.height
+        animator.removeUpdateListener(this)
         animator.addUpdateListener(this)
         animator.start()
     }
 
     override fun onAnimationUpdate(animator: ValueAnimator) {
         val value = animator.animatedValue as Float
-        val top = binding.root.height - from - (to - from) * value
-        binding.curtainSheet.top = top.toInt()
+        val dif = abs(from - to).toFloat()
+        val sheetTop = when {
+            from > to -> dif * value
+            else -> dif - dif * value
+        }
+        binding.curtainSheet.run {
+            val height = height
+            top = sheetTop.toInt()
+            bottom = top + height
+        }
         val width = binding.curtainSheet.width
         val center = when {
             forward -> (width - width * value).toInt()
             else -> (width * value).toInt()
         }
-        left.left = center - width
-        left.right = center
-        right.left = center
-        right.right = center + width
+        leftView.left = center - width
+        leftView.right = center
+        rightView.left = center
+        rightView.right = center + width
         transitionCallback()
-        if (value == end) {
-            ignoreLayoutChanges = false
+        if (value == END_VALUE) {
+            transitionIsRunning = false
             this.animator.removeUpdateListener(this)
             when {
-                forward -> binding.curtainSheet.removeView(left)
-                else -> binding.curtainSheet.removeView(right)
+                forward -> binding.curtainSheet.removeView(leftView)
+                else -> binding.curtainSheet.removeView(rightView)
             }
         }
     }

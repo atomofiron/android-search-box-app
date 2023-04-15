@@ -30,7 +30,6 @@ import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.curtain.fragment.TransitionAnimator
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainBackground
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.dispatchChildrenWindowInsets
 import java.lang.ref.WeakReference
@@ -96,7 +95,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
             onApplyInsets()
         }
-        transitionAnimator = TransitionAnimator(binding, ::updateUi)
+        transitionAnimator = TransitionAnimator(binding, ::updateSnackbarTranslation)
         viewState.onViewCollect()
 
         if (BuildConfig.DEBUG) {
@@ -143,6 +142,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
     override fun onBack(): Boolean {
         when {
+            transitionAnimator.transitionIsRunning -> Unit
             !viewState.cancelable.value -> Unit
             !contentDelegate.showPrev() -> hide()
         }
@@ -213,15 +213,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         snackbar.show()
     }
 
-    private fun updateUi() {
-        updateSaturation()
-        updateSnackbarTranslation()
-    }
-
     private fun updateSaturation() {
-        if (transitionAnimator.ignoreLayoutChanges) {
-            return
-        }
         val sheet = binding.curtainSheet
         val parent = sheet.parent as View
         val alpha = (1f - (sheet.bottom - parent.height) / sheet.height.toFloat()).coerceIn(0f, 1f)
@@ -267,6 +259,9 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         }
 
         // slideOffset is broken
-        override fun onSlide(bottomSheet: View, slideOffset: Float) = updateUi()
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            updateSaturation()
+            updateSnackbarTranslation()
+        }
     }
 }
