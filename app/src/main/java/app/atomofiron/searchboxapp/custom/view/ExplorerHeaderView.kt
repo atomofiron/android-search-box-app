@@ -16,6 +16,7 @@ import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.makeOpenedCurrent
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.ExplorerItemBinderImpl
+import app.atomofiron.searchboxapp.utils.Const
 
 class ExplorerHeaderView @JvmOverloads constructor(
     context: Context,
@@ -39,7 +40,7 @@ class ExplorerHeaderView @JvmOverloads constructor(
         val overlayColor = context.findColorByAttr(R.attr.topRadioGroupBackground)
         backgroundColor = ColorUtils.compositeColors(overlayColor, backgroundColor)
         setBackgroundColor(backgroundColor)
-        insetColor = ColorUtils.setAlphaComponent(backgroundColor, Byte.MAX_VALUE.toInt())
+        insetColor = ColorUtils.setAlphaComponent(backgroundColor, Const.ALPHA_67_PERCENT)
     }
 
     fun setOnItemActionListener(listener: ExplorerItemActionListener) {

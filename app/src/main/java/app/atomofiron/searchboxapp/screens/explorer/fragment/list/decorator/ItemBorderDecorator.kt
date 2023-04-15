@@ -22,7 +22,6 @@ class ItemBorderDecorator(
 ) : ItemDecoration() {
 
     private val items get() = adapter.currentList
-    private val currentColor = headerView.context.findColorByAttr(R.attr.colorSecondary)
     private val cornerRadius = headerView.resources.getDimension(R.dimen.explorer_border_corner_radius)
     private val borderWidth = headerView.resources.getDimension(R.dimen.explorer_border_width)
     // под открытой не пустой директорией
@@ -43,6 +42,7 @@ class ItemBorderDecorator(
         paint.style = Paint.Style.FILL
         paint.strokeCap = Paint.Cap.ROUND
         paint.strokeWidth = borderWidth
+        paint.color = headerView.context.findColorByAttr(R.attr.colorSecondary)
     }
 
     fun setCurrentDir(item: Node?) {
@@ -149,7 +149,6 @@ class ItemBorderDecorator(
         val stroke = borderWidth
         val innerRadius = cornerRadius - stroke
         val radii = FloatArray(8) { if (it <= 3) 0f else cornerRadius }
-        paint.color = currentColor
         framePath.reset()
         framePath.addRoundRect(left, top, right, bottom, radii, Direction.CW)
         framePath.addRoundRect(left + stroke, top, right - stroke, bottom - stroke, innerRadius, innerRadius, Direction.CCW)

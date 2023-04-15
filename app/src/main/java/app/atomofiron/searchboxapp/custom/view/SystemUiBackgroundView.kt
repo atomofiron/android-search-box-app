@@ -16,6 +16,12 @@ import app.atomofiron.searchboxapp.utils.Const
 import kotlin.math.max
 
 class SystemUiBackgroundView : View {
+    companion object {
+        fun Context.getSystemBarsColor(): Int {
+            val color = getColorByAttr(R.attr.colorBackground)
+            return ColorUtils.setAlphaComponent(color, Const.ALPHA_67_PERCENT)
+        }
+    }
 
     private var leftInset = 0
     private var topInset = 0
@@ -30,8 +36,7 @@ class SystemUiBackgroundView : View {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        paint.color = context.getColorByAttr(R.attr.colorBackground)
-        paint.color = ColorUtils.setAlphaComponent(paint.color, Const.ALPHA_67_PERCENT)
+        paint.color = context.getSystemBarsColor()
 
         context.obtainStyledAttributes(attrs, R.styleable.SystemUiBackgroundView, defStyleAttr) {
             drawStatusBar = getBoolean(R.styleable.SystemUiBackgroundView_statusBar, drawStatusBar)
