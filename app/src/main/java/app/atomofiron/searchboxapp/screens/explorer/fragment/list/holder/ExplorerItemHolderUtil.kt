@@ -1,14 +1,17 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder
 
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.graphics.ColorUtils
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.ItemExplorerBinding
 import app.atomofiron.searchboxapp.databinding.ItemExplorerSeparatorBinding
+import app.atomofiron.searchboxapp.utils.Const
 
 const val TAG_EXPLORER_OPENED_ITEM = "TAG_EXPLORER_OPENED_ITEM"
 
@@ -54,11 +57,14 @@ private fun ItemExplorerBinding.makeOpposite(
             else -> 0f
         }
     }
-    val contentColorList = ColorStateList.valueOf(content)
-    root.background = RippleDrawable(contentColorList, drawable, null)
+    val rippleMask = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(Color.BLACK, Color.BLACK))
+    rippleMask.cornerRadius = cornerRadius
+    val rippleColor = ColorUtils.setAlphaComponent(content, Const.RIPPLE_ALPHA_HALF)
+    val rippleColorList = ColorStateList.valueOf(rippleColor)
+    root.background = RippleDrawable(rippleColorList, drawable, rippleMask)
     val filter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(content, BlendModeCompat.SRC_IN)
     itemExplorerIvIcon.colorFilter = filter
-    itemExplorerCb.buttonTintList = contentColorList
+    itemExplorerCb.buttonTintList = ColorStateList.valueOf(content)
     itemExplorerCb.buttonIconTintList = ColorStateList.valueOf(buttonIcon)
     itemExplorerTvTitle.setTextColor(content)
     itemExplorerTvSize.setTextColor(content)
