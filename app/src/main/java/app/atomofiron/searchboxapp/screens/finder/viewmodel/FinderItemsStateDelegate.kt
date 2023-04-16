@@ -12,6 +12,7 @@ class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState
     override val progressItems = mutableListOf<FinderStateItem.ProgressItem>()
     override val targetItems = mutableListOf<FinderStateItem.TargetItem>()
     override val searchItems = MutableStateFlow<List<FinderStateItem>>(listOf())
+    override var configItem = FinderStateItem.ConfigItem()
 
     // todo add state machine
     override fun updateState() {
@@ -38,21 +39,20 @@ class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState
     }
 
     override fun updateConfig(item: FinderStateItem.ConfigItem) {
-        val oldItem = getUniqueItem(FinderStateItem.ConfigItem::class)
+        val prevConfigItem = configItem
+        configItem = item
+        updateUniqueItem(item)
 
-        val ignoreCaseChanged = oldItem.ignoreCase xor item.ignoreCase
-        val replaceEnabledChanged = oldItem.replaceEnabled xor item.replaceEnabled
-        val useRegexpChanged = oldItem.useRegex xor item.useRegex
-        val multilineSearchChanged = oldItem.excludeDirs xor item.excludeDirs
+        val ignoreCaseChanged = prevConfigItem.ignoreCase xor item.ignoreCase
+        val replaceEnabledChanged = prevConfigItem.replaceEnabled xor item.replaceEnabled
+        val useRegexpChanged = prevConfigItem.useRegex xor item.useRegex
+        val multilineSearchChanged = prevConfigItem.excludeDirs xor item.excludeDirs
 
         if (replaceEnabledChanged || useRegexpChanged) {
             updateUniqueItem(FinderStateItem.SearchAndReplaceItem::class) {
                 it.copy(replaceEnabled = item.replaceEnabled, useRegex = item.useRegex)
             }
         }
-
-        updateUniqueItem(item)
-
         if (ignoreCaseChanged || useRegexpChanged || multilineSearchChanged) {
             updateUniqueItem(FinderStateItem.TestItem::class) {
                 it.copy(useRegex = item.useRegex, ignoreCase = item.ignoreCase)
@@ -67,6 +67,7 @@ class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState
 
     override fun <I : FinderStateItem> updateUniqueItem(item: I) {
         val index = uniqueItems.indexOfFirst { it::class == item::class }
+        if (index < 0) return
         uniqueItems.removeAt(index)
         uniqueItems.add(index, item)
         updateState()

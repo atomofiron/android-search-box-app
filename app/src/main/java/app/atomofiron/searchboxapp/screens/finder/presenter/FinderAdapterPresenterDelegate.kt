@@ -42,7 +42,7 @@ class FinderAdapterPresenterDelegate(
             return
         }
         viewState.addToHistory(value)
-        val config = viewState.getConfigItem()
+        val config = viewState.configItem
         interactor.search(value, viewState.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
     }
 }

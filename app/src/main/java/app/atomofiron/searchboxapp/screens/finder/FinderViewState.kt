@@ -7,6 +7,7 @@ import app.atomofiron.common.util.flow.invoke
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
+import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem.ConfigItem
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsState
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsStateDelegate
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class FinderViewState(
     private val scope: CoroutineScope,
 ) : FinderItemsState by FinderItemsStateDelegate(isLocal = false) {
-
-    private var configItem = FinderStateItem.ConfigItem()
 
     val targets = ArrayList<Node>()
 
@@ -56,7 +55,7 @@ class FinderViewState(
     }
 
     fun switchConfigItemVisibility() {
-        var index = uniqueItems.indexOfFirst { it is FinderStateItem.ConfigItem }
+        var index = uniqueItems.indexOfFirst { it is ConfigItem }
         if (index < 0) {
             index = uniqueItems.indexOfFirst { it is FinderStateItem.ButtonsItem }
             when {
@@ -89,16 +88,5 @@ class FinderViewState(
 
     fun showHistory() = showHistory.invoke(scope)
 
-    fun getConfigItem(): FinderStateItem.ConfigItem {
-        return getUniqueItem(FinderStateItem.ConfigItem::class)
-    }
-
-    private inline fun updateConfig(action: FinderStateItem.ConfigItem.() -> FinderStateItem.ConfigItem) {
-        configItem = configItem.action()
-        val index = uniqueItems.indexOfFirst { it is FinderStateItem.ConfigItem }
-        if (index >= 0) {
-            uniqueItems[index] = configItem
-        }
-        updateState()
-    }
+    private inline fun updateConfig(action: ConfigItem.() -> ConfigItem) = updateConfig(configItem.action())
 }

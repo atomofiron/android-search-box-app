@@ -15,6 +15,7 @@ interface FinderItemsState {
     val uniqueItems: MutableList<FinderStateItem>
     val progressItems: MutableList<FinderStateItem.ProgressItem>
     val targetItems: MutableList<FinderStateItem.TargetItem>
+    val configItem: FinderStateItem.ConfigItem
 
     val searchItems: MutableStateFlow<List<FinderStateItem>>
     val isLocal: Boolean
