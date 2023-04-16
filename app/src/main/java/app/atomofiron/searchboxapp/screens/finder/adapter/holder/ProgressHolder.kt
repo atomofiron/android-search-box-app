@@ -6,11 +6,12 @@ import android.text.style.ImageSpan
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.core.view.isGone
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.BallsView
+import app.atomofiron.searchboxapp.model.textviewer.SearchState
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
@@ -43,15 +44,15 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
         btnAction.isEnabled = true
         bView.isInvisible = !task.inProgress
 
-        val idLabel = when (task) {
-            is SearchTask.Progress -> R.string.look
-            is SearchTask.Error -> R.string.error
-            is SearchTask.Done -> if (task.isCompleted) R.string.done else R.string.stopped
+        val idLabel = when {
+            task.inProgress -> R.string.look
+            task.isStopped -> R.string.stopped
+            task.isError -> R.string.error
+            else -> R.string.done
         }
-        val colorLabel = when (task) {
-            is SearchTask.Progress,
-            is SearchTask.Done -> context.findColorByAttr(R.attr.colorAccent)
-            is SearchTask.Error -> context.findColorByAttr(R.attr.colorError)
+        val colorLabel = when {
+            task.isError -> context.findColorByAttr(R.attr.colorError)
+            else -> context.findColorByAttr(R.attr.colorAccent)
         }
         tvLabel.setText(idLabel)
         tvLabel.setTextColor(colorLabel)
@@ -61,7 +62,10 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
             else -> R.string.remove
         }
         btnAction.setText(idAction)
-        btnAction.isGone = task.isDone && !task.isRemovable
+        btnAction.isVisible = when (task.state) {
+            !is SearchState.Ended -> true
+            else -> task.state.isRemovable
+        }
     }
 
     private fun TextView.setStatus(task: SearchTask) {

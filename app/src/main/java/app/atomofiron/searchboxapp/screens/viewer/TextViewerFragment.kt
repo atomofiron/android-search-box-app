@@ -104,7 +104,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         return false
     }
 
-    private fun onTaskChanged(task: SearchTask.Done?) {
+    private fun onTaskChanged(task: SearchTask?) {
         val matches = (task?.result as SearchResult.TextSearchResult?)?.matchesMap
         viewerAdapter.setMatches(matches)
         val iconId = if (task == null) R.drawable.ic_back else R.drawable.ic_cross

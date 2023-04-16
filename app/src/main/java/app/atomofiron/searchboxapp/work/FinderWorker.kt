@@ -21,10 +21,8 @@ import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.finder.ItemCounter
 import app.atomofiron.searchboxapp.model.finder.SearchParams
 import app.atomofiron.searchboxapp.model.finder.SearchResult.FinderResult
+import app.atomofiron.searchboxapp.model.textviewer.SearchState
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
-import app.atomofiron.searchboxapp.model.textviewer.toEnded
-import app.atomofiron.searchboxapp.model.textviewer.toError
-import app.atomofiron.searchboxapp.model.textviewer.withError
 import app.atomofiron.searchboxapp.screens.main.MainActivity
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.Const.UNDEFINEDL
@@ -33,6 +31,8 @@ import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
 import app.atomofiron.searchboxapp.utils.updateNotificationChannel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -86,7 +86,8 @@ class FinderWorker(
     private val forContent = inputData.getBoolean(KEY_FOR_CONTENT, false)
     private val maxDepth = inputData.getInt(KEY_MAX_DEPTH, UNDEFINED)
 
-    private var task: SearchTask = SearchTask.Progress(
+    private val taskMutex = Mutex()
+    private var task: SearchTask = SearchTask(
         id, isLocal = false,
         SearchParams(query, useRegex, ignoreCase),
         if (forContent) FinderResult.forContent() else FinderResult.forNames(),
@@ -94,7 +95,7 @@ class FinderWorker(
     private var process: Process? = null
     private var delayedJob: Job? = null
     private val cacheConfig by lazy(LazyThreadSafetyMode.NONE) { CacheConfig(preferenceStore.useSu.value) }
-    private val jobs = mutableListOf<Job>()
+    private val progressJobs = mutableListOf<Job>()
 
     @Inject
     lateinit var finderStore: FinderStore
@@ -142,18 +143,26 @@ class FinderWorker(
             if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
                 updateTask {
-                    withError(output.error)
+                    copy(error = output.error)
                 }
             }
         }
     }
 
-    private suspend fun updateTask(now: Boolean = false, action: SearchTask.() -> SearchTask) {
-        task = task.action()
+    private suspend fun updateTask(
+        now: Boolean = false,
+        waitJobs: Boolean = true,
+        action: SearchTask.() -> SearchTask,
+    ) {
         if (now) {
             delayedJob?.cancel()
+            if (waitJobs) progressJobs.forEach { it.join() }
+            task = task.action()
             finderStore.addOrUpdate(task)
         } else if (delayedJob?.isActive != true) {
+            taskMutex.withLock {
+                task = task.action()
+            }
             delayedJob = scope.launch {
                 sleep(PERIOD)
                 finderStore.addOrUpdate(task)
@@ -169,7 +178,7 @@ class FinderWorker(
                 val path = line.substring(0, index)
                 addToResults(path, count)
             }
-        }.let { jobs.add(it) }
+        }.let { progressJobs.add(it) }
     }
 
     private suspend fun searchForName(where: List<Node>) {
@@ -186,7 +195,7 @@ class FinderWorker(
             if (!output.success && output.error.isNotBlank()) {
                 logE(output.error)
                 updateTask {
-                    withError(output.error)
+                    copy(error = output.error)
                 }
             }
         }
@@ -198,7 +207,7 @@ class FinderWorker(
                 useRegex && pattern.matcher(line).find() -> addToResults(line)
                 !useRegex && line.contains(query, ignoreCase) -> addToResults(line)
             }
-        }.let { jobs.add(it) }
+        }.let { progressJobs.add(it) }
     }
 
     private suspend fun addToResults(path: String, count: Int = -1) {
@@ -238,8 +247,6 @@ class FinderWorker(
         val data = try {
             finderStore.add(task)
 
-            delay(3000)
-
             val where = inputData.getStringArray(KEY_WHERE_PATHS)!!.map { path ->
                 Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
             }
@@ -248,23 +255,22 @@ class FinderWorker(
                 else -> searchForName(where)
             }
             updateTask(now = true) {
-                toEnded(isCompleted = true)
+                toEnded()
             }
             Data.Builder().build()
         } catch (e: CancellationException) {
-            updateTask(now = true) {
-                toEnded(isCompleted = false)
+            updateTask(now = true, waitJobs = false) {
+                toEnded(isStopped = true)
             }
             process?.destroy()
             Data.Builder().build()
         } catch (e: Exception) {
             logE("$e")
             updateTask(now = true) {
-                toError(e.toString())
+                toEnded(error = e.toString())
             }
             Data.Builder().putString(KEY_EXCEPTION, e.toString()).build()
         } finally {
-            jobs.forEach { it.join() }
             showNotification()
         }
         return Result.success(data)
@@ -272,18 +278,18 @@ class FinderWorker(
 
     private fun showNotification() {
         val task = task
+        task.state as SearchState.Ended
         val id = task.uniqueId
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, id, intent, UPDATING_FLAG)
-        val error = (task as? SearchTask.Error)?.error
         val icon = when {
-            error != null -> R.drawable.ic_notification_error
-            task.isDone -> R.drawable.ic_notification_done
-            else -> R.drawable.ic_notification_stopped
+            task.isStopped -> R.drawable.ic_notification_stopped
+            task.error != null -> R.drawable.ic_notification_error
+            else -> R.drawable.ic_notification_done
         }
         val titleId = when {
-            task !is SearchTask.Done -> R.string.search_failed
-            !task.isCompleted -> R.string.search_stopped
+            task.error != null -> R.string.search_failed
+            task.state.isStopped -> R.string.search_stopped
             task.result.isEmpty -> R.string.search_empty
             else -> R.string.search_succeed
         }
@@ -296,11 +302,13 @@ class FinderWorker(
             }
             subText to text
         } ?: (null to null)
+        val error = task.error?.let { context.getString(R.string.search_error, it) }
         text = arrayOf(text, error).filterNotNull().joinToString(separator = ".\n")
         val notification = NotificationCompat.Builder(context, Const.RESULT_NOTIFICATION_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle(context.getString(titleId))
                 .setSubText(subText)
+                .apply { if (error != null) setStyle(NotificationCompat.BigTextStyle()) }
                 .setContentText(text)
                 .setSmallIcon(icon)
                 .setColor(ContextCompat.getColor(context, R.color.day_night_primary))

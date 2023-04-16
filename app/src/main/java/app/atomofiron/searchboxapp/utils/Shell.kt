@@ -93,7 +93,6 @@ object Shell {
     }
 
     fun exec(command: String, su: Boolean, processObserver: ((Process) -> Unit)? = null, forEachLine: ((String) -> Unit)? = null): Output {
-        poop("exec $command")
         var code = -1
         var output = ""
         var error: String

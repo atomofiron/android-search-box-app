@@ -10,6 +10,7 @@
     <string name="search_failed">Поиск завершён с ошибкой</string>
     <string name="search_for_content_result">"Подстрок: %d, файлов: %d, файлов всего: %d"</string>
     <string name="search_for_names_result">"файлов: %d, файлов всего: %d"</string>
+    <string name="search_error">Ошибка: %s</string>
     <string name="error">Ошибка</string>
     <string name="nothing">Ничего не найдено</string>
     <string name="warning">Вы не выбрали ни одной директории. Поиск будет произведён по всему корневому разделу</string>

@@ -50,7 +50,7 @@ class TextViewerViewState(
     val item = session.item
     val tasks = session.tasks
     val textLines = session.textLines
-    val currentTask = MutableStateFlow<SearchTask.Done?>(null)
+    val currentTask = MutableStateFlow<SearchTask?>(null)
 
     /** @return value >= 0 если нужно подгрузить файл. */
     fun changeCursor(increment: Boolean): Int {

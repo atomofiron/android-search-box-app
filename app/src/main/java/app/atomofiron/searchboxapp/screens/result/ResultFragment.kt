@@ -133,12 +133,10 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             // fix first item offset
             resultAdapter.notifyItemChanged(0)
         }
-        if (task is SearchTask.Error && task.error != snackbarError) {
-            snackbarError = task.error
+        if (task.error != null) {
             errorSnackbar.setText(task.error).show()
-        } else {
-            snackbarError = null
         }
+        snackbarError = task.error
     }
 
     private fun onCompositionChange(composition: ExplorerItemComposition) {

@@ -60,7 +60,7 @@ class SearchAdapterPresenterDelegate(
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
-        if (item.task is SearchTask.Done && item.task.count > 0) {
+        if (item.task.isEnded && item.task.count > 0) {
             curtainDelegate.controller?.close()
             viewState.matchesCursor.value = MatchCursor()
             viewState.currentTask.value = item.task

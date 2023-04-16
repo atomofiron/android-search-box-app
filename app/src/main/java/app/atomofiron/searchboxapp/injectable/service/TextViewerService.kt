@@ -17,6 +17,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.withLock
+import java.util.*
+import kotlin.collections.ArrayList
 
 class TextViewerService(
     private val scope: CoroutineScope,
@@ -122,8 +124,8 @@ class TextViewerService(
         textLoading.value = false
     }
 
-    private suspend fun TextViewerSession.addProgressTask(params: SearchParams): SearchTask.Progress {
-        val task = SearchTask.Progress(isLocal = true, params, SearchResult.TextSearchResult())
+    private suspend fun TextViewerSession.addProgressTask(params: SearchParams): SearchTask {
+        val task = SearchTask(UUID.randomUUID(), isLocal = true, params, SearchResult.TextSearchResult())
         mutex.withLock {
             tasks.run {
                 val tasks = value.toMutableList()
@@ -134,7 +136,7 @@ class TextViewerService(
         return task
     }
 
-    private fun TextViewerSession.searchInside(task: SearchTask.Progress): SearchTask.Ended {
+    private fun TextViewerSession.searchInside(task: SearchTask): SearchTask {
         val params = task.params
         val template = when {
             params.useRegex && params.ignoreCase -> Shell.GREP_BONS_IE
@@ -162,14 +164,14 @@ class TextViewerService(
         return if (output.success || output.code == 1 && output.error.isEmpty()) {
             val indexes = lineIndexToMatches.keys.sorted()
             val result = SearchResult.TextSearchResult(count, lineIndexToMatches, indexes)
-            task.toEnded(isCompleted = true, result = result)
+            task.toEnded(result = result)
         } else  {
             logE("searchInFile !success, error: ${output.error}")
-            task.toError(output.error)
+            task.toEnded(error = output.error)
         }
     }
 
-    private suspend fun TextViewerSession.finishTask(task: SearchTask.Ended) {
+    private suspend fun TextViewerSession.finishTask(task: SearchTask) {
         mutex.withLock {
             tasks.run {
                 val index = value.indexOfFirst { it.uuid == task.uuid }
