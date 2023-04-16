@@ -30,6 +30,7 @@ import app.atomofiron.searchboxapp.utils.Const.UNDEFINEDL
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.Shell
 import app.atomofiron.searchboxapp.utils.escapeQuotes
+import app.atomofiron.searchboxapp.utils.updateNotificationChannel
 import kotlinx.coroutines.*
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -221,8 +222,6 @@ class FinderWorker(
     }
 
     private suspend fun CoroutineScope.work(): Result {
-        logI("doWork")
-
         context.updateNotificationChannel(
             Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
             context.getString(R.string.foreground_notification_name),
@@ -255,7 +254,7 @@ class FinderWorker(
             process?.destroy()
             Data.Builder().build()
         } catch (e: Exception) {
-            logI("$e")
+            logE("$e")
             updateTask(now = true) {
                 toError(e.toString())
             }

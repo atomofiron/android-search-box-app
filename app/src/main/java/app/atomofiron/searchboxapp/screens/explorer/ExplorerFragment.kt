@@ -16,7 +16,7 @@ import app.atomofiron.searchboxapp.custom.ExplorerView
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
-import app.atomofiron.searchboxapp.recyclerView
+import app.atomofiron.searchboxapp.utils.recyclerView
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerPagerAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
 import app.atomofiron.searchboxapp.utils.getString

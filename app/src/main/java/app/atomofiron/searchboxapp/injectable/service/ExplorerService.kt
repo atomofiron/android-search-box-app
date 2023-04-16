@@ -29,8 +29,8 @@ import app.atomofiron.searchboxapp.utils.ExplorerDelegate.sortByName
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.theSame
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.updateWith
-import app.atomofiron.searchboxapp.utils.Tool.endingDot
-import app.atomofiron.searchboxapp.utils.Tool.writeTo
+import app.atomofiron.searchboxapp.utils.endingDot
+import app.atomofiron.searchboxapp.utils.writeTo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first

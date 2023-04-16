@@ -8,7 +8,7 @@ import android.text.Spanned
 import android.util.AttributeSet
 import android.view.Gravity
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.utils.Tool.convert
+import app.atomofiron.searchboxapp.utils.convert
 import kotlin.math.min
 
 class ByteSizeTextField @JvmOverloads constructor(

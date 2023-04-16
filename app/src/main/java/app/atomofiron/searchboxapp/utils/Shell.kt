@@ -1,9 +1,8 @@
 package app.atomofiron.searchboxapp.utils
 
 import app.atomofiron.searchboxapp.logE
-import app.atomofiron.searchboxapp.logI
+import app.atomofiron.searchboxapp.poop
 import java.io.InputStream
-import java.io.InputStreamReader
 import java.io.OutputStream
 
 
@@ -94,7 +93,7 @@ object Shell {
     }
 
     fun exec(command: String, su: Boolean, processObserver: ((Process) -> Unit)? = null, forEachLine: ((String) -> Unit)? = null): Output {
-        logI("exec $command")
+        poop("exec $command")
         var code = -1
         var output = ""
         var error: String
@@ -125,8 +124,6 @@ object Shell {
             }
             error = errorStream.reader().readText()
             code = process.waitFor()
-
-            logI("waitFor $code, ${System.currentTimeMillis() - tik}ms $command")
         } catch (e: Exception) {
             logE(e.toString())
             e.printStackTrace()

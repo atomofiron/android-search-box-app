@@ -16,8 +16,8 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.custom.view.JoystickView
 import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
-import app.atomofiron.searchboxapp.isLayoutRtl
-import app.atomofiron.searchboxapp.isRtl
+import app.atomofiron.searchboxapp.utils.isLayoutRtl
+import app.atomofiron.searchboxapp.utils.isRtl
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView

@@ -79,6 +79,7 @@ class RootRouter(
                     .add(R.id.root_fl_container, home)
                     .add(R.id.root_fl_container, second)
                     .hide(second)
+                    // todo IllegalStateException: Can not perform this action after onSaveInstanceState
                     .commit()
             }
         }

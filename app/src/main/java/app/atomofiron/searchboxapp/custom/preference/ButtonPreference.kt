@@ -8,7 +8,7 @@ import androidx.annotation.StringRes
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.getAttr
+import app.atomofiron.searchboxapp.utils.getAttr
 
 class ButtonPreference @JvmOverloads constructor(
     context: Context,

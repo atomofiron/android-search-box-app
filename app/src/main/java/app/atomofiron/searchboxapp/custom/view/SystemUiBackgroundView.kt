@@ -10,8 +10,8 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.getColorByAttr
-import app.atomofiron.searchboxapp.obtainStyledAttributes
+import app.atomofiron.searchboxapp.utils.getColorByAttr
+import app.atomofiron.searchboxapp.utils.obtainStyledAttributes
 import app.atomofiron.searchboxapp.utils.Const
 import kotlin.math.max
 

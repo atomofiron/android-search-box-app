@@ -18,7 +18,7 @@ import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemAc
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.util.OnScrollIdleSubmitter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootViewHolder.Companion.getTitle
-import app.atomofiron.searchboxapp.scrollToTop
+import app.atomofiron.searchboxapp.utils.scrollToTop
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 @SuppressLint("ViewConstructor")

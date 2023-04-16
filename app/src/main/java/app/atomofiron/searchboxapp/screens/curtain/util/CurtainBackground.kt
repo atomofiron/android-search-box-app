@@ -6,8 +6,8 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.ColorUtils
 import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.getColorByAttr
-import app.atomofiron.searchboxapp.setColorAlpha
+import app.atomofiron.searchboxapp.utils.getColorByAttr
+import app.atomofiron.searchboxapp.utils.setColorAlpha
 import app.atomofiron.searchboxapp.utils.Const
 
 open class CurtainBackground(context: Context) : Drawable() {

@@ -15,7 +15,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
 import app.atomofiron.searchboxapp.logI
 import app.atomofiron.searchboxapp.screens.main.MainActivity
-import app.atomofiron.searchboxapp.updateNotificationChannel
+import app.atomofiron.searchboxapp.utils.updateNotificationChannel
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.work.NotificationWorker
 import java.lang.Deprecated

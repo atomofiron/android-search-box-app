@@ -23,7 +23,7 @@ import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.ge
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.setFabSideListener
 import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Side
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
-import app.atomofiron.searchboxapp.getColorByAttr
+import app.atomofiron.searchboxapp.utils.getColorByAttr
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainContentDelegate
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainNode
 import app.atomofiron.searchboxapp.screens.curtain.model.CurtainAction
