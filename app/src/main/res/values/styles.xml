@@ -31,6 +31,7 @@
 		<item name="textInputOutlinedDenseStyle">@style/InputOutlinedDenseStyle</item>
 
 		<item name="colorControlHighlight" tools:ignore="PrivateResource">@color/mtrl_btn_text_btn_ripple_color</item>
+		<item name="strokeColor">?colorSurfaceVariant</item>
 	</style>
 
 	<style name="AppTheme.Legacy" parent="@style/AppTheme">

@@ -98,6 +98,7 @@
     <string name="pref_explorer_item">File / Directory</string>
     <string name="pref_joystick">ESC button\'s color</string>
     <string name="create">Create</string>
+    <string name="create_file_or_dir">Create a file or directory</string>
     <string name="owner">Owner</string>
     <string name="group">Group</string>
     <string name="empty_check_box">Empty check box</string>

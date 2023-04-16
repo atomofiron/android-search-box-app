@@ -83,7 +83,10 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
                 root.isLongClickable = false
                 tryHide()
             }
-            root.setOnLongClickListener { true }
+            root.setOnLongClickListener {
+                if (BuildConfig.DEBUG) showTestSnackbar()
+                true
+            }
             root.isHapticFeedbackEnabled = false
             root.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateSnackbarTranslation() }
             curtainParent.addOnLayoutChangeListener { parent, left, _, right, _, _, _, _, _ ->
@@ -98,11 +101,11 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         }
         transitionAnimator = TransitionAnimator(binding, ::updateSnackbarTranslation)
         viewState.onViewCollect()
+    }
 
-        if (BuildConfig.DEBUG) {
-            showSnackbar {
-                Snackbar.make(it, "Test", Snackbar.LENGTH_INDEFINITE).setAction("Dismiss") {}
-            }
+    private fun showTestSnackbar() {
+        showSnackbar {
+            Snackbar.make(it, "Test", Snackbar.LENGTH_INDEFINITE).setAction("Dismiss") {}
         }
     }
 

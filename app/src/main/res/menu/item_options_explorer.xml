@@ -3,7 +3,7 @@
     tools:context="app.atomofiron.searchboxapp.MainActivity">
     <item
         android:id="@+id/menu_create"
-        android:title="@string/create"
+        android:title="@string/create_file_or_dir"
         android:icon="@drawable/ic_create"
         />
     <item

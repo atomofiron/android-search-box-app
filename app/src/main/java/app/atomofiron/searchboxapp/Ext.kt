@@ -14,6 +14,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.annotation.StyleableRes
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -98,4 +99,10 @@ fun Context.updateNotificationChannel(
 val ViewPager2.recyclerView: RecyclerView get() = getChildAt(0) as RecyclerView
 
 fun Float.toIntAlpha(): Int = (Const.ALPHA_VISIBLE_INT * this).toInt().coerceIn(0, 255)
+
+fun Int.setColorAlpha(alpha: Float): Int = setColorAlpha(alpha.toIntAlpha())
+
+fun Int.setColorAlpha(alpha: Int): Int = ColorUtils.setAlphaComponent(this, alpha)
+
+fun Int.asOverlayOn(background: Int): Int = ColorUtils.compositeColors(this, background)
 

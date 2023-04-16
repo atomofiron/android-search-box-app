@@ -7,6 +7,8 @@ import androidx.core.graphics.ColorUtils
 import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.getColorByAttr
+import app.atomofiron.searchboxapp.setColorAlpha
+import app.atomofiron.searchboxapp.utils.Const
 
 open class CurtainBackground(context: Context) : Drawable() {
 
@@ -18,8 +20,8 @@ open class CurtainBackground(context: Context) : Drawable() {
     private val dragHandleWidth = context.resources.getDimension(R.dimen.drag_handle_width)
     private val dragHandleMargin = context.resources.getDimension(R.dimen.drag_handle_margin)
     private val strokeColor = when {
-        context.findBooleanByAttr(R.attr.isBlackDeep) -> ColorUtils.compositeColors(dragHandleColor, curtainColor)
-        else -> Color.TRANSPARENT
+        !context.findBooleanByAttr(R.attr.isBlackDeep) -> Color.TRANSPARENT
+        else -> context.getColorByAttr(R.attr.strokeColor).setColorAlpha(Const.ALPHA_50_PERCENT)
     }
     private val paint = Paint()
     private val boundsF = RectF()
@@ -46,27 +48,26 @@ open class CurtainBackground(context: Context) : Drawable() {
 
     override fun getOutline(outline: Outline) {
         super.getOutline(outline)
-        outline.setRoundRect(bounds.left, bounds.top, bounds.right, bounds.bottom, cornerRadius)
+        outline.setRoundRect(bounds, cornerRadius)
     }
 
     override fun draw(canvas: Canvas) {
         var radius = cornerRadius
 
+        paint.color = curtainColor
+        paint.style = Paint.Style.FILL
+        canvas.drawRoundRect(boundsF, radius, radius, paint)
+
         paint.color = strokeColor
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = strokeWidth * 2
         boundsF.run {
-            canvas.drawRoundRect(left, top, right, bottom, radius, radius, paint)
+            canvas.drawRoundRect(left, top, right, bottom + strokeWidth, radius, radius, paint)
         }
 
-        paint.color = curtainColor
         paint.style = Paint.Style.FILL
-        boundsF.run {
-            canvas.drawRoundRect(left, top, right, bottom, radius, radius, paint)
-        }
-
-        radius = dragHandleRect.height()
         paint.color = dragHandleColor
+        radius = dragHandleRect.height()
         canvas.drawRoundRect(dragHandleRect, radius, radius, paint)
     }
 }
