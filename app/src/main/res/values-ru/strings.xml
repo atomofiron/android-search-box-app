@@ -4,6 +4,12 @@
     <string name="case_sens">Учитывать регистр</string>
     <string name="storage_err">Ошибка доступа к памяти</string>
     <string name="searching">Поиск…</string>
+    <string name="search_stopped">Поиск был остановлен</string>
+    <string name="search_empty">Поиск не дал результатов</string>
+    <string name="search_succeed">Поиск завершён успешно</string>
+    <string name="search_failed">Поиск завершён с ошибкой</string>
+    <string name="search_for_content_result">"Подстрок: %d, файлов: %d, файлов всего: %d"</string>
+    <string name="search_for_names_result">"файлов: %d, файлов всего: %d"</string>
     <string name="error">Ошибка</string>
     <string name="nothing">Ничего не найдено</string>
     <string name="warning">Вы не выбрали ни одной директории. Поиск будет произведён по всему корневому разделу</string>

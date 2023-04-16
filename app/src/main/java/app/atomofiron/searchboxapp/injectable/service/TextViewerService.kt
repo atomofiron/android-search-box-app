@@ -15,7 +15,6 @@ import app.atomofiron.searchboxapp.utils.escapeQuotes
 import app.atomofiron.searchboxapp.utils.removeOneIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.withLock
 
@@ -163,7 +162,7 @@ class TextViewerService(
         return if (output.success || output.code == 1 && output.error.isEmpty()) {
             val indexes = lineIndexToMatches.keys.sorted()
             val result = SearchResult.TextSearchResult(count, lineIndexToMatches, indexes)
-            task.toDone(isCompleted = true, result = result)
+            task.toEnded(isCompleted = true, result = result)
         } else  {
             logE("searchInFile !success, error: ${output.error}")
             task.toError(output.error)

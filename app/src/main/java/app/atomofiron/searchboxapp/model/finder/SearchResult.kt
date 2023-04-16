@@ -31,7 +31,7 @@ sealed class SearchResult(
         count: Int = 0,
         val tuples: List<ItemCounter> = listOf(),
         countMax: Int = 0,
-    ) : SearchResult(if (count < 0) tuples.size else count, countMax) {
+    ) : SearchResult(if (forContent) count else tuples.size, countMax) {
         companion object {
             fun forContent() = FinderResult(forContent = true)
             fun forNames() = FinderResult(forContent = false)

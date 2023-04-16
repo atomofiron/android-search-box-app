@@ -25,6 +25,7 @@ sealed class SearchTask {
         override val isLocal: Boolean,
         override val params: SearchParams,
         override val result: SearchResult,
+        val error: String? = null,
     ) : SearchTask() {
         override val inProgress = true
 
@@ -37,10 +38,10 @@ sealed class SearchTask {
 
     data class Error(
         override val uuid: UUID,
-        val error: String,
         override val isLocal: Boolean,
         override val params: SearchParams,
         override val result: SearchResult,
+        val error: String,
     ) : Ended() {
         override val isError = true
 
@@ -74,14 +75,23 @@ sealed class SearchTask {
     }
 }
 
-fun SearchTask.toError(error: String, result: SearchResult = this.result): SearchTask.Error {
-    return SearchTask.Error(uuid, error, isLocal, params, result)
+fun SearchTask.withError(error: String): SearchTask = when (this) {
+    is SearchTask.Progress -> SearchTask.Progress(uuid, isLocal, params, result, error)
+    is SearchTask.Ended -> SearchTask.Error(uuid, isLocal, params, result, error)
 }
 
-fun SearchTask.toDone(
+fun SearchTask.toError(error: String, result: SearchResult = this.result): SearchTask.Error {
+    return SearchTask.Error(uuid, isLocal, params, result, error)
+}
+
+fun SearchTask.toEnded(
     isCompleted: Boolean,
     isRemovable: Boolean = true,
     result: SearchResult = this.result,
-): SearchTask.Done {
-    return SearchTask.Done(uuid, isCompleted, isRemovable, isLocal, params, result)
+): SearchTask.Ended {
+    val error = (this as? SearchTask.Progress)?.error
+    return when {
+        error.isNullOrBlank() -> SearchTask.Done(uuid, isCompleted, isRemovable, isLocal, params, result)
+        else -> SearchTask.Error(uuid, isLocal, params, result, error)
+    }
 }
