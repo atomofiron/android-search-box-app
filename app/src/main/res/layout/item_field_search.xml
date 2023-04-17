@@ -30,6 +30,7 @@
         android:background="@drawable/bg_transparent_ripple"
         android:src="@drawable/ic_find"
         android:layout_gravity="end"
+        android:tint="?colorPrimary"
         />
     <include
         android:id="@+id/item_find_i_replace"

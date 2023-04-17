@@ -28,5 +28,6 @@
         android:background="@drawable/bg_transparent_ripple"
         android:src="@drawable/ic_replace"
         android:layout_gravity="center_vertical|end"
+        android:tint="?colorPrimary"
         />
 </FrameLayout>
