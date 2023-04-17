@@ -1,8 +1,8 @@
 package app.atomofiron.searchboxapp.di.module
 
-import android.app.NotificationManager
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
@@ -15,8 +15,8 @@ open class CommonModule {
 
     @Provides
     @Singleton
-    open fun provideNotificationManager(context: Context): NotificationManager {
-        return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    open fun provideNotificationManager(context: Context): NotificationManagerCompat {
+        return NotificationManagerCompat.from(context)
     }
 
     @Provides

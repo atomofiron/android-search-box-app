@@ -2,7 +2,6 @@ package app.atomofiron.searchboxapp.work
 
 import android.annotation.SuppressLint
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -100,7 +99,7 @@ class FinderWorker(
     @Inject
     lateinit var finderStore: FinderStore
     @Inject
-    lateinit var notificationManager: NotificationManager
+    lateinit var notificationManager: NotificationManagerCompat
     @Inject
     lateinit var appScope: CoroutineScope
     @Inject
@@ -226,21 +225,22 @@ class FinderWorker(
     }
 
     override suspend fun doWork(): Result {
-        context.updateNotificationChannel(
-            Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
-            context.getString(R.string.foreground_notification_name),
-        )
-        val info = ForegroundInfo(Const.FOREGROUND_NOTIFICATION_ID, foregroundNotification())
-        setForeground(info)
-
-        return work()
-    }
-
-    private suspend fun work(): Result {
         if (query.isEmpty()) {
             logE("Query is empty")
             return Result.success()
         }
+        if (context.canForegroundService()) {
+            context.updateNotificationChannel(
+                Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
+                context.getString(R.string.foreground_notification_name),
+            )
+            val info = ForegroundInfo(Const.FOREGROUND_NOTIFICATION_ID, foregroundNotification())
+            setForeground(info)
+        }
+        return work()
+    }
+
+    private suspend fun work(): Result {
         val dataBuilder = Data.Builder()
         try {
             finderStore.addOrUpdate(task)
@@ -270,11 +270,14 @@ class FinderWorker(
             }
             dataBuilder.putString(KEY_EXCEPTION, e.toString())
         } finally {
-            showNotification()
+            if (context.canNotifications()) {
+                showNotification()
+            }
         }
         return Result.success(dataBuilder.build())
     }
 
+    @SuppressLint("MissingPermission")
     private fun showNotification() {
         val task = task
         task.state as SearchState.Ended

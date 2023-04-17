@@ -20,7 +20,7 @@ android {
     defaultConfig {
         applicationId appId
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 8
         versionName "1.1.2"
 

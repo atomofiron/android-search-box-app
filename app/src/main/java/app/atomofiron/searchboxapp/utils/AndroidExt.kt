@@ -4,11 +4,16 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Resources
 import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.P
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -43,7 +48,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 
 fun Resources.getLocale(): Locale = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> configuration.locales.get(0)
+    SDK_INT >= Build.VERSION_CODES.N -> configuration.locales.get(0)
     else -> configuration.locale
 }
 
@@ -132,7 +137,7 @@ const val DEFAULT_FREQUENCY = 60
 
 fun Context.getFrequency(): Int {
     val refreshRate = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> display?.refreshRate
+        SDK_INT >= Build.VERSION_CODES.R -> display?.refreshRate
         else -> {
             val manager = getSystemService(Context.WINDOW_SERVICE) as WindowManager?
             manager?.defaultDisplay?.refreshRate
@@ -257,11 +262,19 @@ fun Context.updateNotificationChannel(
 val ViewPager2.recyclerView: RecyclerView get() = getChildAt(0) as RecyclerView
 
 inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T? = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, clazz)
+    SDK_INT >= TIRAMISU -> getParcelable(key, clazz)
     else -> getParcelable(key)
 }
 
 inline fun <reified T : Serializable> Bundle.getSerializableCompat(key: String, clazz: Class<T>): T? = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializable(key, clazz)
+    SDK_INT >= TIRAMISU -> getSerializable(key, clazz)
     else -> getSerializable(key) as T?
+}
+
+fun Context.canNotifications(): Boolean {
+    return SDK_INT < TIRAMISU || checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PERMISSION_GRANTED
+}
+
+fun Context.canForegroundService(): Boolean {
+    return SDK_INT < P || checkSelfPermission(android.Manifest.permission.FOREGROUND_SERVICE) == PERMISSION_GRANTED
 }

@@ -120,6 +120,12 @@ class PermissionDelegate private constructor(
         return this
     }
 
+    override fun any(callback: ExactAnyCallback): PermissionDelegateApi {
+        granted { callback() }
+        denied { _, _ -> callback() }
+        return this
+    }
+
     override fun granted(permission: String, callback: ExactGrantedCallback): PermissionDelegateApi {
         when {
             SDK_INT < M -> callback()

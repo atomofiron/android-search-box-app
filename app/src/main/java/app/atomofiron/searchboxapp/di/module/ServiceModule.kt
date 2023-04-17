@@ -1,16 +1,15 @@
 package app.atomofiron.searchboxapp.di.module
 
-import android.app.NotificationManager
 import android.content.ClipboardManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
-import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.service.*
 import app.atomofiron.searchboxapp.injectable.store.*
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +34,7 @@ open class ServiceModule {
     fun finderService(
         scoope: CoroutineScope,
         workManager: WorkManager,
-        notificationManager: NotificationManager,
+        notificationManager: NotificationManagerCompat,
         finderStore: FinderStore,
         preferenceStore: PreferenceStore,
         explorerStore: ExplorerStore,

@@ -41,8 +41,14 @@ class FinderAdapterPresenterDelegate(
         if (viewState.targets.isEmpty()) {
             return
         }
-        viewState.addToHistory(value)
+
+        router.permissions.request(android.Manifest.permission.POST_NOTIFICATIONS)
+            .any { startSearch(value) }
+    }
+
+    private fun startSearch(query: String) {
+        viewState.addToHistory(query)
         val config = viewState.configItem
-        interactor.search(value, viewState.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
+        interactor.search(query, viewState.targets, config.ignoreCase, config.useRegex, config.excludeDirs, config.searchInContent)
     }
 }
