@@ -9,6 +9,8 @@ import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.LayoutDirection
 import android.util.TypedValue
@@ -35,6 +37,7 @@ import app.atomofiron.searchboxapp.model.Screen
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import com.google.android.material.navigation.NavigationBarView
+import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
@@ -253,3 +256,12 @@ fun Context.updateNotificationChannel(
 
 val ViewPager2.recyclerView: RecyclerView get() = getChildAt(0) as RecyclerView
 
+inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T? = when {
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, clazz)
+    else -> getParcelable(key)
+}
+
+inline fun <reified T : Serializable> Bundle.getSerializableCompat(key: String, clazz: Class<T>): T? = when {
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializable(key, clazz)
+    else -> getSerializable(key) as T?
+}

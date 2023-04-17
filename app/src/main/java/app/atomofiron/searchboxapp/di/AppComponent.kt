@@ -8,7 +8,6 @@ import android.content.res.AssetManager
 import dagger.BindsInstance
 import dagger.Component
 import app.atomofiron.searchboxapp.android.App
-import app.atomofiron.searchboxapp.android.ForegroundService
 import app.atomofiron.searchboxapp.di.module.*
 import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.screens.curtain.CurtainDependencies
@@ -22,7 +21,6 @@ import app.atomofiron.searchboxapp.screens.template.TemplateDependencies
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerDependencies
 import app.atomofiron.searchboxapp.utils.AppWatcherProxy
 import app.atomofiron.searchboxapp.work.FinderWorker
-import app.atomofiron.searchboxapp.work.NotificationWorker
 import javax.inject.Singleton
 
 @Component(modules = [
@@ -73,7 +71,5 @@ interface AppComponent :
     }
 
     fun inject(target: App)
-    fun inject(target: ForegroundService)
-    fun inject(target: NotificationWorker)
     fun inject(target: FinderWorker)
 }

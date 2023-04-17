@@ -31,8 +31,10 @@ class TextViewerPresenter(
             viewState.setTasks(it)
         }
         session.textLoading.collect(scope, viewState::setLoading)
-        params.initialParams?.let { params ->
-            interactor.search(item, params)
+        params.initialTaskId?.let { taskId ->
+            interactor.fetchTask(item, taskId) { task ->
+                viewState.trySelectTask(task)
+            }
         }
     }
 

@@ -60,13 +60,8 @@ class SearchAdapterPresenterDelegate(
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
-        if (item.task.isEnded && item.task.count > 0) {
+        if (viewState.trySelectTask(item.task)) {
             curtainDelegate.controller?.close()
-            viewState.matchesCursor.value = MatchCursor()
-            viewState.currentTask.value = item.task
-            viewState.status.run {
-                value = value.copy(count = 0, countMax = item.task.count)
-            }
         }
     }
 

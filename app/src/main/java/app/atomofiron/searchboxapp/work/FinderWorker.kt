@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.work.*
-import app.atomofiron.common.util.flow.throttleLatest
 import app.atomofiron.searchboxapp.*
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
@@ -31,8 +30,6 @@ import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.Const.UNDEFINEDL
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.regex.Pattern
@@ -49,6 +46,7 @@ class FinderWorker(
         private const val UNDEFINED = -1
 
         private const val KEY_EXCEPTION = "KEY_EXCEPTION"
+        private const val KEY_CANCELLED = "KEY_CANCELLED"
 
         private const val KEY_QUERY = "KEY_QUERY"
         private const val KEY_USE_SU = "KEY_USE_SU"
@@ -90,7 +88,7 @@ class FinderWorker(
 
     private val taskMutex = Mutex()
     private var task: SearchTask = SearchTask(
-        id, isLocal = false,
+        id,
         SearchParams(query, useRegex, ignoreCase),
         FinderResult(forContent),
     )
@@ -107,8 +105,8 @@ class FinderWorker(
     lateinit var appScope: CoroutineScope
     @Inject
     lateinit var preferenceStore: PreferenceStore
-
-    private val taskEmissionFlow = MutableSharedFlow<SearchTask>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    @Inject
+    lateinit var workManager: WorkManager
 
     init {
         if (useRegex && !forContent) {
@@ -153,17 +151,13 @@ class FinderWorker(
         }
     }
 
-    private suspend fun waitForJobs() {
-        progressJobs.forEachIndexed { i, it, ->
-            it.join()
-        }
-    }
+    private suspend fun waitForJobs() = progressJobs.forEach { it.join() }
 
     private suspend inline fun updateTask(transformation: SearchTask.() -> SearchTask) {
         taskMutex.withLock {
             task = task.transformation()
         }
-        taskEmissionFlow.emit(task)
+        finderStore.addOrUpdate(task)
     }
 
     private val forContentLineListener: (String) -> Unit = { line ->
@@ -232,38 +226,24 @@ class FinderWorker(
     }
 
     override suspend fun doWork(): Result {
-        return coroutineScope {
-            async(Dispatchers.IO) {
-                work()
-            }.also { job ->
-                job.invokeOnCompletion { throwable ->
-                    if (throwable is CancellationException) process?.destroy()
-                }
-            }.await()
-        }
-    }
-
-    @Suppress("SuspendFunctionOnCoroutineScope")
-    private suspend fun CoroutineScope.work(): Result {
         context.updateNotificationChannel(
             Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
             context.getString(R.string.foreground_notification_name),
         )
         val info = ForegroundInfo(Const.FOREGROUND_NOTIFICATION_ID, foregroundNotification())
-        setForegroundAsync(info)
+        setForeground(info)
 
+        return work()
+    }
+
+    private suspend fun work(): Result {
         if (query.isEmpty()) {
             logE("Query is empty")
             return Result.success()
         }
-        val data = try {
-            finderStore.add(task)
-
-            launch {
-                taskEmissionFlow
-                    .throttleLatest(duration = 200L)
-                    .collect(finderStore::addOrUpdate)
-            }
+        val dataBuilder = Data.Builder()
+        try {
+            finderStore.addOrUpdate(task)
 
             val where = inputData.getStringArray(KEY_WHERE_PATHS)!!.map { path ->
                 Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
@@ -276,25 +256,23 @@ class FinderWorker(
             updateTask {
                 toEnded()
             }
-            Data.Builder().build()
         } catch (e: CancellationException) {
             updateTask {
                 toEnded(isStopped = true)
             }
             process?.destroy()
-            Data.Builder().build()
+            dataBuilder.putBoolean(KEY_CANCELLED, true)
         } catch (e: Exception) {
             logE("$e")
             waitForJobs()
             updateTask {
                 toEnded(error = e.toString())
             }
-            Data.Builder().putString(KEY_EXCEPTION, e.toString()).build()
+            dataBuilder.putString(KEY_EXCEPTION, e.toString())
         } finally {
-            finderStore.addOrUpdate(task)
             showNotification()
         }
-        return Result.success(data)
+        return Result.success(dataBuilder.build())
     }
 
     private fun showNotification() {

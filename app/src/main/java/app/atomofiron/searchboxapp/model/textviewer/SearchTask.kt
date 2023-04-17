@@ -12,7 +12,6 @@ sealed interface SearchState {
 
 data class SearchTask(
     val uuid: UUID,
-    val isLocal: Boolean,
     val params: SearchParams,
     val result: SearchResult,
     val state: SearchState = SearchState.Progress,

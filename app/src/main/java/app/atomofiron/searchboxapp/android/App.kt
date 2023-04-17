@@ -9,7 +9,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Configuration
-import androidx.work.WorkManager
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
@@ -18,7 +17,6 @@ import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.getMarketIntent
 import app.atomofiron.searchboxapp.utils.immutable
-import app.atomofiron.searchboxapp.work.NotificationWorker
 import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
@@ -26,8 +24,6 @@ import javax.inject.Inject
 
 class App : Application(), Configuration.Provider {
 
-    @Inject
-    lateinit var workManager: WorkManager
     @Inject
     lateinit var initialDelegate: InitialDelegate
 
@@ -38,7 +34,6 @@ class App : Application(), Configuration.Provider {
 
         DaggerInjector.init(this)
         DaggerInjector.appComponent.inject(this)
-        workManager.cancelUniqueWork(NotificationWorker.NAME)
 
         initialDelegate.applyTheme()
 
@@ -93,6 +88,7 @@ class App : Application(), Configuration.Provider {
                 .setColor(findColorByAttr(R.attr.colorPrimary))
                 .build()
 
+        // todo check permission
         notificationManager.notify(Const.NOTIFICATION_ID_UPDATE, notification)
     }
 }

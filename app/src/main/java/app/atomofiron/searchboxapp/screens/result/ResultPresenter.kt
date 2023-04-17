@@ -39,7 +39,7 @@ class ResultPresenter(
     private val resources by appStore.resourcesProperty
 
     init {
-        val task = finderStore.tasks.value.find { it.uniqueId == taskId }
+        val task = finderStore.tasks.find { it.uniqueId == taskId }
         if (task == null) {
             logE("No task found!")
             router.navigateBack()
@@ -50,7 +50,7 @@ class ResultPresenter(
     }
 
     override fun onSubscribeData() {
-        if (taskId != UNDEFINED) finderStore.tasks.collect(scope) { tasks ->
+        if (taskId != UNDEFINED) finderStore.tasksFlow.collect(scope) { tasks ->
             val task = tasks.find { it.uniqueId == taskId }
             task ?: return@collect
             viewState.task.value = task

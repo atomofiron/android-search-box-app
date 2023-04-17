@@ -20,7 +20,7 @@ class ResultItemActionDelegate(
     override fun onItemClick(item: Node) {
         if (item.isFile && item.content is NodeContent.File.Text) {
             val task = viewModel.task.value
-            router.openFile(item.path, task.uniqueId)
+            router.openFile(item.path, task.uuid)
         } else {
             // todo open dir
         }

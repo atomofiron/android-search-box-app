@@ -118,4 +118,16 @@ class TextViewerViewState(
         status.value = status.value.clear()
         currentTask.value = null
     }
+
+    fun trySelectTask(task: SearchTask): Boolean {
+        return (task.isEnded && task.count > 0).also { isOk ->
+            if (isOk) {
+                matchesCursor.value = MatchCursor()
+                currentTask.value = task
+                status.run {
+                    value = value.copy(count = 0, countMax = task.count)
+                }
+            }
+        }
+    }
 }

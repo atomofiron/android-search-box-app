@@ -6,7 +6,9 @@ import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.finder.SearchParams
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
+import java.util.UUID
 
 class TextViewerInteractor(
     private val scope: CoroutineScope,
@@ -25,9 +27,28 @@ class TextViewerInteractor(
         }
     }
 
-    fun search(item: Node, params: SearchParams) = textViewerService.search(item, params)
+    fun fetchTask(item: Node, taskId: UUID, callback: (SearchTask) -> Unit) {
+        scope.launch {
+            val task = textViewerService.fetchTask(item, taskId)
+            task?.let(callback)
+        }
+    }
 
-    fun removeTask(item: Node, taskId: Int) = textViewerService.removeTask(item, taskId)
+    fun search(item: Node, params: SearchParams) {
+        scope.launch(Dispatchers.IO) {
+            textViewerService.search(item, params)
+        }
+    }
 
-    fun closeSession(item: Node) = textViewerService.closeSession(item)
+    fun removeTask(item: Node, taskId: Int) {
+        scope.launch {
+            textViewerService.removeTask(item, taskId)
+        }
+    }
+
+    fun closeSession(item: Node) {
+        scope.launch {
+            textViewerService.closeSession(item)
+        }
+    }
 }

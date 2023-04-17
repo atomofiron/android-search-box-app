@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".android.App"
@@ -45,11 +46,6 @@
         <activity
             android:name=".utils.FilterActivity"
             android:label="Filter"
-            />
-
-        <service
-            android:name=".android.ForegroundService"
-            android:exported="false"
             />
 
         <provider

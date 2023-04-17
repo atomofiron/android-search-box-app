@@ -62,7 +62,7 @@ class ProgressHolder(parent: ViewGroup, layoutId: Int, listener: OnActionListene
             else -> R.string.remove
         }
         btnAction.setText(idAction)
-        btnAction.isVisible = when (task.state) {
+        btnAction.isEnabled = when (task.state) {
             !is SearchState.Ended -> true
             else -> task.state.isRemovable
         }
