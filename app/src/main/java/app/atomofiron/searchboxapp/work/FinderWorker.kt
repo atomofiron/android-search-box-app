@@ -10,27 +10,29 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.work.*
+import app.atomofiron.common.util.flow.throttleLatest
 import app.atomofiron.searchboxapp.*
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
+import app.atomofiron.searchboxapp.injectable.service.TextViewerService
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
-import app.atomofiron.searchboxapp.model.finder.ItemCounter
+import app.atomofiron.searchboxapp.model.finder.ItemMatch
 import app.atomofiron.searchboxapp.model.finder.SearchParams
 import app.atomofiron.searchboxapp.model.finder.SearchResult.FinderResult
+import app.atomofiron.searchboxapp.model.finder.toItemMatchMultiply
 import app.atomofiron.searchboxapp.model.textviewer.SearchState
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.main.MainActivity
-import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.Const.UNDEFINEDL
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
-import app.atomofiron.searchboxapp.utils.Shell
-import app.atomofiron.searchboxapp.utils.escapeQuotes
-import app.atomofiron.searchboxapp.utils.updateNotificationChannel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.regex.Pattern
@@ -45,7 +47,6 @@ class FinderWorker(
         private const val UPDATING_FLAG = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
         private const val UNDEFINED = -1
-        private const val PERIOD = 100L
 
         private const val KEY_EXCEPTION = "KEY_EXCEPTION"
 
@@ -85,16 +86,17 @@ class FinderWorker(
     private val excludeDirs = inputData.getBoolean(KEY_EXCLUDE_DIRS, false)
     private val forContent = inputData.getBoolean(KEY_FOR_CONTENT, false)
     private val maxDepth = inputData.getInt(KEY_MAX_DEPTH, UNDEFINED)
+    private val params = SearchParams(query, useRegex, ignoreCase)
 
     private val taskMutex = Mutex()
     private var task: SearchTask = SearchTask(
         id, isLocal = false,
         SearchParams(query, useRegex, ignoreCase),
-        if (forContent) FinderResult.forContent() else FinderResult.forNames(),
+        FinderResult(forContent),
     )
     private var process: Process? = null
-    private var delayedJob: Job? = null
-    private val cacheConfig by lazy(LazyThreadSafetyMode.NONE) { CacheConfig(preferenceStore.useSu.value) }
+    private val cacheConfig = CacheConfig(useSu)
+    private val resultCacheConfig = CacheConfig(useSu, thumbnailSize = context.resources.getDimensionPixelSize(R.dimen.preview_size))
     private val progressJobs = mutableListOf<Job>()
 
     @Inject
@@ -102,9 +104,11 @@ class FinderWorker(
     @Inject
     lateinit var notificationManager: NotificationManager
     @Inject
-    lateinit var scope: CoroutineScope
+    lateinit var appScope: CoroutineScope
     @Inject
     lateinit var preferenceStore: PreferenceStore
+
+    private val taskEmissionFlow = MutableSharedFlow<SearchTask>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     init {
         if (useRegex && !forContent) {
@@ -149,35 +153,39 @@ class FinderWorker(
         }
     }
 
-    private suspend fun updateTask(
-        now: Boolean = false,
-        waitJobs: Boolean = true,
-        action: SearchTask.() -> SearchTask,
-    ) {
-        if (now) {
-            delayedJob?.cancel()
-            if (waitJobs) progressJobs.forEach { it.join() }
-            task = task.action()
-            finderStore.addOrUpdate(task)
-        } else if (delayedJob?.isActive != true) {
-            taskMutex.withLock {
-                task = task.action()
-            }
-            delayedJob = scope.launch {
-                sleep(PERIOD)
-                finderStore.addOrUpdate(task)
-            }
+    private suspend fun waitForJobs() {
+        progressJobs.forEachIndexed { i, it, ->
+            it.join()
         }
     }
 
+    private suspend inline fun updateTask(transformation: SearchTask.() -> SearchTask) {
+        taskMutex.withLock {
+            task = task.transformation()
+        }
+        taskEmissionFlow.emit(task)
+    }
+
     private val forContentLineListener: (String) -> Unit = { line ->
-        scope.launch {
+        appScope.launch {
+            // the file name can contain a ':'
             val index = line.lastIndexOf(':')
             val count = line.substring(index.inc()).toInt()
-            if (count > 0) {
-                val path = line.substring(0, index)
-                addToResults(path, count)
+            if (count <= 0) {
+                addToResult(null)
+                return@launch
             }
+            val path = line.substring(0, index)
+            val item = Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
+            if (item.content !is NodeContent.File.Text) {
+                addToResult(null)
+                return@launch
+            }
+            val itemMatch = when (val result = TextViewerService.searchInside(params, path, useSu)) {
+                is Rslt.Ok -> result.data.toItemMatchMultiply(item)
+                is Rslt.Err -> ItemMatch.MultiplyError(item, count, result.error)
+            }
+            addToResult(itemMatch)
         }.let { progressJobs.add(it) }
     }
 
@@ -202,27 +210,30 @@ class FinderWorker(
     }
 
     private val forNameLineListener: (String) -> Unit = { line ->
-        scope.launch {
+        appScope.launch {
+            val item = Node(line, content = NodeContent.File.Unknown).update(resultCacheConfig)
             when {
-                useRegex && pattern.matcher(line).find() -> addToResults(line)
-                !useRegex && line.contains(query, ignoreCase) -> addToResults(line)
+                useRegex && !pattern.matcher(line).find() -> Unit
+                !useRegex && !line.contains(query, ignoreCase) -> Unit
+                else -> addToResult(ItemMatch.Single(item))
             }
         }.let { progressJobs.add(it) }
     }
 
-    private suspend fun addToResults(path: String, count: Int = -1) {
-        val item = Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
-        val itemCounter = ItemCounter(item, count)
-        var result = task.result as FinderResult
-        result = result.add(itemCounter, dCountMax = 1)
+    private suspend fun addToResult(itemMatch: ItemMatch?) {
         updateTask {
+            var result = task.result as FinderResult
+            result = when (itemMatch) {
+                null -> result.copy(countTotal = result.countTotal.inc())
+                else -> result.add(itemMatch)
+            }
             copyWith(result)
         }
     }
 
     override suspend fun doWork(): Result {
         return coroutineScope {
-            async {
+            async(Dispatchers.IO) {
                 work()
             }.also { job ->
                 job.invokeOnCompletion { throwable ->
@@ -232,6 +243,7 @@ class FinderWorker(
         }
     }
 
+    @Suppress("SuspendFunctionOnCoroutineScope")
     private suspend fun CoroutineScope.work(): Result {
         context.updateNotificationChannel(
             Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
@@ -247,6 +259,12 @@ class FinderWorker(
         val data = try {
             finderStore.add(task)
 
+            launch {
+                taskEmissionFlow
+                    .throttleLatest(duration = 200L)
+                    .collect(finderStore::addOrUpdate)
+            }
+
             val where = inputData.getStringArray(KEY_WHERE_PATHS)!!.map { path ->
                 Node(path, content = NodeContent.File.Unknown).update(cacheConfig)
             }
@@ -254,23 +272,26 @@ class FinderWorker(
                 forContent -> searchForContent(where)
                 else -> searchForName(where)
             }
-            updateTask(now = true) {
+            waitForJobs()
+            updateTask {
                 toEnded()
             }
             Data.Builder().build()
         } catch (e: CancellationException) {
-            updateTask(now = true, waitJobs = false) {
+            updateTask {
                 toEnded(isStopped = true)
             }
             process?.destroy()
             Data.Builder().build()
         } catch (e: Exception) {
             logE("$e")
-            updateTask(now = true) {
+            waitForJobs()
+            updateTask {
                 toEnded(error = e.toString())
             }
             Data.Builder().putString(KEY_EXCEPTION, e.toString()).build()
         } finally {
+            finderStore.addOrUpdate(task)
             showNotification()
         }
         return Result.success(data)

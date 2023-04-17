@@ -25,7 +25,7 @@ class ResultsItemHolder(itemView: View) : ResultsHolder(itemView) {
         item as ResultItem.Item
         val result = item.item
         binder.onBind(result.item)
-        tvCounter.isVisible = result.count > 0
+        tvCounter.isVisible = result.withCounter
         tvCounter.text = result.count.toString()
     }
 

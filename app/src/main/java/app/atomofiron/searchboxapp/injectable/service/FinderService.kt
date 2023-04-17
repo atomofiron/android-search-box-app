@@ -23,10 +23,12 @@ class FinderService(
     explorerStore: ExplorerStore,
 ) {
     init {
+        workManager.cancelAllWork()
         explorerStore.removed.collect(scope) {
             finderStore.deleteResultFromTasks(it)
         }
     }
+
     fun search(query: String, where: List<Node>, ignoreCase: Boolean, useRegex: Boolean, isMultiline: Boolean, forContent: Boolean) {
         val maxSize = preferenceStore.maxFileSizeForSearch.value
         val maxDepth = preferenceStore.maxDepthForSearch.value

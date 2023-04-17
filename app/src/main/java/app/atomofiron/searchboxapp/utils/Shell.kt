@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.utils
 
 import app.atomofiron.searchboxapp.logE
-import app.atomofiron.searchboxapp.poop
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -27,17 +26,20 @@ object Shell {
     const val FIND_GREP_CS_I = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -c -s -i -e \"%s\""
     const val FIND_GREP_CS_E = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -c -s -E \"%s\""
     const val FIND_GREP_CS_IE = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -c -s -i -E \"%s\""
+    // /storage/emulated/0/fadb/sba.txt:15
 
     // -H is necessary
     const val GREP_CS = "{toybox} grep -H -c -s -e \"%s\" \"%s\""
     const val GREP_CS_I = "{toybox} grep -H -c -s -i -e \"%s\" \"%s\""
     const val GREP_CS_E = "{toybox} grep -H -c -s -E \"%s\" \"%s\""
     const val GREP_CS_IE = "{toybox} grep -H -c -s -i -E \"%s\" \"%s\""
+    // /storage/emulated/0/fadb/sba.txt:15
 
+    // \( %s \) -exec {toybox} grep -H -c -s -E "work" {} \;"
     const val FIND_EXEC_GREP = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
     const val FIND_EXEC_GREP_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_F = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_IF = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_E = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IE = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
 
     const val FIND_FD = "{toybox} find \"%s\" -maxdepth %d \\( -type f -o -type d \\)"
     const val FIND_F = "{toybox} find \"%s\" -maxdepth %d -type f"
@@ -50,6 +52,7 @@ object Shell {
     const val GREP_BONS_I = "{toybox} grep -bons -ie \"%s\" \"%s\""
     const val GREP_BONS_E = "{toybox} grep -bons -E \"%s\" \"%s\""
     const val GREP_BONS_IE = "{toybox} grep -bons -iE \"%s\" \"%s\""
+    // 241:6916:work
 
     // %s grep -c -s -F -i -e "%s" "%s"
 

@@ -40,7 +40,7 @@ class ResultService(
     fun cacheFile(item: ResultItem.Item) {
         val useSu = preferenceStore.useSu.value
         if (!item.item.isCached) {
-            item.item.updateCache(useSu)
+            // todo cache item.item.item.updateCache(useSu)
             //resultChannel.notifyItemChanged.value = item
         }
     }

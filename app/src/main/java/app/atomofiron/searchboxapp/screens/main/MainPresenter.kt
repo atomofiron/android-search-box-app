@@ -37,7 +37,7 @@ class MainPresenter(
 
     override fun onSubscribeData() = Unit
 
-    fun onEscClick() = router.onBack()
+    fun onEscClick(): Boolean = router.onBack()
 
     fun onExitClick() = router.closeApp()
 

@@ -6,13 +6,10 @@ import app.atomofiron.searchboxapp.model.CacheConfig
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.finder.SearchParams
-import app.atomofiron.searchboxapp.model.finder.SearchResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult.TextSearchResult
 import app.atomofiron.searchboxapp.model.textviewer.*
-import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
-import app.atomofiron.searchboxapp.utils.Shell
-import app.atomofiron.searchboxapp.utils.escapeQuotes
-import app.atomofiron.searchboxapp.utils.removeOneIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,6 +23,40 @@ class TextViewerService(
     private val textViewerStore: TextViewerStore,
     private val finderStore: FinderStore,
 ) {
+    companion object {
+        fun searchInside(params: SearchParams, path: String, useSu: Boolean): Rslt<TextSearchResult> {
+            val template = when {
+                params.useRegex && params.ignoreCase -> Shell.GREP_BONS_IE
+                params.useRegex -> Shell.GREP_BONS_E
+                params.ignoreCase -> Shell.GREP_BONS_I
+                else -> Shell.GREP_BONS
+            }
+            var count = 0
+            val cmd = Shell[template].format(params.query.escapeQuotes(), path)
+            val lineIndexToMatches = hashMapOf<Int, MutableList<TextLineMatch>>()
+            val output = Shell.exec(cmd, useSu) { line ->
+                val lineByteOffset = line.split(':')
+                val lineIndex = lineByteOffset[0].toInt().dec()
+                val byteOffset = lineByteOffset[1].toLong()
+                val text = lineByteOffset[2]
+                var list = lineIndexToMatches[lineIndex]
+                if (list == null) {
+                    list = mutableListOf()
+                    lineIndexToMatches[lineIndex] = list
+                }
+                list.add(TextLineMatch(byteOffset, text.length))
+                count++
+            }
+            return if (output.success || output.code == 1 && output.error.isEmpty()) {
+                val indexes = lineIndexToMatches.keys.sorted()
+                val result = TextSearchResult(count, lineIndexToMatches, indexes)
+                Rslt.Ok(result)
+            } else  {
+                logE("searchInFile !success, error: ${output.error}")
+                Rslt.Err(output.error)
+            }
+        }
+    }
 
     private val useSu: Boolean get() = preferenceStore.useSu.value
 
@@ -125,7 +156,7 @@ class TextViewerService(
     }
 
     private suspend fun TextViewerSession.addProgressTask(params: SearchParams): SearchTask {
-        val task = SearchTask(UUID.randomUUID(), isLocal = true, params, SearchResult.TextSearchResult())
+        val task = SearchTask(UUID.randomUUID(), isLocal = true, params, TextSearchResult())
         mutex.withLock {
             tasks.run {
                 val tasks = value.toMutableList()
@@ -137,37 +168,9 @@ class TextViewerService(
     }
 
     private fun TextViewerSession.searchInside(task: SearchTask): SearchTask {
-        val params = task.params
-        val template = when {
-            params.useRegex && params.ignoreCase -> Shell.GREP_BONS_IE
-            params.useRegex -> Shell.GREP_BONS_E
-            params.ignoreCase -> Shell.GREP_BONS_I
-            else -> Shell.GREP_BONS
-        }
-        var count = 0
-        val cmd = Shell[template].format(params.query.escapeQuotes(), item.value.path)
-        val lineIndexToMatches = hashMapOf<Int, MutableList<TextLineMatch>>()
-        val output = Shell.exec(cmd, useSu) { line ->
-            val lineByteOffset = line.split(':')
-            val lineIndex = lineByteOffset[0].toInt().dec()
-            val byteOffset = lineByteOffset[1].toLong()
-            val text = lineByteOffset[2]
-            val lineMatch = TextLineMatch(byteOffset, text.length)
-            var list = lineIndexToMatches[lineIndex]
-            if (list == null) {
-                list = mutableListOf()
-                lineIndexToMatches[lineIndex] = list
-            }
-            list.add(lineMatch)
-            count++
-        }
-        return if (output.success || output.code == 1 && output.error.isEmpty()) {
-            val indexes = lineIndexToMatches.keys.sorted()
-            val result = SearchResult.TextSearchResult(count, lineIndexToMatches, indexes)
-            task.toEnded(result = result)
-        } else  {
-            logE("searchInFile !success, error: ${output.error}")
-            task.toEnded(error = output.error)
+        return when (val result = searchInside(task.params, item.value.path, useSu)) {
+            is Rslt.Ok -> task.toEnded(result = result.data)
+            is Rslt.Err -> task.toEnded(error = result.error)
         }
     }
 

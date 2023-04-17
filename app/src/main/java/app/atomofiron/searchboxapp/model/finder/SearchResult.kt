@@ -5,46 +5,45 @@ import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
 import app.atomofiron.searchboxapp.utils.Const
 import java.util.*
 
-sealed class SearchResult(
-    val count: Int,
-    val countMax: Int = -100,
-) {
 
-    val isEmpty: Boolean = count == 0
+sealed class SearchResult {
+
+    abstract val count: Int
+    abstract val countTotal: Int
+
+    val isEmpty: Boolean get() = count == 0
 
     abstract fun getCounters(): IntArray
 
-    class TextSearchResult(
-        count: Int,
+    data class TextSearchResult(
+        override val count: Int,
         /** line index -> matches byteOffset+length */
         val matchesMap: Map<Int, List<TextLineMatch>>,
         val indexes: List<Int>,
-    ) : SearchResult(count) {
+    ) : SearchResult() {
+
+        override val countTotal = 1
 
         constructor() : this(0, mapOf(), listOf())
 
         override fun getCounters(): IntArray = intArrayOf(count)
     }
 
-    class FinderResult private constructor(
-        val forContent: Boolean,
-        count: Int = 0,
-        val tuples: List<ItemCounter> = listOf(),
-        countMax: Int = 0,
-    ) : SearchResult(if (forContent) count else tuples.size, countMax) {
-        companion object {
-            fun forContent() = FinderResult(forContent = true)
-            fun forNames() = FinderResult(forContent = false)
-        }
+    data class FinderResult(
+        private val forContent: Boolean,
+        override val count: Int = 0,
+        val matches: List<ItemMatch> = listOf(),
+        override val countTotal: Int = 0,
+    ) : SearchResult() {
 
         override fun getCounters(): IntArray = when {
-            forContent -> intArrayOf(count, tuples.size, countMax)
-            else -> intArrayOf(tuples.size, countMax)
+            forContent -> intArrayOf(count, matches.size, countTotal)
+            else -> intArrayOf(matches.size, countTotal)
         }
 
         fun toMarkdown(): String {
             val data = StringBuilder()
-            for (item in tuples) {
+            for (item in matches) {
                 val name = if (item.item.isDirectory) item.item.name + Const.SLASH else item.item.name
                 val line = String.format("[%s](%s)\n", name, item.item.path.replace(" ", "\\ "))
                 data.append(line)
@@ -53,48 +52,61 @@ sealed class SearchResult(
         }
 
         fun removeItem(item: Node): SearchResult {
-            val index = tuples.indexOfFirst { it.item.uniqueId == item.uniqueId }
+            val index = matches.indexOfFirst { it.item.uniqueId == item.uniqueId }
             if (index < 0) return this
-            val items = tuples.toMutableList()
+            val items = matches.toMutableList()
             val removed = items.removeAt(index)
             val count = count - removed.count
-            return FinderResult(forContent, count, items, countMax.dec())
+            return FinderResult(forContent, count, items, countTotal.dec())
         }
 
-        fun add(itemCounter: ItemCounter, dCountMax: Int): FinderResult {
-            val items = tuples.toMutableList()
+        fun add(itemCounter: ItemMatch): FinderResult {
+            val items = matches.toMutableList()
             val count = count + itemCounter.count
             items.add(itemCounter)
-            return FinderResult(forContent, count, items, countMax + dCountMax)
+            return FinderResult(forContent, count, items, countTotal.inc())
         }
     }
 
-    override fun hashCode(): Int = Objects.hash(this::class, count, countMax)
+    override fun hashCode(): Int = Objects.hash(this::class, count, countTotal)
 
     override fun equals(other: Any?): Boolean = when {
         other === this -> true
         other !is SearchResult -> false
-        other::class != this::class -> false
         other.count != count -> false
-        other.countMax != countMax -> false
-        else -> false
+        other.countTotal != countTotal -> false
+        else -> other::class == this::class
     }
 }
 
-class ItemCounter(
+fun SearchResult.TextSearchResult.toItemMatchMultiply(item: Node): ItemMatch {
+    return ItemMatch.Multiply(item, count, matchesMap, indexes)
+}
+
+sealed class ItemMatch(
     val item: Node,
-    val count: Int = 1,
+    val count: Int,
 ) {
     val path = item.path
-    val isDirectory: Boolean = item.isDirectory
-
     val name: String = item.name
+    val isDirectory: Boolean = item.isDirectory
     val isCached: Boolean = item.isCached
-
-    var isChecked: Boolean = false
     val isDeleting: Boolean = item.state.isDeleting
+    val withCounter: Boolean get() = this !is Single
 
-    fun updateCache(useSu: Boolean) = Unit//xFile.updateCache(useSu, completely = true)
+    class Single(item: Node) : ItemMatch(item, count = 1)
 
-    override fun toString(): String = "ItemWithCounter{count=$count,path=${item.path}}"
+    class Multiply(
+        item: Node,
+        count: Int,
+        /** line index -> matches byteOffset+length */
+        val matchesMap: Map<Int, List<TextLineMatch>>,
+        val indexes: List<Int>,
+    ) : ItemMatch(item, count)
+
+    class MultiplyError(
+        item: Node,
+        count: Int,
+        error: String,
+    ) : ItemMatch(item, count)
 }

@@ -26,18 +26,6 @@ data class SearchTask(
     val isStopped: Boolean get() = state is SearchState.Ended && state.isStopped
     val isError: Boolean get() = state is SearchState.Ended && error != null
 
-    override fun hashCode(): Int = Objects.hash(uuid, state, result, error)
-
-    override fun equals(other: Any?): Boolean = when {
-        other === this -> true
-        other !is SearchTask -> false
-        other.uuid != uuid -> false
-        other.state != state -> false
-        other.result.count != result.count -> false
-        other.result.countMax != result.countMax -> false
-        else -> true
-    }
-
     fun copyWith(result: SearchResult): SearchTask = copy(result = result)
 
     fun toEnded(

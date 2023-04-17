@@ -27,7 +27,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, ResultItem>() {
     private val header = ResultItem.Header(0, 0)
 
     fun setResult(results: SearchResult.FinderResult) {
-        val items = results.tuples.map { ResultItem.Item(it) }
+        val items = results.matches.map { ResultItem.Item(it) }
         super.setItems(items)
 
         header.dirsCount = 0

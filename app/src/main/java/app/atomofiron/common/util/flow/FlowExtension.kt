@@ -61,30 +61,7 @@ fun <T> Fragment.fragmentCollect(
     }
 }
 
-fun <T> Flow<T>.debounceAfterFirst(duration: Long = 100L): Flow<T> = flow {
-    var delayedJob: Job? = null
-    var delayedValue: T? = null
-    var hasDelayedValue = false
-
-    fun post() {
-        delayedJob?.cancel()
-        delayedJob = CoroutineScope(Dispatchers.Default).launch {
-            delay(duration)
-            if (hasDelayedValue) {
-                hasDelayedValue = false
-                emit(delayedValue as T)
-                delayedValue = null
-            }
-        }
-    }
-    collect { value ->
-        if (delayedJob?.isActive == true) {
-            delayedValue = value
-            hasDelayedValue = true
-            post()
-        } else {
-            emit(value)
-            post()
-        }
-    }
+fun <T> Flow<T>.throttleLatest(duration: Long): Flow<T> = conflate().transform {
+    emit(it)
+    delay(duration)
 }
