@@ -46,9 +46,5 @@ class TextViewerInteractor(
         }
     }
 
-    fun closeSession(item: Node) {
-        scope.launch {
-            textViewerService.closeSession(item)
-        }
-    }
+    fun closeSession(item: Node) = textViewerService.closeSession(item)
 }

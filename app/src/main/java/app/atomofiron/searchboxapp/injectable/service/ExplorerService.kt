@@ -142,7 +142,6 @@ class ExplorerService(
             val root = roots[index]
             var item = root.item.copy(children = root.item.children?.copy(isOpened = true))
             roots[index] = root.copy(item = item, isSelected = true)
-            //tree.add(NodeLevel(item.parentPath, mutableListOf(item)))
             while (true) {
                 tree.add(item)
                 item = item.getOpened() ?: break
@@ -165,6 +164,7 @@ class ExplorerService(
                     parent.children.items[anotherOpenedIndex] = anotherOpened.close()
                 }
             }
+            // close() and open() make a copy of children list
             val toggled = if (item.isOpened) item.close() else item.open()
             val index = parent?.children?.indexOfFirst { it.uniqueId == item.uniqueId } ?: -1
             if (index >= 0) {

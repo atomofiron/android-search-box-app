@@ -119,7 +119,7 @@ class TextViewerService(
         }
     }
 
-    suspend fun closeSession(item: Node) {
+    fun closeSession(item: Node) {
         val session = textViewerStore.sessions.remove(item.uniqueId)
         session?.reader?.close()
     }
