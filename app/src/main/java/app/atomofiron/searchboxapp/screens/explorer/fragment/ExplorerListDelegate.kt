@@ -102,6 +102,10 @@ class ExplorerListDelegate(
         dir ?: return
         val holder = recyclerView.findViewHolderForItemId(dir.uniqueId.toLong())
         if (holder !is ExplorerHolder) return
+        val scrollOffset = recyclerView.paddingTop - holder.itemView.top
+        if (scrollOffset > 0) {
+            recyclerView.smoothScrollBy(0, -scrollOffset)
+        }
         holder.highlight()
     }
 
