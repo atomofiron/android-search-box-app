@@ -600,7 +600,8 @@ class ExplorerService(
             when {
                 isEmpty -> isEmpty = false
                 skip -> skip = false
-                else -> tree.getOrNull(i.dec())?.getOpened()?.let {
+                i >= tree.lastIndex.dec() -> Unit
+                else -> tree.getOrNull(i)?.getOpened()?.let {
                     val path = it.path.endingDot()
                     val item = Node(path, it.parentPath, rootId = it.rootId, children = it.children, properties = it.properties, content = it.content)
                     items.add(item)
