@@ -1,7 +1,5 @@
 package app.atomofiron.searchboxapp.screens.finder.adapter.holder
 
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.Q
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
