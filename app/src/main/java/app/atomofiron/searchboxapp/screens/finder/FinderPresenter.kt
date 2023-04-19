@@ -72,6 +72,7 @@ class FinderPresenter(
         finderStore.tasksFlow.collect(scope) { tasks ->
             viewState.progressItems.clear()
             viewState.progressItems.addAll(tasks.map { FinderStateItem.ProgressItem(it) })
+            viewState.progressItems.reverse()
             viewState.updateState()
         }
     }

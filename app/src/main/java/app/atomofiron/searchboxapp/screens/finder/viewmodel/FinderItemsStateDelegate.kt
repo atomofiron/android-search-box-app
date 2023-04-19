@@ -18,13 +18,13 @@ class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState
     override fun updateState() {
         val items = mutableListOf<FinderStateItem>()
         items.addAll(uniqueItems)
-        items.addAll(progressItems)
         items.addAll(targetItems)
         when {
             isLocal -> Unit
             targetItems.isEmpty() -> items.add(FinderStateItem.TipItem(R.string.tip))
             else -> items.add(FinderStateItem.TipItem(R.string.search_here))
         }
+        items.addAll(progressItems)
         if (SDK_INT >= S && !isLocal) items.add(FinderStateItem.DisclaimerItem)
         searchItems.value = items
     }
