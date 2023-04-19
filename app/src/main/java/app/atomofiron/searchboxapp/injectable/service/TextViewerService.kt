@@ -10,7 +10,6 @@ import app.atomofiron.searchboxapp.model.finder.SearchParams
 import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.finder.SearchResult.TextSearchResult
 import app.atomofiron.searchboxapp.model.textviewer.*
-import app.atomofiron.searchboxapp.poop
 import app.atomofiron.searchboxapp.utils.*
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
 import kotlinx.coroutines.CoroutineScope

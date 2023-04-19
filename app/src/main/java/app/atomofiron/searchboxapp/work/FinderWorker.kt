@@ -126,14 +126,14 @@ class FinderWorker(
                 return
             }
             val template = when {
-                item.isDirectory && useRegex && ignoreCase -> Shell[Shell.FIND_GREP_CS_IE]
-                item.isDirectory && useRegex && !ignoreCase -> Shell[Shell.FIND_GREP_CS_E]
-                item.isDirectory && !useRegex && ignoreCase -> Shell[Shell.FIND_GREP_CS_I]
-                item.isDirectory && !useRegex && !ignoreCase -> Shell[Shell.FIND_GREP_CS]
-                useRegex && ignoreCase -> Shell[Shell.GREP_CS_IE]
-                useRegex && !ignoreCase -> Shell[Shell.GREP_CS_E]
-                !useRegex && ignoreCase -> Shell[Shell.GREP_CS_I]
-                else -> Shell[Shell.GREP_CS]
+                item.isDirectory && useRegex && ignoreCase -> Shell[Shell.FIND_GREP_HCS_IE]
+                item.isDirectory && useRegex && !ignoreCase -> Shell[Shell.FIND_GREP_HCS_E]
+                item.isDirectory && !useRegex && ignoreCase -> Shell[Shell.FIND_GREP_HCS_I]
+                item.isDirectory && !useRegex && !ignoreCase -> Shell[Shell.FIND_GREP_HCS]
+                useRegex && ignoreCase -> Shell[Shell.GREP_HCS_IE]
+                useRegex && !ignoreCase -> Shell[Shell.GREP_HCS_E]
+                !useRegex && ignoreCase -> Shell[Shell.GREP_HCS_I]
+                else -> Shell[Shell.GREP_HCS]
             }
             val command = when {
                 item.isDirectory -> template.format(item.path, maxDepth, query.escapeQuotes())

@@ -22,24 +22,24 @@ object Shell {
     const val FILE_B = "{toybox} file -b \"%s\""
 
     // grep: No 'E' with 'F'
-    const val FIND_GREP_CS = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -c -s -e \"%s\""
-    const val FIND_GREP_CS_I = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -c -s -i -e \"%s\""
-    const val FIND_GREP_CS_E = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -c -s -E \"%s\""
-    const val FIND_GREP_CS_IE = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -c -s -i -E \"%s\""
+    const val FIND_GREP_HCS = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -Hcs -e \"%s\""
+    const val FIND_GREP_HCS_I = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -Hcs -ie \"%s\""
+    const val FIND_GREP_HCS_E = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -Hcs -E \"%s\""
+    const val FIND_GREP_HCS_IE = "{toybox} find \"%s\" -type f -maxdepth %d | xargs {toybox} grep -Hcs -iE \"%s\""
     // /storage/emulated/0/fadb/sba.txt:15
 
     // -H is necessary
-    const val GREP_CS = "{toybox} grep -H -c -s -e \"%s\" \"%s\""
-    const val GREP_CS_I = "{toybox} grep -H -c -s -i -e \"%s\" \"%s\""
-    const val GREP_CS_E = "{toybox} grep -H -c -s -E \"%s\" \"%s\""
-    const val GREP_CS_IE = "{toybox} grep -H -c -s -i -E \"%s\" \"%s\""
+    const val GREP_HCS = "{toybox} grep -Hcs -e \"%s\" \"%s\""
+    const val GREP_HCS_I = "{toybox} grep -Hcs -ie \"%s\" \"%s\""
+    const val GREP_HCS_E = "{toybox} grep -Hcs -E \"%s\" \"%s\""
+    const val GREP_HCS_IE = "{toybox} grep -Hcs -iE \"%s\" \"%s\""
     // /storage/emulated/0/fadb/sba.txt:15
 
     // \( %s \) -exec {toybox} grep -H -c -s -E "work" {} \;"
-    const val FIND_EXEC_GREP = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_E = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -E \"%s\" {} \\;"
-    const val FIND_EXEC_GREP_IE = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -H -c -s -i -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -Hcs -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_I = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -Hcs -iE \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_E = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -Hcs -E \"%s\" {} \\;"
+    const val FIND_EXEC_GREP_IE = "{toybox} find \"%s\" -type f -maxdepth %d \\( %s \\) -exec {toybox} grep -Hcs -iE \"%s\" {} \\;"
 
     const val FIND_FD = "{toybox} find \"%s\" -maxdepth %d \\( -type f -o -type d \\)"
     const val FIND_F = "{toybox} find \"%s\" -maxdepth %d -type f"
