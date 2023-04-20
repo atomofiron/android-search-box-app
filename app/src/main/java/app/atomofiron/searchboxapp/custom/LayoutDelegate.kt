@@ -65,7 +65,6 @@ class LayoutDelegate constructor(
         }
         railView?.consumeInsets()
         sideDock?.consumeInsets()
-        View.VISIBLE
     }
 
     override fun onApplyWindowInsets(parent: View, insets: WindowInsetsCompat): WindowInsetsCompat {
@@ -241,8 +240,8 @@ class LayoutDelegate constructor(
         if (!layout.withJoystick && railView == null && bottomView == null) {
             return insets
         }
-        val left = if (layout.isLeft) railSize else 0
-        val right = if (layout.isRight) railSize else 0
+        val left = if (layout.isLeft) currentRailSize else 0
+        val right = if (layout.isRight) currentRailSize else 0
         val joystick = Insets.of(left, 0, right, 0)
         return Insets.add(insets, joystick)
     }
