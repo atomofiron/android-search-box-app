@@ -57,6 +57,7 @@ class ItemBorderDecorator(
         val item = items[holder.bindingAdapterPosition]
         val next = items.getOrNull(holder.bindingAdapterPosition.inc())
         outRect.bottom = when {
+            item.isOpened && item.isEmpty && item.parentPath != next?.parentPath -> doubleSpace + space
             item.isOpened && item.isEmpty -> doubleSpace
             item.isOpened -> space
             item.parentPath != next?.parentPath && item.parentPath == currentDir?.path -> doubleSpace
