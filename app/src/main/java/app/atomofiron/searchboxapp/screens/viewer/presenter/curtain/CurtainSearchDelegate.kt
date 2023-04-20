@@ -30,9 +30,6 @@ class CurtainSearchDelegate(
     init {
         finderAdapter.output = output
         viewState.searchItems.collect(scope, collector = finderAdapter::submitList)
-        viewState.searchItems.collect(scope) {
-            val it = it.find { it is FinderStateItem.ProgressItem } as? FinderStateItem.ProgressItem
-        }
         viewState.insertInQuery.collect(scope, collector = ::insertInQuery)
     }
 
@@ -46,6 +43,7 @@ class CurtainSearchDelegate(
         holder.hideCheckBox()
         holder.setGreyBackgroundColor()
 
+        // todo inverse
         binding.sheetViewerSearchRv.adapter = finderAdapter
         binding.sheetViewerSearchRv.itemAnimator = null
 

@@ -107,7 +107,7 @@
 
 	<style name="NavigationRailStyle.Amoled" parent="@style/Widget.Material3.NavigationRailView" />
 
-	<style name="AppBarLayoutStyle.Amoled" parent="@style/Widget.Design.AppBarLayout" />
+	<style name="AppBarLayoutStyle.Amoled" parent="@style/Widget.Material3.AppBarLayout" />
 
 	<style name="CollapsingToolbarLayoutStyle.Amoled" parent="@style/Widget.Material3.CollapsingToolbar.Large" />
 

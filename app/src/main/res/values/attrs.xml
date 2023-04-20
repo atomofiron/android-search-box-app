@@ -10,10 +10,6 @@
     <attr name="colorOverlay" format="color" />
     <attr name="topRadioGroupBackground" format="color" />
 
-    <declare-styleable name="BottomMenuBar">
-        <attr name="menu" format="reference" />
-    </declare-styleable>
-
     <declare-styleable name="VerticalDockView">
         <attr name="title" format="string" />
     </declare-styleable>

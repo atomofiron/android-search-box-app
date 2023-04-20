@@ -41,35 +41,33 @@ class OrientationLayoutDelegate constructor(
     private val snackbarContainer: CoordinatorLayout? = null,
     private val joystickVisibilityCallback: ((Boolean) -> Unit)? = null,
 ) : OnApplyWindowInsetsListener {
-    enum class Side(val isBottom: Boolean = false) {
-        Left, Bottom(isBottom = true), Right,
-    }
 
     private val resources = parent.resources
     private val railSize = resources.getDimensionPixelSize(R.dimen.m3_navigation_rail_default_width)
     private val bottomSize = resources.getDimensionPixelSize(R.dimen.m3_bottom_nav_min_height)
-    private val withBottomInset get() = side == Side.Bottom && (withJoystick || bottomView != null)
-    private val withFlankInset get() = side != Side.Bottom && (withJoystick || railView != null)
+    private val withBottomInset get() = layout.isBottom && (withJoystick || bottomView != null)
+    private val withFlankInset get() = !layout.isBottom && (withJoystick || railView != null)
     private val currentBottomSize get() = if (withBottomInset) bottomSize else 0
     private val currentRailSize get() = if (withFlankInset) railSize else 0
-    private var side = Side.Bottom
+    private var layout = Layout(Layout.Ground.Bottom, withJoystick = true)
     private var withJoystick = false
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parent, this)
-        setLayout(side != Side.Bottom)
-        parent.setFabSideListener { side ->
-            if (this.side == side) return@setFabSideListener
-            this.side = side
-            setLayout(side != Side.Bottom)
+        setLayout(layout)
+        parent.setLayoutListener { layout ->
+            if (this.layout == layout) return@setLayoutListener
+            this.layout = layout
             parent.requestApplyInsets()
+            setLayout(layout)
         }
         railView?.consumeInsets()
         sideDock?.consumeInsets()
+        View.VISIBLE
     }
 
     override fun onApplyWindowInsets(parent: View, insets: WindowInsetsCompat): WindowInsetsCompat {
-        withJoystick = insets.joystickNeeded()
+        withJoystick = insets.withJoystick()
         joystickVisibilityCallback?.invoke(withJoystick)
         headerView?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets.getHeaderViewInsets())
@@ -104,10 +102,10 @@ class OrientationLayoutDelegate constructor(
         return WindowInsetsCompat.CONSUMED
     }
 
-    private fun setLayout(landscape: Boolean) {
-        bottomView?.isVisible = !landscape
-        railView?.isVisible = landscape
-        tabLayout?.isVisible = !landscape
+    private fun setLayout(layout: Layout) {
+        bottomView?.isVisible = !layout.isWide
+        railView?.isVisible = layout.isWide
+        tabLayout?.isVisible = !layout.isWide
         /* нужно только когда есть табы
         explorerViews?.forEach {
             it.systemUiView.update(statusBar = landscape)
@@ -138,50 +136,41 @@ class OrientationLayoutDelegate constructor(
     }
 
     private fun Insets.editForRecyclerView(): Insets {
-        val top = when (side) {
-            Side.Bottom -> if (tabLayout == null) top else 0
-            Side.Left, Side.Right -> top
+        val top = when {
+            layout.isWide -> top
+            tabLayout == null -> top
+            else -> 0
         }
-        val bottom = bottom + when (side) {
-            Side.Bottom -> currentBottomSize
-            Side.Left, Side.Right -> 0
-        }
-        val left = left + when (side) {
-            Side.Left -> currentRailSize
-            Side.Bottom, Side.Right -> 0
-        }
-        val right = right + when (side) {
-            Side.Right -> currentRailSize
-            Side.Bottom, Side.Left -> 0
-        }
+        val bottom = bottom + if (layout.isWide) 0 else currentBottomSize
+        val left = left + if (layout.isLeft) currentRailSize else 0
+        val right = right + if (layout.isRight) currentRailSize else 0
         return Insets.of(left, top, right, bottom)
     }
 
     private fun Insets.editForTabLayout(): Insets {
-        val left = when (side) {
-            Side.Left -> left + currentRailSize
-            Side.Bottom, Side.Right -> left
+        val left = when {
+            layout.isLeft -> left + currentRailSize
+            else -> left
         }
-        val right = when (side) {
-            Side.Right -> right + currentRailSize
-            Side.Bottom, Side.Left -> right
+        val right = when {
+            layout.isRight -> right + currentRailSize
+            else -> right
         }
         return Insets.of(left, top, right, bottom)
     }
 
     private fun Insets.editForHeaderView(): Insets {
-        val left = when (side) {
-            Side.Left -> left + currentRailSize
-            Side.Bottom,
-            Side.Right -> left
+        val left = when {
+            layout.isLeft -> left + currentRailSize
+            else -> left
         }
-        val right = when (side) {
-            Side.Right -> right + currentRailSize
-            Side.Left, Side.Bottom -> right
+        val right = when {
+            layout.isRight -> right + currentRailSize
+            else -> right
         }
-        val top = when (side) {
-            Side.Bottom -> if (tabLayout == null) top else 0
-            Side.Left, Side.Right -> top
+        val top = when {
+            layout.isBottom -> if (tabLayout == null) top else 0
+            else -> top
         }
         return Insets.of(left, top, right, bottom)
     }
@@ -193,7 +182,7 @@ class OrientationLayoutDelegate constructor(
 
         val collapsingLayout: CollapsingToolbarLayout? = appbarLayout.findViewById(R.id.collapsing_layout)
         collapsingLayout ?: return
-        val custom = insets.getAppbarLayoutInsets()
+        val custom = insets.getToolbarInsets()
         val defaultMargin = resources.getDimensionPixelSize(R.dimen.m3_appbar_expanded_title_margin_horizontal)
         collapsingLayout.run {
             val start = defaultMargin + if (resources.isRtl()) custom.right else custom.left
@@ -212,14 +201,8 @@ class OrientationLayoutDelegate constructor(
     private fun NavigationRailView.applyToRail(windowInsets: WindowInsetsCompat) {
         val insets = windowInsets.getInsets(insetsType)
         val topInset = if (withJoystick) currentRailSize else 0
-        val left = when (side) {
-            Side.Left, Side.Bottom -> insets.left
-            Side.Right -> 0
-        }
-        val right = when (side) {
-            Side.Right, Side.Bottom -> insets.right
-            Side.Left -> 0
-        }
+        val left = if (layout.isRight) 0 else insets.left
+        val right = if (layout.isLeft) 0 else insets.right
         updatePadding(left, insets.top + topInset, right, insets.bottom)
     }
 
@@ -236,12 +219,12 @@ class OrientationLayoutDelegate constructor(
         val currentRailSize = if (withJoystick) currentRailSize else 0
         val left = when {
             gravity != Gravity.LEFT -> 0
-            side == Side.Left -> insets.left + currentRailSize
+            layout.isLeft -> insets.left + currentRailSize
             else -> insets.left
         }
         val right = when {
             gravity != Gravity.RIGHT -> 0
-            side == Side.Right -> insets.right + currentRailSize
+            layout.isRight -> insets.right + currentRailSize
             else -> insets.right
         }
         updateLayoutParams {
@@ -251,56 +234,57 @@ class OrientationLayoutDelegate constructor(
         updatePadding(left, insets.top, right, insets.bottom)
     }
 
-    private fun WindowInsetsCompat.getAppbarLayoutInsets(): Insets {
-        val cutout = getInsets(Type.displayCutout())
-        val bars = getInsets(Type.navigationBars())
-        var fab = Insets.of(
-            if (side == Side.Left) railSize else 0,
-            0,
-            if (side == Side.Right) railSize else 0,
-            if (side == Side.Bottom) bottomSize else 0,
-        )
-        fab = Insets.add(bars, fab)
-        return Insets.max(fab, cutout)
+    private fun WindowInsetsCompat.getToolbarInsets(): Insets {
+        val insets = getInsets(Type.displayCutout() or Type.navigationBars())
+        if (!layout.withJoystick && railView == null && bottomView == null) {
+            return insets
+        }
+        val left = if (layout.isLeft) railSize else 0
+        val right = if (layout.isRight) railSize else 0
+        val joystick = Insets.of(left, 0, right, 0)
+        return Insets.add(insets, joystick)
     }
 
     companion object {
         private val insetsType = Type.systemBars() or Type.displayCutout()
 
-        fun WindowInsetsCompat.joystickNeeded(): Boolean {
-            val tappableElement = getInsets(Type.tappableElement())
-            return getInsets(Type.navigationBars()).run {
+        fun View.withJoystick(): Boolean = ViewCompat.getRootWindowInsets(this)?.withJoystick() != false
+
+        fun WindowInsetsCompat.withJoystick(): Boolean {
+            val tappableElement = getInsetsIgnoringVisibility(Type.tappableElement())
+            return getInsetsIgnoringVisibility(Type.navigationBars()).run {
                 left > 0 && left != tappableElement.left
                         || bottom > 0 && bottom != tappableElement.bottom
                         || right > 0 && right != tappableElement.right
             }
         }
 
-        fun View.setFabSideListener(callback: (side: Side) -> Unit) {
-            var sideWas: Side? = null
+        fun View.setLayoutListener(callback: (layout: Layout) -> Unit) {
+            var layoutWas: Layout? = null
             addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-                val side = getFabSide()
-                if (sideWas != side) callback(side)
-                sideWas = side
+                val layout = getLayout()
+                if (layoutWas != layout) callback(layout)
+                layoutWas = layout
             }
         }
 
-        fun View.getFabSide(): Side {
+        fun View.getLayout(): Layout {
+            val withJoystick = withJoystick()
             val maxSize = resources.getDimensionPixelSize(R.dimen.bottom_bar_max_width)
             val atTheBottom = width < height && width < maxSize
-            return if (atTheBottom) Side.Bottom else Side.Right
+            val side = if (atTheBottom) Layout.Ground.Bottom else Layout.Ground.Right
+            return Layout(side, withJoystick)
         }
 
         fun JoystickView.syncOrientation(root: FrameLayout) {
-            root.setFabSideListener { side ->
+            root.setLayoutListener { layout ->
                 updateLayoutParams<FrameLayout.LayoutParams> {
-                    val flags = when (side) {
-                        Side.Bottom -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                    val flags = when {
+                        layout.isBottom -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
                         else -> Gravity.END or Gravity.TOP
                     }
-                    when (gravity and flags) {
-                        flags -> return@setFabSideListener
-                        else -> gravity = flags
+                    if ((gravity and flags) != flags) {
+                        gravity = flags
                     }
                 }
             }

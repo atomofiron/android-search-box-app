@@ -19,9 +19,8 @@ import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.common.util.isDarkTheme
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.getFabSide
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.setFabSideListener
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Side
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.getLayout
+import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.setLayoutListener
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
 import app.atomofiron.searchboxapp.utils.getColorByAttr
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainContentDelegate
@@ -111,23 +110,30 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
 
     private fun FragmentCurtainBinding.onApplyInsets() {
         val joystickSize = resources.getDimensionPixelSize(R.dimen.joystick_size)
-        val topPadding = resources.getDimensionPixelSize(R.dimen.curtain_padding_top)
-        root.setFabSideListener { root.requestApplyInsets() }
+        val verticalPadding = resources.getDimensionPixelSize(R.dimen.curtain_padding_top)
+        root.setLayoutListener { root.requestApplyInsets() }
         ViewCompat.setOnApplyWindowInsetsListener(root) { root, windowInsets ->
             val builder = WindowInsetsCompat.Builder()
             var insets = windowInsets.getInsets(Type.navigationBars())
-            val side = root.getFabSide()
-            if (side.isBottom) {
-                insets = Insets.of(0, 0, 0, insets.bottom + joystickSize)
+            val layout = root.getLayout()
+            val ime = windowInsets.getInsets(Type.ime())
+            val bottomPadding = when {
+                layout.withJoystick && ime.bottom > 0 -> joystickSize
+                !layout.withJoystick && ime.bottom > 0 -> 0
+                !layout.isBottom -> verticalPadding
+                !layout.withJoystick -> verticalPadding
+                else -> joystickSize
             }
+            insets = Insets.of(0, 0, 0, insets.bottom + bottomPadding)
             builder.setInsets(Type.navigationBars(), insets)
-            builder.setInsets(Type.statusBars(), Insets.of(0, topPadding, 0, 0))
+            builder.setInsets(Type.statusBars(), Insets.of(0, verticalPadding, 0, 0))
             curtainSheet.dispatchChildrenWindowInsets(builder.build())
             insets = windowInsets.getInsets(defaultTypeMask)
-            val horizontal = when (side) {
-                Side.Bottom -> 0 to 0
-                Side.Left -> joystickSize to 0
-                Side.Right -> 0 to joystickSize
+            val horizontal = when {
+                !layout.withJoystick -> 0 to 0
+                layout.isLeft -> joystickSize to 0
+                layout.isRight -> 0 to joystickSize
+                else -> 0 to 0
             }
             root.updatePadding(
                 left = insets.left + horizontal.first,
