@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.model.explorer
 import java.util.*
 
 data class NodeChildren(
+    // список мутабельный, но перед публикацией делается копия через NodeChildren.copy()
     val items: MutableList<Node>,
     val isOpened: Boolean,
 ) : List<Node> by items {

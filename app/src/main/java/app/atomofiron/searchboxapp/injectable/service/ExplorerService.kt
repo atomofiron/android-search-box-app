@@ -172,6 +172,7 @@ class ExplorerService(
             }
             tree.add(levelIndex.inc(), toggled)
         }
+        tryCacheAsync(key, it)
     }
 
     suspend fun updateRootsAsync(key: NodeTabKey) {
@@ -385,7 +386,7 @@ class ExplorerService(
 
     suspend fun tryCheckItem(key: NodeTabKey, item: Node, isChecked: Boolean) {
         renderTab(key) {
-            val (_, state) = states.findIndexed(item.uniqueId)
+            val (_, state) = states.findState(item.uniqueId)
             if (state?.withOperation == true) return
             if (!checked.tryUpdateCheck(item.uniqueId, isChecked)) return
         }
@@ -704,7 +705,7 @@ class ExplorerService(
         uniqueId: Int,
         block: NodeState?.() -> NodeState?,
     ): NodeState? {
-        val (index, state) = findIndexed(uniqueId)
+        val (index, state) = findState(uniqueId)
         val new = state.block()
         when {
             state == null && new != null -> add(new)
@@ -724,37 +725,28 @@ class ExplorerService(
         }
     }
 
-    private fun List<Node>.replaceItem(item: Node) = replaceItem(item.uniqueId, item.parentPath, item)
+    private fun MutableList<Node>.replaceItem(item: Node) = replaceItem(item.uniqueId, item.parentPath, item)
 
-    private fun List<Node>.replaceItem(uniqueId: Int, parentPath: String, item: Node?): Boolean {
-        val (levelIndex, level) = findIndexed(parentPath)
-        val index = level?.children?.indexOfFirst { it.uniqueId == uniqueId }
-        if (index == null || index < 0) return false
-        val prev = level.children[index]
-        val wasOpened = prev.isOpened
-        if (prev.areContentsTheSame(item)) return false
-        val upLevel = getOrNull(levelIndex.dec())
-        when (item?.isOpened) {
-            null -> level.children.items.removeAt(index)
-            wasOpened -> level.children.items[index] = item
-            else -> level.children.items[index] = item.copy(children = item.children?.copy(isOpened = wasOpened))
+    private fun MutableList<Node>.replaceItem(uniqueId: Int, parentPath: String, item: Node?): Boolean {
+        val (_, parent) = findIndexed(parentPath)
+        val parentChildren = parent?.children?.items
+        val index = parentChildren?.indexOfFirst { it.uniqueId == uniqueId } ?: -1
+        var fails = 0
+        when {
+            parentChildren == null -> fails++
+            index < 0 -> fails++
+            item == null -> parentChildren.removeAt(index)
+            parentChildren[index].isOpened == item.isOpened -> parentChildren[index] = item
+            else -> parentChildren[index] = item.open(!item.isOpened)
         }
-        val parent = upLevel?.children?.find { it.path == parentPath }
-        if (level.children === parent?.children) {
-            return true
+        val (currentIndex, current) = findIndexed(uniqueId)
+        when {
+            current == null -> fails++
+            item == null -> removeAt(currentIndex)
+            current.isOpened == item.isOpened -> set(currentIndex, item)
+            else -> set(currentIndex, item.open(!item.isOpened))
         }
-        // далее заменяем/удаляем айтем в родительской ноде
-        val cached = parent?.children?.findIndexed { it.uniqueId == uniqueId }
-        val cachedIndex = cached?.first ?: -1
-        val cachedItem = cached?.second
-        parent?.children?.update {
-            when {
-                cachedItem == null -> Unit // добавление обрабатывается отдельно, учитывая, что папки первые
-                item == null -> removeAt(cachedIndex)
-                else -> set(cachedIndex, item)
-            }
-        }
-        return true
+        return fails < 2
     }
 
     private fun List<Node>.findNode(uniqueId: Int): Node? {
@@ -772,10 +764,12 @@ class ExplorerService(
         return null
     }
 
-    private fun List<Node>.findIndexed(path: String): Pair<Int, Node?> = this@findIndexed.findIndexed { it.path == path }
+    private fun List<Node>.findIndexed(uniqueId: Int): Pair<Int, Node?> = findIndexed { it.uniqueId == uniqueId }
+
+    private fun List<Node>.findIndexed(path: String): Pair<Int, Node?> = findIndexed { it.path == path }
 
     // todo WTF 'NodeState.getUniqueId()' on a null object reference
-    private fun List<NodeState>.findIndexed(uniqueId: Int): Pair<Int, NodeState?> = this@findIndexed.findIndexed { it.uniqueId == uniqueId }
+    private fun List<NodeState>.findState(uniqueId: Int): Pair<Int, NodeState?> = findIndexed { it.uniqueId == uniqueId }
 
     private fun Node.updateContent(): Node {
         val content = content
