@@ -1,5 +1,5 @@
 package app.atomofiron.searchboxapp.model
 
-enum class Screen {
+enum class ScreenSize {
     Compact, Medium, Expanded
 }

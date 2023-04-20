@@ -16,6 +16,8 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.custom.view.JoystickView
 import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+import app.atomofiron.searchboxapp.model.Layout
+import app.atomofiron.searchboxapp.model.ScreenSize
 import app.atomofiron.searchboxapp.utils.isLayoutRtl
 import app.atomofiron.searchboxapp.utils.isRtl
 import com.google.android.material.appbar.AppBarLayout
@@ -265,6 +267,26 @@ class OrientationLayoutDelegate constructor(
                 val layout = getLayout()
                 if (layoutWas != layout) callback(layout)
                 layoutWas = layout
+            }
+        }
+
+        fun View.setScreenSizeListener(listener: (width: ScreenSize, height: ScreenSize) -> Unit) {
+            addOnLayoutChangeListener { view, left, top, right, bottom, _, _, _, _ ->
+                val width = right - left
+                val height = bottom - top
+                val compactThreshold = view.resources.getDimensionPixelSize(R.dimen.screen_compact)
+                val mediumThreshold = view.resources.getDimensionPixelSize(R.dimen.screen_medium)
+                val horizontal = when {
+                    width < compactThreshold -> ScreenSize.Compact
+                    width < mediumThreshold -> ScreenSize.Medium
+                    else -> ScreenSize.Expanded
+                }
+                val vertical = when {
+                    height < compactThreshold -> ScreenSize.Compact
+                    height < mediumThreshold -> ScreenSize.Medium
+                    else -> ScreenSize.Expanded
+                }
+                listener(horizontal, vertical)
             }
         }
 

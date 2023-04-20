@@ -1,4 +1,4 @@
-package app.atomofiron.searchboxapp.custom
+package app.atomofiron.searchboxapp.model
 
 @JvmInline
 value class Layout private constructor(val value: Int = 0) {

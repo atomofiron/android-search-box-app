@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Resources
 import android.content.res.TypedArray
@@ -38,7 +37,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.drawable.BallsDrawable.Companion.setBallsDrawable
-import app.atomofiron.searchboxapp.model.Screen
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 import app.atomofiron.searchboxapp.model.explorer.NodeError
 import com.google.android.material.navigation.NavigationBarView
@@ -111,12 +109,6 @@ fun Context.fixChannel(id: String, name: String, importance: Int) {
             manager.createNotificationChannel(channel)
         }
     }
-}
-
-fun Resources.getSize(size: Int): Screen = when {
-    size < getDimensionPixelSize(R.dimen.screen_compact) -> Screen.Compact
-    size < getDimensionPixelSize(R.dimen.screen_medium) -> Screen.Medium
-    else -> Screen.Expanded
 }
 
 fun Resources.getString(error: NodeError, content: NodeContent? = null): String {
