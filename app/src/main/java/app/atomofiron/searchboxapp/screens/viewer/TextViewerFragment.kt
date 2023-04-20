@@ -80,7 +80,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     override fun onApplyInsets(root: View) {
         binding.run {
             appbarLayout.applyPaddingInsets(start = true, top = true)
-            recyclerView.applyPaddingInsets(horizontal = true)
+            recyclerView.applyPaddingInsets(start = true, end = true, bottom = true)
             LayoutDelegate(
                 root as ViewGroup,
                 recyclerView = recyclerView,
