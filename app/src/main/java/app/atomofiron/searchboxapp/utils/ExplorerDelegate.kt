@@ -8,7 +8,7 @@ import app.atomofiron.searchboxapp.utils.MediaDelegate.getThumbnail
 import kotlinx.coroutines.Job
 
 object ExplorerDelegate {
-    const val ROOT_PARENT_PATH = "root_parent_path"
+    private const val ROOT_PARENT_PATH = "root_parent_path"
 
     private const val TOTAL = "total"
     private const val SLASH = "/"
@@ -306,7 +306,7 @@ object ExplorerDelegate {
         )
     }
 
-    private fun Node.open(value: Boolean): Node = when {
+    fun Node.open(value: Boolean = true): Node = when {
         children == null -> this
         children.isOpened == value -> this
         else -> {
@@ -314,8 +314,6 @@ object ExplorerDelegate {
             copy(children = children.copy(isOpened = value))
         }
     }
-
-    fun Node.open(): Node = open(true)
 
     fun Node.close(): Node = open(false)
 
