@@ -8,7 +8,7 @@ import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentRootBinding
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput
@@ -47,7 +47,7 @@ class RootFragment : Fragment(R.layout.fragment_root),
     }
 
     private fun FragmentRootBinding.applyInsets() {
-        val delegate = OrientationLayoutDelegate(root, snackbarContainer = snackbarContainer)
+        val delegate = LayoutDelegate(root, snackbarContainer = snackbarContainer)
         root.insetsProxying { view, insets ->
             delegate.onApplyWindowInsets(view, insets)
         }

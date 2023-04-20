@@ -19,8 +19,8 @@ import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.common.util.isDarkTheme
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.getLayout
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.setLayoutListener
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.getLayout
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.setLayoutListener
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
 import app.atomofiron.searchboxapp.utils.getColorByAttr
 import app.atomofiron.searchboxapp.screens.curtain.fragment.CurtainContentDelegate

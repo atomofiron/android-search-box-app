@@ -29,7 +29,7 @@ import com.google.android.material.navigationrail.NavigationRailView
 import lib.atomofiron.android_window_insets_compat.consumeInsets
 
 @SuppressLint("PrivateResource")
-class OrientationLayoutDelegate constructor(
+class LayoutDelegate constructor(
     private val parent: ViewGroup,
     private val explorerViews: Array<ExplorerView>? = null,
     private val recyclerView: RecyclerView? = null,

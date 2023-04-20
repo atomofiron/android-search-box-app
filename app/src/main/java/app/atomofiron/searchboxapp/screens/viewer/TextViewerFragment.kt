@@ -12,7 +12,7 @@ import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
 import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
@@ -81,7 +81,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         binding.run {
             appbarLayout.applyPaddingInsets(start = true, top = true)
             recyclerView.applyPaddingInsets(horizontal = true)
-            OrientationLayoutDelegate(
+            LayoutDelegate(
                 root as ViewGroup,
                 recyclerView = recyclerView,
                 bottomView = bottomBar,

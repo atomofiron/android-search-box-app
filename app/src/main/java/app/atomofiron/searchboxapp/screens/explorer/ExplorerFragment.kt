@@ -15,7 +15,7 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.ExplorerView
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
 import app.atomofiron.searchboxapp.model.explorer.NodeError
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.utils.recyclerView
 import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerPagerAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
@@ -117,7 +117,7 @@ class ExplorerFragment : Fragment(R.layout.fragment_explorer),
             explorerTabs.applyPaddingInsets(start = true, top = true, end = true)
             bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
             navigationRail.applyPaddingInsets()
-            OrientationLayoutDelegate(
+            LayoutDelegate(
                 this.root,
                 explorerViews,
                 bottomView = bottomBar,

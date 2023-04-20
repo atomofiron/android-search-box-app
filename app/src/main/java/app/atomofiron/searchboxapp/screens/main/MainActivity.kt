@@ -20,8 +20,8 @@ import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.withJoystick
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate.Companion.syncOrientation
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.withJoystick
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.syncOrientation
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme

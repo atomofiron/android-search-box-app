@@ -16,7 +16,7 @@ import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.utils.anchorView
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
 import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
@@ -86,7 +86,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     override fun onApplyInsets(root: View) {
         binding.run {
             recyclerView.applyPaddingInsets()
-            OrientationLayoutDelegate(
+            LayoutDelegate(
                 root as ViewGroup,
                 recyclerView = recyclerView,
                 bottomView = bottomBar,

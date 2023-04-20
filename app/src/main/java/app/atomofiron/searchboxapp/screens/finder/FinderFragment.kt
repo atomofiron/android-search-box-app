@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.utils.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentFinderBinding
-import app.atomofiron.searchboxapp.custom.OrientationLayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderSpanSizeLookup
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
@@ -118,7 +118,7 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
             recyclerView.applyPaddingInsets()
             bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
             navigationRail.applyPaddingInsets()
-            OrientationLayoutDelegate(
+            LayoutDelegate(
                 coordinator,
                 recyclerView = recyclerView,
                 bottomView = bottomBar,
