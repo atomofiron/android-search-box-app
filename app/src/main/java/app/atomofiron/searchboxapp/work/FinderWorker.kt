@@ -234,8 +234,7 @@ class FinderWorker(
                 Const.FOREGROUND_NOTIFICATION_CHANNEL_ID,
                 context.getString(R.string.foreground_notification_name),
             )
-            val info = ForegroundInfo(Const.FOREGROUND_NOTIFICATION_ID, foregroundNotification())
-            setForeground(info)
+            setForeground(getForegroundInfo())
         }
         return work()
     }
@@ -276,6 +275,8 @@ class FinderWorker(
         }
         return Result.success(dataBuilder.build())
     }
+
+    override suspend fun getForegroundInfo() = ForegroundInfo(Const.FOREGROUND_NOTIFICATION_ID, foregroundNotification())
 
     @SuppressLint("MissingPermission")
     private fun showNotification() {
