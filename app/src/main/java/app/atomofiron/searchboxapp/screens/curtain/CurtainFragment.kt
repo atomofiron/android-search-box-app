@@ -127,7 +127,7 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
             }
             navigationBars = Insets.of(0, 0, 0, navigationBars.bottom + bottomPadding)
             builder.setInsets(Type.navigationBars(), navigationBars)
-            builder.setInsets(Type.ime(), Insets.of(0, 0, 0, ime.bottom))
+            builder.setInsets(Type.ime(), Insets.of(0, 0, 0, ime.bottom + bottomPadding))
             builder.setInsets(Type.statusBars(), Insets.of(0, verticalPadding, 0, 0))
             val sheetInsets = builder.build()
             curtainSheet.dispatchChildrenWindowInsets(sheetInsets)

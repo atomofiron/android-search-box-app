@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding.mainClRoot.setLayoutListener { layout ->
-            binding.joystick.isVisible != layout.withJoystick
+            binding.joystick.isVisible = layout.withJoystick
         }
         binding.joystick.setOnClickListener { onEscClick() }
         binding.joystick.syncOrientation(binding.root)
