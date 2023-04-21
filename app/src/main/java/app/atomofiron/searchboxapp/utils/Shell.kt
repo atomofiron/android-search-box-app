@@ -117,8 +117,6 @@ object Shell {
             osw.flush()
             osw.close()
 
-            val tik = System.currentTimeMillis()
-
             val reader = inputStream.reader()
             when (forEachLine) {
                 null -> output = reader.readText().replace(oneByteNbps, twoBytesNbps)
@@ -137,6 +135,7 @@ object Shell {
                 errorStream?.close()
                 process?.destroy()
             } catch (e: Exception) {
+                logE(e.toString())
             }
         }
         return Output(code, output, error)
