@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:inputType="textMultiLine|textNoSuggestions"
         android:imeOptions="flagNoFullscreen|flagNoExtractUi"
-        android:text="@string/try_find_me"
+        android:text="@string/try_find_this_text"
         style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
         />
 </com.google.android.material.textfield.TextInputLayout>
