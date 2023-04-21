@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.SeekBar
 import app.atomofiron.common.util.findColorByAttr
@@ -27,8 +26,8 @@ class JoystickDelegate(
 
     private var entity: JoystickComposition = preferenceStore.joystickComposition.value
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
-        val binding = CurtainPreferenceJoystickBinding.inflate(inflater, container, false)
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder {
+        val binding = CurtainPreferenceJoystickBinding.inflate(inflater, null, false)
         binding.init()
         binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)

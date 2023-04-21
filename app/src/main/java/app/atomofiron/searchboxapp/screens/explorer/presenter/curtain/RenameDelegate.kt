@@ -4,7 +4,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerRenameBinding
@@ -20,8 +19,8 @@ class RenameDelegate(
 
     var data: RenameData? = null
 
-    fun getView(data: RenameData, inflater: LayoutInflater, container: ViewGroup): View {
-        val binding = CurtainExplorerRenameBinding.inflate(inflater, container, false)
+    fun getView(data: RenameData, inflater: LayoutInflater): View {
+        val binding = CurtainExplorerRenameBinding.inflate(inflater, null, false)
         binding.init(data)
         return binding.root
     }

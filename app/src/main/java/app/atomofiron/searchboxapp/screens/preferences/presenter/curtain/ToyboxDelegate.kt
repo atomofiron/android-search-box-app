@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter.curtain
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import app.atomofiron.common.util.RadioGroupImpl
 import com.google.android.material.snackbar.Snackbar
@@ -30,8 +29,8 @@ class ToyboxDelegate(
         customPath = toyboxVariant.customPath
     }
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
-        val binding = CurtainPreferenceToyboxBinding.inflate(inflater, container, false)
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder {
+        val binding = CurtainPreferenceToyboxBinding.inflate(inflater, null, false)
         binding.init()
         binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)

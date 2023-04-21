@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.viewer.presenter.curtain
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.EditText
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.R
@@ -11,7 +10,6 @@ import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
-import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState
 import kotlinx.coroutines.CoroutineScope
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
@@ -33,8 +31,8 @@ class CurtainSearchDelegate(
         viewState.insertInQuery.collect(scope, collector = ::insertInQuery)
     }
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
-        val binding = CurtainTextViewerSearchBinding.inflate(inflater, container, false)
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder {
+        val binding = CurtainTextViewerSearchBinding.inflate(inflater, null, false)
 
         val holder = ExplorerHolder(binding.itemExplorer.root)
         holder.bind(node)

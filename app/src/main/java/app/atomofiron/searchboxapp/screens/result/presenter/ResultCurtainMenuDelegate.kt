@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.result.presenter
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import app.atomofiron.common.arch.Recipient
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.R
@@ -9,7 +8,6 @@ import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.AppStore
-import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
@@ -35,9 +33,9 @@ class ResultCurtainMenuDelegate(
         curtainChannel.flow.filterForMe().collect(scope, ::setController)
     }
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder? {
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder? {
         val data = data ?: return null
-        val view = optionsDelegate.getView(data, inflater, container)
+        val view = optionsDelegate.getView(data, inflater)
         return CurtainApi.ViewHolder(view)
     }
 

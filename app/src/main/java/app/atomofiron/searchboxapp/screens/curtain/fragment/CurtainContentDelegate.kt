@@ -68,7 +68,7 @@ class CurtainContentDelegate(
     }
 
     private fun getHolder(layoutId: Int): CurtainApi.ViewHolder? {
-        val holder = adapter.getViewHolder(binding.curtainSheet, layoutId)
+        val holder = adapter.getViewHolder(binding.root.context, layoutId)
         when (holder) {
             null -> presenter.onNullViewGot()
             else -> presenter.setCancelable(holder.isCancelable)
@@ -82,13 +82,13 @@ class CurtainContentDelegate(
             is NestedScrollView -> this
             is RecyclerView -> this
             else -> NestedScrollView(context).apply {
-                // WRAP_CONTENT is necessary to the horizontal transitions in curtain
-                layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+                this@makeScrollable.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
                 addView(this@makeScrollable)
                 insetsProxying()
             }
         }
-        layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        // WRAP_CONTENT is necessary to the horizontal transitions in curtain
+        scrollView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
         return scrollView
     }
 }

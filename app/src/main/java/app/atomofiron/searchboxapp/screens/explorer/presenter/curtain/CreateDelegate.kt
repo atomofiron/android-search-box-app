@@ -4,7 +4,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
@@ -18,9 +17,9 @@ class CreateDelegate(
     private val output: ExplorerCurtainMenuDelegate,
 ) {
 
-    fun getView(dir: Node, inflater: LayoutInflater, container: ViewGroup): View {
+    fun getView(dir: Node, inflater: LayoutInflater): View {
         val dirFiles = dir.children?.map { it.name } ?: listOf()
-        val binding = CurtainExplorerCreateBinding.inflate(inflater, container, false)
+        val binding = CurtainExplorerCreateBinding.inflate(inflater, null, false)
         binding.init(dir, dirFiles)
         return binding.root
     }

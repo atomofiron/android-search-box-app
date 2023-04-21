@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.curtain.util
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,11 +66,11 @@ object CurtainApi {
 
         fun clear() = holderList.clear()
 
-        protected abstract fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): H?
+        protected abstract fun getHolder(inflater: LayoutInflater, layoutId: Int): H?
 
-        fun getViewHolder(container: ViewGroup, layoutId: Int): ViewHolder? {
-            val inflater = LayoutInflater.from(container.context)
-            val holder = holderList[layoutId] ?: getHolder(inflater, container, layoutId)?.apply {
+        fun getViewHolder(context: Context, layoutId: Int): ViewHolder? {
+            val inflater = LayoutInflater.from(context)
+            val holder = holderList[layoutId] ?: getHolder(inflater, layoutId)?.apply {
                 holderList[layoutId] = this
             }
             return holder

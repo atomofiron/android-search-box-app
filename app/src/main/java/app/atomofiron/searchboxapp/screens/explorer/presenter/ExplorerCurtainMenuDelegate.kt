@@ -1,9 +1,7 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import app.atomofiron.common.arch.Recipient
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
@@ -52,16 +50,16 @@ class ExplorerCurtainMenuDelegate(
         router.showCurtain(recipient, OPTIONS)
     }
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder? {
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder? {
         return when (layoutId) {
             OPTIONS -> data?.let {
-                optionsDelegate.getView(it, inflater, container)
+                optionsDelegate.getView(it, inflater)
             }
             CREATE -> data?.items?.firstOrNull()?.let {
-                createDelegate.getView(it, inflater, container)
+                createDelegate.getView(it, inflater)
             }
             RENAME -> getRenameData()?.let {
-                renameDelegate.getView(it, inflater, container)
+                renameDelegate.getView(it, inflater)
             }
             else -> null
         }?.let {

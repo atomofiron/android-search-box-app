@@ -1,9 +1,7 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter.curtain
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.*
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.menu.MenuImpl
@@ -19,21 +17,21 @@ class OptionsDelegate(
     private val output: MenuListener,
 ) {
 
-    fun getView(options: ExplorerItemOptions, inflater: LayoutInflater, container: ViewGroup): View {
-        val binding = CurtainExplorerOptionsBinding.inflate(inflater, container, false)
+    fun getView(options: ExplorerItemOptions, inflater: LayoutInflater): View {
+        val binding = CurtainExplorerOptionsBinding.inflate(inflater, null, false)
         binding.menuView.run {
             val menu = inflateMenu(menuId)
             menu.hideExtra(options.ids)
             setMenuListener(output)
             markAsDangerous(R.id.menu_remove)
         }
-        binding.init(container.context, options)
+        binding.init(options)
         binding.root.applyPaddingInsets(top = true, withProxying = true)
         binding.menuView.applyPaddingInsets(bottom = true)
         return binding.root
     }
 
-    fun CurtainExplorerOptionsBinding.init(context: Context, options: ExplorerItemOptions) {
+    fun CurtainExplorerOptionsBinding.init(options: ExplorerItemOptions) {
         when (options.items.size) {
             1 -> {
                 explorerMenuTvTitle.isGone = true
@@ -48,6 +46,7 @@ class OptionsDelegate(
                 explorerMenuItem.itemExplorerCb.isEnabled = false
             }
             else -> {
+                val resources = root.resources
                 explorerMenuTvTitle.isVisible = true
                 explorerMenuItem.root.isGone = true
                 var files = 0
@@ -57,13 +56,13 @@ class OptionsDelegate(
                 }
                 val string = StringBuilder()
                 if (dirs > 0) {
-                    string.append(context.resources.getQuantityString(R.plurals.x_dirs, dirs, dirs))
+                    string.append(resources.getQuantityString(R.plurals.x_dirs, dirs, dirs))
                 }
                 if (dirs > 0 && files > 0) {
                     string.append(", ")
                 }
                 if (files > 0) {
-                    string.append(context.resources.getQuantityString(R.plurals.x_files, files, files))
+                    string.append(resources.getQuantityString(R.plurals.x_files, files, files))
                 }
                 explorerMenuTvTitle.text = string.toString()
             }
