@@ -8,7 +8,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -20,7 +19,7 @@ import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.withJoystick
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.setLayoutListener
 import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.syncOrientation
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
@@ -65,9 +64,8 @@ class MainActivity : AppCompatActivity() {
         presenter.onActivityCreate(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view, insets ->
-            binding.joystick.isVisible = insets.withJoystick()
-            insets
+        binding.mainClRoot.setLayoutListener { layout ->
+            binding.joystick.isVisible != layout.withJoystick
         }
         binding.joystick.setOnClickListener { onEscClick() }
         binding.joystick.syncOrientation(binding.root)
