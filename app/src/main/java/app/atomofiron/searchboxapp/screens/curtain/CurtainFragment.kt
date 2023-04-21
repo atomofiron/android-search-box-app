@@ -113,33 +113,36 @@ class CurtainFragment : DialogFragment(R.layout.fragment_curtain),
         val verticalPadding = resources.getDimensionPixelSize(R.dimen.curtain_padding_top)
         root.setLayoutListener { root.requestApplyInsets() }
         ViewCompat.setOnApplyWindowInsetsListener(root) { root, windowInsets ->
+            val insets = windowInsets.getInsets(defaultTypeMask)
             val builder = WindowInsetsCompat.Builder()
-            var insets = windowInsets.getInsets(Type.navigationBars())
+            var navigationBars = windowInsets.getInsets(Type.navigationBars())
             val layout = root.getLayout()
             val ime = windowInsets.getInsets(Type.ime())
             val bottomPadding = when {
-                layout.withJoystick && ime.bottom > 0 -> joystickSize
-                !layout.withJoystick && ime.bottom > 0 -> 0
-                !layout.isBottom -> verticalPadding
+                ime.bottom > 0 && layout.withJoystick && layout.isBottom -> joystickSize
+                ime.bottom > 0 -> 0
                 !layout.withJoystick -> verticalPadding
+                !layout.isBottom -> verticalPadding
                 else -> joystickSize
             }
-            insets = Insets.of(0, 0, 0, insets.bottom + bottomPadding)
-            builder.setInsets(Type.navigationBars(), insets)
+            navigationBars = Insets.of(0, 0, 0, navigationBars.bottom + bottomPadding)
+            builder.setInsets(Type.navigationBars(), navigationBars)
+            builder.setInsets(Type.ime(), Insets.of(0, 0, 0, ime.bottom))
             builder.setInsets(Type.statusBars(), Insets.of(0, verticalPadding, 0, 0))
-            curtainSheet.dispatchChildrenWindowInsets(builder.build())
-            insets = windowInsets.getInsets(defaultTypeMask)
+            val sheetInsets = builder.build()
+            curtainSheet.dispatchChildrenWindowInsets(sheetInsets)
             val horizontal = when {
                 !layout.withJoystick -> 0 to 0
                 layout.isLeft -> joystickSize to 0
                 layout.isRight -> 0 to joystickSize
                 else -> 0 to 0
             }
+            // don not consume ime to let scrolling to text field on keyboard show
             root.updatePadding(
                 left = insets.left + horizontal.first,
                 top = insets.top,
                 right = insets.right + horizontal.second,
-                bottom = windowInsets.getInsets(Type.ime()).bottom,
+                bottom = 0,
             )
             WindowInsetsCompat.CONSUMED
         }

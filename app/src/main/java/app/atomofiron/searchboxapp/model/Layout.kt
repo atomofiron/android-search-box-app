@@ -2,8 +2,8 @@ package app.atomofiron.searchboxapp.model
 
 @JvmInline
 value class Layout private constructor(val value: Int = 0) {
-    enum class Ground {
-        Left, Bottom, Right,
+    enum class Ground(val isBottom: Boolean = false) {
+        Left, Bottom(true), Right,
     }
     companion object {
         private const val JOYSTICK =    0b001
@@ -12,9 +12,9 @@ value class Layout private constructor(val value: Int = 0) {
         private const val RIGHT =       0b100
         private const val BOTTOM =      0b110
 
-        private fun get(side: Ground, withJoystick: Boolean): Int {
+        private fun get(ground: Ground, withJoystick: Boolean): Int {
             var value = if (withJoystick) JOYSTICK else 0
-            value = when (side) {
+            value = when (ground) {
                 Ground.Left -> value or LEFT
                 Ground.Right -> value or RIGHT
                 Ground.Bottom -> value or BOTTOM
