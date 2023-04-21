@@ -4,9 +4,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
+import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.Unique
 import app.atomofiron.common.util.Equality
 import com.google.android.material.snackbar.Snackbar
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -77,8 +83,29 @@ object CurtainApi {
         }
     }
 
-    open class ViewHolder(
+    open class ViewHolder private constructor(
+        val isCancelable: Boolean,
         val view: View,
-        val isCancelable: Boolean = true,
-    )
+    ) {
+        constructor(
+            view: View,
+            isCancelable: Boolean = true,
+        ) : this(isCancelable, view.makeScrollable())
+    }
+}
+
+// make the large content scrollable
+private fun View.makeScrollable(): View {
+    val scrollView = when (this) {
+        is NestedScrollView -> this
+        is RecyclerView -> this
+        else -> NestedScrollView(context).apply {
+            this@makeScrollable.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            addView(this@makeScrollable)
+            insetsProxying()
+        }
+    }
+    // WRAP_CONTENT is necessary to the horizontal transitions in curtain
+    scrollView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+    return scrollView
 }

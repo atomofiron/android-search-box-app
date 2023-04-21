@@ -1,15 +1,8 @@
 package app.atomofiron.searchboxapp.screens.curtain.fragment
 
-import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.FrameLayout
-import androidx.core.widget.NestedScrollView
-import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.databinding.FragmentCurtainBinding
 import app.atomofiron.searchboxapp.screens.curtain.CurtainPresenter
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class CurtainContentDelegate(
     private val binding: FragmentCurtainBinding,
@@ -37,7 +30,7 @@ class CurtainContentDelegate(
         holder ?: return
         if (transitionAnimator.transitionIsRunning) return
 
-        val view = holder.view.makeScrollable()
+        val view = holder.view
         val node = CurtainNode(layoutId, view, holder.isCancelable)
         stack.add(node)
         node.removeParent()
@@ -74,21 +67,5 @@ class CurtainContentDelegate(
             else -> presenter.setCancelable(holder.isCancelable)
         }
         return holder
-    }
-
-    // make the large content scrollable
-    private fun View.makeScrollable(): View {
-        val scrollView = when (this) {
-            is NestedScrollView -> this
-            is RecyclerView -> this
-            else -> NestedScrollView(context).apply {
-                this@makeScrollable.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                addView(this@makeScrollable)
-                insetsProxying()
-            }
-        }
-        // WRAP_CONTENT is necessary to the horizontal transitions in curtain
-        scrollView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        return scrollView
     }
 }
