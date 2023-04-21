@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
@@ -13,12 +14,16 @@ import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.LayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.setScreenSizeListener
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
+import app.atomofiron.searchboxapp.model.ScreenSize
 import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
 import app.atomofiron.searchboxapp.utils.updateItem
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
@@ -64,6 +69,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
                 }
                 true
             }
+            configureAppBar()
         }
         viewState.onViewCollect()
         onApplyInsets(view)
@@ -90,6 +96,17 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             ) {
                 bottomBar.menu.findItem(R.id.stub).isVisible = it
             }
+        }
+    }
+
+    private fun FragmentTextViewerBinding.configureAppBar() {
+        root.setScreenSizeListener { _, height ->
+            toolbar.updateLayoutParams<AppBarLayout.LayoutParams> {
+                scrollFlags = if (height == ScreenSize.Compact) SCROLL_FLAG_SCROLL else SCROLL_FLAG_NO_SCROLL
+            }
+        }
+        appbarLayout.addOnOffsetChangedListener { _, verticalOffset ->
+            toolbar.alpha = (toolbar.height + verticalOffset) / toolbar.height.toFloat()
         }
     }
 
