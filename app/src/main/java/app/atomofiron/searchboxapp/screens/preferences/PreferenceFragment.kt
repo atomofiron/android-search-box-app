@@ -66,10 +66,11 @@ class PreferenceFragment : PreferenceFragmentCompat(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val appBarLayout = view.findViewById<AppBarLayout>(R.id.appbar_layout)
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         val systemUiView = view.findViewById<SystemBarsBackgroundView>(R.id.system_ui_background)
-        LayoutDelegate(view as ViewGroup, recyclerView = recyclerView, systemUiView = systemUiView)
+        LayoutDelegate(view as ViewGroup, appBarLayout = appBarLayout, recyclerView = recyclerView, systemUiView = systemUiView)
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
         recyclerView.clipToPadding = false

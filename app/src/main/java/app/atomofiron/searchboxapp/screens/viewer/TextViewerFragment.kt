@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.setScreenSizeListener
@@ -61,6 +62,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
             navigationRail.setOnItemSelectedListener(::onBottomMenuItemClick)
             bottomBar.isItemActiveIndicatorEnabled = false
             bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
+            if (BuildConfig.DEBUG) toolbar.menu.add("Test")
             toolbar.setNavigationOnClickListener { presenter.onNavigationClick() }
             toolbar.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -85,14 +87,13 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
 
     override fun onApplyInsets(root: View) {
         binding.run {
-            appbarLayout.applyPaddingInsets(start = true, top = true)
             recyclerView.applyPaddingInsets(start = true, end = true, bottom = true)
             LayoutDelegate(
                 root as ViewGroup,
                 recyclerView = recyclerView,
                 bottomView = bottomBar,
                 railView = navigationRail,
-                appbarLayout = appbarLayout,
+                appBarLayout = appbarLayout,
             ) {
                 bottomBar.menu.findItem(R.id.stub).isVisible = it
             }

@@ -41,7 +41,7 @@ class LayoutDelegate constructor(
     private val railView: NavigationRailView? = null,
     private val systemUiView: SystemBarsBackgroundView? = null,
     private val tabLayout: MaterialButtonToggleGroup? = null,
-    private val appbarLayout: AppBarLayout? = null,
+    private val appBarLayout: AppBarLayout? = null,
     private val sideDock: NavigationView? = null,
     private val headerView: ExplorerHeaderView? = null,
     private val snackbarContainer: CoordinatorLayout? = null,
@@ -103,9 +103,6 @@ class LayoutDelegate constructor(
         bottomView?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets)
         }
-        appbarLayout?.let {
-            ViewCompat.dispatchApplyWindowInsets(it, insets)
-        }
         explorerViews?.forEach {
             ViewCompat.dispatchApplyWindowInsets(it.headerView, insets.getHeaderViewInsets())
             ViewCompat.dispatchApplyWindowInsets(it.recyclerView, insets.getRecyclerViewInsets())
@@ -115,7 +112,7 @@ class LayoutDelegate constructor(
         snackbarContainer?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets.getRecyclerViewInsets())
         }
-        parent.applyToAppbar(insets)
+        appBarLayout?.apply(insets)
         return WindowInsetsCompat.CONSUMED
     }
 
@@ -192,27 +189,22 @@ class LayoutDelegate constructor(
         return Insets.of(left, top, right, bottom)
     }
 
-    private fun View.applyToAppbar(insets: WindowInsetsCompat) {
-        val appbarLayout: AppBarLayout? = findViewById(R.id.appbar_layout)
-        appbarLayout ?: return
-        ViewCompat.dispatchApplyWindowInsets(appbarLayout, insets)
+    private fun AppBarLayout.apply(insets: WindowInsetsCompat) {
+        ViewCompat.dispatchApplyWindowInsets(this, insets)
 
-        val collapsingLayout: CollapsingToolbarLayout? = appbarLayout.findViewById(R.id.collapsing_layout)
-        collapsingLayout ?: return
         val custom = insets.getToolbarInsets()
-        val defaultMargin = resources.getDimensionPixelSize(R.dimen.m3_appbar_expanded_title_margin_horizontal)
-        collapsingLayout.run {
+        val collapsingLayout: CollapsingToolbarLayout? = this.findViewById(R.id.collapsing_layout)
+        collapsingLayout?.run {
+            val defaultMargin = resources.getDimensionPixelSize(R.dimen.m3_appbar_expanded_title_margin_horizontal)
+
             val start = defaultMargin + if (resources.isRtl()) custom.right else custom.left
             val end = defaultMargin + if (resources.isRtl()) custom.left else custom.right
-            if (expandedTitleMarginStart != start)
-                expandedTitleMarginStart = start
-            if (expandedTitleMarginEnd != end)
-                expandedTitleMarginEnd = end
+            if (expandedTitleMarginStart != start) expandedTitleMarginStart = start
+            if (expandedTitleMarginEnd != end) expandedTitleMarginEnd = end
         }
 
-        val toolbar: Toolbar? = collapsingLayout.findViewById(R.id.toolbar)
-        toolbar ?: return
-        toolbar.updatePadding(left = custom.left, right = custom.right)
+        val toolbar: Toolbar? = this.findViewById(R.id.toolbar)
+        toolbar?.updatePadding(left = custom.left, right = custom.right)
     }
 
     private fun NavigationRailView.applyToRail(windowInsets: WindowInsetsCompat) {
