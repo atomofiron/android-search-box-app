@@ -1,7 +1,9 @@
 package app.atomofiron.searchboxapp.custom
 
 import android.annotation.SuppressLint
+import android.view.Display
 import android.view.Gravity
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -18,6 +20,7 @@ import app.atomofiron.searchboxapp.custom.view.JoystickView
 import app.atomofiron.searchboxapp.custom.view.SystemBarsBackgroundView
 import app.atomofiron.searchboxapp.model.Layout
 import app.atomofiron.searchboxapp.model.ScreenSize
+import app.atomofiron.searchboxapp.utils.getDisplayCompat
 import app.atomofiron.searchboxapp.utils.isLayoutRtl
 import app.atomofiron.searchboxapp.utils.isRtl
 import com.google.android.material.appbar.AppBarLayout
@@ -27,6 +30,7 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.navigationrail.NavigationRailView
 import lib.atomofiron.android_window_insets_compat.consumeInsets
+
 
 @SuppressLint("PrivateResource")
 class LayoutDelegate constructor(
@@ -59,11 +63,25 @@ class LayoutDelegate constructor(
         parent.setLayoutListener { layout ->
             if (this.layout == layout) return@setLayoutListener
             this.layout = layout
+            railView?.applyGround(layout.ground)
             parent.requestApplyInsets()
             setLayout(layout)
         }
         railView?.consumeInsets()
         sideDock?.consumeInsets()
+    }
+
+    private fun NavigationRailView.applyGround(ground: Layout.Ground) {
+        val gravity = when (ground) {
+            Layout.Ground.Left -> Gravity.LEFT
+            Layout.Ground.Right -> Gravity.RIGHT
+            Layout.Ground.Bottom -> Gravity.BOTTOM
+        }
+        when (val params = layoutParams) {
+            is FrameLayout.LayoutParams -> params.gravity = gravity
+            is CoordinatorLayout.LayoutParams -> params.gravity = gravity
+            else -> throw IllegalArgumentException("Unsupported layout params ${params.javaClass.name}")
+        }
     }
 
     override fun onApplyWindowInsets(parent: View, insets: WindowInsetsCompat): WindowInsetsCompat {
@@ -265,8 +283,9 @@ class LayoutDelegate constructor(
 
         fun View.setLayoutListener(callback: (layout: Layout) -> Unit) {
             var layoutWas: Layout? = null
+            val display = context.getDisplayCompat()
             addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-                val layout = getLayout()
+                val layout = getLayout(display)
                 if (layoutWas != layout) callback(layout)
                 layoutWas = layout
             }
@@ -300,10 +319,14 @@ class LayoutDelegate constructor(
             }
         }
 
-        fun View.getLayout(): Layout {
+        fun View.getLayout(display: Display? = context.getDisplayCompat()): Layout {
             val maxSize = resources.getDimensionPixelSize(R.dimen.bottom_bar_max_width)
             val atTheBottom = width < height && width < maxSize
-            val ground = if (atTheBottom) Layout.Ground.Bottom else Layout.Ground.Right
+            val ground = when {
+                atTheBottom -> Layout.Ground.Bottom
+                display?.rotation == Surface.ROTATION_270 -> Layout.Ground.Left
+                else -> Layout.Ground.Right
+            }
             return Layout(ground, withJoystick(ground.isBottom))
         }
 

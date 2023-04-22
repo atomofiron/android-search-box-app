@@ -28,6 +28,11 @@ value class Layout private constructor(val value: Int = 0) {
     val isRight: Boolean get() = (value and GROUND_MASK) == RIGHT
     val isBottom: Boolean get() = (value and GROUND_MASK) == BOTTOM
     val isWide: Boolean get() = !isBottom
+    val ground: Ground get() = when {
+        isLeft -> Ground.Left
+        isRight -> Ground.Right
+        else -> Ground.Bottom
+    }
 
     constructor(side: Ground, withJoystick: Boolean) : this(get(side, withJoystick))
 }

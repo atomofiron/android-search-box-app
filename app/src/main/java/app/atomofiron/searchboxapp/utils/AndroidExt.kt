@@ -18,6 +18,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.LayoutDirection
 import android.util.TypedValue
+import android.view.Display
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -35,6 +36,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import app.atomofiron.common.util.Android
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.drawable.BallsDrawable.Companion.setBallsDrawable
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
@@ -269,4 +271,9 @@ fun Context.canNotifications(): Boolean {
 
 fun Context.canForegroundService(): Boolean {
     return SDK_INT < P || checkSelfPermission(android.Manifest.permission.FOREGROUND_SERVICE) == PERMISSION_GRANTED
+}
+
+fun Context.getDisplayCompat(): Display? = when {
+    SDK_INT >= Android.R -> display
+    else -> (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
 }
