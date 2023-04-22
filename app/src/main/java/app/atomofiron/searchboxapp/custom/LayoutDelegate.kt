@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
 import app.atomofiron.searchboxapp.custom.view.JoystickView
-import app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+import app.atomofiron.searchboxapp.custom.view.SystemBarsBackgroundView
 import app.atomofiron.searchboxapp.model.Layout
 import app.atomofiron.searchboxapp.model.ScreenSize
 import app.atomofiron.searchboxapp.utils.isLayoutRtl
@@ -35,7 +35,7 @@ class LayoutDelegate constructor(
     private val recyclerView: RecyclerView? = null,
     private val bottomView: BottomNavigationView? = null,
     private val railView: NavigationRailView? = null,
-    private val systemUiView: SystemUiBackgroundView? = null,
+    private val systemUiView: SystemBarsBackgroundView? = null,
     private val tabLayout: MaterialButtonToggleGroup? = null,
     private val appbarLayout: AppBarLayout? = null,
     private val sideDock: NavigationView? = null,

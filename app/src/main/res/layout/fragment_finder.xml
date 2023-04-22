@@ -19,11 +19,11 @@
 			android:paddingBottom="@dimen/common_margin_large"
 			android:maxWidth="@dimen/card_max_width"
 			/>
-		<app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+		<app.atomofiron.searchboxapp.custom.view.SystemBarsBackgroundView
 			android:id="@+id/system_ui_background"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			app:navigationBar="false"
+			app:navigationBar="none"
 			/>
 		<com.google.android.material.bottomnavigation.BottomNavigationView
 			android:id="@+id/bottom_bar"

@@ -13,14 +13,32 @@ import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.utils.getColorByAttr
 import app.atomofiron.searchboxapp.utils.obtainStyledAttributes
 import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.isLayoutRtl
 import kotlin.math.max
 
-class SystemUiBackgroundView : View {
+class SystemBarsBackgroundView : View {
     companion object {
         fun Context.getSystemBarsColor(): Int {
             val color = getColorByAttr(R.attr.colorBackground)
             return ColorUtils.setAlphaComponent(color, Const.ALPHA_67_PERCENT)
         }
+        private const val START =  0b00001
+        private const val TOP =    0b00010
+        private const val END =    0b00100
+        private const val BOTTOM = 0b01000
+        private const val ALL =    0b01111
+        private const val RTL =    0b10000
+    }
+
+    @JvmInline
+    value class Sides(val value: Int) {
+        val left: Boolean get() = if (value and RTL == 0) (value and START != 0) else (value and END != 0)
+        val top: Boolean get() = (value and TOP != 0)
+        val right: Boolean get() = if (value and RTL == 0) (value and START != 0) else (value and END != 0)
+        val bottom: Boolean get() = (value and BOTTOM != 0)
+        val empty: Boolean get() = (value == 0)
+
+        constructor(value: Int, rtl: Boolean) : this(value + if(rtl) RTL else 0)
     }
 
     private var leftInset = 0
@@ -30,8 +48,8 @@ class SystemUiBackgroundView : View {
 
     private val paint = Paint()
 
-    private var drawStatusBar: Boolean = true
-    private var drawNavigationBar: Boolean = true
+    private var statusBar = true
+    private var navigationBar = Sides(ALL)
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -39,8 +57,10 @@ class SystemUiBackgroundView : View {
         paint.color = context.getSystemBarsColor()
 
         context.obtainStyledAttributes(attrs, R.styleable.SystemUiBackgroundView, defStyleAttr) {
-            drawStatusBar = getBoolean(R.styleable.SystemUiBackgroundView_statusBar, drawStatusBar)
-            drawNavigationBar = getBoolean(R.styleable.SystemUiBackgroundView_navigationBar, drawNavigationBar)
+            statusBar = getBoolean(R.styleable.SystemUiBackgroundView_statusBar, statusBar)
+            navigationBar = getInt(R.styleable.SystemUiBackgroundView_navigationBar, navigationBar.value).let {
+                Sides(it, isLayoutRtl)
+            }
         }
     }
 
@@ -59,35 +79,34 @@ class SystemUiBackgroundView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if (!drawStatusBar && !drawNavigationBar) return
+        if (!statusBar && navigationBar.empty) return
 
         val leftInset = leftInset.toFloat()
         val topInset = topInset.toFloat()
         val rightInset = rightInset.toFloat()
         val bottomInset = bottomInset.toFloat()
 
-        val right = width.toFloat()
-        val bottom = height.toFloat()
+        val width = width.toFloat()
+        val height = height.toFloat()
 
-        if (drawStatusBar) {
-            canvas.drawRect(0f, 0f, right, topInset, paint)
-        }
-        if (drawNavigationBar) {
-            val navigationTop = if (drawStatusBar) topInset else 0f
-            canvas.drawRect(0f, navigationTop, leftInset, bottom - bottomInset, paint)
-            canvas.drawRect(right - rightInset, navigationTop, right, bottom - bottomInset, paint)
-            canvas.drawRect(0f, bottom - bottomInset, right, bottom, paint)
+        if (statusBar) canvas.drawRect(0f, 0f, width, topInset, paint)
+
+        navigationBar.takeIf { !it.empty }?.run {
+            val navigationTop = if (statusBar) topInset else 0f
+            if (left) canvas.drawRect(0f, navigationTop, leftInset, height - bottomInset, paint)
+            if (right) canvas.drawRect(width - rightInset, navigationTop, width, height - bottomInset, paint)
+            if (bottom) canvas.drawRect(0f, height - bottomInset, width, height, paint)
         }
     }
 
-    fun update(statusBar: Boolean = drawStatusBar, navigationBar: Boolean = drawNavigationBar) {
-        drawStatusBar = statusBar
-        drawNavigationBar = navigationBar
+    fun update(
+        statusBar: Boolean = this.statusBar,
+        navigationBar: Sides = this.navigationBar,
+    ) {
+        this.statusBar = statusBar
+        this.navigationBar = navigationBar
         invalidate()
     }
 
-    private fun Int.only(value: Int): Int = when (this) {
-        value -> this
-        else -> 0
-    }
+    private fun Int.only(value: Int): Int = if (this == value) this else 0
 }

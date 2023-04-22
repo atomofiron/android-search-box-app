@@ -30,11 +30,12 @@
                 />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
-    <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+    <app.atomofiron.searchboxapp.custom.view.SystemBarsBackgroundView
         android:id="@+id/system_ui_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="@dimen/design_appbar_elevation"
         app:statusBar="false"
+        app:navigationBar="bottom"
         />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
