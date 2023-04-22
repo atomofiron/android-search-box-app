@@ -25,13 +25,11 @@ class PreferenceFragmentDelegate(
 
     fun onCreatePreference(preference: Preference) {
         setPreferenceListeners(preference)
-        when (preference) {
-            is PreferenceGroup -> {
-                for (i in 0 until preference.preferenceCount) {
-                    onCreatePreference(preference[i])
-                }
+        updatePreference(preference)
+        if (preference is PreferenceGroup) {
+            for (i in 0 until preference.preferenceCount) {
+                onCreatePreference(preference[i])
             }
-            else -> updatePreference(preference)
         }
     }
 
@@ -64,6 +62,7 @@ class PreferenceFragmentDelegate(
             }
             PreferenceKeys.PREF_EXPORT_IMPORT -> preference.isEnabled = viewState.isExportImportAvailable
             PreferenceKeys.KeyToybox.name -> preference.isVisible = SDK_INT < Q
+            PreferenceKeys.PREF_CATEGORY_SYSTEM -> preference.isVisible = SDK_INT < Q
         }
         return true
     }
