@@ -273,6 +273,8 @@ class LayoutDelegate constructor(
         }
 
         fun View.setScreenSizeListener(listener: (width: ScreenSize, height: ScreenSize) -> Unit) {
+            var heightWas: ScreenSize? = null
+            var verticalWas: ScreenSize? = null
             addOnLayoutChangeListener { view, left, top, right, bottom, _, _, _, _ ->
                 val width = right - left
                 val height = bottom - top
@@ -288,7 +290,13 @@ class LayoutDelegate constructor(
                     height < mediumThreshold -> ScreenSize.Medium
                     else -> ScreenSize.Expanded
                 }
-                listener(horizontal, vertical)
+                when {
+                    horizontal == heightWas -> Unit
+                    vertical == verticalWas -> Unit
+                    else -> listener(horizontal, vertical)
+                }
+                heightWas = horizontal
+                verticalWas = vertical
             }
         }
 
