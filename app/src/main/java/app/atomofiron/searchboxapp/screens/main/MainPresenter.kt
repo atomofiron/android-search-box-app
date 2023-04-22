@@ -7,7 +7,6 @@ import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegate
 import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegateApi
 import app.atomofiron.searchboxapp.screens.main.util.tasks.XTask
@@ -22,11 +21,9 @@ class MainPresenter(
     private val preferenceStore: PreferenceStore,
     private val initialDelegate: InitialDelegate,
     mainChannel: MainChannel,
-) : BasePresenter<MainViewModel, MainRouter>(scope, router), SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput,
+) : BasePresenter<MainViewModel, MainRouter>(scope, router),
     AppEventDelegateApi by AppEventDelegate(scope, router, appStore, preferenceStore, mainChannel)
 {
-    override var isExitSnackbarShown: Boolean = false
-
     init {
         viewState.tasks.value = Array(16) { XTask() }.toList()
         preferenceStore.appTheme.collect(scope) {
@@ -39,12 +36,9 @@ class MainPresenter(
 
     fun onEscClick(): Boolean = router.onBack()
 
-    fun onExitClick() = router.closeApp()
-
     fun onBackButtonClick() = when {
         router.onBack() -> Unit
-        isExitSnackbarShown -> router.closeApp()
-        else -> viewState.showExitSnackbar()
+        else -> router.minimize()
     }
 
     fun onThemeApplied(isDarkTheme: Boolean) {

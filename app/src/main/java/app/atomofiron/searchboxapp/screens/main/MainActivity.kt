@@ -25,7 +25,6 @@ import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
 import app.atomofiron.searchboxapp.screens.main.util.offerKeyCodeToChildren
-import app.atomofiron.searchboxapp.screens.root.RootViewModel
 import com.google.android.material.color.DynamicColors
 import lib.atomofiron.android_window_insets_compat.applyMarginInsets
 import lib.atomofiron.android_window_insets_compat.insetsProxying
@@ -70,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         binding.joystick.setOnClickListener { onEscClick() }
         binding.joystick.syncOrientation(binding.root)
 
-        viewState.showExitSnackbar.collect(lifecycleScope) { showExitSnackbar() }
         if (savedInstanceState == null) onIntent(intent)
 
         val manager = getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -155,21 +153,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun onEscClick() {
         val viewWithFocus = binding.root.findFocus() as? EditText
-        var consumed = viewWithFocus?.hideKeyboard() == true
-        if (!consumed) consumed = presenter.onEscClick()
-        if (!consumed) showExitSnackbar()
+        when {
+            viewWithFocus?.hideKeyboard() == true -> Unit
+            presenter.onEscClick() -> Unit
+        }
     }
 
     private fun setOrientation(orientation: AppOrientation) {
         if (requestedOrientation != orientation.constant) {
             requestedOrientation = orientation.constant
         }
-    }
-
-    private fun showExitSnackbar() {
-        val navHostFragment = supportFragmentManager.fragments.firstOrNull()
-        val rootFragment = navHostFragment?.childFragmentManager?.fragments?.firstOrNull()
-        rootFragment ?: return
-        ViewModelProvider(rootFragment)[RootViewModel::class.java].showExitSnackbar(presenter)
     }
 }

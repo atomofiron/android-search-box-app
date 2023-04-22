@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.main
 
-import app.atomofiron.common.util.flow.*
 import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.main.util.tasks.XTask
@@ -13,11 +12,8 @@ class MainViewState(
     initialDelegate: InitialDelegate,
 ) {
 
-    val showExitSnackbar = ChannelFlow<Unit>()
     val setOrientation = preferenceStore.appOrientation
     val setJoystick = preferenceStore.joystickComposition
     val tasks = MutableStateFlow<List<XTask>>(listOf())
     val setTheme = MutableStateFlow(initialDelegate.getTheme())
-
-    fun showExitSnackbar() = showExitSnackbar.invoke(scope)
 }

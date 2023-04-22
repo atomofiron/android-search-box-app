@@ -39,9 +39,8 @@ class RootModule {
     fun presenter(
         scope: CoroutineScope,
         router: RootRouter,
-        preferenceStore: PreferenceStore,
     ): RootPresenter {
-        return RootPresenter(scope, router, preferenceStore)
+        return RootPresenter(scope, router)
     }
 
     @Provides

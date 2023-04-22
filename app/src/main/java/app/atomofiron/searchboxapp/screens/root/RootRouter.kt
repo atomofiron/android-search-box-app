@@ -94,7 +94,7 @@ class RootRouter(
 
     fun closeApp() {
         activity {
-            finish()
+            moveTaskToBack(true)
         }
     }
 }

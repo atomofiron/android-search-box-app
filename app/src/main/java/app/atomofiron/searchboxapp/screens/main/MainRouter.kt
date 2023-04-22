@@ -36,10 +36,4 @@ class MainRouter(activityProperty: WeakProperty<out FragmentActivity>) : BaseRou
             navigateUp()
         } ?: false
     }
-
-    fun closeApp() {
-        activity {
-            finish()
-        }
-    }
 }
