@@ -322,12 +322,14 @@ class LayoutDelegate constructor(
             return Layout(ground, withJoystick(ground.isBottom))
         }
 
-        fun JoystickView.syncOrientation(root: FrameLayout) {
+        fun JoystickView.syncWithLayout(root: FrameLayout) {
             root.setLayoutListener { layout ->
+                this.isVisible = layout.withJoystick
                 updateLayoutParams<FrameLayout.LayoutParams> {
-                    val flags = when {
-                        layout.isBottom -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                        else -> Gravity.END or Gravity.TOP
+                    val flags = when (layout.ground) {
+                        Layout.Ground.Left -> Gravity.LEFT
+                        Layout.Ground.Right -> Gravity.RIGHT
+                        Layout.Ground.Bottom -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
                     }
                     if ((gravity and flags) != flags) {
                         gravity = flags

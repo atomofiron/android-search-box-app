@@ -9,7 +9,6 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -19,8 +18,7 @@ import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.hideKeyboard
 import app.atomofiron.common.util.isDarkTheme
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.setLayoutListener
-import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.syncOrientation
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.syncWithLayout
 import app.atomofiron.searchboxapp.databinding.ActivityMainBinding
 import app.atomofiron.searchboxapp.model.preference.AppOrientation
 import app.atomofiron.searchboxapp.model.preference.AppTheme
@@ -63,11 +61,8 @@ class MainActivity : AppCompatActivity() {
         presenter.onActivityCreate(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        binding.mainClRoot.setLayoutListener { layout ->
-            binding.joystick.isVisible = layout.withJoystick
-        }
         binding.joystick.setOnClickListener { onEscClick() }
-        binding.joystick.syncOrientation(binding.root)
+        binding.joystick.syncWithLayout(binding.root)
 
         if (savedInstanceState == null) onIntent(intent)
 
