@@ -2,19 +2,22 @@ package app.atomofiron.searchboxapp.screens.root
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.custom.LayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.getLayout
 import app.atomofiron.searchboxapp.databinding.FragmentRootBinding
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput
 import app.atomofiron.searchboxapp.screens.main.util.SnackbarWrapper
 import com.google.android.material.snackbar.Snackbar
-import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
+import lib.atomofiron.android_window_insets_compat.defaultTypeMask
 import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class RootFragment : Fragment(R.layout.fragment_root),
@@ -47,13 +50,25 @@ class RootFragment : Fragment(R.layout.fragment_root),
     }
 
     private fun FragmentRootBinding.applyInsets() {
-        val delegate = LayoutDelegate(root, snackbarContainer = snackbarContainer)
-        root.insetsProxying { view, insets ->
-            delegate.onApplyWindowInsets(view, insets)
-        }
+        root.insetsProxying()
         rootFlContainer.insetsProxying()
-        snackbarContainer.applyPaddingInsets()
+        applyToSnackbarContainer()
     }
 
     override fun onBack(): Boolean = presenter.onBack()
+
+    private fun FragmentRootBinding.applyToSnackbarContainer() {
+        val railSize = resources.getDimensionPixelSize(R.dimen.m3_navigation_rail_default_width)
+        val bottomSize = resources.getDimensionPixelSize(R.dimen.m3_bottom_nav_min_height)
+        ViewCompat.setOnApplyWindowInsetsListener(snackbarContainer) { container, windowInsets ->
+            val layout = root.getLayout()
+            val insets = windowInsets.getInsets(defaultTypeMask)
+            container.updatePadding(
+                left = insets.left + if (layout.isLeft) railSize else 0,
+                right = insets.right + if (layout.isRight) railSize else 0,
+                bottom = insets.bottom + if (layout.isBottom) bottomSize else 0,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+    }
 }
