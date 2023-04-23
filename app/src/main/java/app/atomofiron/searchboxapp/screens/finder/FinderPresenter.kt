@@ -14,7 +14,7 @@ import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.presenter.FinderAdapterPresenterDelegate
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.flow.combine
 
 class FinderPresenter(
     scope: CoroutineScope,
@@ -54,7 +54,8 @@ class FinderPresenter(
         viewState.reloadHistory.collect(scope) {
             preferenceChannel.notifyHistoryImported()
         }
-        explorerStore.current.zip(explorerStore.searchTargets) { current, second ->
+        // zip() ignoring new values from `current`
+        explorerStore.current.combine(explorerStore.searchTargets) { current, second ->
             current to second
         }.collect(scope) {
             viewState.updateTargets(it.first, it.second)
