@@ -17,8 +17,6 @@ class FinderViewState(
     private val scope: CoroutineScope,
 ) : FinderItemsState by FinderItemsStateDelegate(isLocal = false) {
 
-    val targets = ArrayList<Node>()
-
     val historyDrawerGravity = MutableStateFlow(Gravity.START)
     val reloadHistory = ChannelFlow<Unit>()
     val insertInQuery = ChannelFlow<String>()
@@ -43,8 +41,6 @@ class FinderViewState(
             }
             currentDir != null -> targets.add(currentDir)
         }
-        targetItems.clear()
-        targetItems.addAll(targets.map { FinderStateItem.TargetItem(it) })
         updateState()
     }
 

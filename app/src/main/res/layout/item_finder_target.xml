@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.chip.Chip
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_ll_root"
-    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_chip_target"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/common_margin_half"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    >
-
-    <ImageView
-        android:id="@+id/item_iv_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_file"
-        />
-    <TextView
-        android:id="@+id/item_tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/common_margin_half"
-        android:textColor="?attr/colorContent"
-        android:text="Some file"
-        />
-</LinearLayout>
+    android:layout_marginHorizontal="@dimen/common_margin_half"
+    android:textColor="?attr/colorContent"
+    android:textStyle="bold"
+    android:gravity="bottom"
+    android:checked="true"
+    android:ellipsize="middle"
+    android:textSize="18sp"
+    app:chipIconSize="24dp"
+    app:chipIcon="@drawable/ic_file"
+    tools:text="Some file"
+    />

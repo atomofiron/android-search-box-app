@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.finder.viewmodel
 
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.reflect.KClass
@@ -14,7 +15,7 @@ interface FinderItemsState {
      */
     val uniqueItems: MutableList<FinderStateItem>
     val progressItems: MutableList<FinderStateItem.ProgressItem>
-    val targetItems: MutableList<FinderStateItem.TargetItem>
+    val targets: MutableList<Node>
     val configItem: FinderStateItem.ConfigItem
 
     val searchItems: MutableStateFlow<List<FinderStateItem>>

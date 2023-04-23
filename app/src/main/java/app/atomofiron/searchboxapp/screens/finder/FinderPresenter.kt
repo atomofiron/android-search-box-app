@@ -54,7 +54,7 @@ class FinderPresenter(
         viewState.reloadHistory.collect(scope) {
             preferenceChannel.notifyHistoryImported()
         }
-        // zip() ignoring new values from `current`
+        // zip() ignoring new values from 'current'
         explorerStore.current.combine(explorerStore.searchTargets) { current, second ->
             current to second
         }.collect(scope) {

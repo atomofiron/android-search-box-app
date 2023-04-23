@@ -3,6 +3,7 @@ package app.atomofiron.searchboxapp.screens.finder.viewmodel
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.S
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.reflect.KClass
@@ -10,7 +11,7 @@ import kotlin.reflect.KClass
 class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState {
     override val uniqueItems = mutableListOf<FinderStateItem>()
     override val progressItems = mutableListOf<FinderStateItem.ProgressItem>()
-    override val targetItems = mutableListOf<FinderStateItem.TargetItem>()
+    override val targets = mutableListOf<Node>()
     override val searchItems = MutableStateFlow<List<FinderStateItem>>(listOf())
     override var configItem = FinderStateItem.ConfigItem()
 
@@ -18,11 +19,13 @@ class FinderItemsStateDelegate(override val isLocal: Boolean) : FinderItemsState
     override fun updateState() {
         val items = mutableListOf<FinderStateItem>()
         items.addAll(uniqueItems)
-        items.addAll(targetItems)
         when {
             isLocal -> Unit
-            targetItems.isEmpty() -> items.add(FinderStateItem.TipItem(R.string.tip))
-            else -> items.add(FinderStateItem.TipItem(R.string.search_here))
+            targets.isEmpty() -> items.add(FinderStateItem.TipItem(R.string.tip))
+            else -> {
+                items.add(FinderStateItem.TargetsItem(targets.toList()))
+                items.add(FinderStateItem.TipItem(R.string.search_here))
+            }
         }
         items.addAll(progressItems)
         if (SDK_INT >= S && !isLocal) items.add(FinderStateItem.DisclaimerItem)

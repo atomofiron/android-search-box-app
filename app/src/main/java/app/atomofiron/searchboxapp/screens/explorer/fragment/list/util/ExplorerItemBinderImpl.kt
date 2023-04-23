@@ -80,7 +80,7 @@ class ExplorerItemBinderImpl(
         itemView.setOnLongClickListener(onLongClickListener)
         cbBox.setOnCheckedChangeListener(onCheckListener)
 
-        ivIcon.setImageResource(item.defineIcon())
+        ivIcon.setImageResource(item.getIcon())
         ivIcon.alpha = if (item.isDirectory && !item.isCached) Const.ALPHA_DISABLED else Const.ALPHA_ENABLED
         val thumbnail = (item.content as? NodeContent.File)?.thumbnail
         ivThumbnail.setImageDrawable(thumbnail)
@@ -145,15 +145,6 @@ class ExplorerItemBinderImpl(
             else -> Color.TRANSPARENT
         }
         itemView.setBackgroundColor(color)
-    }
-
-    private fun Node.defineIcon(): Int {
-        return when (val content = content) {
-            is NodeContent.Unknown -> R.drawable.ic_explorer_unknown
-            is NodeContent.Link -> R.drawable.ic_explorer_link
-            is NodeContent.File -> content.getIcon()
-            is NodeContent.Directory -> content.getIcon(isEmpty)
-        }
     }
 
     interface ExplorerItemBinderActionListener {

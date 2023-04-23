@@ -1,8 +1,18 @@
 package app.atomofiron.searchboxapp.screens.explorer.fragment.list.util
 
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
 
+
+fun Node.getIcon(): Int {
+    return when (val content = content) {
+        is NodeContent.Unknown -> R.drawable.ic_explorer_unknown
+        is NodeContent.Link -> R.drawable.ic_explorer_link
+        is NodeContent.File -> content.getIcon()
+        is NodeContent.Directory -> content.getIcon(isEmpty)
+    }
+}
 
 fun NodeContent.File.getIcon(): Int = when (this) {
     is NodeContent.File.Music -> R.drawable.ic_explorer_music

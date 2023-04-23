@@ -15,6 +15,7 @@ sealed class FinderStateItem(val stableId: Int, val layoutId: Int) {
         private const val BUTTONS_ID = 4
         private const val TEST_ID = 5
         private const val DISCLAIMER_ID = 6
+        private const val TARGETS_ID = 7
     }
 
     data class SearchAndReplaceItem(
@@ -55,9 +56,9 @@ sealed class FinderStateItem(val stableId: Int, val layoutId: Int) {
         val task: SearchTask,
     ) : FinderStateItem(task.uniqueId, R.layout.item_progress)
 
-    data class TargetItem(
-        val target: Node,
-    ) : FinderStateItem(target.hashCode(), R.layout.item_finder_target)
+    data class TargetsItem(
+        val targets: List<Node>,
+    ) : FinderStateItem(TARGETS_ID, R.layout.item_finder_targets)
 
     data class TipItem(
         @StringRes val titleId: Int,
