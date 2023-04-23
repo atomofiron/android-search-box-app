@@ -9,9 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.searchboxapp.utils.isLayoutRtl
 
 class WideRecyclerView : RecyclerView {
-    companion object {
-        private const val ITEM_STEP = 8
-    }
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -48,16 +45,16 @@ class WideRecyclerView : RecyclerView {
     }
 
     private fun update(parent: View) {
-        updatePadding(parent.paddingStart, parent.paddingEnd, ITEM_STEP)
+        updatePadding(parent.paddingStart, parent.paddingEnd)
         updateLayoutParams<MarginLayoutParams> {
             marginStart = -parent.paddingStart
             marginEnd = -parent.paddingEnd
         }
     }
 
-    private fun View.updatePadding(paddingStart: Int, paddingEnd: Int, itemStep: Int) {
+    private fun View.updatePadding(paddingStart: Int, paddingEnd: Int) {
         val child = takeIf { paddingStart != this.paddingStart }?.let {
-            findChildOnPaddingEdge(itemStep)
+            findChildOnPaddingEdge()
         }
         val position = child?.let { getChildLayoutPosition(it) }
         position?.let { postChildrenOffsetFix(position, child) }
@@ -65,16 +62,18 @@ class WideRecyclerView : RecyclerView {
         position?.let { scrollToPosition(it) }
     }
 
-    private fun RecyclerView.findChildOnPaddingEdge(itemMargin: Int): View? {
-        for (i in 0..(itemMargin * 2) step itemMargin) {
+    private fun RecyclerView.findChildOnPaddingEdge(): View? {
+        var offset = 0
+        while (offset < width) {
             val paddingEdge = when {
-                isLayoutRtl -> width - paddingStart - i
-                else -> paddingStart + i
+                isLayoutRtl -> width - paddingStart - offset
+                else -> paddingStart + offset
             }
             val y = (paddingTop + height - paddingBottom) / 2f
             findChildViewUnder(paddingEdge.toFloat(), y)?.let {
                 return it
             }
+            offset += 8
         }
         return null
     }
