@@ -576,7 +576,7 @@ class ExplorerService(
                 else -> it.copy(isCurrent = !it.hasOpened())
             }
         }?.also {
-            items.add(it)
+            items.add(updateStateFor(it))
         }
         if (root?.isOpened != true) {
             return items
