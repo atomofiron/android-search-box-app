@@ -6,7 +6,6 @@ import android.os.Environment
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.Android
 import app.atomofiron.common.util.flow.collect
-import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
@@ -15,6 +14,7 @@ import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.finder.presenter.FinderAdapterPresenterDelegate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.zip
 
 class FinderPresenter(
     scope: CoroutineScope,
@@ -54,20 +54,10 @@ class FinderPresenter(
         viewState.reloadHistory.collect(scope) {
             preferenceChannel.notifyHistoryImported()
         }
-
-        explorerStore.current.collect(scope) {
-            val checked = explorerStore.searchTargets.value
-            if (checked.isEmpty()) {
-                scope.launch {
-                    viewState.updateTargets(it, checked)
-                }
-            }
-        }
-        explorerStore.searchTargets.collect(scope) {
-            val currentDir = explorerStore.current.value
-            scope.launch {
-                viewState.updateTargets(currentDir, it)
-            }
+        explorerStore.current.zip(explorerStore.searchTargets) { current, second ->
+            current to second
+        }.collect(scope) {
+            viewState.updateTargets(it.first, it.second)
         }
         finderStore.tasksFlow.collect(scope) { tasks ->
             viewState.progressItems.clear()

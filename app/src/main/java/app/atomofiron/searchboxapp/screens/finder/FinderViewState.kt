@@ -33,18 +33,18 @@ class FinderViewState(
     }
 
     fun updateTargets(currentDir: Node?, checked: List<Node>) {
-        targetItems.clear()
         targets.clear()
         when {
             checked.isNotEmpty() -> {
-                checked.forEach { targetItems.add(FinderStateItem.TargetItem(it)) }
-                targets.addAll(checked)
+                val filtered = checked.filter { target ->
+                    !checked.any { target.parentPath.startsWith(it.path) }
+                }
+                targets.addAll(filtered)
             }
-            currentDir != null -> {
-                targetItems.add(FinderStateItem.TargetItem(currentDir))
-                targets.add(currentDir)
-            }
+            currentDir != null -> targets.add(currentDir)
         }
+        targetItems.clear()
+        targetItems.addAll(targets.map { FinderStateItem.TargetItem(it) })
         updateState()
     }
 
