@@ -28,18 +28,16 @@ class ResultItemActionDelegate(
     }
 
     override fun onItemLongClick(item: Node) = viewState.run {
-        val items = (task.value.result as SearchResult.FinderResult).matches
+        val matches = (task.value.result as SearchResult.FinderResult).matches
         val checked = checked.value.filter { id ->
-            items.any { it.item.uniqueId == id && !it.isDeleting }
+            matches.any { it.item.uniqueId == id && !it.isDeleting }
         }
         val isSingle = !checked.contains(item.uniqueId) || checked.size == 1
         val options = when {
             isSingle && item.isDirectory -> ExplorerItemOptions(oneDirOptions, listOf(item), composition.value)
             isSingle -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
             else -> {
-                val items = (task.value.result as SearchResult.FinderResult).matches
-                    .filter { checked.contains(it.item.uniqueId) }
-                    .map { it.item }
+                val items = matches.filter { checked.contains(it.item.uniqueId) }.map { it.item }
                 ExplorerItemOptions(manyFilesOptions, items, composition.value)
             }
         }
