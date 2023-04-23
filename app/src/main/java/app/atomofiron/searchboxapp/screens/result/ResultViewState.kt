@@ -12,6 +12,7 @@ class ResultViewState(
 ) {
 
     val oneFileOptions = listOf(R.id.menu_remove, R.id.menu_share, R.id.menu_open_with)
+    val oneDirOptions = listOf(R.id.menu_remove)
     val manyFilesOptions = listOf(R.id.menu_remove)
 
     val task = DeferredStateFlow<SearchTask>()

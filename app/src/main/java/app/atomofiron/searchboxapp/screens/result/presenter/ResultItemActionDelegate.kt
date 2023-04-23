@@ -29,9 +29,10 @@ class ResultItemActionDelegate(
 
     override fun onItemLongClick(item: Node) = viewState.run {
         val checked = checked.value
+        val isSingle = !checked.contains(item.uniqueId) || checked.size == 1
         val options = when {
-            !checked.contains(item.uniqueId) -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
-            checked.size == 1 -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
+            isSingle && item.isDirectory -> ExplorerItemOptions(oneDirOptions, listOf(item), composition.value)
+            isSingle -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
             else -> {
                 val items = (task.value.result as SearchResult.FinderResult).matches
                     .filter { checked.contains(it.item.uniqueId) }
