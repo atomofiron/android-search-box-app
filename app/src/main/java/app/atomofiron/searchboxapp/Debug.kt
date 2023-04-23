@@ -52,3 +52,5 @@ fun Any.natik(s: String) {
     nanotimestamp = now
     Log.e("searchboxapp", "[${this.javaClass.simpleName}] $dif $s")
 }
+
+val Any?.className: String get() = this?.javaClass?.simpleName.toString()
