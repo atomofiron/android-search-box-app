@@ -48,6 +48,8 @@ class ResultCurtainMenuDelegate(
                 interactor.copyToClipboard(items.first())
                 viewState.sendAlert(resources.getString(R.string.copied))
             }
+            R.id.menu_open_with -> router.openWith(items.first())
+            R.id.menu_share -> router.shareWith(items.first())
             R.id.menu_remove -> interactor.deleteItems(items)
         }
     }

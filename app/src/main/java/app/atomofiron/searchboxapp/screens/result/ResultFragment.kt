@@ -1,6 +1,5 @@
 package app.atomofiron.searchboxapp.screens.result
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -79,8 +78,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     override fun ResultViewState.onViewCollect() {
         viewCollect(composition, collector = ::onCompositionChange)
         viewCollect(task, collector = ::onTaskChange)
-        viewCollect(enableOptions, collector = ::enableOptions)
-        viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
+        viewCollect(alerts, collector = ::showSnackbar)
     }
 
     override fun onApplyInsets(root: View) {
@@ -92,6 +90,7 @@ class ResultFragment : Fragment(R.layout.fragment_result),
                 bottomView = bottomBar,
                 railView = navigationRail,
                 systemUiView = systemUiBackground,
+                snackbarContainer = binding.snackbarContainer,
             ) {
                 bottomBar.menu.findItem(R.id.stub).isVisible = it
             }
@@ -104,15 +103,6 @@ class ResultFragment : Fragment(R.layout.fragment_result),
     }
 
     private fun NavigationBarView.onTaskChange(task: SearchTask) {
-        /*val label = task.result.getCounters()
-        val enabled = !task.isError
-        when {
-            task.inProgress -> updateItem(R.id.menu_status, R.drawable.progress_loop, label, enabled)
-            else -> {
-                statusDrawable.setState(enabled = enabled, activated = task.isDone)
-                updateItem(R.id.menu_status, statusDrawable, label, enabled)
-            }
-        }*/
         var item = menu.findItem(R.id.menu_stop)
         if (item.isEnabled != task.inProgress) {
             item.isEnabled = task.inProgress
@@ -143,12 +133,10 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         resultAdapter.setComposition(composition)
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun enableOptions(enable: Boolean) {
-        // todo resolve
-        /*val item = binding.bottomBar.menu.findItem(R.id.menu_options)
-        if (item.isEnabled != enable) {
-            item.isEnabled = enable
-        }*/
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.snackbarContainer, message, Snackbar.LENGTH_INDEFINITE)
+            .setAnchorView(anchorView)
+            .setAction(R.string.got_it) { }
+            .show()
     }
 }

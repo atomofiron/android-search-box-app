@@ -8,13 +8,13 @@ import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.*
 import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.model.finder.SearchResult
-import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultItemActionDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 import app.atomofiron.searchboxapp.utils.Const
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.combine
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,7 +35,6 @@ class ResultPresenter(
         private const val UNDEFINED = -1
     }
     private val taskId = params.taskId
-
     private val resources by appStore.resourcesProperty
 
     init {
@@ -50,8 +49,18 @@ class ResultPresenter(
     }
 
     override fun onSubscribeData() {
-        if (taskId != UNDEFINED) finderStore.tasksFlow.collect(scope) { tasks ->
-            val task = tasks.find { it.uniqueId == taskId }
+        if (taskId != UNDEFINED) finderStore.tasksFlow.combine(viewState.checked) { tasks, checked ->
+            tasks.find { it.uniqueId == taskId }?.let { task ->
+                val result = task.result as SearchResult.FinderResult
+                val matches = result.matches.map { match ->
+                    when {
+                        !checked.contains(match.item.uniqueId) -> match
+                        else -> match.update(match.item.copy(isChecked = true))
+                    }
+                }
+                task.copy(result = task.result.copy(matches = matches))
+            }
+        }.collect(scope) { task ->
             task ?: return@collect
             viewState.task.value = task
         }
@@ -61,15 +70,6 @@ class ResultPresenter(
     }
 
     fun onStopClick() = interactor.stop(viewState.task.value.uuid)
-
-    fun onOptionsClick() = viewState.run {
-        val ids = when (viewState.checked.size) {
-            1 -> viewState.oneFileOptions
-            else -> viewState.manyFilesOptions
-        }
-        val options = ExplorerItemOptions(ids, viewState.checked, viewState.composition.value)
-        curtainMenuDelegate.showOptions(options)
-    }
 
     fun onExportClick() {
         val task = viewState.task.value
@@ -83,37 +83,3 @@ class ResultPresenter(
         }
     }
 }
-
-/*
-
-				((android.content.ClipboardManager) ac.getSystemService(Context.CLIPBOARD_SERVICE))
-						.setPrimaryClip(android.content.ClipData.newPlainText("RegexFinder", str));
-				snackbarHelper.show(R.string.copied);
-
-
-
-			ResultsHolder.setResult(resultsList.get(position));
-			startActivity(
-					new Intent(ac, MainActivity.class)
-							.setAction(MainActivity.ACTION_SHOW_RESULT)
-			);
-		} else
-			try {
-				Uri uri = Build.VERSION.SDK_INT < 24 ? Uri.fromFile(file) :
-						FileProvider.getUriForFile(ac, ac.getApplicationContext().getPackageName() + ".provider", file);
-				Intent intent = new Intent()
-						.setAction(android.content.Intent.ACTION_VIEW)
-						.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension(format));
-
-				if (intent.resolveActivity(ac.getPackageManager()) != null)
-					startActivity(intent);
-				else
-					snackbarHelper.show(R.string.no_activity);
-			} catch (Exception e) {
-				if (e.getMessage().startsWith("Failed to find configured root that contains")) {
-					snackbarHelper.showLong(R.string.fucking_provider);
-					showPathWithCopyAction(file.getAbsolutePath());
-				} else
-					snackbarHelper.show(R.string.error);
-			}
- */

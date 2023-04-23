@@ -87,7 +87,7 @@ class TextViewerService(
         val result = finderTask.result as SearchResult.FinderResult
         val itemMatch = result.matches.find {
             it.item.uniqueId == item.uniqueId
-        } as ItemMatch.Multiply?
+        } as? ItemMatch.Multiply
         itemMatch ?: return null
         val task = SearchTask(
             finderTask.uuid,

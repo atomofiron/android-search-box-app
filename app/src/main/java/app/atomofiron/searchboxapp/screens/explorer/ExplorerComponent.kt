@@ -13,9 +13,7 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
-import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegateImpl
 import app.atomofiron.searchboxapp.injectable.service.ExplorerService
-import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
@@ -114,8 +112,8 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun router(fragment: WeakProperty<out Fragment>, appStore: AppStore): ExplorerRouter {
-        return ExplorerRouter(fragment, FileSharingDelegateImpl(appStore))
+    fun router(fragment: WeakProperty<out Fragment>): ExplorerRouter {
+        return ExplorerRouter(fragment)
     }
 
     @Provides
@@ -131,7 +129,6 @@ interface ExplorerDependencies {
     fun explorerService(): ExplorerService
     fun explorerStore(): ExplorerStore
     fun preferenceStore(): PreferenceStore
-    fun appStore(): AppStore
     fun curtainChannel(): CurtainChannel
     fun apkInteractor(): ApkInteractor
     fun mainChannel(): MainChannel

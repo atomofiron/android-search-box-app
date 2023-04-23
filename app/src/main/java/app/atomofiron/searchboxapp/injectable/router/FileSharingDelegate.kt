@@ -4,15 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import androidx.fragment.app.FragmentActivity
+import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.BuildConfig
-import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import java.io.File
 
 
-class FileSharingDelegateImpl(appStore: AppStore) : FileSharingDelegate {
+class FileSharingDelegateImpl(activityProperty: WeakProperty<out FragmentActivity>) : FileSharingDelegate {
 
-    private val activity by appStore.activityProperty
+    private val activity by activityProperty
 
     override fun openWith(item: Node) {
         activity?.startForFile(Intent.ACTION_VIEW, item)

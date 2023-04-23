@@ -24,21 +24,15 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, ResultItem>() {
     private val gravityDecorator = ItemGravityDecorator()
     private val backgroundDecorator = ItemBackgroundDecorator(evenNumbered = false)
 
-    private val header = ResultItem.Header(0, 0)
-
     fun setResult(results: SearchResult.FinderResult) {
-        val items = results.matches.map { ResultItem.Item(it) }
-        super.setItems(items)
-
-        header.dirsCount = 0
-        header.filesCount = 0
-        for (item in items) {
-            when {
-                item.item.isDirectory -> header.dirsCount++
-                else -> header.filesCount++
-            }
+        val items = ArrayList<ResultItem>(results.matches.size.inc())
+        val dirCount = results.matches.count { it.item.isDirectory }
+        val header = ResultItem.Header(dirCount, results.matches.size - dirCount)
+        items.add(header)
+        results.matches.forEach {
+            items.add(ResultItem.Item(it))
         }
-        notifyItemChanged(POSITION_HEADER)
+        super.setItems(items)
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
@@ -50,8 +44,6 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, ResultItem>() {
         POSITION_HEADER -> TYPE_HEADER
         else -> super.getItemViewType(position)
     }
-
-    override fun getItemCount(): Int = items.size.inc()
 
     override fun getDiffUtilCallback(old: List<ResultItem>, new: List<ResultItem>): DiffUtil.Callback {
         return ResultDiffUtilCallback(old, new)
@@ -83,13 +75,14 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, ResultItem>() {
     }
 
     override fun onBindViewHolder(holder: ResultsHolder, position: Int) = when (position) {
-        POSITION_HEADER -> holder.bind(header)
+        POSITION_HEADER -> holder.bind(items[position])
         else -> {
             holder as ResultsItemHolder
             holder.setOnItemActionListener(itemActionListener)
-            super.onBindViewHolder(holder, position.dec())
+            super.onBindViewHolder(holder, position)
             holder.bindComposition(composition)
-            itemActionListener.onItemVisible(items[position.dec()] as ResultItem.Item)
+            val item = items[position] as ResultItem.Item
+            itemActionListener.onItemVisible(item)
         }
     }
 }

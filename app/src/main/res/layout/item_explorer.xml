@@ -120,11 +120,12 @@
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/item_explorer_cb"
         android:layout_width="@dimen/edge_size"
-        android:layout_height="32dp"
+        android:layout_height="0dp"
         android:layout_gravity="end"
+        android:layout_marginTop="-4dp"
         android:gravity="top"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/item_explorer_tv_title"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

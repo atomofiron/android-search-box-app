@@ -12,11 +12,13 @@ import androidx.navigation.fragment.findNavController
 import app.atomofiron.common.util.property.MutableWeakProperty
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegate
+import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegateImpl
 
 abstract class BaseRouter(
     fragmentProperty: WeakProperty<out Fragment>,
     protected val activityProperty: WeakProperty<out FragmentActivity> = activityProperty(fragmentProperty),
-) {
+) : FileSharingDelegate by FileSharingDelegateImpl(activityProperty) {
     companion object {
         const val RECIPIENT = "RECIPIENT"
 

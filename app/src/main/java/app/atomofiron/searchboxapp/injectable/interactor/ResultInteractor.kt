@@ -14,20 +14,20 @@ class ResultInteractor(
     private val resultService: ResultService,
     private val explorerService: ExplorerService,
 ) {
-    private val context = Dispatchers.IO
+    private val dispatcher = Dispatchers.IO
 
     fun stop(uuid: UUID) = resultService.stop(uuid)
 
     fun copyToClipboard(item: Node) = resultService.copyToClipboard(item)
 
     fun deleteItems(items: List<Node>) {
-        scope.launch(context) {
+        scope.launch(dispatcher) {
             explorerService.deleteEveryWhere(items)
         }
     }
 
     fun cacheItem(item: ResultItem.Item) {
-        scope.launch(context) {
+        scope.launch(dispatcher) {
             resultService.cacheFile(item)
         }
     }

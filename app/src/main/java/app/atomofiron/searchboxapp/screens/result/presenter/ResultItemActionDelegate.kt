@@ -4,43 +4,51 @@ import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.explorer.NodeContent
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
 import app.atomofiron.searchboxapp.screens.result.ResultViewState
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItem
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
 
+
 class ResultItemActionDelegate(
-    private val viewModel: ResultViewState,
+    private val viewState: ResultViewState,
     private val router: ResultRouter,
-    private val curtainM: ResultCurtainMenuDelegate,
+    private val curtainDelegate: ResultCurtainMenuDelegate,
     private val interactor: ResultInteractor,
     private val preferenceStore: PreferenceStore,
 ) : ResultItemActionListener {
     override fun onItemClick(item: Node) {
-        if (item.isFile && item.content is NodeContent.File.Text) {
-            val task = viewModel.task.value
-            router.openFile(item.path, task.uuid)
-        } else {
-            // todo open dir
+        when {
+            item.content is NodeContent.File.Text -> router.openFile(item.path, viewState.task.value.uuid)
+            item.isDirectory -> Unit // todo open dir
+            else -> router.openWith(item)
         }
     }
 
-    override fun onItemLongClick(item: Node) = viewModel.run {
+    override fun onItemLongClick(item: Node) = viewState.run {
+        val checked = checked.value
         val options = when {
-            checked.contains(item) -> ExplorerItemOptions(manyFilesOptions, checked, composition.value)
-            else -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
+            !checked.contains(item.uniqueId) -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
+            checked.size == 1 -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
+            else -> {
+                val items = (task.value.result as SearchResult.FinderResult).matches
+                    .filter { checked.contains(it.item.uniqueId) }
+                    .map { it.item }
+                ExplorerItemOptions(manyFilesOptions, items, composition.value)
+            }
         }
-        curtainM.showOptions(options)
+        curtainDelegate.showOptions(options)
     }
 
     override fun onItemCheck(item: Node, isChecked: Boolean) {
-        // todo item.isChecked = isChecked
+        val checked = viewState.checked.value.toMutableList()
         when {
-            isChecked -> viewModel.checked.add(item)
-            else -> viewModel.checked.remove(item)
+            isChecked -> checked.add(item.uniqueId)
+            else -> checked.remove(item.uniqueId)
         }
-        viewModel.enableOptions.value = viewModel.checked.isNotEmpty()
+        viewState.checked.value = checked
     }
 
     override fun onItemVisible(item: ResultItem.Item) = interactor.cacheItem(item)

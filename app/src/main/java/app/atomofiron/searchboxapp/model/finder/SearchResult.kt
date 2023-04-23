@@ -83,30 +83,42 @@ fun SearchResult.TextSearchResult.toItemMatchMultiply(item: Node): ItemMatch {
     return ItemMatch.Multiply(item, count, matchesMap, indexes)
 }
 
-sealed class ItemMatch(
-    val item: Node,
-    val count: Int,
-) {
-    val path = item.path
-    val name: String = item.name
-    val isDirectory: Boolean = item.isDirectory
-    val isCached: Boolean = item.isCached
-    val isDeleting: Boolean = item.state.isDeleting
+@Suppress("LeakingThis")
+sealed class ItemMatch {
+
+    abstract val item: Node
+    abstract val count: Int
+
+    val path get() = item.path
+    val isDirectory: Boolean get() = item.isDirectory
+    val isCached: Boolean get() = item.isCached
+    val isDeleting: Boolean get() = item.state.isDeleting
+    val isChecked: Boolean get() = item.isChecked
     val withCounter: Boolean get() = this !is Single
 
-    class Single(item: Node) : ItemMatch(item, count = 1)
+    abstract fun update(item: Node): ItemMatch
 
-    class Multiply(
-        item: Node,
-        count: Int,
+    data class Single(override val item: Node) : ItemMatch() {
+        override val count = 1
+
+        override fun update(item: Node): ItemMatch = copy(item = item)
+    }
+
+    data class Multiply(
+        override val item: Node,
+        override val count: Int,
         /** line index -> matches byteOffset+length */
         val matchesMap: Map<Int, List<TextLineMatch>>,
         val indexes: List<Int>,
-    ) : ItemMatch(item, count)
+    ) : ItemMatch() {
+        override fun update(item: Node): ItemMatch = copy(item = item)
+    }
 
-    class MultiplyError(
-        item: Node,
-        count: Int,
-        error: String,
-    ) : ItemMatch(item, count)
+    data class MultiplyError(
+        override val item: Node,
+        override val count: Int,
+        val error: String,
+    ) : ItemMatch() {
+        override fun update(item: Node): ItemMatch = copy(item = item)
+    }
 }
