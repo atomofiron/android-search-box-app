@@ -25,10 +25,4 @@ class ResultInteractor(
             explorerService.deleteEveryWhere(items)
         }
     }
-
-    fun cacheItem(item: ResultItem.Item) {
-        scope.launch(dispatcher) {
-            resultService.cacheFile(item)
-        }
-    }
 }

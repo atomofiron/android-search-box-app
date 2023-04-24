@@ -9,7 +9,6 @@ import app.atomofiron.searchboxapp.injectable.store.*
 import app.atomofiron.searchboxapp.logE
 import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
-import app.atomofiron.searchboxapp.screens.result.presenter.ResultCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultItemActionDelegate
 import app.atomofiron.searchboxapp.screens.result.presenter.ResultPresenterParams
 import app.atomofiron.searchboxapp.utils.Const
@@ -28,7 +27,6 @@ class ResultPresenter(
     router: ResultRouter,
     appStore: AppStore,
     itemActionDelegate: ResultItemActionDelegate,
-    private val curtainMenuDelegate: ResultCurtainMenuDelegate
 ) : BasePresenter<ResultViewModel, ResultRouter>(scope, router),
     ResultItemActionListener by itemActionDelegate {
     companion object {

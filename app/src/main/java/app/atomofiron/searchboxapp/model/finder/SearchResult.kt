@@ -51,12 +51,12 @@ sealed class SearchResult {
             return data.toString()
         }
 
-        fun removeItem(item: Node): SearchResult {
-            val index = matches.indexOfFirst { it.item.uniqueId == item.uniqueId }
-            if (index < 0) return this
+        fun removeItem(removed: Node): SearchResult {
+            val nothing = !matches.any { it.item.path.startsWith(removed.path) }
+            if (nothing) return this
+            val left = matches.filter { !it.item.path.startsWith(removed.path) }
             val items = matches.toMutableList()
-            val removed = items.removeAt(index)
-            val count = count - removed.count
+            val count = left.sumOf { it.count }
             return FinderResult(forContent, count, items, countTotal.dec())
         }
 

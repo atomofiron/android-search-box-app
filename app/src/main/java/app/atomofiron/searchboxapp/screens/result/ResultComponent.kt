@@ -59,7 +59,6 @@ class ResultModule {
         router: ResultRouter,
         appStore: AppStore,
         itemActionDelegate: ResultItemActionDelegate,
-        menuListenerDelegate: ResultCurtainMenuDelegate,
     ): ResultPresenter {
         return ResultPresenter(
             params,
@@ -71,7 +70,6 @@ class ResultModule {
             router,
             appStore,
             itemActionDelegate,
-            menuListenerDelegate,
         )
     }
 

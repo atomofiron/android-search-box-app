@@ -53,5 +53,5 @@ class ResultItemActionDelegate(
         viewState.checked.value = checked
     }
 
-    override fun onItemVisible(item: ResultItem.Item) = interactor.cacheItem(item)
+    override fun onItemVisible(item: ResultItem.Item) = Unit
 }

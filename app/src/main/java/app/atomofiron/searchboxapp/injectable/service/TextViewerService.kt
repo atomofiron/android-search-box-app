@@ -147,6 +147,7 @@ class TextViewerService(
     }
 
     private suspend fun TextViewerSession.readNextLines() {
+        val reader = reader ?: return
         textLoading.value = true
         val lines = ArrayList<TextLine>(Const.TEXT_FILE_PAGINATION_STEP)
         var byteOffset = textLines.value.lastOrNull()?.run { byteOffset + byteCount.inc() } ?: 0

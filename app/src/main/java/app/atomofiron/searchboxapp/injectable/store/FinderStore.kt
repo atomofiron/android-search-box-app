@@ -45,7 +45,7 @@ class FinderStore(
                 result ?: return@forEachIndexed
                 val new = result.removeItem(item)
                 if (new !== result) {
-                    this[index] = task.copyWith(result)
+                    this[index] = task.copyWith(new)
                 }
             }
         }

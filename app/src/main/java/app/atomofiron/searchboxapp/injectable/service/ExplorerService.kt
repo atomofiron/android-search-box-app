@@ -423,7 +423,21 @@ class ExplorerService(
     }
 
     suspend fun deleteEveryWhere(items: List<Node>) {
-        // todo deleteEveryWhere
+        // todo make good
+        items.forEach {
+            when {
+                it.isDirectory -> scope.launch {
+                    it.delete(config.useSu)
+                }
+                else -> it.delete()
+            }
+        }
+    }
+
+    private suspend fun Node.delete() {
+        if (delete(config.useSu) == null) {
+            explorerStore.removed.emit(copy(children = null))
+        }
     }
 
     suspend fun tryDelete(key: NodeTabKey, its: List<Node>) {
@@ -456,7 +470,7 @@ class ExplorerService(
                 withGarden(key) { tab ->
                     tab.tree.replaceItem(item.uniqueId, item.parentPath, result)
                     states.updateState(item.uniqueId) { null }
-                    explorerStore.removed.emit(item)
+                    explorerStore.removed.emit(item.copy(children = null))
                     tab.render()
                 }
             }
