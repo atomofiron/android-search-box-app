@@ -53,4 +53,6 @@ fun Any.natik(s: String) {
     Log.e("searchboxapp", "[${this.javaClass.simpleName}] $dif $s")
 }
 
-val Any?.className: String get() = this?.javaClass?.simpleName.toString()
+val Any?.simpleName: String get() = this?.javaClass?.simpleName.toString()
+
+val Any?.className: String get() = this?.javaClass?.name.toString()
