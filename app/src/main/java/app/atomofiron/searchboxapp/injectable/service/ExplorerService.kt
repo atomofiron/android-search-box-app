@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
+import androidx.room.util.copy
 import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.set
 import app.atomofiron.searchboxapp.BuildConfig
@@ -19,6 +20,7 @@ import app.atomofiron.searchboxapp.model.explorer.NodeContent.Directory.Type
 import app.atomofiron.searchboxapp.model.explorer.NodeRoot.NodeRootType
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.utils.*
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.asRoot
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.close
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.completePath
 import app.atomofiron.searchboxapp.utils.ExplorerDelegate.delete
@@ -49,7 +51,8 @@ class ExplorerService(
 ) {
     companion object {
         private const val SUB_PATH_CAMERA = "DCIM/Camera/"
-        private const val SUB_PATH_PICTURES = "Pictures/Screenshots/"
+        private const val SUB_PATH_PIC_SCREENSHOTS = "Pictures/Screenshots/"
+        private const val SUB_PATH_DCIM_SCREENSHOTS = "DCIM/Screenshots/"
         private const val SUB_PATH_DOWNLOAD = "Download/"
         private const val SUB_PATH_DOWNLOAD_BLUETOOTH = "Download/Bluetooth/"
         private const val SUB_PATH_BLUETOOTH = "Bluetooth/"
@@ -116,12 +119,12 @@ class ExplorerService(
     private fun NodeTabTree.initRoots() {
         val storagePath = internalStoragePath
         val roots = listOf(
-            NodeRootType.Photos.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA", it)) },
-            NodeRootType.Videos.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_CAMERA", it)) },
-            NodeRootType.Screenshots.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_PICTURES", it)) },
-            NodeRootType.Bluetooth.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_BLUETOOTH", it)) },
-            NodeRootType.Downloads.let { NodeRoot(it, ExplorerDelegate.asRoot("${storagePath}$SUB_PATH_DOWNLOAD", it)) },
-            NodeRootType.InternalStorage().let { NodeRoot(it, ExplorerDelegate.asRoot(storagePath, it)) },
+            NodeRoot(NodeRootType.Photos, "${storagePath}$SUB_PATH_CAMERA"),
+            NodeRoot(NodeRootType.Videos, "${storagePath}$SUB_PATH_CAMERA"),
+            NodeRoot(NodeRootType.Screenshots, "${storagePath}$SUB_PATH_PIC_SCREENSHOTS", "${storagePath}$SUB_PATH_DCIM_SCREENSHOTS"),
+            NodeRoot(NodeRootType.Bluetooth, "${storagePath}$SUB_PATH_BLUETOOTH", "${storagePath}$SUB_PATH_DOWNLOAD_BLUETOOTH"),
+            NodeRoot(NodeRootType.Downloads, "${storagePath}$SUB_PATH_BLUETOOTH", "${storagePath}$SUB_PATH_DOWNLOAD"),
+            NodeRoot(NodeRootType.InternalStorage(), storagePath),
         )
         this.roots.clear()
         this.roots.addAll(roots)
@@ -147,6 +150,7 @@ class ExplorerService(
                 item = item.getOpened() ?: break
             }
         }
+        tryCacheAsync(key, rootItem.item)
     }
 
     suspend fun tryToggle(key: NodeTabKey, it: Node) {
@@ -185,13 +189,7 @@ class ExplorerService(
 
     private fun NodeTabTree.updateRootsAsync() {
         roots.forEach { root ->
-            when (root.type) {
-                is NodeRootType.Photos,
-                is NodeRootType.Videos,
-                is NodeRootType.Screenshots -> updateRootAsync(key, root)
-                is NodeRootType.Bluetooth -> updateBluetoothAsync(key, root)
-                else -> if (!root.item.isCached) updateRootAsync(key, root)
-            }
+            updateRootAsync(key, root)
         }
     }
 
@@ -199,8 +197,18 @@ class ExplorerService(
         scope.launch {
             withGarden {
                 withCachingState(root.stableId) {
-                    val updated = root.item.update(config).run {
-                        if (root.withPreview) sortByDate() else sortByName()
+                    var updated = root.item.update(config)
+                    updated = when (updated.error) {
+                        !is NodeError.NoSuchFile -> updated
+                        else -> tryAlternative(root, updated)
+                    }
+                    updated.run {
+                        when (true) {
+                            root.withPreview,
+                            (root.type is NodeRootType.Bluetooth),
+                            (root.type is NodeRootType.Downloads) -> sortByDate()
+                            else -> sortByName()
+                        }
                     }
                     updateRootSync(updated, key, root)
                 }
@@ -208,46 +216,19 @@ class ExplorerService(
         }
     }
 
-    private fun updateBluetoothAsync(key: NodeTabKey, root: NodeRoot) {
-        scope.launch {
-            withGarden(key) { tab ->
-                updateBluetoothSync(key, root)
-                tab.render()
-            }
+    private fun tryAlternative(root: NodeRoot, missing: Node): Node {
+        val variants = root.pathVariants?.takeIf { it.isNotEmpty() }
+        variants ?: return missing
+        val items = variants.map { path ->
+            Node.asRoot(path, root.type).update(config)
         }
-    }
-
-    private fun NodeGarden.updateBluetoothSync(key: NodeTabKey, root: NodeRoot) {
-        val storagePath = internalStoragePath
-        var current = root.item
-        val rootType = NodeRootType.Bluetooth
-        var bluetooth = ExplorerDelegate.asRoot("$storagePath$SUB_PATH_BLUETOOTH", rootType)
-        var downloadBluetooth = ExplorerDelegate.asRoot("$storagePath$SUB_PATH_DOWNLOAD_BLUETOOTH", rootType)
-        current = current.update(config).sortByDate()
-        bluetooth = if (current.error == null) bluetooth.update(config).sortByDate() else bluetooth
-        downloadBluetooth = if (current.error == null) downloadBluetooth.update(config).sortByDate() else downloadBluetooth
-        val updated = when {
-            current.error == null -> current
-            bluetooth.error == null -> bluetooth
-            downloadBluetooth.error == null -> downloadBluetooth
-            else -> current
-        }
-
-        states.updateState(root.stableId) {
-            nextState(root.stableId, cachingJob = null)
-        }
-        trees.values.forEach { tab ->
-            tab.roots.replace {
-                when {
-                    it.stableId != root.stableId -> it
-                    else -> {
-                        if (it.isSelected && !updated.isCached) tab.tree.clear()
-                        val isSelected = it.isSelected && updated.isCached
-                        val item = if (tab.key == key) updated else it.item.updateWith(updated)
-                        it.copy(isSelected = isSelected, item = item)
-                    }
-                }
-            }
+        val alt = items.find { it.error == null }
+            ?: items.find { it.error !is NodeError.NoSuchFile }
+        return when {
+            alt == null -> missing
+            !missing.isOpened -> alt
+            alt.children == null -> alt
+            else -> alt.copy(children = alt.children.copy(isOpened = true))
         }
     }
 
@@ -264,10 +245,10 @@ class ExplorerService(
         }
     }
 
-    private suspend fun updateRootSync(updated: Node, key: NodeTabKey, targetRoot: NodeRoot) {
-        val onlyPhotos = targetRoot.type == NodeRootType.Photos || targetRoot.type == NodeRootType.Screenshots
-        val onlyVideos = targetRoot.type == NodeRootType.Videos
-        val onlyMedia = targetRoot.type == NodeRootType.Camera
+    private fun filterMediaRootChildren(updated: Node, type: NodeRootType) {
+        val onlyPhotos = type == NodeRootType.Photos || type == NodeRootType.Screenshots
+        val onlyVideos = type == NodeRootType.Videos
+        val onlyMedia = type == NodeRootType.Camera
         if (onlyPhotos || onlyVideos || onlyMedia) {
             updated.children?.update {
                 replace {
@@ -280,8 +261,11 @@ class ExplorerService(
                 }
             }
         }
+    }
+
+    private fun updateRootThumbnail(updated: Node, targetRoot: NodeRoot): NodeRoot {
         val newestChild = updated.takeIf { targetRoot.withPreview }?.children?.firstOrNull()
-        val root = when {
+        return when {
             newestChild == null -> targetRoot.copy(item = updated, thumbnail = null, thumbnailPath = "")
             targetRoot.thumbnailPath == newestChild.path -> targetRoot
             else -> {
@@ -291,6 +275,11 @@ class ExplorerService(
                 targetRoot.copy(item = updated, thumbnail = content?.thumbnail, thumbnailPath = newestChild.path)
             }
         }
+    }
+
+    private suspend fun updateRootSync(updated: Node, key: NodeTabKey, targetRoot: NodeRoot) {
+        filterMediaRootChildren(updated, targetRoot.type)
+        val root = updateRootThumbnail(updated, targetRoot)
         withGarden(key) { currentTab ->
             states.updateState(root.stableId) {
                 nextState(root.stableId, cachingJob = null)
@@ -311,6 +300,11 @@ class ExplorerService(
                             )
                         }
                         else -> it
+                    }.also { updated ->
+                        if (!updated.isSelected) return@also
+                        val treeRoot = tab.tree.firstOrNull()
+                        treeRoot ?: return@also
+                        tab.tree[0] = updated.item
                     }
                 }
             }
@@ -342,11 +336,17 @@ class ExplorerService(
 
     suspend fun tryCacheAsync(key: NodeTabKey, it: Node) {
         withGarden(key) { tab ->
+            if (it.isRoot) {
+                val root = tab.roots.find { r -> r.item.uniqueId == it.uniqueId }
+                if (root != null) {
+                    updateRootAsync(key, root)
+                    return
+                }
+            }
             val item = tab.tree.findNode(it.uniqueId)
             item ?: return
-            val isMediaRoot = tab.roots.find { it.item.uniqueId == item.uniqueId }?.withPreview == true
             withCachingState(item.uniqueId) {
-                cacheSync(key, item, isMediaRoot) {
+                cacheSync(key, item) {
                     // todo replace everywhere
                     tree.replaceItem(it)
                 }
@@ -670,12 +670,9 @@ class ExplorerService(
     private suspend fun cacheSync(
         key: NodeTabKey,
         item: Node,
-        isMediaRoot: Boolean,
         predicate: NodeTabTree.(Node) -> Boolean,
     ): Node {
-        var updated = item.update(config).run {
-            if (isMediaRoot) sortByDate() else sortByName()
-        }
+        var updated = item.update(config).sortByName()
         updated = updated.updateContent()
         renderTab(key) {
             states.updateState(item.uniqueId) {

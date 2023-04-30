@@ -1,7 +1,9 @@
 package app.atomofiron.searchboxapp.model.explorer
 
 import android.graphics.drawable.Drawable
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.asRoot
 import java.util.Objects
+
 
 data class NodeRoot(
     val type: NodeRootType,
@@ -9,7 +11,12 @@ data class NodeRoot(
     val thumbnail: Drawable? = null,
     val thumbnailPath: String = "",
     val isSelected: Boolean = false,
+    val pathVariants: Array<out String>? = null,
 ) {
+
+    constructor(type: NodeRootType, vararg pathVariants: String)
+            : this(type, Node.asRoot(pathVariants.first(), type), pathVariants = pathVariants.takeIf { it.size > 1 })
+
     val stableId: Int = type.stableId
     val withPreview: Boolean = when (type) {
         is NodeRootType.Photos,

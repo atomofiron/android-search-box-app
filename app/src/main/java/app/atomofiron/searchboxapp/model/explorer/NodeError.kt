@@ -4,7 +4,7 @@ sealed class NodeError {
     object NoSuchFile : NodeError()
     object PermissionDenied : NodeError()
     object Unknown : NodeError()
-    object Multiply : NodeError()
+    class Multiply(val lines: List<String>) : NodeError()
     class Message(val message: String) : NodeError()
 
     override fun toString(): String {

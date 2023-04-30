@@ -118,7 +118,7 @@ object ExplorerDelegate {
         }
     }
 
-    fun asRoot(path: String, type: NodeRoot.NodeRootType): Node {
+    fun Node.Companion.asRoot(path: String, type: NodeRoot.NodeRootType): Node {
         return Node(
             path = path,
             parentPath = ROOT_PARENT_PATH,
@@ -185,7 +185,7 @@ object ExplorerDelegate {
                     else -> cacheFile(config)
                 }
             }
-            output.success -> copy(children = null, error = NodeError.Unknown)
+            output.success -> copy(children = null, error = null)
             else -> copy(error = output.error.toNodeError(path))
         }
     }
@@ -194,7 +194,7 @@ object ExplorerDelegate {
         val output = Shell.exec(Shell[Shell.LS_LAHL].format(path), useSu)
         val lines = output.output.split("\n").filter { it.isNotEmpty() }
         return when {
-            output.success && lines.isEmpty() -> copy(children = null, error = NodeError.Unknown)
+            output.success && lines.isEmpty() -> copy(children = null, error = null)
             output.success -> parseDir(lines)
             else -> copy(error = output.error.toNodeError(path))
         }
@@ -374,10 +374,10 @@ object ExplorerDelegate {
     }
 
     private fun String.toNodeError(path: String): NodeError {
-        val lines = split(NEW_LINE).filter { it.isNotBlank() }
-        val first = lines.firstOrNull()
+        val lines = trim().split(NEW_LINE)
+        val first = lines.find { it.isNotBlank() }
         return when {
-            lines.size > 1 -> NodeError.Multiply
+            lines.size > 1 -> NodeError.Multiply(lines)
             first.isNullOrBlank() -> NodeError.Unknown
             path.isBlank() -> NodeError.Message(first)
             first == LS_NO_SUCH_FILE.format(path) -> NodeError.NoSuchFile
@@ -428,12 +428,12 @@ object ExplorerDelegate {
         val oldChildren = children
         val newChildren = item.children
         val items = newChildren?.map { new ->
-            val old = oldChildren?.find { it.uniqueId == new.uniqueId }
-            new.copy(children = old?.children)
+            when (val old = oldChildren?.find { it.uniqueId == new.uniqueId }) {
+                null -> new
+                else -> new.copy(children = old.children)
+            }
         }?.toMutableList() ?: mutableListOf()
         val wasOpened = oldChildren?.isOpened ?: false
         return item.copy(children = newChildren?.copy(items = items, isOpened = wasOpened))
     }
-
-    fun NodeRoot.getTitle(aliases: Map<Int, String>): String = aliases[item.uniqueId] ?: item.name
 }
