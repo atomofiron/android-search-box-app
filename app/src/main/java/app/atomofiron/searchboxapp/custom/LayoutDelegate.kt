@@ -54,7 +54,7 @@ class LayoutDelegate constructor(
     private val withBottomInset get() = layout.isBottom && (layout.withJoystick || bottomView != null)
     private val withFlankInset get() = !layout.isBottom && (layout.withJoystick || railView != null)
     private val currentBottomSize get() = if (withBottomInset) bottomSize else 0
-    private val currentRailSize get() = if (withFlankInset) railSize else 0
+    private val currentFlankSize get() = if (withFlankInset) railSize else 0
     private var layout = Layout(Layout.Ground.Bottom, withJoystick = true)
 
     init {
@@ -68,7 +68,6 @@ class LayoutDelegate constructor(
             setLayout(layout)
         }
         railView?.consumeInsets()
-        sideDock?.consumeInsets()
     }
 
     private fun NavigationRailView.applyGround(ground: Layout.Ground) {
@@ -93,7 +92,9 @@ class LayoutDelegate constructor(
             ViewCompat.dispatchApplyWindowInsets(it, insets.getRecyclerViewInsets())
         }
         railView?.applyToRail(insets)
-        sideDock?.applyToSideDock(insets)
+        sideDock?.let {
+            ViewCompat.dispatchApplyWindowInsets(it, insets.getSideDockInsets(it.getLtrGravity()))
+        }
         tabLayout?.let {
             ViewCompat.dispatchApplyWindowInsets(it, insets.getTabLayoutInsets())
         }
@@ -145,6 +146,12 @@ class LayoutDelegate constructor(
         }
     }
 
+    private fun WindowInsetsCompat.getSideDockInsets(ltrGravity: Int): WindowInsetsCompat {
+        return custom {
+            setInsets(insetsType, getInsets(insetsType).editSideDock(ltrGravity))
+        }
+    }
+
     private inline fun WindowInsetsCompat.custom(action: WindowInsetsCompat.Builder.() -> Unit): WindowInsetsCompat {
         return WindowInsetsCompat.Builder(this).apply(action).build()
     }
@@ -156,18 +163,18 @@ class LayoutDelegate constructor(
             else -> 0
         }
         val bottom = bottom + if (layout.isWide) 0 else currentBottomSize
-        val left = left + if (layout.isLeft) currentRailSize else 0
-        val right = right + if (layout.isRight) currentRailSize else 0
+        val left = left + if (layout.isLeft) currentFlankSize else 0
+        val right = right + if (layout.isRight) currentFlankSize else 0
         return Insets.of(left, top, right, bottom)
     }
 
     private fun Insets.editForTabLayout(): Insets {
         val left = when {
-            layout.isLeft -> left + currentRailSize
+            layout.isLeft -> left + currentFlankSize
             else -> left
         }
         val right = when {
-            layout.isRight -> right + currentRailSize
+            layout.isRight -> right + currentFlankSize
             else -> right
         }
         return Insets.of(left, top, right, bottom)
@@ -175,17 +182,32 @@ class LayoutDelegate constructor(
 
     private fun Insets.editForHeaderView(): Insets {
         val left = when {
-            layout.isLeft -> left + currentRailSize
+            layout.isLeft -> left + currentFlankSize
             else -> left
         }
         val right = when {
-            layout.isRight -> right + currentRailSize
+            layout.isRight -> right + currentFlankSize
             else -> right
         }
         val top = when {
             layout.isBottom -> if (tabLayout == null) top else 0
             else -> top
         }
+        return Insets.of(left, top, right, bottom)
+    }
+
+    private fun Insets.editSideDock(ltrGravity: Int): Insets {
+        val left = when {
+            ltrGravity != Gravity.LEFT -> 0
+            !layout.isLeft -> left
+            else -> left + currentFlankSize
+        }
+        val right = when {
+            ltrGravity != Gravity.RIGHT -> 0
+            !layout.isRight -> right
+            else -> right + currentFlankSize
+        }
+        val bottom = bottom + currentBottomSize
         return Insets.of(left, top, right, bottom)
     }
 
@@ -209,38 +231,10 @@ class LayoutDelegate constructor(
 
     private fun NavigationRailView.applyToRail(windowInsets: WindowInsetsCompat) {
         val insets = windowInsets.getInsets(insetsType)
-        val topInset = if (layout.withJoystick) currentRailSize else 0
+        val topInset = if (layout.withJoystick) currentFlankSize else 0
         val left = if (layout.isRight) 0 else insets.left
         val right = if (layout.isLeft) 0 else insets.right
         updatePadding(left, insets.top + topInset, right, insets.bottom)
-    }
-
-    private fun NavigationView.applyToSideDock(windowInsets: WindowInsetsCompat) {
-        var gravity = (layoutParams as? DrawerLayout.LayoutParams)?.gravity
-        gravity = when {
-            gravity == Gravity.END && isLayoutRtl -> Gravity.LEFT
-            gravity == Gravity.END -> Gravity.RIGHT
-            gravity == Gravity.START && isLayoutRtl -> Gravity.RIGHT
-            gravity == Gravity.START -> Gravity.LEFT
-            else -> gravity
-        }
-        val insets = windowInsets.getInsets(insetsType)
-        val currentRailSize = if (layout.withJoystick) currentRailSize else 0
-        val left = when {
-            gravity != Gravity.LEFT -> 0
-            layout.isLeft -> insets.left + currentRailSize
-            else -> insets.left
-        }
-        val right = when {
-            gravity != Gravity.RIGHT -> 0
-            layout.isRight -> insets.right + currentRailSize
-            else -> insets.right
-        }
-        updateLayoutParams {
-            val minWidth = resources.getDimensionPixelSize(R.dimen.design_navigation_max_width)
-            width = minWidth + left + right
-        }
-        updatePadding(left, insets.top, right, insets.bottom)
     }
 
     private fun WindowInsetsCompat.getToolbarInsets(): Insets {
@@ -248,10 +242,21 @@ class LayoutDelegate constructor(
         if (!layout.withJoystick && railView == null && bottomView == null) {
             return insets
         }
-        val left = if (layout.isLeft) currentRailSize else 0
-        val right = if (layout.isRight) currentRailSize else 0
+        val left = if (layout.isLeft) currentFlankSize else 0
+        val right = if (layout.isRight) currentFlankSize else 0
         val joystick = Insets.of(left, 0, right, 0)
         return Insets.add(insets, joystick)
+    }
+
+    private fun NavigationView.getLtrGravity(): Int {
+        val gravity = (layoutParams as? DrawerLayout.LayoutParams)?.gravity ?: Gravity.NO_GRAVITY
+        return when {
+            gravity == Gravity.END && isLayoutRtl -> Gravity.LEFT
+            gravity == Gravity.END -> Gravity.RIGHT
+            gravity == Gravity.START && isLayoutRtl -> Gravity.RIGHT
+            gravity == Gravity.START -> Gravity.LEFT
+            else -> gravity
+        }
     }
 
     companion object {
