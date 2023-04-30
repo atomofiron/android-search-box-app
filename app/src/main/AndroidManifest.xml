@@ -51,7 +51,7 @@
         </provider>
         <receiver
             android:name=".android.InstallReceiver"
-            android:exported="true"
+            android:exported="false"
             />
     </application>
 
