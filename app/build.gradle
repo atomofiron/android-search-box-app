@@ -36,22 +36,23 @@ android {
     }
     buildTypes {
         debug {
-            resValue "string", "app_name", "File Portal D"
+            resValue "string", "app_name", "File Seeker"
             applicationIdSuffix ".debug"
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
             buildConfigField "String", "AUTHORITY", "\"${appId + applicationIdSuffix + fileProviderName}\""
         }
         beta {
-            resValue "string", "app_name", "File Portal B"
+            resValue "string", "app_name", "File Seeker"
             signingConfig signingConfigs.beta
             applicationIdSuffix ".beta"
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
             buildConfigField "String", "AUTHORITY", "\"${appId + applicationIdSuffix + fileProviderName}\""
         }
         release {
-            resValue "string", "app_name", "File Portal"
+            resValue "string", "app_name", "File Seeker"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders += [PROVIDER: appId + applicationIdSuffix + fileProviderName]
+            buildConfigField "String", "AUTHORITY", "\"${appId + applicationIdSuffix + fileProviderName}\""
         }
     }
     lint {
