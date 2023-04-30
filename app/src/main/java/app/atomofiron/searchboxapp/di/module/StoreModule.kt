@@ -1,10 +1,10 @@
 package app.atomofiron.searchboxapp.di.module
 
 import android.content.Context
-import android.content.SharedPreferences
 import app.atomofiron.searchboxapp.injectable.store.*
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -12,7 +12,7 @@ open class StoreModule {
 
     @Provides
     @Singleton
-    open fun provideFinderStore(): FinderStore = FinderStore()
+    open fun provideFinderStore(scope: CoroutineScope): FinderStore = FinderStore(scope)
 
     @Provides
     @Singleton
@@ -20,13 +20,21 @@ open class StoreModule {
 
     @Provides
     @Singleton
+    open fun provideTextViewerStore(): TextViewerStore = TextViewerStore()
+
+    @Provides
+    @Singleton
     open fun provideExplorerStore(): ExplorerStore = ExplorerStore()
 
     @Provides
     @Singleton
-    open fun provideSettingsStore(context: Context, sp: SharedPreferences): PreferenceStore = PreferenceStore(context, sp)
+    open fun providePreferenceStore(context: Context, scope: CoroutineScope): PreferenceStore {
+        return PreferenceStore(context, scope)
+    }
 
     @Provides
     @Singleton
-    open fun provideAppStore(context: Context): AppStore = AppStore(context, context.resources)
+    open fun provideAppStore(context: Context, scope: CoroutineScope): AppStore {
+        return AppStore(context, scope, context.resources)
+    }
 }

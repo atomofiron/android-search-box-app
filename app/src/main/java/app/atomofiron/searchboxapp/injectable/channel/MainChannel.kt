@@ -1,8 +1,9 @@
 package app.atomofiron.searchboxapp.injectable.channel
 
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
+import android.net.Uri
+import app.atomofiron.common.util.flow.EventFlow
 
-object MainChannel {
-    val channel = BroadcastChannel<Int>(Channel.BUFFERED)
+class MainChannel {
+    val fileToReceive = EventFlow<Uri>()
+    val maximized = EventFlow<Unit>()
 }

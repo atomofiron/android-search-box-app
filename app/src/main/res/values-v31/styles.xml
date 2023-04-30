@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="CompatTheme" parent="@style/AppTheme" />
+
+    <style name="CompatTheme.Amoled" parent="@style/AppTheme.Amoled" />
+
+</resources>

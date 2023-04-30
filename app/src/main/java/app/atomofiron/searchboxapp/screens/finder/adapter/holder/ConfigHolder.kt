@@ -1,18 +1,19 @@
 package app.atomofiron.searchboxapp.screens.finder.adapter.holder
 
-import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import androidx.core.view.isGone
+import app.atomofiron.common.recycler.GeneralHolder
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 
 class ConfigHolder(
     parent: ViewGroup,
-    id: Int,
-    private val listener: OnActionListener
-) : CardViewHolder(parent, id) {
+    layoutId: Int,
+    private val listener: FinderConfigListener
+) : GeneralHolder<FinderStateItem>(parent, layoutId) {
+
     private val cbCaseSense = itemView.findViewById<CheckBox>(R.id.config_cb_case_sense)
     private val cbUseRegexp = itemView.findViewById<CheckBox>(R.id.config_cb_use_regexp)
     private val cpSearchInContent = itemView.findViewById<CheckBox>(R.id.config_cb_in_content)
@@ -83,7 +84,7 @@ class ConfigHolder(
         listener.onConfigChange(item)
     }
 
-    interface OnActionListener {
+    interface FinderConfigListener {
         fun onConfigChange(item: FinderStateItem.ConfigItem)
     }
 }

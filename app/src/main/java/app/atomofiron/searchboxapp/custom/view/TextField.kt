@@ -10,7 +10,7 @@ import android.view.inputmethod.EditorInfo
 
 open class TextField @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
+    attrs: AttributeSet? = null,
 ) : AutoHideKeyboardField(context, attrs), TextWatcher {
     private var onSubmitListener: OnSubmitListener? = null
 
@@ -19,8 +19,8 @@ open class TextField @JvmOverloads constructor(
     init {
         hideKeyboardOnDetached = false
         addTextChangedListener(this)
-        imeOptions = EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or EditorInfo.IME_ACTION_DONE
-        inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        imeOptions = imeOptions or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS or EditorInfo.IME_ACTION_DONE
+        inputType = inputType or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
         isSingleLine = true
         isLongClickable = false
         setHintTextColor(0)

@@ -23,6 +23,7 @@ class MenuHolder(
     val button: TextView = itemView.findViewById(R.id.item_menu_tv_button)
 
     private lateinit var item: MenuItem
+    private var clickCount = 0
 
     init {
         itemView.setOnClickListener(this)
@@ -52,15 +53,15 @@ class MenuHolder(
     }
 
     private fun showButton() {
-        if (button.isVisible) {
-            return
-        }
         val parent = itemView as ViewGroup
-        TransitionManager.beginDelayedTransition(parent)
-        button.isEnabled = true
-        button.isVisible = true
+        if (!button.isVisible) {
+            TransitionManager.beginDelayedTransition(parent)
+            button.isEnabled = true
+            button.isVisible = true
+        }
+        val count = ++clickCount
         button.postDelayed({
-            if (button.isVisible) {
+            if (count == clickCount && button.isVisible) {
                 TransitionManager.beginDelayedTransition(parent)
                 button.isVisible = false
             }

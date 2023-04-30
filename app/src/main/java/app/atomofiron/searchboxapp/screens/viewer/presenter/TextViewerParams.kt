@@ -1,29 +1,28 @@
 package app.atomofiron.searchboxapp.screens.viewer.presenter
 
 import android.os.Bundle
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerFragment
+import app.atomofiron.searchboxapp.utils.getSerializableCompat
+import java.util.*
 
 class TextViewerParams(
     val path: String,
-    val query: String?,
-    val useRegex: Boolean,
-    val ignoreCase: Boolean,
+    val initialTaskId: UUID?,
 ) {
     companion object {
+        private const val KEY_PARAMS = "KEY_PARAMS"
+        private const val KEY_TASK_ID = "KEY_TASK_ID"
 
-        fun arguments(path: String, params: FinderQueryParams? = null) = Bundle().apply {
+        fun arguments(path: String, taskId: UUID? = null) = Bundle().apply {
             putString(TextViewerFragment.KEY_PATH, path)
-            putString(TextViewerFragment.KEY_QUERY, params?.query)
-            putBoolean(TextViewerFragment.KEY_USE_REGEX, params?.useRegex ?: false)
-            putBoolean(TextViewerFragment.KEY_IGNORE_CASE, params?.ignoreCase ?: false)
+            if (taskId != null) putSerializable(TextViewerFragment.KEY_TASK_ID, taskId)
         }
 
-        fun params(arguments: Bundle) = TextViewerParams(
-            arguments.getString(TextViewerFragment.KEY_PATH)!!,
-            arguments.getString(TextViewerFragment.KEY_QUERY),
-            arguments.getBoolean(TextViewerFragment.KEY_USE_REGEX),
-            arguments.getBoolean(TextViewerFragment.KEY_IGNORE_CASE),
-        )
+        fun params(arguments: Bundle): TextViewerParams {
+            return TextViewerParams(
+                arguments.getString(TextViewerFragment.KEY_PATH)!!,
+                arguments.getSerializableCompat(KEY_TASK_ID, UUID::class.java),
+            )
+        }
     }
 }

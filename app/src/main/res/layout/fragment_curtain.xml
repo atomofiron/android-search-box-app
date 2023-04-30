@@ -2,24 +2,27 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/curtain_root"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="false"
-    android:clickable="true"
-    tools:ignore="KeyboardInaccessibleWidget"
     >
-    <FrameLayout
-        android:id="@+id/curtain_sheet"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/curtain_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:elevation="@dimen/curtain_elevation"
-        android:focusable="false"
-        android:clickable="true"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        app:behavior_skipCollapsed="true"
-        app:behavior_hideable="true"
-        />
+        android:layout_gravity="bottom"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        >
+        <FrameLayout
+            android:id="@+id/curtain_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:elevation="@dimen/curtain_elevation"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            app:behavior_skipCollapsed="true"
+            app:behavior_hideable="true"
+            />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

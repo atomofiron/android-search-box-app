@@ -7,18 +7,22 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.*
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import app.atomofiron.common.util.property.MutableWeakProperty
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegate
+import app.atomofiron.searchboxapp.injectable.router.FileSharingDelegateImpl
 
 abstract class BaseRouter(
-    fragmentProperty: WeakProperty<Fragment>,
-    protected val activityProperty: WeakProperty<FragmentActivity> = activityProperty(fragmentProperty),
-) {
+    fragmentProperty: WeakProperty<out Fragment>,
+    protected val activityProperty: WeakProperty<out FragmentActivity> = activityProperty(fragmentProperty),
+) : FileSharingDelegate by FileSharingDelegateImpl(activityProperty) {
     companion object {
         const val RECIPIENT = "RECIPIENT"
 
-        private fun activityProperty(fragmentProperty: WeakProperty<Fragment>): WeakProperty<FragmentActivity> {
+        private fun activityProperty(fragmentProperty: WeakProperty<out Fragment>): WeakProperty<out FragmentActivity> {
             val activityProperty = MutableWeakProperty<FragmentActivity>()
             fragmentProperty.observe { fragment ->
                 activityProperty.value = fragment?.activity
@@ -46,7 +50,7 @@ abstract class BaseRouter(
 
     protected abstract val currentDestinationId: Int
 
-    constructor(activityProperty: WeakProperty<FragmentActivity>) : this(WeakProperty(), activityProperty)
+    constructor(activityProperty: WeakProperty<out FragmentActivity>) : this(WeakProperty(), activityProperty)
 
     protected open val isCurrentDestination: Boolean
         get() = navigation {
@@ -59,21 +63,30 @@ abstract class BaseRouter(
 
     val activity: FragmentActivity? by activityProperty
 
+    val context: Context? get() = fragment?.context ?: activity
+
     fun <R> fragment(action: Fragment.() -> R): R? = fragment?.run(action)
 
     fun <R> activity(action: FragmentActivity.() -> R): R? = activity?.run(action)
 
-    fun <R> context(action: Context.() -> R): R? = (fragment?.context ?: activity)?.run(action)
+    fun <R> context(action: Context.() -> R): R? = context?.run(action)
 
     fun <T> navigation(action: NavController.() -> T): T? {
         return activity?.run {
-            Navigation.findNavController(this, R.id.nav_host_fragment).run(action)
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            navHostFragment.findNavController().run(action)
         }
     }
 
     fun navigateBack() {
         navigation {
             navigateUp()
+        }
+    }
+
+    fun minimize() {
+        activity {
+            moveTaskToBack(true)
         }
     }
 
@@ -88,12 +101,11 @@ abstract class BaseRouter(
     protected fun FragmentManager.switchScreen(predicate: (Fragment) -> Boolean) {
         val lastVisible = fragments.findLastVisibleFragment()
         val target = fragments.find(predicate)
+        target ?: return
         if (lastVisible === target) return
         beginTransaction()
-            .apply {
-                lastVisible?.let { hide(it as Fragment) }
-            }
-            .show(target!!)
+            .apply { lastVisible?.let { hide(it as Fragment) } }
+            .show(target)
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .commit()
     }

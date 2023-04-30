@@ -4,12 +4,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import app.atomofiron.searchboxapp.databinding.CurtainExplorerRenameBinding
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerHolder
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.holder.ExplorerHolder
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 
@@ -19,8 +19,8 @@ class RenameDelegate(
 
     var data: RenameData? = null
 
-    fun getView(data: RenameData, inflater: LayoutInflater, container: ViewGroup): View {
-        val binding = CurtainExplorerRenameBinding.inflate(inflater, container, false)
+    fun getView(data: RenameData, inflater: LayoutInflater): View {
+        val binding = CurtainExplorerRenameBinding.inflate(inflater, null, false)
         binding.init(data)
         return binding.root
     }
@@ -33,6 +33,7 @@ class RenameDelegate(
         holder.disableClicks()
         holder.setGreyBackgroundColor()
         holder.hideCheckBox()
+        explorerRenameEt.inputType = EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
         explorerRenameEt.setText(data.item.name)
         explorerRenameEt.addTextChangedListener(ButtonClick(data, explorerRenameBtn))
         explorerRenameBtn.setOnClickListener {
@@ -48,7 +49,7 @@ class RenameDelegate(
 
     data class RenameData(
         val composition: ExplorerItemComposition,
-        val item: XFile,
+        val item: Node,
         val items: List<String>
     )
 

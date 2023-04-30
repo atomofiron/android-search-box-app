@@ -4,9 +4,13 @@
 	<dimen name="infinity">999dp</dimen>
 	<dimen name="fab_margin">16dp</dimen>
 	<dimen name="corner_radius">16dp</dimen>
+	<dimen name="common_margin_extra">32dp</dimen>
+	<dimen name="common_margin_large">24dp</dimen>
 	<dimen name="common_margin">16dp</dimen>
+	<dimen name="common_margin_three_quarter">12dp</dimen>
 	<dimen name="common_margin_half">8dp</dimen>
 	<dimen name="common_margin_nano">4dp</dimen>
+	<dimen name="common_margin_pico">2dp</dimen>
 	<dimen name="edit_text_padding">8dp</dimen>
 	<dimen name="search_button_padding">16dp</dimen>
 	<dimen name="icon_size">24dp</dimen>
@@ -23,75 +27,53 @@
 	<dimen name="padding_large">12dp</dimen>
 	<dimen name="padding_xlarge">16dp</dimen>
 	<dimen name="padding_xxlarge">32dp</dimen>
-    <dimen name="card_corner_radius">8dp</dimen>
-    <dimen name="bottom_tab_bar_height">56dp</dimen>
-    <dimen name="bottom_second_bar_margin">72dp</dimen>
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="navigation_view_size">80dp</dimen>
     <dimen name="card_max_width">512dp</dimen>
-    <dimen name="joystick_size">@dimen/bottom_tab_bar_height</dimen>
+    <dimen name="joystick_size">@dimen/navigation_view_size</dimen>
     <dimen name="item_explorer_file_size">36dp</dimen>
-    <dimen name="edge_size">40dp</dimen>
+    <dimen name="edge_size">48dp</dimen>
+    <dimen name="item_explorer_min_height">40dp</dimen>
+    <dimen name="thumbnail_size">48dp</dimen>
+    <dimen name="preview_size">192dp</dimen>
     <dimen name="item_dir_shadow_size">6dp</dimen>
 	<dimen name="item_dir_separation_size">3.5dp</dimen>
+	<dimen name="title_size">20sp</dimen>
+	<dimen name="title_margin">40dp</dimen>
 	<dimen name="curtain_title_margin">52dp</dimen>
-	<dimen name="curtain_title_size">20sp</dimen>
-    <dimen name="bottom_bar_elevation">8dp</dimen>
+	<dimen name="curtain_title_size">@dimen/title_size</dimen>
     <dimen name="background_span_corner_radius">4dp</dimen>
+    <dimen name="background_span_border_thickness">1dp</dimen>
 
+	<!-- ShapeAppearance.M3.Sys.Shape.Corner.ExtraLarge -->
+	<dimen name="corner_extra_large">28dp</dimen>
 
+	// (360 - 16 * 3) / 3 = 98.(6)
+	<dimen name="column_min_width">98dp</dimen>
+	<dimen name="compact_column_min_width">100dp</dimen>
 	<dimen name="item_ripple_corner_radius">16dp</dimen>
 	<dimen name="content_padding_bottom">32dp</dimen>
 	<dimen name="bottom_bar_max_width">480dp</dimen>
+	<dimen name="screen_compact">480dp</dimen>
+	<dimen name="screen_medium">600dp</dimen>
+	<dimen name="finder_column_width">300dp</dimen>
 	<dimen name="curtain_max_width">480dp</dimen>
-	<dimen name="curtain_padding_top">24dp</dimen>
-	<dimen name="curtain_padding_bottom">48dp</dimen>
-	<dimen name="curtain_latch_width">32dp</dimen>
-	<dimen name="curtain_latch_height">4dp</dimen>
+	<dimen name="curtain_padding_top">48dp</dimen>
+	<dimen name="drag_handle_width">32dp</dimen>
+	<dimen name="drag_handle_height">4dp</dimen>
+	<dimen name="drag_handle_margin">22dp</dimen>
 	<dimen name="content_margin">16dp</dimen>
 	<dimen name="content_margin_half">8dp</dimen>
 	<dimen name="content_margin_quarter">4dp</dimen>
 	<dimen name="content_margin_three_quarter">12dp</dimen>
-	<dimen name="content_margin_an_eighth">2dp</dimen>
-	<dimen name="header_corner_radius">8dp</dimen>
-	<dimen name="corner_radius_half">8dp</dimen>
-	<dimen name="card_view_elevation">6dp</dimen>
+
 	<dimen name="item_card_corner_radius">16dp</dimen>
-	<dimen name="item_note_card_corner_radius">20dp</dimen>
-	<dimen name="input_corners_radius">8dp</dimen>
-	<dimen name="toolbar_height">56dp</dimen>
-	<dimen name="toolbar_field_height">48dp</dimen>
 	<dimen name="stroke_width">1dp</dimen>
-	<dimen name="clickable_elevation">4dp</dimen>
-	<dimen name="today_list_margin_top">38dp</dimen>
-	<dimen name="today_peek_height">102dp</dimen>
-
-	<dimen name="strength_item_size">36sp</dimen>
-	<dimen name="strength_item_text_size">20sp</dimen>
-	<dimen name="strength_item_corner">18sp</dimen>
-
-	<dimen name="item_catalog_circle_size">24dp</dimen>
-	<dimen name="item_catalog_title_size">18sp</dimen>
-
-	<dimen name="item_diary_padding_start">12dp</dimen>
-	<dimen name="item_diary_title_size">18sp</dimen>
-	<dimen name="item_diary_label_size">14sp</dimen>
-	<dimen name="item_diary_icon_size">18sp</dimen>
-	<dimen name="item_diary_icon_sleep_size">24sp</dimen>
-	<dimen name="item_diary_icon_note_size">26sp</dimen>
-	<dimen name="day_time_icon_size">24sp</dimen>
-	<dimen name="icon_person_large_size">128dp</dimen>
-
-	<dimen name="item_tag_label_size">14sp</dimen>
-	<dimen name="shadow_height">6dp</dimen>
-	<dimen name="img_progress_size">24dp</dimen>
-
-	<dimen name="emotion_column_min_size">280dp</dimen>
-	<dimen name="empty_category_holder_height">36dp</dimen>
-	<dimen name="empty_category_holder_text_size">14dp</dimen>
-	<dimen name="edit_panel_height">48dp</dimen>
-	<dimen name="category_elevation">4dp</dimen>
-	<dimen name="category_height">72dp</dimen>
+	<dimen name="selected_stroke_width">3dp</dimen>
+	<dimen name="arc_stroke_width">6dp</dimen>
+	<dimen name="explorer_border_width">6dp</dimen>
+	<dimen name="explorer_border_corner_radius">16dp</dimen>
 	<dimen name="curtain_elevation">16dp</dimen>
-	<dimen name="week_day_size">32dp</dimen>
-	<dimen name="week_day_size_mini">20dp</dimen>
-	<dimen name="curtain_footer_height">32dp</dimen>
+	<dimen name="item_root_title">20sp</dimen>
+    <dimen name="item_progress_status_counter_size">14sp</dimen>
 </resources>

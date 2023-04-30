@@ -2,23 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="app.atomofiron.searchboxapp.MainActivity">
     <item
-        android:id="@+id/menu_history"
-        android:title="@string/history"
-        android:icon="@drawable/ic_history"
-        />
-    <item
         android:id="@+id/menu_explorer"
         android:title="@string/explorer"
         android:icon="@drawable/ic_tree"
         />
     <item
+        android:id="@+id/stub"
         android:title=""
         android:enabled="false"
-        />
-    <item
-        android:id="@+id/menu_options"
-        android:title="@string/options"
-        android:icon="@drawable/ic_check_box"
         />
     <item
         android:id="@+id/menu_settings"

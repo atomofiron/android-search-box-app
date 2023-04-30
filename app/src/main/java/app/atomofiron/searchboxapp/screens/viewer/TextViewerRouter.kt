@@ -5,6 +5,6 @@ import app.atomofiron.common.arch.BaseRouter
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.R
 
-class TextViewerRouter(property: WeakProperty<Fragment>) : BaseRouter(property) {
+class TextViewerRouter(property: WeakProperty<out Fragment>) : BaseRouter(property) {
     override val currentDestinationId = R.id.textViewerFragment
 }

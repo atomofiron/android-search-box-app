@@ -1,64 +1,47 @@
 package app.atomofiron.searchboxapp.screens.main
 
-import androidx.lifecycle.viewModelScope
-import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.value
+import app.atomofiron.common.arch.BasePresenter
+import app.atomofiron.common.util.flow.collect
+import app.atomofiron.searchboxapp.injectable.channel.MainChannel
+import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.screens.main.fragment.SnackbarCallbackFragmentDelegate
 import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegate
 import app.atomofiron.searchboxapp.screens.main.presenter.AppEventDelegateApi
 import app.atomofiron.searchboxapp.screens.main.util.tasks.XTask
-import app.atomofiron.searchboxapp.utils.Shell
+import kotlinx.coroutines.CoroutineScope
 
 class MainPresenter(
-    private val viewModel: MainViewModel,
-    private val router: MainRouter,
+    scope: CoroutineScope,
+    private val viewState: MainViewState,
+    router: MainRouter,
     private val windowService: WindowService,
     appStore: AppStore,
-    preferenceStore: PreferenceStore,
-) : SnackbarCallbackFragmentDelegate.SnackbarCallbackOutput,
-    AppEventDelegateApi by AppEventDelegate(viewModel.viewModelScope, appStore, preferenceStore)
+    private val preferenceStore: PreferenceStore,
+    private val initialDelegate: InitialDelegate,
+    mainChannel: MainChannel,
+) : BasePresenter<MainViewModel, MainRouter>(scope, router),
+    AppEventDelegateApi by AppEventDelegate(scope, router, appStore, preferenceStore, mainChannel)
 {
-    override var isExitSnackbarShown: Boolean = false
-    private val scope = viewModel.viewModelScope
-
     init {
-        preferenceStore.appTheme.collect(scope) { theme ->
-            viewModel.setTheme.value = theme
+        viewState.tasks.value = Array(16) { XTask() }.toList()
+        preferenceStore.appTheme.collect(scope) {
+            initialDelegate.updateTheme(it)
+            viewState.setTheme.value = it
         }
-        preferenceStore.deepBlack.collect(scope) { deepBlack ->
-            val appTheme = preferenceStore.appTheme.entity
-            viewModel.setTheme.value = appTheme.copy(deepBlack)
-        }
-        preferenceStore.appOrientation.collect(scope) {
-            viewModel.setOrientation.value = it
-        }
-        preferenceStore.joystickComposition.collect(scope) {
-            viewModel.setJoystick.value = it
-        }
-        preferenceStore.toyboxVariant.collect(scope) {
-            Shell.toyboxPath = it.toyboxPath
-        }
-        viewModel.tasks.value = Array(16) { XTask() }.toList()
     }
 
-    fun onEscClick() = when {
-        router.onBack() -> Unit
-        else -> viewModel.showExitSnackbar.invoke()
-    }
+    override fun onSubscribeData() = Unit
 
-    fun onExitClick() = router.closeApp()
+    fun onEscClick(): Boolean = router.onBack()
 
     fun onBackButtonClick() = when {
         router.onBack() -> Unit
-        isExitSnackbarShown -> router.closeApp()
-        else -> viewModel.showExitSnackbar.invoke()
+        else -> router.minimize()
     }
 
-    fun applyTheme(isDarkTheme: Boolean) {
-        router.reattachFragments()
+    fun onThemeApplied(isDarkTheme: Boolean) {
         updateLightStatusBar(isDarkTheme)
         updateLightNavigationBar(isDarkTheme)
     }

@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:id="@+id/drawer_rv"
         android:paddingTop="36dp"
-        android:paddingBottom="@dimen/bottom_tab_bar_height"
         android:clipToPadding="false"
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -21,7 +20,7 @@
         android:id="@+id/drawer_title_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorBackground"
+        android:background="?attr/colorSurfaceVariant"
         >
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/drawer_title"
@@ -45,4 +44,10 @@
             android:alpha="0.5"
             />
     </LinearLayout>
+    <app.atomofiron.searchboxapp.custom.view.SystemBarsBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:statusBar="false"
+        app:navigationBar="bottom"
+        />
 </merge>

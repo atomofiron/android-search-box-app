@@ -1,98 +1,30 @@
 package app.atomofiron.searchboxapp.screens.finder
 
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.BaseViewModel
-import app.atomofiron.common.util.flow.dataFlow
-import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.model.explorer.XFile
-import app.atomofiron.searchboxapp.model.finder.FinderTaskChange
-import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModel
-import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsModelDelegate
 import javax.inject.Inject
 
-class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderPresenter>(), FinderItemsModel by FinderItemsModelDelegate() {
-    var configItem: FinderStateItem.ConfigItem? = FinderStateItem.ConfigItem()
-        private set
-    val targets = ArrayList<XFile>()
-
-    val historyDrawerGravity = dataFlow<Int>()
-    val reloadHistory = dataFlow(Unit, single = true)
-    val insertInQuery = dataFlow<String>(single = true)
-    val replaceQuery = dataFlow<String>(single = true)
-    val snackbar = dataFlow<String>(single = true)
-    val history = dataFlow<String>(single = true)
+class FinderViewModel : BaseViewModel<FinderComponent, FinderFragment, FinderViewState, FinderPresenter>() {
 
     @Inject
     override lateinit var presenter: FinderPresenter
+    @Inject
+    override lateinit var viewState: FinderViewState
+    @Inject
+    lateinit var router: FinderRouter
 
-    override fun inject(view: FinderFragment) {
-        super.inject(view)
-        component.inject(this)
+    override fun setView(view: FinderFragment) {
+        super.setView(view)
+        router.permissions.registerForActivityResult(view)
     }
 
-    override fun createComponent(fragmentProperty: WeakProperty<Fragment>) = DaggerFinderComponent
+    override fun component(view: FinderFragment) = DaggerFinderComponent
         .builder()
-        .bind(this)
-        .bind(fragmentProperty)
+        .bind(viewModelScope)
+        .bind(viewProperty)
         .dependencies(DaggerInjector.appComponent)
-        .build()
-
-    fun updateTargets(currentDir: XFile?, checked: List<XFile>) {
-        targetItems.clear()
-        targets.clear()
-        when {
-            checked.isNotEmpty() -> {
-                checked.forEach { targetItems.add(FinderStateItem.TargetItem(it)) }
-                targets.addAll(checked)
-            }
-            currentDir != null -> {
-                targetItems.add(FinderStateItem.TargetItem(currentDir))
-                targets.add(currentDir)
-            }
+        .build().apply {
+            inject(this@FinderViewModel)
         }
-        updateState()
-    }
-
-    fun onFinderTaskUpdate(change: FinderTaskChange) {
-        when (change) {
-            is FinderTaskChange.Add -> {
-                val item = FinderStateItem.ProgressItem(change.task)
-                progressItems.add(item)
-            }
-            is FinderTaskChange.Update -> {
-                val items = change.tasks.map { FinderStateItem.ProgressItem(it) }
-                progressItems.clear()
-                progressItems.addAll(items)
-            }
-            is FinderTaskChange.Drop -> {
-                val index = progressItems.indexOfFirst { it.finderTask.id == change.task.id }
-                // todo wtf
-                progressItems.removeAt(index)
-            }
-        }
-        updateState()
-    }
-
-    fun setExcludeDirsValue(excludeDirs: Boolean) {
-        configItem = configItem?.copy(excludeDirs = excludeDirs)
-    }
-
-    fun switchConfigItemVisibility() {
-        when (val configItem = configItem) {
-            null -> {
-                val item = getUniqueItem(FinderStateItem.ConfigItem::class)
-                this.configItem = item
-                val index = uniqueItems.indexOf(item)
-                uniqueItems.removeAt(index)
-            }
-            else -> {
-                val index = uniqueItems.indexOf(getUniqueItem(FinderStateItem.TestItem::class))
-                uniqueItems.add(index, configItem)
-                this.configItem = null
-            }
-        }
-        updateState()
-    }
 }

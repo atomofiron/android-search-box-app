@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 open class GeneralHolder<D : Any>(view: View) : RecyclerView.ViewHolder(view) {
     protected val context = view.context
 
-    lateinit var item: D
+    protected lateinit var item: D
         private set
 
-    constructor(parent: ViewGroup, id: Int)
-            : this(LayoutInflater.from(parent.context).inflate(id, parent, false))
+    constructor(parent: ViewGroup, layoutId: Int)
+            : this(LayoutInflater.from(parent.context).inflate(layoutId, parent, false))
 
     fun bind(item: D, position: Int = -1) {
         this.item = item

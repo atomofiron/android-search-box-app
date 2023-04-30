@@ -2,94 +2,76 @@ package app.atomofiron.searchboxapp.screens.viewer
 
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.value
-import kotlinx.coroutines.launch
-import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.viewer.presenter.SearchAdapterPresenterDelegate
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
+import kotlinx.coroutines.CoroutineScope
 
 class TextViewerPresenter(
     params: TextViewerParams,
-    viewModel: TextViewerViewModel,
+    scope: CoroutineScope,
+    private val viewState: TextViewerViewState,
     router: TextViewerRouter,
     private val searchDelegate: SearchAdapterPresenterDelegate,
     private val interactor: TextViewerInteractor,
-    preferenceStore: PreferenceStore,
-    textViewerChannel: TextViewerChannel
-) : BasePresenter<TextViewerViewModel, TextViewerRouter>(viewModel, router),
+    session: TextViewerSession,
+) : BasePresenter<TextViewerViewModel, TextViewerRouter>(scope, router),
     TextViewerAdapter.TextViewerListener,
     FinderAdapterOutput by searchDelegate
 {
-    private var lineIndexMatchesMap: Map<Int, List<TextLineMatch>> = HashMap()
-    private var matchesCount: Int? = null
+
+    private val item: Node get() = viewState.item.value
 
     init {
-        textViewerChannel.textFromFile.collect(scope) {
-            scope.launch {
-                viewModel.textLines.value = it
+        session.tasks.collect(scope) {
+            viewState.setTasks(it)
+        }
+        session.textLoading.collect(scope, viewState::setLoading)
+        params.initialTaskId?.let { taskId ->
+            interactor.fetchTask(item, taskId) { task ->
+                viewState.trySelectTask(task)
             }
         }
-        textViewerChannel.lineIndexMatches.collect(scope) {
-            viewModel.lineIndexMatches = it
-        }
-        textViewerChannel.lineIndexMatchesMap.collect(scope) {
-            scope.launch {
-                lineIndexMatchesMap = it
-                viewModel.matchesMap.value = it
-            }
-        }
-        textViewerChannel.matchesCount.collect(scope) {
-            scope.launch {
-                matchesCount = it
-                viewModel.matchesCounter.value = matchesCount?.toLong()
-                viewModel.matchesCursor.value = null
-            }
-        }
-        textViewerChannel.textFromFileLoading.collect(scope) {
-            scope.launch {
-                viewModel.loading.value = it
-            }
-        }
-        textViewerChannel.tasks.collect(scope) {
-            scope.launch {
-                viewModel.setTasks(it)
-            }
-        }
-        viewModel.composition = preferenceStore.explorerItemComposition.entity
+    }
 
-        val queryParams = params.query?.let {
-            FinderQueryParams(params.query, params.useRegex, params.ignoreCase)
-        }
-        val xFile = MutableXFile.byPath(params.path)
-        interactor.loadFile(xFile, queryParams) {
-            viewModel.xFile = xFile
-        }
+    override fun onCleared() {
+        super.onCleared()
+        interactor.closeSession(item)
     }
 
     override fun onSubscribeData() = Unit
 
-    override fun onLineVisible(index: Int) = interactor.onLineVisible(index)
+    override fun onLineVisible(index: Int) = interactor.readFileToLine(item, index)
+
+    override fun onNavigationClick() {
+        when (viewState.currentTask.value) {
+            null -> super.onNavigationClick()
+            else -> viewState.dropTask()
+        }
+    }
+
+    fun onBackClick(): Boolean {
+        return (viewState.currentTask.value != null).also {
+            if (it) viewState.dropTask()
+        }
+    }
 
     fun onSearchClick() = searchDelegate.show()
 
-    fun onPreviousClick() = viewModel.changeCursor(increment = false)
+    fun onPreviousClick() {
+        viewState.changeCursor(increment = false)
+    }
 
     fun onNextClick() {
-        val success = viewModel.changeCursor(increment = true)
-        if (!success) {
-            interactor.loadFileUpToLine(viewModel.currentLineIndexCursor) {
-                scope.launch {
-                    viewModel.changeCursor(increment = true)
-                }
+        val requiredLineIndex = viewState.changeCursor(increment = true)
+        if (requiredLineIndex >= 0) {
+            interactor.readFileToLine(item, requiredLineIndex) {
+                viewState.changeCursor(increment = true)
             }
-            viewModel.loading.value = true
         }
     }
 }

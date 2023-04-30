@@ -1,38 +1,66 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-	<style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-		<item name="colorPrimary">@color/day_night_primary</item>
-		<item name="colorPrimaryDark">@color/day_night_primary</item><!--3700B3-->
-		<item name="colorPrimaryLite">@color/day_night_primary_lite</item>
-		<item name="colorAccent">@color/day_night_primary</item><!--03DAC5-->
-		<item name="android:colorBackground">@color/day_night_background</item>
-		<item name="android:windowBackground">@color/day_night_background</item>
+	<style name="CompatTheme" parent="@style/AppTheme.Legacy" />
+
+	<style name="CompatTheme.Amoled" parent="@style/AppTheme.Amoled.Legacy" />
+
+	<style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
 		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
-		<item name="cardBackgroundColor">@color/day_night_card_background</item>
 		<item name="android:clipToPadding">false</item>
+		<item name="android:windowEnableSplitTouch">false</item>
+		<item name="android:splitMotionEvents">false</item>
 
 		<item name="colorContent">@color/day_night_content</item>
-		<item name="colorSecondary">@color/day_night_secondary</item>
-		<item name="colorPositive">@color/day_night_positive</item>
-		<item name="colorNegative">@color/day_night_negative</item>
-		<item name="colorRipple">@color/day_night_ripple</item>
 
-		<item name="colorBackground">@color/day_night_background</item>
+		<item name="colorBackground">?colorSurface</item>
 		<item name="colorFieldBackground">@color/day_night_background</item>
-		<item name="colorCardBackground">@color/day_night_card_background</item>
 		<item name="colorFieldDivider">@color/day_night_field_divider</item>
 		<item name="colorBone">@color/day_night_bone</item>
-		<item name="colorOverlay">@color/day_night_overlay</item>
-        <item name="colorShadow">@color/day_night_shadow</item>
+		<item name="colorOverlay">@color/overlay_black</item>
+		<item name="topRadioGroupBackground">@color/surface_variant_lite</item>
+		<item name="isBlackDeep">false</item>
 
-        <item name="android:statusBarColor">@color/status_bar</item>
-        <item name="android:navigationBarColor">@color/navigation_bar</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/isDayTheme</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/isDayTheme</item>
+		<item name="android:statusBarColor">@color/status_bar</item>
+		<item name="android:navigationBarColor">@color/navigation_bar</item>
+		<item name="android:windowLightStatusBar" tools:targetApi="23">@bool/isDayTheme</item>
+		<item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/isDayTheme</item>
 
-        <item name="isDarkTheme">@bool/isNightTheme</item>
+		<item name="isDarkTheme">@bool/isNightTheme</item>
+		<item name="materialCardViewStyle">@style/CardViewStyle</item>
+		<item name="materialButtonOutlinedStyle">@style/OutlinedButtonStyle</item>
+		<item name="textInputOutlinedDenseStyle">@style/InputOutlinedDenseStyle</item>
 
-        <item name="cardViewStyle">@style/CardViewStyle</item>
+		<item name="colorControlHighlight" tools:ignore="PrivateResource">@color/mtrl_btn_text_btn_ripple_color</item>
+		<item name="strokeColor">?colorSurfaceVariant</item>
+	</style>
+
+	<style name="AppTheme.Legacy" parent="@style/AppTheme">
+		<item name="colorPrimary">@color/md_theme_light_primary</item>
+		<item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+		<item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+		<item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+		<item name="colorSecondary">@color/md_theme_light_secondary</item>
+		<item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+		<item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+		<item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+		<item name="colorTertiary">@color/md_theme_light_tertiary</item>
+		<item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+		<item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+		<item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+		<item name="colorError">@color/md_theme_light_error</item>
+		<item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+		<item name="colorOnError">@color/md_theme_light_onError</item>
+		<item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+		<item name="android:colorBackground">@color/md_theme_light_background</item>
+		<item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+		<item name="colorSurface">@color/md_theme_light_surface</item>
+		<item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+		<item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+		<item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+		<item name="colorOutline">@color/md_theme_light_outline</item>
+		<item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+		<item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+		<item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
 	</style>
 
 	<style name="AppTheme.Amoled" parent="@style/AppTheme">
@@ -40,105 +68,53 @@
 		<item name="android:colorBackground">@color/day_night_background_amoled</item>
 		<item name="colorBackground">@color/day_night_background_amoled</item>
 		<item name="colorFieldBackground">@color/day_night_card_background_amoled</item>
-		<item name="colorCardBackground">@color/day_night_card_background_amoled</item>
 		<item name="colorFieldDivider">@color/day_night_field_divider_amoled</item>
+		<item name="topRadioGroupBackground">@color/black</item>
+		<item name="isBlackDeep">true</item>
+
+		<item name="materialCardViewStyle">@style/CardViewStyle.Amoled</item>
+		<item name="bottomNavigationStyle">@style/BottomNavigationStyle.Amoled</item>
+		<item name="navigationRailStyle">@style/NavigationRailStyle.Amoled</item>
+		<item name="appBarLayoutStyle">@style/AppBarLayoutStyle.Amoled</item>
+		<item name="collapsingToolbarLayoutStyle">@style/CollapsingToolbarLayoutStyle.Amoled</item>
 	</style>
 
-	<style name="AppTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
-		<item name="android:windowEnableSplitTouch">false</item>
-		<item name="android:splitMotionEvents">false</item>
-		<item name="isDarkTheme">false</item>
-		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-		<item name="android:clipToPadding">false</item>
-		<item name="android:windowBackground">@color/white</item>
-		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
-		<item name="cardBackgroundColor">@color/card_background_light</item>
-		<item name="android:colorPrimary">@color/primary_light</item>
-		<item name="android:colorPrimaryDark">@color/primary_light</item>
-		<item name="android:colorAccent">@color/accent_light</item>
-		<item name="android:colorControlHighlight">@color/accent_light</item>
-		<item name="colorPrimary">@color/primary_light</item>
-		<item name="colorPrimaryDark">@color/primary_light</item>
-		<item name="colorAccent">@color/accent_light</item>
-		<item name="colorControlHighlight">@color/accent_light</item>
+	<style name="AppTheme.Amoled.Legacy" parent="@style/AppTheme.Legacy">
+		<item name="android:windowBackground">@color/day_night_background_amoled</item>
+		<item name="android:colorBackground">@color/day_night_background_amoled</item>
+		<item name="colorBackground">@color/day_night_background_amoled</item>
+		<item name="colorFieldBackground">@color/day_night_card_background_amoled</item>
+		<item name="colorFieldDivider">@color/day_night_field_divider_amoled</item>
+		<item name="topRadioGroupBackground">@color/black</item>
+		<item name="isBlackDeep">true</item>
 
-		<item name="colorContent">@color/grey_dark</item>
-		<item name="colorSecondary">@color/grey_dark_lite</item>
-		<item name="colorPositive">@color/black</item>
-		<item name="colorNegative">@color/white</item>
-		<item name="colorRipple">@color/ripple_light</item>
-
-		<item name="colorBackground">@color/white</item>
-		<item name="colorFieldBackground">@color/grey_light</item>
-		<item name="colorCardBackground">@color/white</item>
-		<item name="colorFieldDivider">@color/grey_light</item>
-		<item name="colorBone">@color/grey_light</item>
-		<item name="colorOverlay">@color/overlay_black</item>
-        <item name="colorShadow">@color/shadow_light</item>
-
-        <item name="android:statusBarColor">@color/status_bar</item>
-        <item name="android:navigationBarColor">@color/navigation_bar</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
-	</style>
-	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
-		<item name="android:windowEnableSplitTouch">false</item>
-		<item name="android:splitMotionEvents">false</item>
-		<item name="isDarkTheme">true</item>
-		<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-		<item name="android:clipToPadding">false</item>
-		<item name="android:windowBackground">@color/grey_dark_13</item>
-		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
-		<item name="cardBackgroundColor">@color/card_background_dark</item>
-		<item name="android:colorPrimary">@color/primary_dark</item>
-		<item name="android:colorPrimaryDark">@color/primary_dark</item>
-		<item name="android:colorAccent">@color/accent_dark</item>
-		<item name="android:colorControlHighlight">@color/accent_dark</item>
-		<item name="colorPrimary">@color/primary_dark</item>
-		<item name="colorPrimaryDark">@color/primary_dark</item>
-		<item name="colorAccent">@color/accent_dark</item>
-		<item name="colorControlHighlight">@color/accent_dark</item>
-
-		<item name="colorContent">@color/grey_light</item>
-		<item name="colorSecondary">@color/grey_light_lite</item>
-		<item name="colorPositive">@color/white</item>
-		<item name="colorNegative">@color/black</item>
-		<item name="colorRipple">@color/ripple_dark</item>
-
-		<item name="colorBackground">@color/grey_dark_13</item>
-		<item name="colorFieldBackground">@color/grey_dark_21</item>
-		<item name="colorCardBackground">@color/grey_dark_21</item>
-		<item name="colorFieldDivider">@color/grey_dark_21</item>
-		<item name="colorBone">@color/grey_dark_21</item>
-		<item name="colorOverlay">@color/overlay_colored</item>
-        <item name="colorShadow">@color/shadow_dark</item>
-
-		<item name="android:statusBarColor">@color/status_bar</item>
-		<item name="android:navigationBarColor">@color/navigation_bar</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
-	</style>
-	<style name="AppTheme.Black" parent="@style/AppTheme.Dark">
-		<item name="android:colorBackground">@color/black</item>
-		<item name="android:windowBackground">@color/black</item>
-
-		<item name="colorBackground">@color/black</item>
-		<item name="colorFieldBackground">@color/grey_dark_13</item>
-		<item name="colorCardBackground">@color/grey_dark_13</item>
-		<item name="colorFieldDivider">@color/grey_dark_13</item>
+		<item name="materialCardViewStyle">@style/CardViewStyle.Amoled</item>
+		<item name="bottomNavigationStyle">@style/BottomNavigationStyle.Amoled</item>
+		<item name="navigationRailStyle">@style/NavigationRailStyle.Amoled</item>
+		<item name="appBarLayoutStyle">@style/AppBarLayoutStyle.Amoled</item>
+		<item name="collapsingToolbarLayoutStyle">@style/CollapsingToolbarLayoutStyle.Amoled</item>
 	</style>
 
-	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.Material3.Dark" />
 
-	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
+	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3.Dark" />
 
-	<!--<style name="AppCompat.NoActionBar">
-		<item name="windowActionBar">false</item>
-		<item name="windowNoTitle">true</item>
-	</style>-->
+	<style name="CardViewStyle" parent="@style/Widget.Material3.CardView.Elevated" />
 
-	<style name="CardViewStyle" parent="CardView">
-		<item name="cardBackgroundColor">?cardBackgroundColor</item>
-	</style>
+	<style name="CardViewStyle.Amoled" parent="@style/Widget.Material3.CardView.Elevated" />
+
+	<style name="BottomNavigationStyle.Amoled" parent="@style/Widget.Material3.BottomNavigationView" />
+
+	<style name="NavigationRailStyle.Amoled" parent="@style/Widget.Material3.NavigationRailView" />
+
+	<style name="AppBarLayoutStyle.Amoled" parent="@style/Widget.Material3.AppBarLayout" />
+
+	<style name="CollapsingToolbarLayoutStyle.Amoled" parent="@style/Widget.Material3.CollapsingToolbar.Large" />
+
+	<style name="OutlinedButtonStyle" parent="@style/Widget.Material3.Button.OutlinedButton" />
+
+	<style name="InputOutlinedDenseStyle" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense" />
+
+	<style name="InputOutlinedDenseStyle2" parent="@style/Widget.Material3.TabLayout" />
 
 </resources>

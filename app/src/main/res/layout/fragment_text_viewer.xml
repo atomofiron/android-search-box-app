@@ -2,75 +2,58 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/text_viewer_cl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorBackground"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toStartOf="@+id/navigation_rail"
+    app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
     >
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        >
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:menu="@menu/text_viewer"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="Title"
+            />
+    </com.google.android.material.appbar.AppBarLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:maxWidth="@dimen/card_max_width"
-        android:paddingBottom="@dimen/joystick_size"
         android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/content_margin"
+        android:paddingBottom="@dimen/content_margin"
         />
-    <app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
-        android:id="@+id/bottom_app_bar"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="?colorBackground"
-        >
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/bottom_tab_bar_height"
-            android:background="?colorBackground"
-            app:menu="@menu/nav_text_viewer"
-            app:itemRippleColor="?colorRipple"
-            app:itemTextColor="?android:textColorPrimary"
-            app:itemIconTint="?android:textColorPrimary"
-            app:labelVisibilityMode="labeled"
-            app:elevation="0dp"
-            />
-        <LinearLayout
-            android:id="@+id/status_ll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                >
-                <app.atomofiron.searchboxapp.custom.view.BallsView
-                    android:id="@+id/balls_view"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:visibility="invisible"
-                    />
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_counter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textColor="?attr/colorContent"
-                    />
-            </LinearLayout>
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="4"
-                />
-        </LinearLayout>
-    </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
-    <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
-        android:layout_width="match_parent"
+        app:menu="@menu/nav_text_viewer"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    <com.google.android.material.navigationrail.NavigationRailView
+        android:id="@+id/navigation_rail"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_gravity="end"
+        app:menu="@menu/nav_text_viewer"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:labelVisibilityMode="unlabeled"
+        app:elevation="@dimen/design_appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
         />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

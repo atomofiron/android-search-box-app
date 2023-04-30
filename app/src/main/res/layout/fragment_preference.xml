@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-    <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        >
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            style="?attr/collapsingToolbarLayoutLargeStyle"
+            android:id="@+id/collapsing_layout"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            >
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="0dp"
+                app:menu="@menu/preferences"
+                app:navigationIcon="@drawable/ic_back"
+                app:title="@string/preferences"
+                app:layout_collapseMode="pin"
+                />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+    <app.atomofiron.searchboxapp.custom.view.SystemBarsBackgroundView
+        android:id="@+id/system_ui_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:elevation="@dimen/design_appbar_elevation"
+        app:statusBar="false"
+        app:navigationBar="bottom"
         />
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,61 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/explorer_dl"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?colorBackground"
     >
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinator"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/joystick_size"
-            android:overScrollMode="never"
-            />
-        <app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar
-            android:id="@+id/bottom_app_bar"
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/explorer_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-			android:background="?colorBackground"
-            >
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/bottom_bar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_tab_bar_height"
-				android:background="?colorBackground"
-                app:menu="@menu/nav_explorer"
-                app:itemRippleColor="?colorRipple"
-                app:itemTextColor="?android:textColorPrimary"
-                app:itemIconTint="?android:textColorPrimary"
-                app:labelVisibilityMode="labeled"
-                app:elevation="0dp"
-                />
-        </app.atomofiron.searchboxapp.custom.view.FixedBottomAppBar>
-        <app.atomofiron.searchboxapp.custom.view.SystemUiBackgroundView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-        <app.atomofiron.searchboxapp.custom.view.ExplorerHeaderView
-            android:id="@+id/explorer_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:background="@drawable/top_radio_group_background"
+            android:paddingHorizontal="@dimen/common_margin"
             android:visibility="gone"
-            android:layout_marginTop="-999dp"
+            app:singleSelection="true"
+            tools:background="@null"
+            >
+            <com.google.android.material.button.MaterialButton
+                style="?attr/materialButtonOutlinedStyle"
+                android:id="@+id/first_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/dash"
+                />
+            <com.google.android.material.button.MaterialButton
+                style="?attr/materialButtonOutlinedStyle"
+                android:id="@+id/second_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/dash"
+                />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             />
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    <app.atomofiron.searchboxapp.custom.view.VerticalDockView
-        android:id="@+id/vertical_dock"
+    </LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/nav_explorer"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    <com.google.android.material.navigationrail.NavigationRailView
+        android:id="@+id/navigation_rail"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="?attr/colorBackground"
-        android:layout_gravity="start"
-        app:title="@string/places"
+        android:layout_gravity="end"
+        app:menu="@menu/nav_explorer"
+        app:labelVisibilityMode="unlabeled"
+        app:itemTextColor="?android:textColorPrimary"
+        app:itemIconTint="?android:textColorPrimary"
+        app:elevation="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
         />
-</androidx.drawerlayout.widget.DrawerLayout>
+</FrameLayout>

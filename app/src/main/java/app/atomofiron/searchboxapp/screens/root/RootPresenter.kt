@@ -1,15 +1,20 @@
 package app.atomofiron.searchboxapp.screens.root
 
 import app.atomofiron.common.arch.BasePresenter
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import kotlinx.coroutines.CoroutineScope
 
 class RootPresenter(
-    viewModel: RootViewModel,
+    scope: CoroutineScope,
     router: RootRouter,
-    preferenceStore: PreferenceStore,
-) : BasePresenter<RootViewModel, RootRouter>(viewModel, router) {
+) : BasePresenter<RootViewModel, RootRouter>(scope, router) {
 
     override fun onSubscribeData() = Unit
 
     fun onBack() = router.onBack()
+
+    fun onChildrenCreated() {
+        if (!router.granted) {
+            router.showFinder()
+        }
+    }
 }

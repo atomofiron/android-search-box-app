@@ -1,0 +1,18 @@
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="@dimen/item_progress_status_counter_size"
+    android:height="@dimen/item_progress_status_counter_size"
+    android:viewportWidth="20"
+    android:viewportHeight="20"
+    android:tint="?colorContent"
+    >
+    <group
+        android:translateX="-4"
+        android:translateY="-2"
+        >
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"
+            />
+    </group>
+</vector>

@@ -3,156 +3,83 @@ package app.atomofiron.searchboxapp.screens.curtain.util
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import app.atomofiron.searchboxapp.BuildConfig
+import app.atomofiron.common.util.findBooleanByAttr
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.getColorByAttr
-import java.lang.Deprecated
-import kotlin.math.min
+import app.atomofiron.searchboxapp.utils.getColorByAttr
+import app.atomofiron.searchboxapp.utils.setColorAlpha
+import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.asOverlayOn
 
 open class CurtainBackground(context: Context) : Drawable() {
-    companion object {
-        private const val MAX_SATURATION = 200
+
+    private val isBlackDeep = context.findBooleanByAttr(R.attr.isBlackDeep)
+    private val cornerRadius = context.resources.getDimension(R.dimen.corner_extra_large)
+    private val curtainColor = context.getColorByAttr(R.attr.colorBackground)
+    private val strokeWidth = if (isBlackDeep) context.resources.getDimensionPixelSize(R.dimen.stroke_width) else 0
+    private val dragHandleColor = ColorUtils.setAlphaComponent(context.getColorByAttr(R.attr.colorOnSurfaceVariant), 102)
+    private val dragHandleRect = RectF()
+    private val dragHandleWidth = context.resources.getDimension(R.dimen.drag_handle_width)
+    private val dragHandleMargin = context.resources.getDimension(R.dimen.drag_handle_margin)
+    private val strokeColor = when {
+        isBlackDeep -> context
+            .getColorByAttr(R.attr.strokeColor)
+            .setColorAlpha(Const.ALPHA_50_PERCENT)
+            .asOverlayOn(curtainColor)
+        else -> Color.TRANSPARENT
     }
-    private val cornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius)
-    private val curtainColor = context.getColorByAttr(android.R.attr.colorBackground)
-    private val overlayColor = context.getColorByAttr(R.attr.colorOverlay)
-    private val latchColor = ContextCompat.getColor(context, R.color.latch)
-    private val latchRect = RectF()
     private val paint = Paint()
-
-    private var insetTop = 0
-    private var viewTop = 0
-    private var viewBottom = 0
-    private var paddingHorizontal = 0
-
-    private var contentTop = 0
-    private val trueBounds = Rect()
-    private var transitCornerRadius = 0
-
-    private var saturationColor = 0
-
-    val outline = OutlineDrawable()
+    private val boundsF = RectF()
+    private val outlineRect = Rect()
+    private val borderRect = RectF()
 
     init {
         paint.isAntiAlias = true
-        val latchHeight = context.resources.getDimension(R.dimen.curtain_latch_height)
-        latchRect.top = (context.resources.getDimension(R.dimen.curtain_padding_top) - latchHeight) / 2
-        latchRect.right = context.resources.getDimension(R.dimen.curtain_latch_width)
-        latchRect.bottom = latchRect.top + latchHeight
+        dragHandleRect.top = dragHandleMargin
+        dragHandleRect.bottom = dragHandleMargin + context.resources.getDimension(R.dimen.drag_handle_height)
     }
 
     override fun setAlpha(alpha: Int) = Unit
 
     override fun setColorFilter(colorFilter: ColorFilter?) = Unit
 
-    @Deprecated
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
-        super.setBounds(left, top, right, bottom)
-        updateTrueBounds()
+        super.setBounds(left, top, right, bottom + cornerRadius.toInt())
+        boundsF.set(bounds)
+        outlineRect.set(bounds)
+        outlineRect.left -= strokeWidth
+        outlineRect.right += strokeWidth
+        borderRect.set(outlineRect)
+
+        val center = (left + right) / 2
+        dragHandleRect.left = center - dragHandleWidth / 2
+        dragHandleRect.right =  center + dragHandleWidth / 2
+    }
+
+    override fun getOutline(outline: Outline) {
+        outline.setRoundRect(outlineRect, cornerRadius)
+        outline.alpha = 0f
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.drawColor(saturationColor)
+        var radius = cornerRadius
+
         paint.color = curtainColor
-        val radius = transitCornerRadius.toFloat()
-        val left = trueBounds.left.toFloat()
-        val top = trueBounds.top.toFloat()
-        val right = trueBounds.right.toFloat()
-        val bottom = trueBounds.bottom.toFloat()
-        canvas.drawRoundRect(left, top, right, bottom, radius, radius, paint)
+        paint.style = Paint.Style.FILL
+        canvas.drawRoundRect(boundsF, radius, radius, paint)
 
-        paint.color = latchColor
-        val dx = (bounds.width() - latchRect.width()) / 2
-        canvas.translate(dx, contentTop.toFloat())
-        canvas.drawRoundRect(latchRect, latchRect.height(), latchRect.height(), paint)
-    }
-
-    fun setSaturation(value: Float) {
-        val alpha = (MAX_SATURATION * value).toInt()
-        saturationColor = ColorUtils.setAlphaComponent(overlayColor, alpha)
-        invalidateSelf()
-    }
-
-    fun updateTop(viewTop: Int) = updateTrueBounds(insetTop = 0, viewTop, viewBottom = bounds.bottom, paddingHorizontal = 0)
-
-    fun updateTrueBounds(insetTop: Int, viewTop: Int, viewBottom: Int, paddingHorizontal: Int) {
-        this.insetTop = insetTop
-        this.viewTop = viewTop
-        this.viewBottom = viewBottom
-        this.paddingHorizontal = paddingHorizontal
-        contentTop = viewTop + insetTop
-        updateTrueBounds()
-    }
-
-    private fun updateTrueBounds() {
-        calcTrueBounds(insetTop, viewTop, viewBottom, paddingHorizontal)
-        calcCornerRadius(insetTop, viewTop)
-        outline.update(trueBounds.top - viewTop, transitCornerRadius)
-    }
-
-    private var flag = false
-    private var underStatusBar = false
-    private fun calcTrueBounds(insetTop: Int, viewTop: Int, viewBottom: Int, paddingHorizontal: Int) {
-        when {
-            !BuildConfig.DEBUG -> Unit
-            viewTop > insetTop && flag == underStatusBar -> underStatusBar = !underStatusBar
-            viewTop <= insetTop -> flag = underStatusBar
-        }
-        val top = when {
-            viewTop >= insetTop -> viewTop + insetTop
-            underStatusBar -> viewTop + insetTop * viewTop / insetTop
-            else -> viewTop + insetTop
-        }
-        val left = bounds.left + paddingHorizontal
-        val right = bounds.right - paddingHorizontal
-        val bottom = viewBottom
-        if (left != trueBounds.left || top != trueBounds.top || right != trueBounds.right || bottom != trueBounds.bottom) {
-            trueBounds.set(left, top, right, bottom)
-            invalidateSelf()
-        }
-    }
-
-    private fun calcCornerRadius(insetTop: Int, viewTop: Int) {
-        val cornerRadius = when {
-            insetTop <= 0 -> min(cornerRadius, viewTop)
-            trueBounds.top < insetTop -> min(cornerRadius, trueBounds.top)
-            else -> cornerRadius
-        }
-        if (cornerRadius != transitCornerRadius) {
-            transitCornerRadius = cornerRadius
-            invalidateSelf()
-        }
-    }
-
-    class OutlineDrawable : Drawable() {
-        private var cornerRadius = 0
-        private var outlineTop = 0
-
-        override fun draw(canvas: Canvas) = Unit
-
-        override fun setAlpha(alpha: Int) = Unit
-
-        override fun setColorFilter(colorFilter: ColorFilter?) = Unit
-
-        @Deprecated
-        override fun getOpacity(): Int = PixelFormat.OPAQUE
-
-        override fun getOutline(outline: Outline) {
-            super.getOutline(outline)
-            val radius = cornerRadius.toFloat()
-            outline.setRoundRect(bounds.left, outlineTop, bounds.right, bounds.bottom, radius)
+        if (isBlackDeep) {
+            paint.color = strokeColor
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = strokeWidth * 2f
+            canvas.drawRoundRect(borderRect, radius, radius, paint)
         }
 
-        fun update(outlineTop: Int, cornerRadius: Int) {
-            if (this.outlineTop != outlineTop || this.cornerRadius != cornerRadius) {
-                this.cornerRadius = cornerRadius
-                this.outlineTop = outlineTop
-                invalidateSelf()
-            }
-        }
+        paint.style = Paint.Style.FILL
+        paint.color = dragHandleColor
+        radius = dragHandleRect.height()
+        canvas.drawRoundRect(dragHandleRect, radius, radius, paint)
     }
 }

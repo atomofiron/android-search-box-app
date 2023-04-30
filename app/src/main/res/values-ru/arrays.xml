@@ -10,6 +10,7 @@
         <item>Системная</item>
         <item>Портретная</item>
         <item>Альбомная</item>
+        <item>Автоматическая</item>
     </string-array>
 
     <string-array
@@ -20,9 +21,9 @@
     </string-array>
 
     <string-array name="size_suffix_arr">
-        <item>б</item>
-        <item>Кб</item>
-        <item>Мб</item>
-        <item>Гб</item>
+        <item>Б</item>
+        <item>КБ</item>
+        <item>МБ</item>
+        <item>ГБ</item>
     </string-array>
 </resources>

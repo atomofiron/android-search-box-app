@@ -8,38 +8,34 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.work.Configuration
-import androidx.work.WorkManager
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.di.DaggerInjector
-import app.atomofiron.searchboxapp.utils.AppWatcherProxy
+import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.utils.Const
 import app.atomofiron.searchboxapp.utils.getMarketIntent
-import app.atomofiron.searchboxapp.work.NotificationWorker
+import app.atomofiron.searchboxapp.utils.immutable
+import com.google.android.material.color.DynamicColors
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
 import javax.inject.Inject
 
 class App : Application(), Configuration.Provider {
-    companion object {
-        lateinit var appContext: Context
-    }
 
     @Inject
-    lateinit var workManager: WorkManager
+    lateinit var initialDelegate: InitialDelegate
 
     override fun onCreate() {
         super.onCreate()
 
-        appContext = applicationContext
+        DynamicColors.applyToActivitiesIfAvailable(this)
 
-        DaggerInjector.init(applicationContext)
+        DaggerInjector.init(this)
         DaggerInjector.appComponent.inject(this)
-        workManager.cancelUniqueWork(NotificationWorker.NAME)
 
-        AppWatcherProxy.setEnabled(false)
+        initialDelegate.applyTheme()
 
         checkForUpdate(this)
     }
@@ -80,19 +76,19 @@ class App : Application(), Configuration.Provider {
                 notificationManager.createNotificationChannel(channel)
             }
         }
-        val notificationIntent = PendingIntent
-                .getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), PendingIntent.FLAG_UPDATE_CURRENT)
-        val actionIntent = PendingIntent
-                .getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), PendingIntent.FLAG_UPDATE_CURRENT)
+        val flag = PendingIntent.FLAG_UPDATE_CURRENT.immutable()
+        val notificationIntent = PendingIntent.getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), flag)
+        val actionIntent = PendingIntent.getActivity(this, Const.REQUEST_CODE_MARKET_UPDATE, getMarketIntent(), flag)
         val notification = NotificationCompat.Builder(this, Const.NOTIFICATION_CHANNEL_UPDATE_ID)
                 .setTicker(getString(R.string.update_available))
                 .setContentTitle(getString(R.string.update_available))
                 .setSmallIcon(R.drawable.ic_notification_update)
                 .setContentIntent(notificationIntent)
                 .addAction(0, getString(R.string.get_update), actionIntent)
-                .setColor(ContextCompat.getColor(this, R.color.primary_light))
+                .setColor(findColorByAttr(R.attr.colorPrimary))
                 .build()
 
+        // todo check permission
         notificationManager.notify(Const.NOTIFICATION_ID_UPDATE, notification)
     }
 }

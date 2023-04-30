@@ -19,7 +19,7 @@ class NumberPreference(context: Context, attrs: AttributeSet) : Preference(conte
     override fun onGetDefaultValue(array: TypedArray, index: Int): Int = array.getInt(index, 0)
 
     override fun onSetInitialValue(defaultValue: Any?) {
-        value = (defaultValue as? Int) ?: getPersistedInt(value)
+        value = getPersistedInt((defaultValue as? Int) ?: value)
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
@@ -38,7 +38,7 @@ class NumberPreference(context: Context, attrs: AttributeSet) : Preference(conte
     }
 
     public override fun onClick() {
-        editText!!.performClick()
+        editText?.performClick()
     }
 
     private fun onSubmit(value: Int) {

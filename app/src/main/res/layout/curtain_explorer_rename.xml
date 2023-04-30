@@ -5,20 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/bottom_tab_bar_height"
     >
     <include
         android:id="@+id/explorer_rename_item"
         layout="@layout/item_explorer"
         />
-    <app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
-        android:id="@+id/explorer_rename_et"
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/explorer_create_rename"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_margin_half"
         android:layout_margin="@dimen/common_margin"
-        android:imeOptions="actionDone"
-        android:inputType="textNoSuggestions"
-        />
+        android:hint="@string/a_name"
+        >
+        <app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
+            android:id="@+id/explorer_rename_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/explorer_rename_btn"
         android:layout_width="wrap_content"

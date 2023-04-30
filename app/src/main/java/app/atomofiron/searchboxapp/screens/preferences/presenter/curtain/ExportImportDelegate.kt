@@ -1,7 +1,6 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter.curtain
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainPreferenceExportImportBinding
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
@@ -11,8 +10,8 @@ class ExportImportDelegate(
     private val output: ExportImportOutput,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
-        val binding = CurtainPreferenceExportImportBinding.inflate(inflater, container, false)
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder {
+        val binding = CurtainPreferenceExportImportBinding.inflate(inflater, null, false)
         binding.init()
         binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)
@@ -28,7 +27,7 @@ class ExportImportDelegate(
             leiBtn.setText(id)
         }
         leiBtn.setOnClickListener { onButtonClick() }
-        leiTvPath.text = output.externalPath
+        // todo share leiTvPath.text = output.externalPath
     }
 
     private fun CurtainPreferenceExportImportBinding.onButtonClick() {
@@ -49,7 +48,6 @@ class ExportImportDelegate(
     }
 
     interface ExportImportOutput {
-        val externalPath: String
         fun exportPreferences()
         fun exportHistory()
         fun importPreferences()

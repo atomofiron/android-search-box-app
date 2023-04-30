@@ -32,6 +32,7 @@
             android:layout_marginStart="@dimen/common_margin"
             android:layout_marginEnd="@dimen/common_margin"
             android:textColor="?attr/colorContent"
+            android:textSize="18sp"
             />
     </LinearLayout>
     <com.google.android.material.button.MaterialButton
@@ -41,6 +42,8 @@
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/common_margin"
         android:text="@string/confirm"
+        android:backgroundTint="?colorError"
+        android:textColor="?colorOnError"
         app:cornerRadius="@dimen/infinity"
         />
 </FrameLayout>

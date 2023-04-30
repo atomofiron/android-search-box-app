@@ -1,13 +1,12 @@
 package app.atomofiron.searchboxapp.screens.preferences.presenter.curtain
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import app.atomofiron.common.util.RadioGroupImpl
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainPreferenceToyboxBinding
-import app.atomofiron.searchboxapp.injectable.store.util.PreferenceNode
+import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.model.preference.ToyboxVariant
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.utils.Const
@@ -16,7 +15,7 @@ import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
 import java.io.File
 
 class ToyboxDelegate(
-    private val node: PreferenceNode<ToyboxVariant, Set<String>>,
+    private val preferenceStore: PreferenceStore,
 ) : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
 
     private val radioGroup = RadioGroupImpl()
@@ -25,13 +24,13 @@ class ToyboxDelegate(
     private var customPath: String
 
     init {
-        val toyboxVariant = node.entity
+        val toyboxVariant = preferenceStore.toyboxVariant.value
         variant = toyboxVariant.variant
         customPath = toyboxVariant.customPath
     }
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
-        val binding = CurtainPreferenceToyboxBinding.inflate(inflater, container, false)
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder {
+        val binding = CurtainPreferenceToyboxBinding.inflate(inflater, null, false)
         binding.init()
         binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)
@@ -86,8 +85,8 @@ class ToyboxDelegate(
             }
         }
         when {
-            cpOutput == null && test() -> node.pushByOriginal(setOf(variant, customPath))
-            cpOutput?.success == true && test() -> node.pushByOriginal(setOf(variant, importedPath!!))
+            cpOutput == null && test() -> preferenceStore { setToyboxVariant(setOf(variant, customPath)) }
+            cpOutput?.success == true && test() -> preferenceStore { setToyboxVariant(setOf(variant, importedPath!!)) }
             cpOutput?.success == false -> controller?.showSnackbar(cpOutput.error, Snackbar.LENGTH_LONG)
         }
     }

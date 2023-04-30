@@ -6,7 +6,4 @@
     <item android:id="@android:id/mask">
         <color android:color="@color/mask" />
     </item>
-    <item android:id="@+id/fill">
-        <color android:color="@color/red_transparent" />
-    </item>
 </ripple>

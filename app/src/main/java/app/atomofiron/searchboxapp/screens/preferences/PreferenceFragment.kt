@@ -1,10 +1,15 @@
 package app.atomofiron.searchboxapp.screens.preferences
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
@@ -16,70 +21,75 @@ import app.atomofiron.common.util.flow.collect
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.anchorView
+import app.atomofiron.searchboxapp.utils.anchorView
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
+import app.atomofiron.searchboxapp.custom.view.SystemBarsBackgroundView
 import app.atomofiron.searchboxapp.screens.preferences.fragment.*
-import app.atomofiron.searchboxapp.utils.Const
+import app.atomofiron.searchboxapp.utils.PreferenceKeys
 import app.atomofiron.searchboxapp.utils.Shell
+import com.google.android.material.appbar.AppBarLayout
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class PreferenceFragment : PreferenceFragmentCompat(),
-    BaseFragment<PreferenceFragment, PreferenceViewModel, PreferencePresenter> by BaseFragmentImpl()
+    BaseFragment<PreferenceFragment, PreferenceViewState, PreferencePresenter> by BaseFragmentImpl()
 {
     private lateinit var preferenceDelegate: PreferenceFragmentDelegate
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initViewModel(this, PreferenceViewModel::class, savedInstanceState)
 
-        preferenceDelegate = PreferenceFragmentDelegate(this, viewModel, presenter, presenter)
+        preferenceManager.preferenceDataStore = viewState.preferenceDataStore
+        preferenceDelegate = PreferenceFragmentDelegate(this, viewState, presenter)
         setPreferencesFromResource(R.xml.preferences, rootKey)
+        preferenceDelegate.onCreatePreference(preferenceScreen)
 
-        val deepBlack = findPreference<Preference>(Const.PREF_DEEP_BLACK)!!
-        viewModel.showDeepBlack.collect(lifecycleScope) {
+        val deepBlack = findPreference<Preference>(PreferenceKeys.KeyDeepBlack.name)!!
+        viewState.showDeepBlack.collect(lifecycleScope) {
             deepBlack.isVisible = it
         }
     }
 
-    override fun onCreateAdapter(preferenceScreen: PreferenceScreen): RecyclerView.Adapter<*> {
-        preferenceDelegate.onUpdateScreen(preferenceScreen)
-        return super.onCreateAdapter(preferenceScreen)
-    }
-
+    @SuppressLint("InlinedApi")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val container = inflater.inflate(R.layout.fragment_preference, container, false)
-        container as ViewGroup
+        val root = inflater.inflate(R.layout.fragment_preference, container, false)
+        root as ViewGroup
         val view = super.onCreateView(inflater, container, savedInstanceState)
-        container.addView(view, 0)
-        return container
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        val listContainer = view.findViewById<FrameLayout>(android.R.id.list_container)
+        listContainer.removeView(recyclerView)
+        recyclerView.layoutParams = CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
+            behavior = AppBarLayout.ScrollingViewBehavior()
+        }
+        root.addView(recyclerView, 1)
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        view.insetsProxying()
+        val appBarLayout = view.findViewById<AppBarLayout>(R.id.appbar_layout)
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        val systemUiView = view.findViewById<SystemBarsBackgroundView>(R.id.system_ui_background)
+        LayoutDelegate(view as ViewGroup, appBarLayout = appBarLayout, recyclerView = recyclerView, systemUiView = systemUiView)
         view.setBackgroundColor(view.context.findColorByAttr(R.attr.colorBackground))
         preferenceScreen.fixIcons()
-        viewModel.onViewCollect()
-        onApplyInsets(view)
-    }
-
-    override fun onCreateRecyclerView(inflater: LayoutInflater, parent: ViewGroup, savedInstanceState: Bundle?): RecyclerView {
-        val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         recyclerView.clipToPadding = false
-        val padding = resources.getDimensionPixelSize(R.dimen.joystick_size)
-        recyclerView.updatePadding(bottom = padding)
-        recyclerView.applyPaddingInsets()
-        return recyclerView
+        recyclerView.updatePadding(top = resources.getDimensionPixelSize(R.dimen.content_margin_half))
+        recyclerView.applyPaddingInsets(start = true, end = true, bottom = true)
+        toolbar.setNavigationOnClickListener { presenter.onNavigationClick() }
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.pref_about -> presenter.onAboutClick()
+            }
+            true
+        }
+        viewState.onViewCollect()
     }
 
-    override fun PreferenceViewModel.onViewCollect() {
-        viewCollect(alert, collector = ::showAlert)
+    override fun PreferenceViewState.onViewCollect() {
+        viewCollect(alert, collector = ::onAlert)
         viewCollect(alertOutputSuccess, collector = ::showOutputSuccess)
         viewCollect(alertOutputError, collector = ::showOutputError)
-    }
-
-    override fun onApplyInsets(root: View) {
-        root.insetsProxying()
     }
 
     private fun PreferenceGroup.fixIcons() {
@@ -91,7 +101,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
         }
     }
 
-    private fun showAlert(message: String) {
+    private fun onAlert(message: String) {
         val view = view ?: return
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
             .setAnchorView(anchorView)
@@ -109,6 +119,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
 
     private fun showOutputError(output: Shell.Output) {
         val view = view ?: return
+        val anchorView = anchorView
         Snackbar.make(view, R.string.error, Snackbar.LENGTH_SHORT).apply {
             if (output.error.isNotEmpty()) {
                 setAction(R.string.more) {
@@ -117,7 +128,7 @@ class PreferenceFragment : PreferenceFragmentCompat(),
                             .show()
                 }
             }
-            anchorView = anchorView
+            this.anchorView = anchorView
             show()
         }
     }

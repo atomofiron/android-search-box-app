@@ -1,53 +1,57 @@
 package app.atomofiron.searchboxapp.screens.result.presenter
 
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.explorer.XFile
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.result.ResultRouter
-import app.atomofiron.searchboxapp.screens.result.ResultViewModel
-import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
+import app.atomofiron.searchboxapp.screens.result.ResultViewState
+import app.atomofiron.searchboxapp.screens.result.adapter.ResultItem
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultItemActionListener
-import app.atomofiron.searchboxapp.utils.Util
+
 
 class ResultItemActionDelegate(
-    private val viewModel: ResultViewModel,
+    private val viewState: ResultViewState,
     private val router: ResultRouter,
-    private val curtainM: ResultCurtainMenuDelegate,
+    private val curtainDelegate: ResultCurtainMenuDelegate,
     private val interactor: ResultInteractor,
     private val preferenceStore: PreferenceStore,
 ) : ResultItemActionListener {
-    override fun onItemClick(item: XFile) {
-        item as FinderResult
-        val textFormats = preferenceStore.textFormats.entity
-        if (item.isFile && Util.isTextFile(item.completedPath, textFormats)) {
-            val params = viewModel.task.value.params
-            router.openFile(item.completedPath, params)
-        } else {
-            // todo open dir
+    override fun onItemClick(item: Node) {
+        when {
+            item.content is NodeContent.File.Text -> router.openFile(item.path, viewState.task.value.uuid)
+            item.isDirectory -> Unit // todo open dir
+            else -> router.openWith(item)
         }
     }
 
-    override fun onItemLongClick(item: XFile) = viewModel.run {
+    override fun onItemLongClick(item: Node) = viewState.run {
+        val matches = (task.value.result as SearchResult.FinderResult).matches
+        val checked = checked.value.filter { id ->
+            matches.any { it.item.uniqueId == id && !it.isDeleting }
+        }
+        val isSingle = !checked.contains(item.uniqueId) || checked.size == 1
         val options = when {
-            checked.contains(item) -> ExplorerItemOptions(manyFilesOptions, checked, composition.value)
-            else -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
+            isSingle && item.isDirectory -> ExplorerItemOptions(oneDirOptions, listOf(item), composition.value)
+            isSingle -> ExplorerItemOptions(oneFileOptions, listOf(item), composition.value)
+            else -> {
+                val items = matches.filter { checked.contains(it.item.uniqueId) }.map { it.item }
+                ExplorerItemOptions(manyFilesOptions, items, composition.value)
+            }
         }
-        curtainM.showOptions(options)
+        curtainDelegate.showOptions(options)
     }
 
-    override fun onItemCheck(item: XFile, isChecked: Boolean) {
-        item as FinderResult
-        item.isChecked = isChecked
-        if (isChecked) {
-            viewModel.checked.add(item)
-        } else {
-            viewModel.checked.remove(item)
+    override fun onItemCheck(item: Node, isChecked: Boolean) {
+        val checked = viewState.checked.value.toMutableList()
+        when {
+            isChecked -> checked.add(item.uniqueId)
+            else -> checked.remove(item.uniqueId)
         }
-        viewModel.enableOptions.value = viewModel.checked.isNotEmpty()
+        viewState.checked.value = checked
     }
 
-    override fun onItemVisible(item: FinderResultItem.Item) = interactor.cacheFile(item)
+    override fun onItemVisible(item: ResultItem.Item) = Unit
 }

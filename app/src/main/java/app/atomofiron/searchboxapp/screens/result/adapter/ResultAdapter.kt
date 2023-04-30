@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.recycler.GeneralAdapter
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.model.finder.FinderResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemBackgroundDecorator
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ItemGravityDecorator
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemBackgroundDecorator
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.decorator.ItemGravityDecorator
 
-class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
+class ResultAdapter : GeneralAdapter<ResultsHolder, ResultItem>() {
     companion object {
         private const val POSITION_HEADER = 0
         private const val TYPE_HEADER = 2
@@ -22,23 +22,17 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
     private lateinit var composition: ExplorerItemComposition
 
     private val gravityDecorator = ItemGravityDecorator()
-    private val backgroundDecorator = ItemBackgroundDecorator(atFirst = false)
+    private val backgroundDecorator = ItemBackgroundDecorator(evenNumbered = false)
 
-    private val header = FinderResultItem.Header(0, 0)
-
-    fun setResults(results: List<FinderResult>) {
-        val items = results.map { FinderResultItem.Item(it) }
-        super.setItems(items)
-
-        header.dirsCount = 0
-        header.filesCount = 0
-        for (item in items) {
-            when {
-                item.item.isDirectory -> header.dirsCount++
-                else -> header.filesCount++
-            }
+    fun setResult(results: SearchResult.FinderResult) {
+        val items = ArrayList<ResultItem>(results.matches.size.inc())
+        val dirCount = results.matches.count { it.item.isDirectory }
+        val header = ResultItem.Header(dirCount, results.matches.size - dirCount)
+        items.add(header)
+        results.matches.forEach {
+            items.add(ResultItem.Item(it))
         }
-        notifyItemChanged(POSITION_HEADER)
+        super.setItems(items)
     }
 
     fun setComposition(composition: ExplorerItemComposition) {
@@ -51,9 +45,7 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
         else -> super.getItemViewType(position)
     }
 
-    override fun getItemCount(): Int = items.size.inc()
-
-    override fun getDiffUtilCallback(old: List<FinderResultItem>, new: List<FinderResultItem>): DiffUtil.Callback? {
+    override fun getDiffUtilCallback(old: List<ResultItem>, new: List<ResultItem>): DiffUtil.Callback {
         return ResultDiffUtilCallback(old, new)
     }
 
@@ -83,13 +75,14 @@ class ResultAdapter : GeneralAdapter<ResultsHolder, FinderResultItem>() {
     }
 
     override fun onBindViewHolder(holder: ResultsHolder, position: Int) = when (position) {
-        POSITION_HEADER -> holder.bind(header)
+        POSITION_HEADER -> holder.bind(items[position])
         else -> {
             holder as ResultsItemHolder
             holder.setOnItemActionListener(itemActionListener)
-            super.onBindViewHolder(holder, position.dec())
+            super.onBindViewHolder(holder, position)
             holder.bindComposition(composition)
-            itemActionListener.onItemVisible(items[position.dec()] as FinderResultItem.Item)
+            val item = items[position] as ResultItem.Item
+            itemActionListener.onItemVisible(item)
         }
     }
 }

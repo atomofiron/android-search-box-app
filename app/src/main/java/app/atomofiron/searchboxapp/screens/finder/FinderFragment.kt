@@ -2,31 +2,33 @@ package app.atomofiron.searchboxapp.screens.finder
 
 import android.content.Context
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.anchorView
+import app.atomofiron.searchboxapp.utils.anchorView
 import app.atomofiron.searchboxapp.databinding.FragmentFinderBinding
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapter
+import app.atomofiron.searchboxapp.screens.finder.adapter.FinderSpanSizeLookup
 import app.atomofiron.searchboxapp.screens.finder.history.adapter.HistoryAdapter
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class FinderFragment : Fragment(R.layout.fragment_finder),
-    BaseFragment<FinderFragment, FinderViewModel, FinderPresenter> by BaseFragmentImpl()
+    BaseFragment<FinderFragment, FinderViewState, FinderPresenter> by BaseFragmentImpl()
 {
 
     private lateinit var binding: FragmentFinderBinding
     private val finderAdapter = FinderAdapter()
+    private lateinit var layoutManager: GridLayoutManager
 
     private val historyAdapter: HistoryAdapter = HistoryAdapter(object : HistoryAdapter.OnItemClickListener {
         override fun onItemClick(node: String) {
@@ -40,6 +42,8 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         initViewModel(this, FinderViewModel::class, savedInstanceState)
 
         finderAdapter.output = presenter
+        layoutManager = GridLayoutManager(context, 1)
+        layoutManager.spanSizeLookup = FinderSpanSizeLookup(finderAdapter, layoutManager)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,31 +52,39 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         binding = FragmentFinderBinding.bind(view)
 
         binding.recyclerView.run {
-            val linearLayoutManager = LinearLayoutManager(context)
-            linearLayoutManager.reverseLayout = true
-            layoutManager = linearLayoutManager
+            this@FinderFragment.layoutManager.reverseLayout = true
+            layoutManager = this@FinderFragment.layoutManager
             itemAnimator = null
             adapter = finderAdapter
         }
 
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
-        binding.bottomBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_history -> binding.verticalDock.open()
-                R.id.menu_explorer -> presenter.onExplorerOptionSelected()
-                R.id.menu_options -> presenter.onConfigOptionSelected()
-                R.id.menu_settings -> presenter.onSettingsOptionSelected()
-            }
-            false
-        }
+        binding.bottomBar.isItemActiveIndicatorEnabled = false
+        binding.bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
+        binding.navigationRail.menu.removeItem(R.id.stub)
+        binding.navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
+        binding.navigationRail.isItemActiveIndicatorEnabled = false
 
         binding.verticalDock.run {
             onGravityChangeListener = presenter::onDockGravityChange
             recyclerView.adapter = historyAdapter
         }
 
-        viewModel.onViewCollect()
+        val columnWidth = resources.getDimensionPixelSize(R.dimen.finder_column_width)
+        binding.recyclerView.addOnLayoutChangeListener { recyclerView, left, _, right, _, _, _, _, _ ->
+            val width = right - left - recyclerView.paddingStart - recyclerView.paddingEnd
+            layoutManager.spanCount = (width / columnWidth).coerceAtLeast(1)
+        }
+
+        viewState.onViewCollect()
         onApplyInsets(view)
+    }
+
+    private fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_explorer -> presenter.onExplorerOptionSelected()
+            R.id.menu_settings -> presenter.onSettingsOptionSelected()
+        }
+        return false
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -86,21 +98,37 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         }
     }
 
-    override fun FinderViewModel.onViewCollect() {
-        viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
+    override fun FinderViewState.onViewCollect() {
+        viewCollect(historyDrawerGravity) {
+            binding.verticalDock.gravity = it
+            binding.verticalDock.requestApplyInsets()
+        }
         viewCollect(reloadHistory, collector = historyAdapter::reload)
         viewCollect(history, collector = historyAdapter::add)
-        viewCollect(insertInQuery, collector = ::insertInQuery)
+        viewCollect(insertInQuery, collector = ::onInsertInQuery)
         viewCollect(searchItems, collector = ::onStateChange)
-        viewCollect(replaceQuery, collector = ::replaceQuery)
-        viewCollect(snackbar, collector = ::showSnackbar)
+        viewCollect(replaceQuery, collector = ::onReplaceQuery)
+        viewCollect(snackbar, collector = ::onShowSnackbar)
+        viewCollect(showHistory) { binding.verticalDock.open() }
+        viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
-        binding.coordinator.insetsProxying()
-        binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.applyPaddingInsets(bottom = true)
+        binding.run {
+            recyclerView.applyPaddingInsets()
+            bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
+            navigationRail.applyPaddingInsets()
+            LayoutDelegate(
+                coordinator,
+                recyclerView = recyclerView,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                systemUiView = systemUiBackground,
+                sideDock = verticalDock,
+            ) {
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
+            }
+        }
     }
 
     override fun onBack(): Boolean {
@@ -109,24 +137,32 @@ class FinderFragment : Fragment(R.layout.fragment_finder),
         return consumed || super.onBack()
     }
 
-    private fun onStateChange(state: List<FinderStateItem>) = finderAdapter.setItems(state)
+    private fun onStateChange(items: List<FinderStateItem>) = finderAdapter.submitList(items)
 
-    private fun replaceQuery(value: String) {
+    private fun onReplaceQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)?.setText(value)
     }
 
-    private fun showSnackbar(value: String) {
+    private fun onShowSnackbar(value: String) {
         val view = view ?: return
         Snackbar.make(view, value, Snackbar.LENGTH_SHORT)
                 .setAnchorView(anchorView)
                 .show()
     }
 
-    private fun insertInQuery(value: String) {
+    private fun onInsertInQuery(value: String) {
         view?.findViewById<EditText>(R.id.item_find_rt_find)
                 ?.takeIf { it.isFocused }
                 ?.apply {
                     text.replace(selectionStart, selectionEnd, value)
                 }
+    }
+
+    private fun showPermissionRequiredWarning(unit: Unit) {
+        val view = view ?: return
+        Snackbar.make(view, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
+            .setAnchorView(view)
+            .setAction(R.string.allow) { presenter.onAllowStorageClick() }
+            .show()
     }
 }

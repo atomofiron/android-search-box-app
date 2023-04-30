@@ -1,233 +1,202 @@
 package app.atomofiron.searchboxapp.injectable.service
 
-import app.atomofiron.common.util.flow.emitLast
-import app.atomofiron.common.util.flow.value
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
-import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.injectable.store.*
 import app.atomofiron.searchboxapp.logE
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
-import app.atomofiron.searchboxapp.model.textviewer.LineIndexMatches
-import app.atomofiron.searchboxapp.model.textviewer.TextLine
-import app.atomofiron.searchboxapp.model.textviewer.TextLineMatch
-import app.atomofiron.searchboxapp.utils.Const
-import app.atomofiron.searchboxapp.utils.Shell
-import app.atomofiron.searchboxapp.utils.escapeQuotes
+import app.atomofiron.searchboxapp.model.CacheConfig
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeContent
+import app.atomofiron.searchboxapp.model.finder.ItemMatch
+import app.atomofiron.searchboxapp.model.finder.SearchParams
+import app.atomofiron.searchboxapp.model.finder.SearchResult
+import app.atomofiron.searchboxapp.model.finder.SearchResult.TextSearchResult
+import app.atomofiron.searchboxapp.model.textviewer.*
+import app.atomofiron.searchboxapp.utils.*
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.update
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
+import java.util.*
+import kotlin.collections.ArrayList
 
 class TextViewerService(
-    private val textViewerChannel: TextViewerChannel,
-    private val preferenceStore: PreferenceStore
+    private val scope: CoroutineScope,
+    private val preferenceStore: PreferenceStore,
+    private val textViewerStore: TextViewerStore,
+    private val finderStore: FinderStore,
 ) {
     companion object {
-        private const val UNKNOWN = -1L
-    }
-    private class Match(
-        val byteOffset: Long,
-        val textLength: Int
-    )
-    private lateinit var matchesLineIndexes: MutableList<Int>
-    /** line index -> matches byteOffset-textLength */
-    private lateinit var matchesMap: MutableMap<Int, MutableList<Match>>
-    /** line index -> matches start-end */
-    private lateinit var textLineMatches: MutableList<LineIndexMatches>
-    /** line index -> matches start-end */
-    private lateinit var textLineMatchesMap: MutableMap<Int, List<TextLineMatch>>
-    private lateinit var lines: MutableList<TextLine>
-    private val tasks: MutableList<MutableFinderTask> = ArrayList()
-    private val useSu: Boolean get() = preferenceStore.useSu.value
-    private var lock = false
-    private val mutex = Mutex()
-    private var primaryParams: FinderQueryParams? = null
-    private var currentTask: MutableFinderTask? = null
-
-    private lateinit var path: String
-    private lateinit var xFile: MutableXFile
-    private var textOffset = 0L
-    private var isEndReached = false
-    private var fileSize = UNKNOWN
-
-    suspend fun showTask(task: MutableFinderTask) {
-        if (task == currentTask) {
-            return
-        }
-        loadFile(task)
-    }
-
-    fun removeTask(task: MutableFinderTask) {
-        if (task == currentTask) {
-            textViewerChannel.lineIndexMatches.value = ArrayList()
-            textViewerChannel.lineIndexMatchesMap.value = HashMap()
-            textViewerChannel.matchesCount.value = null
-        }
-        tasks.remove(task)
-        textViewerChannel.tasks.value = tasks
-    }
-
-    suspend fun primarySearch(xFile: MutableXFile, params: FinderQueryParams?) {
-        this.xFile = xFile
-        path = xFile.completedPath
-        primaryParams = params
-        when {
-            params != null -> {
-                val task = addTask(isPrimary = true, params = params)
-                loadFile(task)
+        fun searchInside(params: SearchParams, path: String, useSu: Boolean): Rslt<TextSearchResult> {
+            val template = when {
+                params.useRegex && params.ignoreCase -> Shell.GREP_BONS_IE
+                params.useRegex -> Shell.GREP_BONS_E
+                params.ignoreCase -> Shell.GREP_BONS_I
+                else -> Shell.GREP_BONS
             }
-            else -> loadFile(params)
+            var count = 0
+            val cmd = Shell[template].format(params.query.escapeQuotes(), path)
+            val lineIndexToMatches = hashMapOf<Int, MutableList<TextLineMatch>>()
+            val output = Shell.exec(cmd, useSu) { line ->
+                val lineByteOffset = line.split(':')
+                val lineIndex = lineByteOffset[0].toInt().dec()
+                val byteOffset = lineByteOffset[1].toLong()
+                val text = lineByteOffset[2]
+                var list = lineIndexToMatches[lineIndex]
+                if (list == null) {
+                    list = mutableListOf()
+                    lineIndexToMatches[lineIndex] = list
+                }
+                list.add(TextLineMatch(byteOffset, text.length))
+                count++
+            }
+            return if (output.success || output.code == 1 && output.error.isEmpty()) {
+                val indexes = lineIndexToMatches.keys.sorted()
+                val result = TextSearchResult(count, lineIndexToMatches, indexes)
+                Rslt.Ok(result)
+            } else  {
+                logE("searchInFile !success, error: ${output.error}")
+                Rslt.Err(output.error)
+            }
         }
     }
 
-    suspend fun secondarySearch(params: FinderQueryParams) {
-        val task = addTask(isPrimary = false, params = params)
-        loadFile(task)
+    private val useSu: Boolean get() = preferenceStore.useSu.value
+
+    fun getFileSession(path: String): TextViewerSession {
+        val item = Node(path, content = NodeContent.Unknown)
+        var session = findSession(item)
+        if (session == null) {
+            session = TextViewerSession(item)
+            textViewerStore.sessions[item.uniqueId] = session
+            scope.launch(Dispatchers.IO) { readFile(item) }
+        }
+        if (!item.isCached) {
+            scope.launch(Dispatchers.IO) {
+                val config = CacheConfig(useSu, thumbnailSize = 0)
+                session.item.value = item.update(config)
+            }
+        }
+        return session
     }
 
-    private fun addTask(isPrimary: Boolean, params: FinderQueryParams): MutableFinderTask {
-        val task = MutableFinderTask.local(isRemovable = !isPrimary, params = params)
-        tasks.add(task)
-        textViewerChannel.tasks.value = tasks
+    suspend fun fetchTask(item: Node, taskId: UUID): SearchTask? {
+        val finderTask = finderStore.tasks.find { it.uuid == taskId }
+        finderTask ?: return null
+        val session = findSession(item)
+        session ?: return null
+        val result = finderTask.result as SearchResult.FinderResult
+        val itemMatch = result.matches.find {
+            it.item.uniqueId == item.uniqueId
+        } as? ItemMatch.Multiply
+        itemMatch ?: return null
+        val task = SearchTask(
+            finderTask.uuid,
+            finderTask.params,
+            TextSearchResult(itemMatch.count, itemMatch.matchesMap, itemMatch.indexes),
+            SearchState.Ended(isRemovable = false, isStopped = false),
+        )
+        session.addProgressTask(task)
         return task
     }
 
-    private suspend fun loadFile(task: MutableFinderTask? = null) {
-        textOffset = 0
-        isEndReached = false
-        lines = ArrayList()
-        matchesMap = HashMap()
-        textLineMatches = ArrayList()
-        textLineMatchesMap = HashMap()
-        matchesLineIndexes = ArrayList()
-
-        textViewerChannel.textFromFile.value = lines
-        textViewerChannel.lineIndexMatches.value = textLineMatches
-        textViewerChannel.lineIndexMatchesMap.value = textLineMatchesMap
-        textViewerChannel.matchesCount.value = null
-
-        fileSize = getFileSize()
-        xFile.updateCache(useSu)
-        currentTask = task
-
-        when (task?.params) {
-            null -> loadUpToLine(0)
-            else -> {
-                val matchesCount = searchInFile(task.params)
-                textViewerChannel.matchesCount.value = matchesCount
-
-                task.count = matchesCount
-                task.isDone = true
-                textViewerChannel.tasks.value = tasks
-
-                loadUpToLine(0)
-            }
-        }
-    }
-
-    suspend fun onLineVisible(index: Int) = loadUpToLine(index)
-
-    suspend fun loadFileUpToLine(prevIndex: Int?) {
-        val indexOfNext = when (prevIndex) {
-            null -> 0
-            else -> matchesLineIndexes.indexOf(prevIndex).inc()
-        }
-        val nextLineIndex = matchesLineIndexes[indexOfNext]
-        loadUpToLine(nextLineIndex)
-    }
-
-    private suspend fun loadUpToLine(index: Int) {
-        if (!isEndReached && index > lines.size - Const.TEXT_FILE_PAGINATION_STEP_OFFSET) {
-            mutex.withLock(lock) {
-                if (lock) {
-                    return
-                }
-                lock = true
-            }
-
-            textViewerChannel.textFromFileLoading.value = true
-            val step = index - lines.size + Const.TEXT_FILE_PAGINATION_STEP
-            loadNext(step)
-            textViewerChannel.lineIndexMatches.emitLast()
-            textViewerChannel.textFromFile.value = ArrayList(lines)
-            textViewerChannel.textFromFileLoading.value = false
-
-            lock = false
-        }
-    }
-
-    private fun loadNext(step: Int) {
-        val fileSize = getFileSize()
-        if (this.fileSize != fileSize) {
-            logE("File size was changed! $path")
-            isEndReached = true
+    /** @return true if success */
+    suspend fun readFile(item: Node, targetLineIndex: Int = 0, callback: ((Boolean) -> Unit)? = null) {
+        val session = findSession(item)
+        if (session == null) {
+            callback?.invoke(false)
             return
         }
-        val offset = lines.size
-        val cmd = Shell[Shell.HEAD_TAIL].format(path, offset + step, step)
-        val output = Shell.exec(cmd, useSu) { line ->
-            val index = lines.size
-            val match = matchesMap[index]
-            match?.map {
-                val byteOffsetInLine = (it.byteOffset - textOffset).toInt()
-                val bytes = line.toByteArray(Charsets.UTF_8).copyOf(byteOffsetInLine)
-                val offsetInLine = String(bytes, Charsets.UTF_8).length
-                TextLineMatch(offsetInLine, offsetInLine + it.textLength)
-            }?.let {
-                val lineMatches = LineIndexMatches(index, it)
-                textLineMatches.add(lineMatches)
-                textLineMatchesMap[index] = it
+        session.mutex.withLock {
+            val paginationThreshold = session.textLines.value.size - Const.TEXT_FILE_PAGINATION_STEP_OFFSET
+            when {
+                session.textLoading.value -> callback?.invoke(false)
+                session.isFullyRead -> callback?.invoke(false)
+                targetLineIndex < paginationThreshold -> callback?.invoke(false)
+                else -> session.readNextLines()
             }
-            val textLine = TextLine(line)
-            lines.add(textLine)
-            textOffset += line.toByteArray(Charsets.UTF_8).size.inc()
-        }
-        if (!output.success) {
-            logE("loadNext !success, error: ${output.error}")
-        }
-
-        isEndReached = lines.size - offset < step
-        isEndReached = isEndReached || textOffset >= fileSize
-    }
-
-    private fun getFileSize(): Long {
-        val lsLong = Shell[Shell.LS_LOG].format(path)
-        val output = Shell.exec(lsLong, useSu)
-        return when {
-            output.success -> output.output.split(Const.SPACE)[2].toLong()
-            else -> {
-                logE("getFileSize !success, error: ${output.error}")
-                UNKNOWN
-            }
+            callback?.invoke(true)
         }
     }
 
-    private fun searchInFile(params: FinderQueryParams): Int {
-        val template = when {
-            params.useRegex && params.ignoreCase -> Shell.GREP_BONS_IE
-            params.useRegex -> Shell.GREP_BONS_E
-            params.ignoreCase -> Shell.GREP_BONS_I
-            else -> Shell.GREP_BONS
+    fun closeSession(item: Node) {
+        val session = textViewerStore.sessions.remove(item.uniqueId)
+        session?.reader?.close()
+    }
+
+    suspend fun removeTask(item: Node, taskId: Int) {
+        val session = findSession(item) ?: return
+        session.mutex.withLock {
+            val tasks = session.tasks.value.toMutableList()
+            tasks.removeOneIf { it.uniqueId == taskId }
+            session.tasks.value = tasks
         }
-        var count = 0
-        val cmd = Shell[template].format(params.query.escapeQuotes(), path)
-        val output = Shell.exec(cmd, useSu) {
-            val lineByteOffset = it.split(':')
-            val lineIndex = lineByteOffset[0].toInt().dec()
-            val byteOffset = lineByteOffset[1].toLong()
-            val text = lineByteOffset[2]
-            val match = Match(byteOffset, text.length)
-            var list = matchesMap[lineIndex]
-            if (list == null) {
-                list = ArrayList()
-                matchesMap[lineIndex] = list
-                matchesLineIndexes.add(lineIndex)
+    }
+
+    suspend fun search(item: Node, params: SearchParams) {
+        val session = findSession(item) ?: return
+        val task = SearchTask(UUID.randomUUID(), params, TextSearchResult())
+        val taskProgress = session.addProgressTask(task)
+        val taskDone = session.searchInside(taskProgress)
+        session.finishTask(taskDone)
+    }
+
+    private fun findSession(item: Node): TextViewerSession? {
+        return textViewerStore.sessions[item.uniqueId].also { task ->
+            task ?: logE("Session not found for ${item.path}")
+        }
+    }
+
+    private suspend fun TextViewerSession.readNextLines() {
+        val reader = reader ?: return
+        textLoading.value = true
+        val lines = ArrayList<TextLine>(Const.TEXT_FILE_PAGINATION_STEP)
+        var byteOffset = textLines.value.lastOrNull()?.run { byteOffset + byteCount.inc() } ?: 0
+        while (lines.size < Const.TEXT_FILE_PAGINATION_STEP) {
+            when (val stringOrNull = reader.readLine()) {
+                null -> {
+                    isFullyRead = true
+                    break
+                }
+                else -> {
+                    val byteCount = stringOrNull.toByteArray().size
+                    lines.add(TextLine(byteOffset, byteCount, stringOrNull))
+                    byteOffset += byteCount.inc() // \n
+                }
             }
-            list.add(match)
-            count++
         }
-        if (!output.success) {
-            logE("searchInFile !success, error: ${output.error}")
+        val text = textLines.value.toMutableList()
+        text.addAll(lines)
+        textLines.value = text
+        textLoading.value = false
+    }
+
+    private suspend fun TextViewerSession.addProgressTask(task: SearchTask): SearchTask {
+        mutex.withLock {
+            tasks.run {
+                val tasks = value.toMutableList()
+                tasks.add(0, task)
+                value = tasks
+            }
         }
-        return count
+        return task
+    }
+
+    private fun TextViewerSession.searchInside(task: SearchTask): SearchTask {
+        return when (val result = searchInside(task.params, item.value.path, useSu)) {
+            is Rslt.Ok -> task.toEnded(result = result.data)
+            is Rslt.Err -> task.toEnded(error = result.error)
+        }
+    }
+
+    private suspend fun TextViewerSession.finishTask(task: SearchTask) {
+        mutex.withLock {
+            tasks.run {
+                val index = value.indexOfFirst { it.uuid == task.uuid }
+                if (index < 0) return@run logE("No Progress task with query ${task.params.query}")
+                val tasks = value.toMutableList()
+                tasks[index] = task
+                value = tasks
+            }
+        }
     }
 }

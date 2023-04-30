@@ -2,95 +2,76 @@ package app.atomofiron.searchboxapp.screens.explorer
 
 import app.atomofiron.common.arch.BasePresenter
 import app.atomofiron.common.util.flow.collect
-import app.atomofiron.common.util.flow.invoke
-import app.atomofiron.common.util.flow.value
+import app.atomofiron.searchboxapp.custom.ExplorerView
+import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
-import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
-import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerItemActionListener
-import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
-import app.atomofiron.searchboxapp.screens.explorer.places.XPlace
-import app.atomofiron.searchboxapp.screens.explorer.places.XPlaceType
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeRoot
+import app.atomofiron.searchboxapp.screens.explorer.fragment.list.ExplorerItemActionListener
+import app.atomofiron.searchboxapp.screens.explorer.fragment.roots.RootAdapter
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
-import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
+import kotlinx.coroutines.CoroutineScope
 
 class ExplorerPresenter(
-    viewModel: ExplorerViewModel,
+    scope: CoroutineScope,
+    private val viewState: ExplorerViewState,
     router: ExplorerRouter,
     private val explorerStore: ExplorerStore,
     private val preferenceStore: PreferenceStore,
-    appStore: AppStore,
     private val explorerInteractor: ExplorerInteractor,
     itemListener: ExplorerItemActionListenerDelegate,
-    placesListener: PlacesActionListenerDelegate,
-    private val curtainMenuDelegate: ExplorerCurtainMenuDelegate
-) : BasePresenter<ExplorerViewModel, ExplorerRouter>(viewModel, router,),
-    ExplorerItemActionListener by itemListener,
-    PlacesAdapter.ItemActionListener by placesListener {
+    private val curtainMenuDelegate: ExplorerCurtainMenuDelegate,
+    mainChannel: MainChannel,
+) : BasePresenter<ExplorerViewModel, ExplorerRouter>(scope, router),
+    ExplorerView.ExplorerViewOutput,
+    RootAdapter.RootClickListener,
+    ExplorerItemActionListener by itemListener {
 
-    private val resources by appStore.resourcesProperty
+    private val currentTab get() = viewState.currentTab.value
 
     init {
-        preferenceStore.dockGravity.collect(scope, ::onDockGravityChanged)
-        preferenceStore.storagePath.collect(scope, ::onStoragePathChanged)
         preferenceStore.explorerItemComposition.collect(scope) {
-            viewModel.itemComposition.value = it
+            viewState.itemComposition.value = it
         }
-
-        val items = ArrayList<XPlace>()
-        items.add(XPlace.InternalStorage(resources.getString(XPlaceType.InternalStorage.titleId), visible = true))
-        items.add(XPlace.ExternalStorage(resources.getString(XPlaceType.ExternalStorage.titleId), visible = true))
-        items.add(XPlace.AnotherPlace("Another Place 0"))
-        items.add(XPlace.AnotherPlace("Another Place 1"))
-        items.add(XPlace.AnotherPlace("Another Place 2"))
-        viewModel.places.value = items
-
-        onSubscribeData()
+        mainChannel.maximized.collect(scope) {
+            explorerInteractor.updateRoots(currentTab)
+        }
     }
 
-    override fun onSubscribeData() {
-        explorerStore.store.collect(scope, viewModel::onChanged)
-        explorerStore.updates.collect(scope, viewModel::onChanged)
-        explorerStore.current.collect(scope, viewModel::onChanged)
-        explorerStore.alerts.collect(scope, viewModel.alerts::emit)
-    }
+    override fun onSubscribeData() = Unit
 
-    private fun onDockGravityChanged(gravity: Int) {
-        viewModel.historyDrawerGravity.value = gravity
-    }
-
-    private fun onStoragePathChanged(path: String) = explorerInteractor.setRoot(path)
+    override fun onRootClick(item: NodeRoot) = explorerInteractor.selectRoot(currentTab, item)
 
     fun onSearchOptionSelected() = router.showFinder()
 
-    fun onOptionsOptionSelected() {
-        val current = explorerStore.current.value
-        val files = when {
-            explorerStore.checked.isNotEmpty() -> ArrayList(explorerStore.checked)
-            current != null -> listOf(current)
-            else -> return
+    fun onTabSelected(index: Int) {
+        viewState.currentTab.value = when (index) {
+            0 -> viewState.firstTab
+            else -> viewState.secondTab
         }
-        val ids = when {
-            files.size > 1 -> viewModel.manyFilesOptions
-            files.first().isChecked -> viewModel.manyFilesOptions
-            files.first().isDirectory -> viewModel.directoryOptions
-            else -> viewModel.oneFileOptions
-        }
-        val options = ExplorerItemOptions(ids, files, viewModel.itemComposition.value)
-        curtainMenuDelegate.showOptions(options)
+        explorerInteractor.updateRoots(currentTab)
+        explorerStore.current.value = viewState.getCurrentDir()
+        /* todo searchTargets
+            val checked = items.filter { it.isChecked }
+            explorerStore.searchTargets.set(checked)
+        */
     }
 
     fun onSettingsOptionSelected() = router.showSettings()
 
-    fun onDockGravityChange(gravity: Int) = preferenceStore.dockGravity.pushByEntity(gravity)
+    fun onDockGravityChange(gravity: Int) = preferenceStore { setDockGravity(gravity) }
 
-    fun onAllowStorageClick() = router.showSystemPermissionsAppSettings()
+    fun onVolumeUp(isCurrentDirVisible: Boolean) {
+        val currentDir = viewState.getCurrentDir()
+        currentDir ?: return
+        scrollOrOpenParent(currentDir, isCurrentDirVisible)
+    }
 
-    fun onVolumeUp(isCurrentDirVisible: Boolean) = when {
-        isCurrentDirVisible -> explorerInteractor.openParent()
-        else -> viewModel.scrollToCurrentDir.invoke()
+    private fun scrollOrOpenParent(item: Node, isTargetVisible: Boolean) = when {
+        isTargetVisible -> explorerInteractor.toggleDir(currentTab, item)
+        else -> viewState.scrollTo(item)
     }
 }

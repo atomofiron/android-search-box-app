@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 
 @SuppressLint("RestrictedApi")
@@ -43,5 +46,17 @@ class MenuAdapter(context: Context) : RecyclerView.Adapter<MenuHolder>() {
             else -> R.drawable.item_menu
         }
         holder.itemView.setBackgroundResource(backgroundId)
+        val context = holder.itemView.context
+        when (item.itemId) {
+            dangerousItemId -> {
+                val color = context.findColorByAttr(R.attr.colorError)
+                holder.icon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_IN)
+                holder.title.setTextColor(color)
+            }
+            else -> {
+                holder.icon.colorFilter = null
+                holder.title.setTextColor(context.findColorByAttr(R.attr.colorContent))
+            }
+        }
     }
 }

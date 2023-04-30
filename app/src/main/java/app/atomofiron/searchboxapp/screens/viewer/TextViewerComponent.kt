@@ -8,10 +8,10 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
-import app.atomofiron.searchboxapp.injectable.channel.TextViewerChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
 import app.atomofiron.searchboxapp.screens.viewer.presenter.SearchAdapterPresenterDelegate
 import app.atomofiron.searchboxapp.screens.viewer.presenter.TextViewerParams
 import javax.inject.Scope
@@ -29,9 +29,7 @@ interface TextViewerComponent {
         @BindsInstance
         fun bind(params: TextViewerParams): Builder
         @BindsInstance
-        fun bind(viewModel: TextViewerViewModel): Builder
-        @BindsInstance
-        fun bind(activity: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: TextViewerDependencies): Builder
@@ -48,60 +46,66 @@ class TextViewerModule {
     @TextViewerScope
     fun presenter(
         params: TextViewerParams,
-        viewModel: TextViewerViewModel,
+        scope: CoroutineScope,
+        viewState: TextViewerViewState,
         router: TextViewerRouter,
         searchAdapterPresenterDelegate: SearchAdapterPresenterDelegate,
         textViewerInteractor: TextViewerInteractor,
-        preferenceStore: PreferenceStore,
-        textViewerChannel: TextViewerChannel
+        session: TextViewerSession,
     ): TextViewerPresenter {
         return TextViewerPresenter(
             params,
-            viewModel,
+            scope,
+            viewState,
             router,
             searchAdapterPresenterDelegate,
             textViewerInteractor,
-            preferenceStore,
-            textViewerChannel,
+            session,
         )
     }
 
     @Provides
     @TextViewerScope
     fun searchOutputDelegate(
-        viewModel: TextViewerViewModel,
+        scope: CoroutineScope,
+        viewState: TextViewerViewState,
         router: TextViewerRouter,
         interactor: TextViewerInteractor,
         preferenceStore: PreferenceStore,
         curtainChannel: CurtainChannel,
     ): SearchAdapterPresenterDelegate {
-        return SearchAdapterPresenterDelegate(viewModel, router, interactor, preferenceStore, curtainChannel)
+        return SearchAdapterPresenterDelegate(scope, viewState, router, interactor, preferenceStore, curtainChannel)
     }
-
-    @Provides
-    @TextViewerScope
-    fun textViewerService(
-        textViewerChannel: TextViewerChannel,
-        preferenceStore: PreferenceStore
-    ): TextViewerService = TextViewerService(textViewerChannel, preferenceStore)
 
     @Provides
     @TextViewerScope
     fun textViewerInteractor(
         scope: CoroutineScope,
-        textViewerService: TextViewerService
+        textViewerService: TextViewerService,
     ): TextViewerInteractor = TextViewerInteractor(scope, textViewerService)
 
     @Provides
     @TextViewerScope
-    fun textViewerChannel(): TextViewerChannel = TextViewerChannel()
+    fun router(fragment: WeakProperty<out Fragment>): TextViewerRouter = TextViewerRouter(fragment)
 
     @Provides
     @TextViewerScope
-    fun router(fragment: WeakProperty<Fragment>): TextViewerRouter = TextViewerRouter(fragment)
+    fun textViewerSession(
+        params: TextViewerParams,
+        interactor: TextViewerInteractor,
+    ): TextViewerSession = interactor.fetchFileSession(params.path)
+
+    @Provides
+    @TextViewerScope
+    fun viewerViewState(
+        scope: CoroutineScope,
+        session: TextViewerSession,
+        preferenceStore: PreferenceStore,
+    ): TextViewerViewState = TextViewerViewState(scope, session, preferenceStore)
 }
 
 interface TextViewerDependencies {
     fun preferenceStore(): PreferenceStore
     fun curtainChannel(): CurtainChannel
+    fun textViewerService(): TextViewerService
 }

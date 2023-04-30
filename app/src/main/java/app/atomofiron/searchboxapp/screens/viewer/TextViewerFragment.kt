@@ -1,31 +1,38 @@
 package app.atomofiron.searchboxapp.screens.viewer
 
-import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import androidx.core.view.isInvisible
+import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.common.util.flow.viewCollect
+import app.atomofiron.searchboxapp.BuildConfig
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
+import app.atomofiron.searchboxapp.custom.LayoutDelegate.Companion.setScreenSizeListener
 import app.atomofiron.searchboxapp.databinding.FragmentTextViewerBinding
+import app.atomofiron.searchboxapp.model.ScreenSize
+import app.atomofiron.searchboxapp.model.finder.SearchResult
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.viewer.recycler.TextViewerAdapter
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import app.atomofiron.searchboxapp.utils.updateItem
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
-    BaseFragment<TextViewerFragment, TextViewerViewModel, TextViewerPresenter> by BaseFragmentImpl()
+    BaseFragment<TextViewerFragment, TextViewerViewState, TextViewerPresenter> by BaseFragmentImpl()
 {
     companion object {
         const val KEY_PATH = "KEY_PATH"
-        const val KEY_QUERY = "KEY_QUERY"
-        const val KEY_USE_REGEX = "KEY_USE_REGEX"
-        const val KEY_IGNORE_CASE = "KEY_IGNORE_CASE"
+        const val KEY_TASK_ID = "KEY_TASK_ID"
     }
 
     private lateinit var binding: FragmentTextViewerBinding
@@ -41,78 +48,105 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentTextViewerBinding.bind(view)
-
-        binding.recyclerView.run {
-            layoutManager = LinearLayoutManager(context)
-            adapter = viewerAdapter
-            itemAnimator = null
-        }
-        binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
-        binding.bottomBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_search -> presenter.onSearchClick()
-                R.id.menu_previous -> presenter.onPreviousClick()
-                R.id.menu_next -> presenter.onNextClick()
+        binding = FragmentTextViewerBinding.bind(view).apply {
+            recyclerView.run {
+                layoutManager = LinearLayoutManager(context)
+                adapter = viewerAdapter
+                itemAnimator = null
             }
-            false
+            (recyclerView.layoutParams as CoordinatorLayout.LayoutParams).run {
+                behavior = AppBarLayout.ScrollingViewBehavior()
+            }
+            navigationRail.menu.removeItem(R.id.stub)
+            navigationRail.isItemActiveIndicatorEnabled = false
+            navigationRail.setOnItemSelectedListener(::onBottomMenuItemClick)
+            bottomBar.isItemActiveIndicatorEnabled = false
+            bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
+            if (BuildConfig.DEBUG) toolbar.menu.add("Test")
+            toolbar.setNavigationOnClickListener { presenter.onNavigationClick() }
+            toolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.menu_edit -> Unit
+                    R.id.menu_save -> Unit
+                }
+                true
+            }
+            configureAppBar()
         }
-        viewModel.onViewCollect()
+        viewState.onViewCollect()
         onApplyInsets(view)
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.bottomAppBar.updateElevation()
-    }
-
-    override fun TextViewerViewModel.onViewCollect() {
-        viewCollect(loading, collector = ::setLoading)
+    override fun TextViewerViewState.onViewCollect() {
+        viewCollect(item) { binding.toolbar.title = it.name }
         viewCollect(textLines, collector = viewerAdapter::setItems)
-        viewCollect(matchesMap, collector = viewerAdapter::setMatches)
+        viewCollect(currentTask, collector = ::onTaskChanged)
         viewCollect(matchesCursor, collector = ::onMatchCursorChanged)
-        viewCollect(matchesCounter, collector = ::onMatchCounterChanged)
-        viewCollect(insertInQuery, collector = ::insertInQuery)
+        viewCollect(status, collector = ::onStatusChanged)
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
-        binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.applyPaddingInsets(bottom = true)
-    }
-
-    private fun setLoading(visible: Boolean) {
-        binding.ballsView.isInvisible = !visible
-        onMatchCounterChanged(viewModel.matchesCounter.value)
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun onMatchCounterChanged(counter: Long?) {
-        var index: Int? = null
-        var count: Int? = null
-        binding.tvCounter.text = when (counter) {
-            null -> null
-            else -> {
-                index = counter.shr(32).toInt()
-                count = counter.toInt()
-                "$index / $count"
+        binding.run {
+            recyclerView.applyPaddingInsets(start = true, end = true, bottom = true)
+            LayoutDelegate(
+                root as ViewGroup,
+                recyclerView = recyclerView,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                appBarLayout = appbarLayout,
+            ) {
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
             }
         }
-        val loading = viewModel.loading.value
-        binding.bottomBar.menu.findItem(R.id.menu_previous).isEnabled = !loading && index != null && index!! > 1
-        binding.bottomBar.menu.findItem(R.id.menu_next).isEnabled = !loading && count != null && index != count
     }
 
-    private fun onMatchCursorChanged(cursor: Long?) {
-        viewerAdapter.setCursor(cursor)
-    }
-
-    private fun insertInQuery(value: String) {
-        view?.findViewById<EditText>(R.id.item_find_rt_find)
-            ?.takeIf { it.isFocused }
-            ?.apply {
-                text.replace(selectionStart, selectionEnd, value)
+    private fun FragmentTextViewerBinding.configureAppBar() {
+        root.setScreenSizeListener { _, height ->
+            toolbar.updateLayoutParams<AppBarLayout.LayoutParams> {
+                scrollFlags = if (height == ScreenSize.Compact) SCROLL_FLAG_SCROLL else SCROLL_FLAG_NO_SCROLL
             }
+        }
+        appbarLayout.addOnOffsetChangedListener { _, verticalOffset ->
+            toolbar.alpha = (toolbar.height + verticalOffset) / toolbar.height.toFloat()
+        }
     }
+
+    override fun onBack(): Boolean = presenter.onBackClick() || super.onBack()
+
+    private fun onBottomMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_search -> presenter.onSearchClick()
+            R.id.menu_previous -> presenter.onPreviousClick()
+            R.id.menu_next -> presenter.onNextClick()
+        }
+        return false
+    }
+
+    private fun onTaskChanged(task: SearchTask?) {
+        val matches = (task?.result as SearchResult.TextSearchResult?)?.matchesMap
+        viewerAdapter.setMatches(matches)
+        val iconId = if (task == null) R.drawable.ic_back else R.drawable.ic_cross
+        binding.toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), iconId)
+    }
+
+    private fun onStatusChanged(status: TextViewerViewState.Status) {
+        var index: Int? = null
+        var count: Int? = null
+        val text = if (status.countMax == 0) null else {
+            index = status.count
+            count = status.countMax
+            "$index / $count"
+        }
+        val iconId = if (status.loading) R.drawable.progress_loop else R.drawable.ic_circle_check
+        binding.run {
+            bottomBar.updateItem(R.id.menu_status, iconId, text)
+            navigationRail.updateItem(R.id.menu_status, iconId, text)
+            arrayOf(bottomBar.menu, navigationRail.menu).forEach {
+                it.findItem(R.id.menu_previous).isEnabled = !status.loading && index != null && index > 1
+                it.findItem(R.id.menu_next).isEnabled = !status.loading && count != null && index != count
+            }
+        }
+    }
+
+    private fun onMatchCursorChanged(cursor: TextViewerViewState.MatchCursor) = viewerAdapter.setCursor(cursor)
 }

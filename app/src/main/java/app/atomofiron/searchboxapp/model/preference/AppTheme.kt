@@ -6,25 +6,18 @@ import java.util.*
 
 sealed class AppTheme(
     val name: String,
+    val deepBlack: Boolean,
 ) {
-    open val deepBlack: Boolean = false
 
-    class System(override val deepBlack: Boolean = false) : AppTheme(NAME_SYSTEM) {
-        override fun copy(deepBlack: Boolean): AppTheme = System(deepBlack)
-    }
-    object Light : AppTheme(NAME_LIGHT) {
-        override fun copy(deepBlack: Boolean): AppTheme = this
-    }
-    class Dark(override val deepBlack: Boolean = false) : AppTheme(NAME_DARK) {
-        override fun copy(deepBlack: Boolean): AppTheme = Dark(deepBlack)
-    }
-
-    abstract fun copy(deepBlack: Boolean): AppTheme
+    class System(deepBlack: Boolean) : AppTheme(NAME_SYSTEM, deepBlack)
+    class Light(deepBlack: Boolean) : AppTheme(NAME_LIGHT, deepBlack)
+    class Dark(deepBlack: Boolean) : AppTheme(NAME_DARK, deepBlack)
 
     override fun equals(other: Any?) = when {
         other == null -> false
         other !is AppTheme -> false
-        other::class != this::class -> false
+        other.name != name -> false
+        other is Light -> true
         else -> other.deepBlack == deepBlack
     }
 
@@ -43,11 +36,11 @@ sealed class AppTheme(
 
         fun fromString(name: String?, deepBlack: Boolean = false) = when (name) {
             NAME_SYSTEM -> System(deepBlack)
-            NAME_LIGHT -> Light
+            NAME_LIGHT -> Light(deepBlack)
             NAME_DARK -> Dark(deepBlack)
             else -> when {
                 SDK_INT >= Q -> System(deepBlack)
-                else -> Light
+                else -> Light(deepBlack)
             }
         }
     }

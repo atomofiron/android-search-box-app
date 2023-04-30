@@ -1,35 +1,28 @@
 package app.atomofiron.searchboxapp.injectable.interactor
 
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.ResultService
-import app.atomofiron.searchboxapp.model.explorer.XFile
-import app.atomofiron.searchboxapp.model.finder.FinderResult
-import app.atomofiron.searchboxapp.screens.result.adapter.FinderResultItem
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.screens.result.adapter.ResultItem
 import java.util.*
 
 class ResultInteractor(
     private val scope: CoroutineScope,
-    private val resultService: ResultService
+    private val resultService: ResultService,
+    private val explorerService: ExplorerService,
 ) {
-    private val context = Dispatchers.IO
+    private val dispatcher = Dispatchers.IO
 
     fun stop(uuid: UUID) = resultService.stop(uuid)
 
-    fun dropTaskError(taskId: Long) = resultService.dropTaskError(taskId)
+    fun copyToClipboard(item: Node) = resultService.copyToClipboard(item)
 
-    fun copyToClipboard(finderResult: FinderResult) = resultService.copyToClipboard(finderResult)
-
-    fun deleteItems(items: List<XFile>, uuid: UUID) {
-        scope.launch(context) {
-            resultService.deleteItems(items, uuid)
-        }
-    }
-
-    fun cacheFile(item: FinderResultItem.Item) {
-        scope.launch(context) {
-            resultService.cacheFile(item)
+    fun deleteItems(items: List<Node>) {
+        scope.launch(dispatcher) {
+            explorerService.deleteEveryWhere(items)
         }
     }
 }

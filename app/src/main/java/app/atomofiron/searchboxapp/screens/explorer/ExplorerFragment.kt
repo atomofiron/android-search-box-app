@@ -1,128 +1,148 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
-import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
+import app.atomofiron.searchboxapp.custom.ExplorerView
 import app.atomofiron.searchboxapp.databinding.FragmentExplorerBinding
-import app.atomofiron.searchboxapp.screens.explorer.adapter.ExplorerAdapter
-import app.atomofiron.searchboxapp.screens.explorer.fragment.HeaderViewOutputDelegate
-import app.atomofiron.searchboxapp.screens.explorer.places.PlacesAdapter
+import app.atomofiron.searchboxapp.model.explorer.NodeError
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
+import app.atomofiron.searchboxapp.utils.recyclerView
+import app.atomofiron.searchboxapp.screens.explorer.fragment.ExplorerPagerAdapter
 import app.atomofiron.searchboxapp.screens.main.util.KeyCodeConsumer
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import app.atomofiron.searchboxapp.utils.getString
+import com.google.android.material.snackbar.Snackbar
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class ExplorerFragment : Fragment(R.layout.fragment_explorer),
-    BaseFragment<ExplorerFragment, ExplorerViewModel, ExplorerPresenter> by BaseFragmentImpl(),
+    BaseFragment<ExplorerFragment, ExplorerViewState, ExplorerPresenter> by BaseFragmentImpl(),
     KeyCodeConsumer
 {
     private lateinit var binding: FragmentExplorerBinding
-
-    private val explorerAdapter = ExplorerAdapter()
-    private val placesAdapter = PlacesAdapter()
-
-    private lateinit var headerViewOutputDelegate: HeaderViewOutputDelegate
+    private lateinit var pagerAdapter: ExplorerPagerAdapter
+    private val explorerViews get() = pagerAdapter.items
+    private val tabIds = arrayOf(R.id.first_button, R.id.second_button)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewModel(this, ExplorerViewModel::class, savedInstanceState)
-
-        explorerAdapter.itemActionListener = presenter
-        placesAdapter.itemActionListener = presenter
-
-        headerViewOutputDelegate = HeaderViewOutputDelegate(explorerAdapter, presenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentExplorerBinding.bind(view)
-
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = explorerAdapter
-
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
-        binding.bottomBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_places -> binding.verticalDock.open()
-                R.id.menu_search -> presenter.onSearchOptionSelected()
-                R.id.menu_options -> presenter.onOptionsOptionSelected()
-                R.id.menu_settings -> presenter.onSettingsOptionSelected()
-            }
-            false
-        }
-
-        binding.verticalDock.run {
-            onGravityChangeListener = presenter::onDockGravityChange
-            recyclerView.adapter = placesAdapter
-        }
-
-        explorerAdapter.setHeaderView(binding.explorerHeader)
-        binding.explorerHeader.setOnItemActionListener(headerViewOutputDelegate)
-        viewModel.onViewCollect()
+        pagerAdapter = ExplorerPagerAdapter(binding.pager, presenter)
+        binding.initView()
+        viewState.onViewCollect()
         onApplyInsets(view)
     }
 
-    override fun ExplorerViewModel.onViewCollect() {
-        viewCollect(items, collector = explorerAdapter::setItems)
-        viewCollect(itemComposition, collector = explorerAdapter::setComposition)
-        viewCollect(current, collector = explorerAdapter::setCurrentDir)
-        viewCollect(notifyUpdate, collector = explorerAdapter::setItem)
-        viewCollect(notifyRemove, collector = explorerAdapter::removeItem)
-        viewCollect(notifyInsert) { explorerAdapter.insertItem(it.first, it.second) }
-        viewCollect(notifyUpdateRange, collector = explorerAdapter::notifyItems)
-        viewCollect(notifyRemoveRange, collector = explorerAdapter::removeItems)
-        viewCollect(notifyInsertRange) { explorerAdapter.insertItems(it.first, it.second) }
-        viewCollect(permissionRequiredWarning, collector = ::showPermissionRequiredWarning)
-        viewCollect(historyDrawerGravity) { binding.verticalDock.gravity = it }
-        viewCollect(places, collector = placesAdapter::setItems)
-        viewCollect(scrollToCurrentDir, collector = explorerAdapter::scrollToCurrentDir)
+    private fun FragmentExplorerBinding.initView() {
+        pager.adapter = pagerAdapter
+        bottomBar.isItemActiveIndicatorEnabled = false
+        bottomBar.setOnItemSelectedListener(::onNavigationItemSelected)
+        binding.navigationRail.menu.removeItem(R.id.stub)
+        navigationRail.setOnItemSelectedListener(::onNavigationItemSelected)
+        navigationRail.isItemActiveIndicatorEnabled = false
+        pager.recyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                presenter.onTabSelected(position)
+                explorerTabs.check(tabIds[position])
+            }
+        })
+
+        explorerTabs.addOnButtonCheckedListener { group, id, isChecked ->
+            if (!isChecked && group.checkedButtonId == View.NO_ID) {
+                getCurrentTabView().scrollToTop()
+                group.check(id)
+            }
+            if (isChecked) {
+                pager.currentItem = tabIds.indexOf(id)
+            }
+        }
+        explorerTabs.setOnClickListener {
+            getCurrentTabView().scrollToTop()
+        }
+
+        val textColors = ContextCompat.getColorStateList(requireContext(), R.color.redio_text_button_foreground_color_selector)
+        firstButton.setTextColor(textColors)
+        secondButton.setTextColor(textColors)
+    }
+
+    private fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_search -> presenter.onSearchOptionSelected()
+            R.id.menu_settings -> presenter.onSettingsOptionSelected()
+        }
+        return false
+    }
+
+    override fun ExplorerViewState.onViewCollect() {
+        //viewCollect(actions, collector = explorerAdapter::onAction)
+        viewCollect(firstTabItems) {
+            val first = explorerViews.first()
+            first.submitList(it)
+            binding.firstButton.text = first.title ?: getString(R.string.dash)
+        }
+        /*viewCollect(secondTabItems) {
+            val second = explorerViews.last()
+            second.submitList(it)
+            binding.secondButton.text = second.title ?: getString(R.string.dash)
+        }*/
+        viewCollect(itemComposition) { composition ->
+            explorerViews.forEach { it.setComposition(composition) }
+        }
+        viewCollect(scrollTo) { item ->
+            getCurrentTabView().scrollTo(item)
+        }
+        viewCollect(alerts, collector = ::showAlert)
+        viewCollect(currentTab) {
+            binding.pager.currentItem = it.index
+        }
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
-        binding.coordinator.insetsProxying()
-        binding.verticalDock.insetsProxying()
-        binding.recyclerView.applyPaddingInsets()
-        binding.explorerHeader.applyPaddingInsets(start = true, top = true, end = true)
-        binding.bottomAppBar.applyPaddingInsets(start = true, bottom = true, end = true)
-    }
-
-    override fun onBack(): Boolean {
-        if (binding.verticalDock.isOpened) {
-            binding.verticalDock.close()
-            return true
+        binding.run {
+            explorerTabs.applyPaddingInsets(start = true, top = true, end = true)
+            bottomBar.applyPaddingInsets(start = true, bottom = true, end = true)
+            navigationRail.applyPaddingInsets()
+            LayoutDelegate(
+                this.root,
+                explorerViews,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                tabLayout = null/*explorerTabs*/,
+            ) {
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
+            }
         }
-        return super.onBack()
     }
 
     override fun onKeyDown(keyCode: Int): Boolean = when {
         !isVisible -> false
         keyCode != KeyEvent.KEYCODE_VOLUME_UP -> false
-        else -> {
-            presenter.onVolumeUp(explorerAdapter.isCurrentDirVisible())
-            true
-        }
+        else -> getCurrentTabView().isCurrentDirVisible()?.also {
+            presenter.onVolumeUp(it)
+        } != null
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        explorerAdapter.notifyItemChanged(0)
-    }
+    private fun getCurrentTabView(): ExplorerView = explorerViews[binding.pager.currentItem]
 
-    private fun showPermissionRequiredWarning(unit: Unit) {
+    private fun showAlert(error: NodeError) {
         val view = view ?: return
-        Snackbar.make(view, R.string.access_to_storage_forbidden, Snackbar.LENGTH_LONG)
+        Snackbar.make(view, resources.getString(error), Snackbar.LENGTH_LONG)
             .setAnchorView(view)
-            .setAction(R.string.allow) { presenter.onAllowStorageClick() }
             .show()
     }
 }

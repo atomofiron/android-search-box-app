@@ -7,7 +7,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_HIGH
-import androidx.core.content.ContextCompat
+import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 
 object Notifications {
@@ -31,7 +31,7 @@ object Notifications {
             .setSmallIcon(R.drawable.ic_explorer_folder)
             .setContentIntent(notificationIntent)
             .addAction(0, context.getString(actionId), actionIntent)
-            .setColor(ContextCompat.getColor(context, R.color.day_night_primary))
+            .setColor(context.findColorByAttr(R.attr.colorPrimary))
             .build()
         notificationManager.notify(NOTIFICATION_ID_UPDATE, notification)
     }

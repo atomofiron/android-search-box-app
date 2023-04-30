@@ -1,12 +1,12 @@
 package app.atomofiron.searchboxapp.screens.result
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.atomofiron.common.arch.BaseFragment
@@ -14,26 +14,28 @@ import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
 import com.google.android.material.snackbar.Snackbar
 import app.atomofiron.searchboxapp.R
-import app.atomofiron.searchboxapp.anchorView
+import app.atomofiron.searchboxapp.utils.anchorView
+import app.atomofiron.searchboxapp.custom.LayoutDelegate
 import app.atomofiron.searchboxapp.databinding.FragmentResultBinding
-import app.atomofiron.searchboxapp.model.finder.FinderTask
+import app.atomofiron.searchboxapp.model.finder.SearchResult
 import app.atomofiron.searchboxapp.model.preference.ExplorerItemComposition
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.result.adapter.ResultAdapter
-import app.atomofiron.searchboxapp.setContentMaxWidthRes
+import com.google.android.material.navigation.NavigationBarView
 import lib.atomofiron.android_window_insets_compat.applyPaddingInsets
-import lib.atomofiron.android_window_insets_compat.insetsProxying
 
 class ResultFragment : Fragment(R.layout.fragment_result),
-    BaseFragment<ResultFragment, ResultViewModel, ResultPresenter> by BaseFragmentImpl()
+    BaseFragment<ResultFragment, ResultViewState, ResultPresenter> by BaseFragmentImpl()
 {
 
     private lateinit var binding: FragmentResultBinding
+    private lateinit var statusDrawable: Drawable
 
     private val resultAdapter = ResultAdapter()
     private val errorSnackbar by lazy(LazyThreadSafetyMode.NONE) {
         Snackbar.make(requireView(), "", Snackbar.LENGTH_INDEFINITE)
             .setAnchorView(anchorView)
-            .setAction(R.string.dismiss) { presenter.onDropTaskErrorClick() }
+            .setAction(R.string.got_it) { }
     }
     private var snackbarError: String? = null
 
@@ -42,6 +44,8 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         initViewModel(this, ResultViewModel::class, savedInstanceState)
 
         resultAdapter.itemActionListener = presenter
+        statusDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_search_status)!!
+        statusDrawable.setTintList(ContextCompat.getColorStateList(requireContext(), R.color.ic_search_status))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,34 +58,43 @@ class ResultFragment : Fragment(R.layout.fragment_result),
             layoutManager = LinearLayoutManager(requireContext())
             adapter = resultAdapter
         }
-        binding.statusLl.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
-        binding.bottomBar.setContentMaxWidthRes(R.dimen.bottom_bar_max_width)
+        binding.navigationRail.menu.removeItem(R.id.stub)
+        binding.navigationRail.isItemActiveIndicatorEnabled = false
+        binding.navigationRail.setOnItemSelectedListener(::onBottomMenuItemClick)
+        binding.bottomBar.isItemActiveIndicatorEnabled = false
         binding.bottomBar.setOnItemSelectedListener(::onBottomMenuItemClick)
-        viewModel.onViewCollect()
+        viewState.onViewCollect()
         onApplyInsets(view)
     }
 
     private fun onBottomMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_stop -> presenter.onStopClick()
-            R.id.menu_options -> presenter.onOptionsClick()
             R.id.menu_export -> presenter.onExportClick()
         }
         return false
     }
 
-    override fun ResultViewModel.onViewCollect() {
+    override fun ResultViewState.onViewCollect() {
         viewCollect(composition, collector = ::onCompositionChange)
         viewCollect(task, collector = ::onTaskChange)
-        viewCollect(enableOptions, collector = ::enableOptions)
-        viewCollect(notifyTaskHasChanged) { resultAdapter.notifyDataSetChanged() }
-        viewCollect(notifyItemChanged, collector = resultAdapter::setItem) // todo works poor
+        viewCollect(alerts, collector = ::showSnackbar)
     }
 
     override fun onApplyInsets(root: View) {
-        root.insetsProxying()
-        binding.recyclerView.applyPaddingInsets()
-        binding.bottomAppBar.applyPaddingInsets(bottom = true)
+        binding.run {
+            recyclerView.applyPaddingInsets()
+            LayoutDelegate(
+                root as ViewGroup,
+                recyclerView = recyclerView,
+                bottomView = bottomBar,
+                railView = navigationRail,
+                systemUiView = systemUiBackground,
+                snackbarContainer = binding.snackbarContainer,
+            ) {
+                bottomBar.menu.findItem(R.id.stub).isVisible = it
+            }
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -89,46 +102,41 @@ class ResultFragment : Fragment(R.layout.fragment_result),
         resultAdapter.notifyItemChanged(0)
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun onTaskChange(task: FinderTask) {
-        binding.ballsView.isVisible = task.inProgress
-        binding.ivStatus.run {
-            isGone = task.inProgress
-            isActivated = task.isDone
-            isEnabled = task.error == null
+    private fun NavigationBarView.onTaskChange(task: SearchTask) {
+        var item = menu.findItem(R.id.menu_stop)
+        if (item.isEnabled != task.inProgress) {
+            item.isEnabled = task.inProgress
         }
-        binding.tvCounter.text = "${task.results.size}/${task.count}"
-        binding.bottomBar.run {
-            var item = menu.findItem(R.id.menu_stop)
-            if (item.isEnabled != task.inProgress) {
-                item.isEnabled = task.inProgress
-            }
-            item = menu.findItem(R.id.menu_export)
-            if (item.isEnabled != task.results.isNotEmpty()) {
-                item.isEnabled = task.results.isNotEmpty()
-            }
+        item = menu.findItem(R.id.menu_export)
+        if (item.isEnabled != !task.result.isEmpty) {
+            item.isEnabled = !task.result.isEmpty
         }
-        resultAdapter.setResults(task.results)
+    }
 
-        if (task.results.isNotEmpty()) {
+    private fun onTaskChange(task: SearchTask) {
+        binding.bottomBar.onTaskChange(task)
+        binding.navigationRail.onTaskChange(task)
+
+        resultAdapter.setResult(task.result as SearchResult.FinderResult)
+
+        if (!task.result.isEmpty) {
             // fix first item offset
             resultAdapter.notifyItemChanged(0)
         }
-
-        if (task.error != snackbarError) {
-            errorSnackbar.setText(task.error!!).show()
+        if (task.error != null) {
+            errorSnackbar.setText(task.error).show()
         }
+        snackbarError = task.error
     }
 
     private fun onCompositionChange(composition: ExplorerItemComposition) {
         resultAdapter.setComposition(composition)
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun enableOptions(enable: Boolean) {
-        val item = binding.bottomBar.menu.findItem(R.id.menu_options)
-        if (item.isEnabled != enable) {
-            item.isEnabled = enable
-        }
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.snackbarContainer, message, Snackbar.LENGTH_INDEFINITE)
+            .setAnchorView(anchorView)
+            .setAction(R.string.got_it) { }
+            .show()
     }
 }

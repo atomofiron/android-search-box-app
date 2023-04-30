@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="day_night_primary">@color/primary_dark</color>
-	<color name="day_night_primary_lite">@color/primary_dark_lite</color>
 
+	<color name="day_night_primary">@color/md_theme_dark_primary</color>
 	<color name="day_night_content">@color/grey_light</color>
-	<color name="day_night_secondary">@color/grey_light_lite</color>
-	<color name="day_night_positive">@color/white</color>
-	<color name="day_night_negative">@color/grey_dark_21</color>
-	<color name="day_night_ripple">@color/ripple_dark</color>
 	<color name="day_night_background">@color/grey_dark_13</color>
 	<color name="day_night_background_amoled">@color/black</color>
-	<color name="day_night_shadow">@color/shadow_dark</color>
 	<color name="day_night_card_background">@color/card_background_dark</color>
 	<color name="day_night_card_background_amoled">@color/card_background_dark_amoled</color>
 
 	<color name="day_night_field_divider">@color/grey_dark_13</color>
 	<color name="day_night_field_divider_amoled">@color/grey_dark_21</color>
 	<color name="day_night_bone">@color/grey_dark_21</color>
-	<color name="day_night_overlay">@color/overlay_colored</color>
 
 </resources>

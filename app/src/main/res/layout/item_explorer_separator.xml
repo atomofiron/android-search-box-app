@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_explorer_separator"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="?attr/selectableItemBackground"
+    >
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/item_explorer_iv_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_double_arrow_up"
+        android:paddingStart="@dimen/common_margin"
+        android:paddingEnd="@dimen/common_margin_half"
+        />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/item_explorer_tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="Separator"
+        />
+</LinearLayout>

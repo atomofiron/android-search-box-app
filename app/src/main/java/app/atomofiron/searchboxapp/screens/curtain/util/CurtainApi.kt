@@ -1,9 +1,18 @@
 package app.atomofiron.searchboxapp.screens.curtain.util
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
+import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView
+import app.atomofiron.common.util.Unique
+import app.atomofiron.common.util.Equality
 import com.google.android.material.snackbar.Snackbar
+import lib.atomofiron.android_window_insets_compat.insetsProxying
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -27,7 +36,7 @@ object CurtainApi {
         fun getSnackbar(container: ViewGroup): Snackbar
     }
 
-    abstract class Adapter<H : ViewHolder> {
+    abstract class Adapter<H : ViewHolder> : Equality by Unique(Unit) {
         companion object {
             private val unused = Any()
         }
@@ -63,19 +72,40 @@ object CurtainApi {
 
         fun clear() = holderList.clear()
 
-        protected abstract fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): H?
+        protected abstract fun getHolder(inflater: LayoutInflater, layoutId: Int): H?
 
-        fun getViewHolder(container: ViewGroup, layoutId: Int): ViewHolder? {
-            val inflater = LayoutInflater.from(container.context)
-            val holder = holderList[layoutId] ?: getHolder(inflater, container, layoutId)?.apply {
+        fun getViewHolder(context: Context, layoutId: Int): ViewHolder? {
+            val inflater = LayoutInflater.from(context)
+            val holder = holderList[layoutId] ?: getHolder(inflater, layoutId)?.apply {
                 holderList[layoutId] = this
             }
             return holder
         }
     }
 
-    open class ViewHolder(
+    open class ViewHolder private constructor(
+        val isCancelable: Boolean,
         val view: View,
-        val isCancelable: Boolean = true,
-    )
+    ) {
+        constructor(
+            view: View,
+            isCancelable: Boolean = true,
+        ) : this(isCancelable, view.makeScrollable())
+    }
+}
+
+// make the large content scrollable
+private fun View.makeScrollable(): View {
+    val scrollView = when (this) {
+        is NestedScrollView -> this
+        is RecyclerView -> this
+        else -> NestedScrollView(context).apply {
+            this@makeScrollable.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            addView(this@makeScrollable)
+            insetsProxying()
+        }
+    }
+    // WRAP_CONTENT is necessary to the horizontal transitions in curtain
+    scrollView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+    return scrollView
 }

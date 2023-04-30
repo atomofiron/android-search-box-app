@@ -4,49 +4,47 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import app.atomofiron.searchboxapp.injectable.service.TextViewerService
-import app.atomofiron.searchboxapp.model.explorer.MutableXFile
-import app.atomofiron.searchboxapp.model.finder.FinderQueryParams
-import app.atomofiron.searchboxapp.model.finder.FinderTask
-import app.atomofiron.searchboxapp.model.finder.MutableFinderTask
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.finder.SearchParams
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
+import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
+import java.util.UUID
 
 class TextViewerInteractor(
     private val scope: CoroutineScope,
-    private val textViewerService: TextViewerService
+    private val textViewerService: TextViewerService,
 ) {
     private val context = Dispatchers.IO
 
-    fun loadFile(xFile: MutableXFile, params: FinderQueryParams?, callback: () -> Unit) {
+    fun fetchFileSession(path: String): TextViewerSession = textViewerService.getFileSession(path)
+
+    /** invoke the callback after success */
+    fun readFileToLine(item: Node, index: Int, callback: (() -> Unit)? = null) {
         scope.launch(context) {
-            textViewerService.primarySearch(xFile, params)
-            callback()
+            textViewerService.readFile(item, index) { success ->
+                if (success) callback?.invoke()
+            }
         }
     }
 
-    fun onLineVisible(index: Int) {
-        scope.launch(context) {
-            textViewerService.onLineVisible(index)
+    fun fetchTask(item: Node, taskId: UUID, callback: (SearchTask) -> Unit) {
+        scope.launch {
+            val task = textViewerService.fetchTask(item, taskId)
+            task?.let(callback)
         }
     }
 
-    fun loadFileUpToLine(prevIndex: Int?, callback: () -> Unit) {
-        scope.launch(context) {
-            textViewerService.loadFileUpToLine(prevIndex)
-            callback()
+    fun search(item: Node, params: SearchParams) {
+        scope.launch(Dispatchers.IO) {
+            textViewerService.search(item, params)
         }
     }
 
-    fun search(query: String, ignoreCase: Boolean, useRegex: Boolean) {
-        scope.launch(context) {
-            val params = FinderQueryParams(query, useRegex, ignoreCase)
-            textViewerService.secondarySearch(params)
+    fun removeTask(item: Node, taskId: Int) {
+        scope.launch {
+            textViewerService.removeTask(item, taskId)
         }
     }
 
-    fun showTask(task: FinderTask) {
-        scope.launch(context) {
-            textViewerService.showTask(task as MutableFinderTask)
-        }
-    }
-
-    fun removeTask(task: FinderTask) = textViewerService.removeTask(task as MutableFinderTask)
+    fun closeSession(item: Node) = textViewerService.closeSession(item)
 }

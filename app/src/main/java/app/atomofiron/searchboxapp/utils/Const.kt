@@ -6,35 +6,13 @@ object Const {
     const val SPACE = " "
     const val EMPTY = ""
     const val QUOTE = "\""
-    const val SDCARD = "/sdcard/"
     const val ANDROID_DIR = "/Android/"
-    const val PREF_ABOUT = "pref_about"
-    const val PREF_STORAGE_PATH = "pref_storage_path"
-    const val PREF_OPENED_DIR_PATH = "pref_opened_dir_path"
-    const val PREF_DOCK_GRAVITY = "pref_drawer_gravity"
-    const val PREF_SPECIAL_CHARACTERS = "pref_special_characters"
-    const val PREF_TEXT_FORMATS = "pref_text_formats"
-    const val PREF_APP_ORIENTATION = "pref_app_orientation"
-    const val PREF_APP_THEME = "pref_app_theme"
-    const val PREF_DEEP_BLACK = "pref_deep_black"
-    const val PREF_MAX_SIZE = "pref_max_size"
-    const val PREF_MAX_DEPTH = "pref_max_depth"
-    const val PREF_EXCLUDE_DIRS = "pref_exclude_dirs"
-    const val PREF_USE_SU = "pref_use_su"
-    const val PREF_CURRENT_DIR = "pref_current_dir"
-    const val PREF_EXPORT_IMPORT = "pref_export_import"
-    const val PREF_EXPLORER_ITEM = "pref_explorer_item"
-    const val PREF_JOYSTICK = "pref_joystick"
-    const val PREF_TOYBOX = "pref_toybox"
-    const val PREF_LEAK_CANARY = "pref_leak_canary"
-
-    const val PREF_CATEGORY_DEBUG = "pref_category_debug"
 
     const val DEFAULT_TEXT_FORMATS = "txt java xml html htm smali log js css json kt md mkd markdown cm ad adoc"
     const val DEFAULT_SPECIAL_CHARACTERS = "\\ [ { ? + * ^ $"
-    const val DEFAULT_MAX_SIZE = 10485760L
+    const val DEFAULT_MAX_SIZE = 10485760
     const val DEFAULT_MAX_DEPTH = 1024
-    const val DEFAULT_EXPLORER_ITEM = 251
+    const val DEFAULT_EXPLORER_ITEM = 248
     const val DEFAULT_JOYSTICK = 16732754 // 0ff5252
     const val DEFAULT_TOYBOX_PATH = "/system/bin/toybox"
 
@@ -50,14 +28,17 @@ object Const {
     const val ALPHA_INVISIBLE = 0f
     const val ALPHA_ENABLED = 1f
     const val ALPHA_DISABLED = 0.5f
-    const val ALPHA_ENABLED_INT = 255
+    const val ALPHA_VISIBLE_INT = 255
     const val ALPHA_DISABLED_INT = 128
     const val ALPHA_12_PERCENT = 31
+    const val ALPHA_30_PERCENT = 80
     const val ALPHA_50_PERCENT = 128
+    const val ALPHA_67_PERCENT = 170
     const val ALPHA_80_PERCENT = 200
     const val ALPHA_90_PERCENT = 225
     const val RIPPLE_ALPHA = 64
-    const val COMMON_DURATION = 256L
+    const val RIPPLE_ALPHA_HALF = 180
+    const val COMMON_DURATION = 512L
     const val COMMON_DELAY = 256L
     const val CONFIRM_DELAY = 2000L
 
@@ -74,6 +55,7 @@ object Const {
     const val FOREGROUND_INTENT_REQUEST_CODE = 102
     const val REQUEST_CODE_MARKET_UPDATE = 7453
     const val NOTIFICATION_ID_UPDATE = 9485
+    const val REQUEST_CODE_INSTALL = 5673
 
     const val DATE_PATTERN = "yyyy-MM-DD_HH-mm-ss"
     const val MIME_TYPE_TEXT = "text/plain"

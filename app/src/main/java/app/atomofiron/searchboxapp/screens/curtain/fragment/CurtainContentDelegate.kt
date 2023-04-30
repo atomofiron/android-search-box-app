@@ -21,12 +21,15 @@ class CurtainContentDelegate(
             node.removeParent()
             binding.curtainSheet.removeAllViews()
             binding.curtainSheet.addView(holder.view)
+            binding.curtainSheet.requestApplyInsets()
         }
     }
 
     fun showNext(layoutId: Int) {
         val holder = getHolder(layoutId)
         holder ?: return
+        if (transitionAnimator.transitionIsRunning) return
+
         val view = holder.view
         val node = CurtainNode(layoutId, view, holder.isCancelable)
         stack.add(node)
@@ -38,6 +41,8 @@ class CurtainContentDelegate(
 
     fun showPrev(): Boolean {
         if (stack.size < 2) return false
+        if (transitionAnimator.transitionIsRunning) return false
+
         val last = stack.removeLast()
         adapter.drop(last.layoutId)
 
@@ -56,7 +61,7 @@ class CurtainContentDelegate(
     }
 
     private fun getHolder(layoutId: Int): CurtainApi.ViewHolder? {
-        val holder = adapter.getViewHolder(binding.curtainSheet, layoutId)
+        val holder = adapter.getViewHolder(binding.root.context, layoutId)
         when (holder) {
             null -> presenter.onNullViewGot()
             else -> presenter.setCancelable(holder.isCancelable)

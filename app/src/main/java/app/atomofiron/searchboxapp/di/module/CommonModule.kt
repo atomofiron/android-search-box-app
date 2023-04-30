@@ -1,13 +1,13 @@
 package app.atomofiron.searchboxapp.di.module
 
-import android.app.NotificationManager
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -15,14 +15,8 @@ open class CommonModule {
 
     @Provides
     @Singleton
-    open fun provideSharedPreferences(context: Context): SharedPreferences {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-    }
-
-    @Provides
-    @Singleton
-    open fun provideNotificationManager(context: Context): NotificationManager {
-        return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    open fun provideNotificationManager(context: Context): NotificationManagerCompat {
+        return NotificationManagerCompat.from(context)
     }
 
     @Provides
@@ -35,5 +29,11 @@ open class CommonModule {
     @Singleton
     open fun provideClipboardManager(context: Context): ClipboardManager {
         return context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    }
+
+    @Provides
+    @Singleton
+    open fun provideCoroutineScope(): CoroutineScope {
+        return CoroutineScope(Dispatchers.Default)
     }
 }

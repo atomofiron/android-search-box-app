@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
+import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.view.Gravity
@@ -22,6 +23,7 @@ class NumberTextField @JvmOverloads constructor(
         gravity = Gravity.CENTER_HORIZONTAL
         keyListener = DigitsKeyListener.getInstance("0123456789")
         hint = "_____"
+        inputType = inputType or InputType.TYPE_NUMBER_FLAG_DECIMAL
     }
 
     fun setOnSubmitListener(listener: OnSubmitListener?) {

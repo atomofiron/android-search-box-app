@@ -22,7 +22,7 @@
 		app:defaultNavHost="true"
 		app:navGraph="@navigation/graph"
 		/>
-	<app.atomofiron.searchboxapp.custom.view.Joystick
+	<app.atomofiron.searchboxapp.custom.view.JoystickView
 		android:id="@+id/joystick"
 		android:layout_width="@dimen/joystick_size"
 		android:layout_height="@dimen/joystick_size"

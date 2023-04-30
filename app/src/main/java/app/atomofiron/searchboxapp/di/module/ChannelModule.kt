@@ -1,10 +1,13 @@
 package app.atomofiron.searchboxapp.di.module
 
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
+import app.atomofiron.searchboxapp.injectable.channel.MainChannel
 import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
+import app.atomofiron.searchboxapp.injectable.store.AppStore
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 
@@ -13,7 +16,7 @@ open class ChannelModule {
 
     @Provides
     @Singleton
-    open fun providePreferenceChannel(): PreferenceChannel = PreferenceChannel()
+    open fun providePreferenceChannel(scope: CoroutineScope): PreferenceChannel = PreferenceChannel(scope)
 
     @Provides
     @Singleton
@@ -21,5 +24,9 @@ open class ChannelModule {
 
     @Provides
     @Singleton
-    open fun provideCurtainChannel(): CurtainChannel = CurtainChannel()
+    open fun provideCurtainChannel(appStore: AppStore): CurtainChannel = CurtainChannel(appStore.scope)
+
+    @Provides
+    @Singleton
+    open fun provideMainChannel(): MainChannel = MainChannel()
 }

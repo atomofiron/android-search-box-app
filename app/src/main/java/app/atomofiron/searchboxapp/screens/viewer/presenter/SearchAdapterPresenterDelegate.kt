@@ -1,68 +1,73 @@
 package app.atomofiron.searchboxapp.screens.viewer.presenter
 
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
-import app.atomofiron.common.util.flow.emitNow
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.TextViewerInteractor
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.model.finder.SearchParams
+import app.atomofiron.searchboxapp.model.textviewer.SearchTask
 import app.atomofiron.searchboxapp.screens.finder.adapter.FinderAdapterOutput
 import app.atomofiron.searchboxapp.screens.finder.model.FinderStateItem
 import app.atomofiron.searchboxapp.screens.viewer.TextViewerRouter
-import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewModel
+import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState
+import app.atomofiron.searchboxapp.screens.viewer.TextViewerViewState.MatchCursor
 import app.atomofiron.searchboxapp.screens.viewer.presenter.curtain.CurtainSearchDelegate
 import app.atomofiron.searchboxapp.utils.showCurtain
+import kotlinx.coroutines.CoroutineScope
 
 class SearchAdapterPresenterDelegate(
-    private val viewModel: TextViewerViewModel,
+    scope: CoroutineScope,
+    private val viewState: TextViewerViewState,
     private val router: TextViewerRouter,
     private val interactor: TextViewerInteractor,
     preferenceStore: PreferenceStore,
     curtainChannel: CurtainChannel,
 ) : Recipient, FinderAdapterOutput {
 
-    private val curtainDelegate = CurtainSearchDelegate(this)
+    private val curtainDelegate = CurtainSearchDelegate(this, viewState, scope)
 
     init {
-        viewModel.run {
+        viewState.run {
             uniqueItems.add(FinderStateItem.SearchAndReplaceItem())
-            val characters = preferenceStore.specialCharacters.entity
+            val characters = preferenceStore.specialCharacters.value
             uniqueItems.add(FinderStateItem.SpecialCharactersItem(characters))
             uniqueItems.add(FinderStateItem.ConfigItem(isLocal = true))
             uniqueItems.add(FinderStateItem.TestItem())
-            updateState(isLocal = true)
+            updateState()
         }
-        curtainChannel.flow.collectForMe(viewModel.viewModelScope) { controller ->
-            curtainDelegate.set(viewModel.searchItems.value, viewModel.xFile, viewModel.composition)
+        curtainChannel.flow.collectForMe(scope) { controller ->
             curtainDelegate.setController(controller)
         }
     }
 
     fun show() = router.showCurtain(recipient, R.layout.curtain_text_viewer_search)
 
-    override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewModel.updateConfig(item)
+    override fun onConfigChange(item: FinderStateItem.ConfigItem) = viewState.updateConfig(item)
 
-    override fun onCharacterClick(value: String) = viewModel.insertInQuery.emitNow(value)
+    override fun onConfigVisibilityClick() = Unit
 
-    override fun onSearchChange(value: String) = viewModel.updateSearchQuery(value)
+    override fun onHistoryClick() = Unit
+
+    override fun onCharacterClick(value: String) = viewState.sendInsertInQuery(value)
+
+    override fun onSearchChange(value: String) = viewState.updateSearchQuery(value)
 
     override fun onSearchClick(value: String) {
-        val config = viewModel.getUniqueItem(FinderStateItem.ConfigItem::class)
-        interactor.search(value, config.ignoreCase, config.useRegex)
-        curtainDelegate.controller?.close()
+        val config = viewState.getUniqueItem(FinderStateItem.ConfigItem::class)
+        val params = SearchParams(value, config.ignoreCase, config.useRegex)
+        interactor.search(viewState.item.value, params)
     }
 
     override fun onItemClick(item: FinderStateItem.ProgressItem) {
-        if (item.finderTask.count > 0) {
+        if (viewState.trySelectTask(item.task)) {
             curtainDelegate.controller?.close()
-            interactor.showTask(item.finderTask)
         }
     }
 
     override fun onProgressRemoveClick(item: FinderStateItem.ProgressItem) {
-        interactor.removeTask(item.finderTask)
+        interactor.removeTask(viewState.item.value, item.task.uniqueId)
+        viewState.dropTask()
     }
 
     override fun onReplaceClick(value: String) = Unit

@@ -1,51 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/bottom_tab_bar_height"
     >
-
-    <app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
-        android:id="@+id/explorer_create_et"
-        android:layout_width="match_parent"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/explorer_create_tv"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/common_margin"
-        android:imeOptions="actionDone"
-        android:inputType="textNoSuggestions"
+        android:layout_marginStart="@dimen/curtain_title_margin"
+        android:layout_marginBottom="@dimen/common_margin_half"
+        android:textSize="@dimen/curtain_title_size"
+        android:textColor="?attr/colorContent"
+        android:textStyle="bold"
+        android:text="@string/create_a_new"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
-    <RadioGroup
-        android:id="@+id/explorer_create_rg"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/explorer_create_til"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:layout_marginEnd="@dimen/common_margin"
+        android:layout_marginTop="@dimen/common_margin_half"
+        android:layout_margin="@dimen/common_margin"
+        android:hint="@string/a_name"
+        app:layout_constraintTop_toBottomOf="@+id/explorer_create_tv"
         >
-        <com.google.android.material.radiobutton.MaterialRadioButton
-            android:id="@+id/explorer_create_dir"
-            android:layout_width="wrap_content"
+        <app.atomofiron.searchboxapp.custom.view.AutoHideKeyboardField
+            android:id="@+id/explorer_create_et"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/a_directory"
-            android:layout_marginEnd="@dimen/common_margin"
-            android:checked="true"
+            android:imeOptions="actionDone"
             />
-        <com.google.android.material.radiobutton.MaterialRadioButton
-            android:id="@+id/explorer_create_file"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/a_file"
-            />
-    </RadioGroup>
+    </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/explorer_create_btn"
+        android:id="@+id/explorer_create_file_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="@dimen/common_margin"
-        android:text="@string/create"
+        android:layout_marginVertical="@dimen/common_margin"
+        android:text="@string/a_file"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:cornerRadius="@dimen/infinity"
+        app:layout_constraintTop_toBottomOf="@+id/explorer_create_til"
+        app:layout_constraintEnd_toStartOf="@+id/explorer_create_dir_btn"
         />
-</LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/explorer_create_dir_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/common_margin"
+        android:layout_marginVertical="@dimen/common_margin"
+        android:text="@string/a_directory"
+        app:cornerRadius="@dimen/infinity"
+        app:layout_constraintTop_toBottomOf="@+id/explorer_create_til"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

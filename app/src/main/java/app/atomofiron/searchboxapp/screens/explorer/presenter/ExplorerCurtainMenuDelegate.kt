@@ -1,32 +1,32 @@
 package app.atomofiron.searchboxapp.screens.explorer.presenter
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.lifecycle.viewModelScope
 import app.atomofiron.common.arch.Recipient
-import app.atomofiron.common.util.flow.value
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.custom.view.menu.MenuListener
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.model.other.ExplorerItemOptions
 import app.atomofiron.searchboxapp.screens.curtain.util.CurtainApi
 import app.atomofiron.searchboxapp.screens.explorer.ExplorerRouter
-import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewModel
+import app.atomofiron.searchboxapp.screens.explorer.ExplorerViewState
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.CreateDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.OptionsDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.curtain.RenameDelegate
+import app.atomofiron.searchboxapp.utils.ExplorerDelegate.isParentOf
 import app.atomofiron.searchboxapp.utils.showCurtain
+import kotlinx.coroutines.CoroutineScope
 
 class ExplorerCurtainMenuDelegate(
-    private val viewModel: ExplorerViewModel,
+    private val scope: CoroutineScope,
+    private val viewState: ExplorerViewState,
     private val router: ExplorerRouter,
     private val explorerStore: ExplorerStore,
     private val explorerInteractor: ExplorerInteractor,
     curtainChannel: CurtainChannel,
-) : Recipient, CurtainApi.Adapter<CurtainApi.ViewHolder>(), MenuListener {
+) : CurtainApi.Adapter<CurtainApi.ViewHolder>(), Recipient, MenuListener {
     private companion object {
         const val OPTIONS = 111
         const val CREATE = 222
@@ -37,10 +37,12 @@ class ExplorerCurtainMenuDelegate(
     private val createDelegate = CreateDelegate(output = this)
     private val renameDelegate = RenameDelegate(output = this)
 
+    private val currentTab get() = viewState.currentTab.value
+
     override var data: ExplorerItemOptions? = null
 
     init {
-        curtainChannel.flow.collectForMe(viewModel.viewModelScope, ::setController)
+        curtainChannel.flow.collectForMe(scope, ::setController)
     }
 
     fun showOptions(options: ExplorerItemOptions) {
@@ -48,16 +50,16 @@ class ExplorerCurtainMenuDelegate(
         router.showCurtain(recipient, OPTIONS)
     }
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder? {
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder? {
         return when (layoutId) {
             OPTIONS -> data?.let {
-                optionsDelegate.getView(it, inflater, container)
+                optionsDelegate.getView(it, inflater)
             }
             CREATE -> data?.items?.firstOrNull()?.let {
-                createDelegate.getView(it, inflater, container)
+                createDelegate.getView(it, inflater)
             }
             RENAME -> getRenameData()?.let {
-                renameDelegate.getView(it, inflater, container)
+                renameDelegate.getView(it, inflater)
             }
             else -> null
         }?.let {
@@ -72,30 +74,32 @@ class ExplorerCurtainMenuDelegate(
             R.id.menu_create -> controller?.showNext(CREATE)
             R.id.menu_rename -> controller?.showNext(RENAME)
             R.id.menu_remove -> onRemoveConfirm(items)
+            R.id.menu_share -> router.shareWith(items.first())
+            R.id.menu_open_with -> router.openWith(items.first())
         }
     }
 
-    fun onCreateConfirm(dir: XFile, name: String, directory: Boolean) {
+    fun onCreateConfirm(dir: Node, name: String, directory: Boolean) {
         controller?.close()
-        explorerInteractor.create(dir, name, directory)
+        explorerInteractor.create(currentTab, dir, name, directory)
     }
 
-    fun onRenameConfirm(item: XFile, name: String) {
+    fun onRenameConfirm(item: Node, name: String) {
         controller?.close()
-        explorerInteractor.rename(item, name)
+        explorerInteractor.rename(currentTab, item, name)
     }
 
-    private fun onRemoveConfirm(items: List<XFile>) {
+    private fun onRemoveConfirm(items: List<Node>) {
         controller?.close()
-        explorerInteractor.deleteItems(items)
+        explorerInteractor.deleteItems(currentTab, items)
     }
 
     private fun getRenameData(): RenameDelegate.RenameData? {
         val item = data?.items?.first() ?: return null
-        val dirFiles = explorerStore.items
+        val dirFiles = explorerStore.currentItems
             .find { it.isParentOf(item) }
             ?.children?.map { it.name }
         dirFiles ?: return null
-        return RenameDelegate.RenameData(viewModel.itemComposition.value, item, dirFiles)
+        return RenameDelegate.RenameData(viewState.itemComposition.value, item, dirFiles)
     }
 }

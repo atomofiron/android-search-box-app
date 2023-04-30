@@ -4,6 +4,13 @@
     <string name="case_sens">Case sensitivity</string>
     <string name="storage_err">Error accessing memory</string>
     <string name="searching">Search…</string>
+    <string name="search_stopped">Search was stopped</string>
+    <string name="search_empty">Search returned no results</string>
+    <string name="search_succeed">Search completed successfully</string>
+    <string name="search_failed">Search ended with an error</string>
+    <string name="search_for_content_result">Substrings: %d, files: %d, total files: %d</string>
+    <string name="search_for_names_result">Files: %d, total files: %d</string>
+    <string name="search_error">Error: %s</string>
     <string name="error">Error</string>
     <string name="nothing">Nothing found</string>
     <string name="warning">You have not selected any directory. The search will be made around the root section</string>
@@ -13,7 +20,7 @@
     <string name="results">Your search returned %d results</string>
     <string name="find">Find</string>
     <string name="search_in_the_content">Search in the files content</string>
-    <string name="pref_search_in_the_content">@string/search_in_the_content</string>
+    <string name="pref_search">@string/search</string>
     <string name="regex">Use regexp</string>
     <string name="multiline">\'Multiline\' flag</string>
     <string name="bad_ex">Incorrect regular expression</string>
@@ -32,15 +39,15 @@
     <string name="done">Done</string>
     <string name="stopped">Stopped</string>
     <string name="options">Options</string>
+    <string name="options_title">Options:</string>
     <string name="explorer">Files</string>
     <string name="replace">Replace</string>
     <string name="tasks">Tasks</string>
     <string name="settings">Settings</string>
     <string name="share">Share</string>
-    <string name="pref_storage_path">Storage directory path</string>
-    <string name="pref_text_formats">Text formats</string>
     <string name="pref_orientation">Screen orientation</string>
     <string name="fucking_provider">Сould not open file due to system limitations, try to copy the absolute path to the file and open it in another application</string>
+    <string name="pref_home_screen">Home screen</string>
     <string name="pref_theme">App theme</string>
     <string name="pref_deep_black">Deep black</string>
     <string name="pref_max_depth">Max depth of the search</string>
@@ -48,16 +55,18 @@
     <string name="max_size_sum">If search in the content</string>
     <string name="pref_exclude_dirs">Exclude directories</string>
     <string name="exclude_dirs_summary">From search results</string>
+    <string name="max_size_summary">When searching by content</string>
     <string name="pref_use_su">Use super user</string>
     <string name="preferences">Preferences</string>
     <string name="pref_about">About the App</string>
     <string name="look_github">Look the Github repository</string>
     <string name="faq_4pda">FAQ / Discuss</string>
     <string name="test_field">Test text field</string>
+    <string name="try_find_this_text">Try to find this text</string>
     <string name="waiting_for_results">Waiting for the results…</string>
     <string name="no_access">No access</string>
     <string name="data_was_lost">Data was lost</string>
-    <string name="search_completed">Search completed: %d/%d</string>
+    <string name="search_completed">Search completed: %s</string>
     <string name="pref_special_characters">Special characters</string>
     <string name="search">Search</string>
     <string name="use_regular_expression">Use regular expression</string>
@@ -66,6 +75,13 @@
     <string name="click_back_to_exit">Click Back to close the App</string>
     <string name="remove">Remove</string>
     <string name="rename">Rename</string>
+    <string name="open_with">Open with</string>
+    <string name="no_such_file">No such file</string>
+    <string name="no_such_directory">No such directory</string>
+    <string name="no_such_file_or_directory">No such file or directory</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="a_lot_of_errors">A lot of errors</string>
     <string name="not_allowed">Not allowed</string>
     <string name="pref_export_import">Export / Import</string>
     <string name="export_btn">Export</string>
@@ -75,8 +91,13 @@
     <string name="more">More</string>
     <string name="access_to_storage_forbidden">Access to the storage is forbidden</string>
     <string name="allow">Allow</string>
-    <string name="places">Places</string>
     <string name="confirm">Confirm</string>
+    <string name="root_photos">Photos</string>
+    <string name="root_videos">Videos</string>
+    <string name="root_camera">Camera</string>
+    <string name="root_downloads">Down&#8203;loads</string>
+    <string name="root_bluetooth" translatable="false">Blue&#8203;tooth</string>
+    <string name="root_screenshots">Screen&#8203;shots</string>
     <string name="internal_storage">Internal storage</string>
     <string name="external_storage">External storage</string>
     <string name="oops_not_working">Oops, not working yet</string>
@@ -84,9 +105,13 @@
     <string name="pref_explorer_item">File / Directory</string>
     <string name="pref_joystick">ESC button\'s color</string>
     <string name="create">Create</string>
+    <string name="create_file_or_dir">Create a file or directory</string>
+    <string name="owner">Owner</string>
+    <string name="group">Group</string>
     <string name="empty_check_box">Empty check box</string>
-    <string name="item_explorer_background">Alternating background</string>
+    <string name="item_explorer_background">Striped background</string>
     <string name="create_a_new">Create a new</string>
+    <string name="a_name">Name</string>
     <string name="a_file">File</string>
     <string name="a_directory">Directory</string>
     <string name="inverse_glowing">Inverse highlight</string>
@@ -104,8 +129,11 @@
     <string name="toybox_32" translatable="false">toybox arm32</string>
     <string name="toybox_x86_64" translatable="false">toybox x86_64</string>
     <string name="dismiss">Dismiss</string>
+    <string name="got_it">Got it</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
     <string name="update_available">Update is available</string>
     <string name="failed_check_updates">Failed to check for updates</string>
     <string name="update_loading">Update is loading now</string>
@@ -115,6 +143,9 @@
     <string name="channel_name_updates">Updates</string>
     <string name="tip">In Explorer specify where to search</string>
     <string name="search_here">Search here:</string>
+    <string name="by_default">Reset to default</string>
+    <string name="dash" translatable="false">—</string>
+    <string name="fix_android_12">Starting from Android 12, the search may be interrupted by the system.\nThis issue will be fixed in the next updates.</string>
     <plurals name="x_dirs">
         <item quantity="zero">%d directories</item>
         <item quantity="one">%d directory</item>

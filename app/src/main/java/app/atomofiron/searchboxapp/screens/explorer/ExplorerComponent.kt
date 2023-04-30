@@ -1,24 +1,23 @@
 package app.atomofiron.searchboxapp.screens.explorer
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.fragment.app.Fragment
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
+import app.atomofiron.searchboxapp.injectable.channel.MainChannel
+import app.atomofiron.searchboxapp.injectable.interactor.ApkInteractor
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.injectable.interactor.ExplorerInteractor
-import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
-import app.atomofiron.searchboxapp.injectable.store.AppStore
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.injectable.store.ExplorerStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerItemActionListenerDelegate
-import app.atomofiron.searchboxapp.screens.explorer.presenter.PlacesActionListenerDelegate
 import javax.inject.Scope
 
 @Scope
@@ -32,9 +31,7 @@ interface ExplorerComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: ExplorerViewModel): Builder
-        @BindsInstance
-        fun bind(fragment: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         fun dependencies(dependencies: ExplorerDependencies): Builder
@@ -49,64 +46,61 @@ class ExplorerModule {
     @Provides
     @ExplorerScope
     fun itemListener(
-        viewModel: ExplorerViewModel,
+        viewState: ExplorerViewState,
         menuListenerDelegate: ExplorerCurtainMenuDelegate,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
         router: ExplorerRouter,
         explorerInteractor: ExplorerInteractor,
+        apkInteractor: ApkInteractor,
     ): ExplorerItemActionListenerDelegate {
         return ExplorerItemActionListenerDelegate(
-            viewModel,
+            viewState,
             menuListenerDelegate,
             explorerStore,
             preferenceStore,
             router,
             explorerInteractor,
+            apkInteractor,
         )
     }
 
     @Provides
     @ExplorerScope
-    fun placesListener(viewModel: ExplorerViewModel): PlacesActionListenerDelegate {
-        return PlacesActionListenerDelegate(viewModel)
-    }
-
-    @Provides
-    @ExplorerScope
     fun menuListener(
-        viewModel: ExplorerViewModel,
+        scope: CoroutineScope,
+        viewState: ExplorerViewState,
         router: ExplorerRouter,
         explorerStore: ExplorerStore,
         explorerInteractor: ExplorerInteractor,
         curtainChannel: CurtainChannel,
     ): ExplorerCurtainMenuDelegate {
-        return ExplorerCurtainMenuDelegate(viewModel, router, explorerStore, explorerInteractor, curtainChannel)
+        return ExplorerCurtainMenuDelegate(scope, viewState, router, explorerStore, explorerInteractor, curtainChannel)
     }
 
     @Provides
     @ExplorerScope
     fun presenter(
-        viewModel: ExplorerViewModel,
+        scope: CoroutineScope,
+        viewState: ExplorerViewState,
         router: ExplorerRouter,
         explorerStore: ExplorerStore,
         preferenceStore: PreferenceStore,
-        appStore: AppStore,
         explorerInteractor: ExplorerInteractor,
         itemListener: ExplorerItemActionListenerDelegate,
-        placesListener: PlacesActionListenerDelegate,
         curtainMenuDelegate: ExplorerCurtainMenuDelegate,
+        mainChannel: MainChannel,
     ): ExplorerPresenter {
         return ExplorerPresenter(
-            viewModel,
+            scope,
+            viewState,
             router,
             explorerStore,
             preferenceStore,
-            appStore,
             explorerInteractor,
             itemListener,
-            placesListener,
             curtainMenuDelegate,
+            mainChannel,
         )
     }
 
@@ -118,16 +112,24 @@ class ExplorerModule {
 
     @Provides
     @ExplorerScope
-    fun router(fragment: WeakProperty<Fragment>): ExplorerRouter = ExplorerRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): ExplorerRouter {
+        return ExplorerRouter(fragment)
+    }
+
+    @Provides
+    @ExplorerScope
+    fun viewState(scope: CoroutineScope, explorerStore: ExplorerStore, interactor: ExplorerInteractor): ExplorerViewState {
+        return ExplorerViewState(scope, explorerStore, interactor)
+    }
 }
 
 interface ExplorerDependencies {
     fun context(): Context
     fun assetManager(): AssetManager
-    fun sharedPreferences(): SharedPreferences
     fun explorerService(): ExplorerService
     fun explorerStore(): ExplorerStore
     fun preferenceStore(): PreferenceStore
-    fun appStore(): AppStore
     fun curtainChannel(): CurtainChannel
+    fun apkInteractor(): ApkInteractor
+    fun mainChannel(): MainChannel
 }

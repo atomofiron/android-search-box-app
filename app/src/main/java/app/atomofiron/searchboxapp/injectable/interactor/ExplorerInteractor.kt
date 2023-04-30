@@ -1,65 +1,66 @@
 package app.atomofiron.searchboxapp.injectable.interactor
 
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import app.atomofiron.searchboxapp.injectable.service.explorer.ExplorerService
-import app.atomofiron.searchboxapp.model.explorer.XFile
+import app.atomofiron.searchboxapp.model.explorer.Node
+import app.atomofiron.searchboxapp.model.explorer.NodeRoot
+import app.atomofiron.searchboxapp.model.explorer.NodeTabKey
 
 class ExplorerInteractor(
     private val scope: CoroutineScope,
-    private val service: ExplorerService
+    private val service: ExplorerService,
 ) {
     private val context = Dispatchers.IO
 
-    fun setRoot(path: String) {
+    fun getFlow(tab: NodeTabKey) = service.getOrCreateFlowSync(tab)
+
+    fun selectRoot(tab: NodeTabKey, item: NodeRoot) {
         scope.launch(context) {
-            service.setRoots(path)
+            service.trySelectRoot(tab, item)
         }
     }
 
-    fun checkItem(item: XFile, isChecked: Boolean) {
+    fun checkItem(tab: NodeTabKey, item: Node, isChecked: Boolean) {
         scope.launch(context) {
-            service.checkItem(item, isChecked)
+            service.tryCheckItem(tab, item, isChecked)
         }
     }
 
-    fun openDir(dir: XFile) {
+    fun toggleDir(tab: NodeTabKey, dir: Node) {
         scope.launch(context) {
-            service.open(dir)
-            service.persistState()
+            service.tryToggle(tab, dir)
         }
     }
 
-    fun openParent() {
+    fun updateItem(tab: NodeTabKey, file: Node) {
         scope.launch(context) {
-            service.openParent()
+            service.tryCacheAsync(tab, file)
         }
     }
 
-    fun updateItem(file: XFile) {
+    fun updateRoots(tab: NodeTabKey) {
         scope.launch(context) {
-            service.updateItem(file)
+            service.updateRootsAsync(tab)
         }
     }
 
-    fun invalidateItem(file: XFile) = service.invalidateDir(file)
-
-    fun deleteItems(file: List<XFile>) {
+    fun deleteItems(tab: NodeTabKey, items: List<Node>) {
         scope.launch(context) {
-            service.delete(file)
+            service.tryDelete(tab, items)
         }
     }
 
-    fun rename(item: XFile, name: String) {
+    fun rename(tab: NodeTabKey, item: Node, name: String) {
         scope.launch(context) {
-            service.rename(item, name)
+            service.tryRename(tab, item, name)
         }
     }
 
-    fun create(dir: XFile, name: String, directory: Boolean) {
+    fun create(tab: NodeTabKey, dir: Node, name: String, directory: Boolean) {
         scope.launch(context) {
-            service.create(dir, name, directory)
+            service.tryCreate(tab, dir, name, directory)
         }
     }
 }

@@ -1,6 +1,6 @@
 package app.atomofiron.searchboxapp.model.textviewer
 
-class TextLineMatch(
-    val start: Int,
-    val end: Int
+data class TextLineMatch(
+    val byteOffset: Long,
+    val length: Int,
 )

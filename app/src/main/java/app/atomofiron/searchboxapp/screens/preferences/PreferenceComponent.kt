@@ -2,6 +2,7 @@ package app.atomofiron.searchboxapp.screens.preferences
 
 import android.content.Context
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceDataStore
 import app.atomofiron.common.util.property.WeakProperty
 import app.atomofiron.searchboxapp.injectable.channel.CurtainChannel
 import dagger.BindsInstance
@@ -10,13 +11,15 @@ import dagger.Module
 import dagger.Provides
 import app.atomofiron.searchboxapp.injectable.channel.PreferenceChannel
 import app.atomofiron.searchboxapp.injectable.service.PreferenceService
+import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.PreferenceStore
+import app.atomofiron.searchboxapp.screens.preferences.fragment.LegacyPreferenceDataStore
 import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceClickOutput
-import app.atomofiron.searchboxapp.screens.preferences.fragment.PreferenceUpdateOutput
 import app.atomofiron.searchboxapp.screens.preferences.presenter.ExportImportPresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceClickPresenterDelegate
-import app.atomofiron.searchboxapp.screens.preferences.presenter.PreferenceUpdatePresenterDelegate
 import app.atomofiron.searchboxapp.screens.preferences.presenter.curtain.ExportImportDelegate
+import app.atomofiron.searchboxapp.utils.AppWatcherProxy
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Scope
 
 @Scope
@@ -30,9 +33,9 @@ interface PreferenceComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: PreferenceViewModel): Builder
+        fun bind(scope: CoroutineScope): Builder
         @BindsInstance
-        fun bind(fragment: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         fun dependencies(dependencies: PreferenceDependencies): Builder
         fun build(): PreferenceComponent
     }
@@ -45,35 +48,27 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun preferenceUpdatePresenterDelegate(
-        context: Context, viewModel: PreferenceViewModel, preferenceStore: PreferenceStore
-    ): PreferenceUpdateOutput {
-        return PreferenceUpdatePresenterDelegate(context, viewModel, preferenceStore)
-    }
-
-    @Provides
-    @PreferenceScope
     fun exportImportPresenterDelegate(
-        context: Context,
-        viewModel: PreferenceViewModel,
+        scope: CoroutineScope,
+        viewState: PreferenceViewState,
         preferenceService: PreferenceService,
         preferenceStore: PreferenceStore,
         preferenceChannel: PreferenceChannel,
     ): ExportImportDelegate.ExportImportOutput {
-        return ExportImportPresenterDelegate(context, viewModel, preferenceService, preferenceStore, preferenceChannel)
+        return ExportImportPresenterDelegate(scope, viewState, preferenceService, preferenceStore, preferenceChannel)
     }
 
     @Provides
     @PreferenceScope
     fun preferenceClickPresenterDelegate(
-        viewModel: PreferenceViewModel,
+        scope: CoroutineScope,
         router: PreferenceRouter,
         exportImportDelegate: ExportImportDelegate.ExportImportOutput,
         preferenceStore: PreferenceStore,
         curtainChannel: CurtainChannel,
     ): PreferenceClickOutput {
         return PreferenceClickPresenterDelegate(
-            viewModel,
+            scope,
             router,
             exportImportDelegate,
             preferenceStore,
@@ -84,18 +79,22 @@ class PreferenceModule {
     @Provides
     @PreferenceScope
     fun presenter(
-        viewModel: PreferenceViewModel,
+        scope: CoroutineScope,
+        viewState: PreferenceViewState,
         router: PreferenceRouter,
         exportImportDelegate: ExportImportDelegate.ExportImportOutput,
-        preferenceUpdateDelegate: PreferenceUpdateOutput,
         preferenceClickOutput: PreferenceClickOutput,
+        preferenceStore: PreferenceStore,
+        appStore: AppStore,
     ): PreferencePresenter {
         return PreferencePresenter(
-            viewModel,
+            scope,
+            viewState,
             router,
             exportImportDelegate,
-            preferenceUpdateDelegate,
             preferenceClickOutput,
+            preferenceStore,
+            appStore,
         )
     }
 
@@ -107,7 +106,24 @@ class PreferenceModule {
 
     @Provides
     @PreferenceScope
-    fun router(fragment: WeakProperty<Fragment>): PreferenceRouter = PreferenceRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): PreferenceRouter = PreferenceRouter(fragment)
+
+    @Provides
+    @PreferenceScope
+    fun viewState(
+        scope: CoroutineScope,
+        preferenceDataStore: PreferenceDataStore,
+    ): PreferenceViewState = PreferenceViewState(scope, preferenceDataStore)
+
+    @Provides
+    @PreferenceScope
+    fun preferenceDataStore(
+        preferences: PreferenceStore,
+        appStore: AppStore,
+        watcher: AppWatcherProxy,
+    ): PreferenceDataStore {
+        return LegacyPreferenceDataStore(preferences, appStore.scope, watcher)
+    }
 }
 
 interface PreferenceDependencies {
@@ -115,4 +131,6 @@ interface PreferenceDependencies {
     fun preferenceStore(): PreferenceStore
     fun context(): Context
     fun curtainChannel(): CurtainChannel
+    fun appWatcherProxy(): AppWatcherProxy
+    fun appStore(): AppStore
 }

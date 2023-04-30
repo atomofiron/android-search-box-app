@@ -10,7 +10,7 @@
         </shape>
     </item>
     <item>
-        <ripple android:color="?attr/colorRipple">
+        <ripple android:color="?attr/colorControlHighlight">
             <item android:id="@android:id/mask">
                 <shape android:shape="rectangle">
                     <solid android:color="@color/mask" />

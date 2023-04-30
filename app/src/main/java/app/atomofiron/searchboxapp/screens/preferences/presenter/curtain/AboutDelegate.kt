@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import app.atomofiron.common.util.findColorByAttr
 import app.atomofiron.searchboxapp.R
 import app.atomofiron.searchboxapp.databinding.CurtainAboutBinding
@@ -20,8 +19,8 @@ class AboutDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
     private val githubIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Const.GITHUB_URL))
     private val forpdaIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Const.FORPDA_URL))
 
-    override fun getHolder(inflater: LayoutInflater, container: ViewGroup, layoutId: Int): CurtainApi.ViewHolder {
-        val binding = CurtainAboutBinding.inflate(inflater, container, false)
+    override fun getHolder(inflater: LayoutInflater, layoutId: Int): CurtainApi.ViewHolder {
+        val binding = CurtainAboutBinding.inflate(inflater, null, false)
         binding.init()
         binding.root.applyPaddingInsets(vertical = true)
         return CurtainApi.ViewHolder(binding.root)
@@ -32,7 +31,7 @@ class AboutDelegate : CurtainApi.Adapter<CurtainApi.ViewHolder>() {
         var componentName = githubIntent.resolveActivity(context.packageManager)
         aboutTvGithub.isEnabled = componentName != null
         aboutTvGithub.alpha = if (componentName == null) ALPHA_DISABLED else ALPHA_ENABLED
-        val tint = context.findColorByAttr(R.attr.colorPositive)
+        val tint = context.findColorByAttr(R.attr.colorOnSurface)
         aboutTvGithub.compoundDrawablesRelative[0].setTint(tint)
         aboutTvForpda.compoundDrawablesRelative[0].setTint(tint)
 

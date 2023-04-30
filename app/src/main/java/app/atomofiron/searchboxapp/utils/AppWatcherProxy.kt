@@ -1,11 +1,16 @@
 package app.atomofiron.searchboxapp.utils
 
-//import leakcanary.AppWatcher
+import leakcanary.LeakCanary
 
-object AppWatcherProxy {
-    fun isEnabled(): Boolean = false//AppWatcher.config.enabled
+class AppWatcherProxy {
 
-    fun setEnabled(enabled: Boolean) {
-        //AppWatcher.config = AppWatcher.config.copy(enabled = enabled)
+    var isEnabled: Boolean
+        get() = LeakCanary.config.dumpHeap
+        set(value) {
+            LeakCanary.config = LeakCanary.config.copy(dumpHeap = value)
+        }
+
+    init {
+        LeakCanary.config = LeakCanary.config.copy(dumpHeap = false)
     }
 }

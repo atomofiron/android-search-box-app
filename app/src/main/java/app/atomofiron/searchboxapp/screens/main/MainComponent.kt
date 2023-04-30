@@ -2,6 +2,8 @@ package app.atomofiron.searchboxapp.screens.main
 
 import androidx.fragment.app.FragmentActivity
 import app.atomofiron.common.util.property.WeakProperty
+import app.atomofiron.searchboxapp.injectable.channel.MainChannel
+import app.atomofiron.searchboxapp.injectable.delegate.InitialDelegate
 import app.atomofiron.searchboxapp.injectable.service.WindowService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import dagger.BindsInstance
@@ -23,17 +25,14 @@ interface MainComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: MainViewModel): Builder
-        @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
-        fun bind(viewModel: WeakProperty<FragmentActivity>): Builder
+        fun bind(view: WeakProperty<out FragmentActivity>): Builder
         fun dependencies(dependencies: MainDependencies): Builder
         fun build(): MainComponent
     }
 
     fun inject(target: MainViewModel)
-    fun inject(target: MainActivity)
 }
 
 @Module
@@ -42,22 +41,35 @@ class MainModule {
     @Provides
     @MainScope
     fun presenter(
-        viewModel: MainViewModel,
+        scope: CoroutineScope,
+        viewState: MainViewState,
         router: MainRouter,
         windowService: WindowService,
         appStore: AppStore,
         preferenceStore: PreferenceStore,
+        mainChannel: MainChannel,
+        initialDelegate: InitialDelegate,
     ): MainPresenter {
-        return MainPresenter(viewModel, router, windowService, appStore, preferenceStore)
+        return MainPresenter(scope, viewState, router, windowService, appStore, preferenceStore, initialDelegate, mainChannel)
     }
 
     @Provides
     @MainScope
-    fun router(activity: WeakProperty<FragmentActivity>): MainRouter = MainRouter(activity)
+    fun router(activity: WeakProperty<out FragmentActivity>): MainRouter = MainRouter(activity)
+
+    @Provides
+    @MainScope
+    fun viewState(
+        scope: CoroutineScope,
+        preferenceStore: PreferenceStore,
+        initialDelegate: InitialDelegate,
+    ): MainViewState = MainViewState(scope, preferenceStore, initialDelegate)
 }
 
 interface MainDependencies {
     fun windowService(): WindowService
     fun appStore(): AppStore
     fun preferenceStore(): PreferenceStore
+    fun mainChannel(): MainChannel
+    fun initialDelegate(): InitialDelegate
 }

@@ -10,6 +10,7 @@ import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import app.atomofiron.searchboxapp.injectable.channel.ResultChannel
 import app.atomofiron.searchboxapp.injectable.interactor.ResultInteractor
+import app.atomofiron.searchboxapp.injectable.service.ExplorerService
 import app.atomofiron.searchboxapp.injectable.service.ResultService
 import app.atomofiron.searchboxapp.injectable.store.AppStore
 import app.atomofiron.searchboxapp.injectable.store.FinderStore
@@ -31,9 +32,7 @@ interface ResultComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun bind(viewModel: ResultViewModel): Builder
-        @BindsInstance
-        fun bind(activity: WeakProperty<Fragment>): Builder
+        fun bind(view: WeakProperty<out Fragment>): Builder
         @BindsInstance
         fun bind(scope: CoroutineScope): Builder
         @BindsInstance
@@ -52,36 +51,32 @@ class ResultModule {
     @ResultScope
     fun presenter(
         params: ResultPresenterParams,
-        viewModel: ResultViewModel,
-        resultStore: ResultStore,
+        scope: CoroutineScope,
+        viewState: ResultViewState,
         finderStore: FinderStore,
         preferenceStore: PreferenceStore,
         interactor: ResultInteractor,
         router: ResultRouter,
-        resultChannel: ResultChannel,
         appStore: AppStore,
         itemActionDelegate: ResultItemActionDelegate,
-        menuListenerDelegate: ResultCurtainMenuDelegate,
     ): ResultPresenter {
         return ResultPresenter(
             params,
-            viewModel,
-            resultStore,
+            scope,
+            viewState,
             finderStore,
             preferenceStore,
             interactor,
             router,
-            resultChannel,
             appStore,
             itemActionDelegate,
-            menuListenerDelegate,
         )
     }
 
     @Provides
     @ResultScope
     fun resultItemActionDelegate(
-        viewModel: ResultViewModel,
+        viewModel: ResultViewState,
         router: ResultRouter,
         menuListenerDelegate: ResultCurtainMenuDelegate,
         interactor: ResultInteractor,
@@ -93,30 +88,40 @@ class ResultModule {
     @Provides
     @ResultScope
     fun menuListenerDelegate(
-        viewModel: ResultViewModel,
+        scope: CoroutineScope,
+        viewState: ResultViewState,
         router: ResultRouter,
         interactor: ResultInteractor,
         appStore: AppStore,
         curtainChannel: CurtainChannel,
     ): ResultCurtainMenuDelegate {
-        return ResultCurtainMenuDelegate(viewModel, router, interactor, appStore, curtainChannel)
+        return ResultCurtainMenuDelegate(scope, viewState, router, interactor, appStore, curtainChannel)
     }
 
     @Provides
     @ResultScope
-    fun interactor(scope: CoroutineScope, resultService: ResultService): ResultInteractor {
-        return ResultInteractor(scope, resultService)
+    fun interactor(
+        scope: CoroutineScope,
+        resultService: ResultService,
+        explorerService: ExplorerService,
+    ): ResultInteractor {
+        return ResultInteractor(scope, resultService, explorerService)
     }
 
     @Provides
     @ResultScope
-    fun router(fragment: WeakProperty<Fragment>): ResultRouter = ResultRouter(fragment)
+    fun router(fragment: WeakProperty<out Fragment>): ResultRouter = ResultRouter(fragment)
+
+    @Provides
+    @ResultScope
+    fun viewState(scope: CoroutineScope): ResultViewState = ResultViewState(scope)
 }
 
 interface ResultDependencies {
     fun finderStore(): FinderStore
     fun preferenceStore(): PreferenceStore
     fun resultService(): ResultService
+    fun explorerService(): ExplorerService
     fun resultStore(): ResultStore
     fun resultChannel(): ResultChannel
     fun appStore(): AppStore
