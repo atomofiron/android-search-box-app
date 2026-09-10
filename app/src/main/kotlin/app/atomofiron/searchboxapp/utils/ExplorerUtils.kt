@@ -78,6 +78,7 @@ object ExplorerUtils {
     private const val FILE_ODT = "application/vnd.oasis.opendocument.text"
     private const val FILE_TTF = "font/ttf"
     private const val FILE_XRIFF = "application/x-riff" // +webp
+    private const val FILE_KEYSTORE = "application/x-java-keystore"
     // 'xml' unknown type: application/x-dia-shape
 
     private const val EXT_APNG = ".apng"
@@ -154,6 +155,7 @@ object ExplorerUtils {
     private const val EXT_OLZ = ".olz" // osu lazer map
     private const val EXT_OSR = ".osr" // osu replay
     private const val EXT_OSB = ".osb" // osu storyboard
+    private const val EXT_KEYSTORE = ".keystore"
 
     suspend fun copy(from: Node, to: Node, move: Boolean, asSu: Boolean, collector: (CommonProgress) -> Unit): Node? {
         val result = NativeBridge.copy(from.ref, to.ref, move = move, asSu = asSu, collector)
@@ -387,6 +389,7 @@ object ExplorerUtils {
                 else -> NodeContent.Text.Plain
             }
             (mimeType == FILE_XRIFF) -> content.ifMismatches { NodeContent.Picture(mimeType) }
+            (mimeType == FILE_KEYSTORE) -> content.ifMismatches { NodeContent.Keystore }
             (mimeType == FILE_APK) -> content.ifMismatches { AndroidApp.Apk }
             (mimeType == FILE_RAR) -> content.ifMismatches { NodeContent.Rar() }
             (mimeType == FILE_XAR) -> when {
@@ -719,6 +722,7 @@ object ExplorerUtils {
         ref.name.hasExt(EXT_OSB) -> ifMismatches { NodeContent.Osu.Storyboard() }
         ref.name.hasExt(EXT_XPI) -> ifMismatches { NodeContent.Firefox }
         ref.name.hasExt(EXT_ASS) -> ifMismatches { NodeContent.Text.Subtitles }
+        ref.name.hasExt(EXT_KEYSTORE) -> ifMismatches { NodeContent.Keystore }
         else -> NodeContent.Unknown
     }
 

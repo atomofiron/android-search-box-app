@@ -194,6 +194,7 @@ sealed class NodeContent(
     data object Font : File()
     data object Cert : File()
     data object Firefox : File()
+    data object Keystore : File()
     data object Unknown : File()
 
     fun matchesAny(mimeType: List<String>): Boolean {
