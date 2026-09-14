@@ -4,9 +4,10 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24"
-    android:tint="?attr/colorControlNormal">
+    >
     <path
+        android:name="shape"
         android:fillColor="@color/white"
-        android:pathData="M9,13H15V19H18V10L12,5.5L6,10V19H9V13M4,21V9L12,3L20,9V21H4Z"
+        android:pathData="@string/checkbox_unchecked"
         />
 </vector>

@@ -11,7 +11,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.util.DrawerStateListenerImpl
 import app.atomofiron.common.util.MaterialAttr
-import app.atomofiron.common.util.AppCompatAttr
 import app.atomofiron.fileseeker.R
 import app.atomofiron.fileseeker.databinding.LayoutDrawerNavigationBinding
 import app.atomofiron.searchboxapp.utils.Alpha

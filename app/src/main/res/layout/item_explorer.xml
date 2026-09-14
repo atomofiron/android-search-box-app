@@ -135,6 +135,8 @@
         android:layout_marginTop="-2dp"
         android:gravity="top"
         android:minHeight="0dp"
+        app:buttonCompat="@drawable/check_box"
+        app:buttonIcon="@null"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -78,19 +78,16 @@ class ExplorerDockState @Inject constructor(
             deepest != null -> deepest.copiable()
             else -> false
         }
-        val allCopiedAreDirs = copied.isNotEmpty() && copied.all { it.isDirectory }
         val icon = when {
             deepest == null -> R.drawable.ic_copy_file
-            !copyable && pasteable && allCopiedAreDirs -> R.drawable.ic_insert_folder
-            !copyable && pasteable -> R.drawable.ic_insert_file
+            !copyable && pasteable -> R.drawable.ic_paste
             copyable && checked.all { it.isDirectory } -> R.drawable.ic_copy_folder
             copyable && checked.isNotEmpty() -> R.drawable.ic_copy_file
             copyable && deepest.isDirectory -> R.drawable.ic_copy_folder
-            copyable -> R.drawable.ic_copy_file
             else -> R.drawable.ic_copy_file
         }.let { DockItem.Icon(it) }
         val notice = DockItem.Notice.Normal.takeIf { copied.isNotEmpty() }
-        val children = pasteChildren(copied, allCopiedAreDirs, copyable = copyable, pasteable = pasteable)
+        val children = pasteChildren(copied, copyable = copyable, pasteable = pasteable)
         return when {
             !copyable && pasteable -> ExplorerDock.Paste.copy(icon = icon, notice = notice, children = children)
             else -> ExplorerDock.Copy.copy(icon = icon, enabled = copyable, notice = notice, children = children)
@@ -114,17 +111,11 @@ class ExplorerDockState @Inject constructor(
             copyable && checked.all { it.isDirectory } -> R.drawable.ic_copy_folder
             copyable && checked.isNotEmpty() -> R.drawable.ic_copy_file
             copyable && deepest.isDirectory -> R.drawable.ic_copy_folder
-            copyable -> R.drawable.ic_copy_file
             else -> R.drawable.ic_copy_file
         }.let { DockItem.Icon(it) }
-        val pasteIcon = when {
-            deepest == null -> R.drawable.ic_insert_file
-            !copyable && pasteable && allCopiedAreDirs -> R.drawable.ic_insert_folder
-            !copyable && pasteable -> R.drawable.ic_insert_file
-            else -> R.drawable.ic_insert_file
-        }.let { DockItem.Icon(it) }
+        val pasteIcon = DockItem.Icon(R.drawable.ic_paste)
         val notice = DockItem.Notice.Normal.takeIf { copied.isNotEmpty() }
-        val children = pasteChildren(copied, allCopiedAreDirs, copyable = copyable, pasteable = pasteable)
+        val children = pasteChildren(copied, copyable = copyable, pasteable = pasteable)
         return listOf(
             ExplorerDock.Copy.copy(icon = copyIcon, enabled = copyable),
             ExplorerDock.Paste.copy(icon = pasteIcon, enabled = pasteable, notice = notice, children = children),
@@ -133,16 +124,11 @@ class ExplorerDockState @Inject constructor(
 
     private fun pasteChildren(
         copied: List<Node>,
-        allCopiedAreDirs: Boolean,
         copyable: Boolean,
         pasteable: Boolean,
     ): DockItemChildren {
-        val pasteCopy = (if (allCopiedAreDirs) R.drawable.ic_insert_copy_folder else R.drawable.ic_insert_copy_file)
-            .let { DockItem.Icon(it) }
-            .let { PasteCopy.copy(enabled = pasteable, icon = it) }
-        val pasteMove = (if (allCopiedAreDirs) R.drawable.ic_insert_move_folder else R.drawable.ic_insert_move_file)
-            .let { DockItem.Icon(it) }
-            .let { PasteMove.copy(enabled = pasteable, icon = it) }
+        val pasteCopy = PasteCopy.copy(enabled = pasteable, icon = DockItem.Icon(R.drawable.ic_paste_copy))
+        val pasteMove = PasteMove.copy(enabled = pasteable, icon = DockItem.Icon(R.drawable.ic_paste_move))
         val cancel = Cancel.copy(enabled = copied.isNotEmpty())
         return DockItemChildren(pasteCopy, pasteMove, cancel, secondary = copyable)
     }

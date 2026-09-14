@@ -7,10 +7,21 @@
     >
     <path
         android:fillColor="@android:color/white"
-        android:pathData="M13 20H4C2.9 20 2 19.11 2 18V6C2 4.89 2.89 4 4 4H10L12 6H20C21.1 6 22 6.89 22 8V16 l -4 -2 h -3 v 6"
+        android:pathData="M17.8 22m-13.8-2 a 2 2 0 0 1 -2 -2l0-12 a a 2 2 0 0 1 2 -2l5.175 0q0.4 0 0.7625 0.15q0.3625 0.15 0.6375 0.425l1.425 1.425l8 0a 2 2 0 0 1 2 2
+            l0 5 a 1 1 0 0 1 -1.5 0.866
+            l -3.464 -2
+            a 2.466 2.466 0 0 0 -3.7 2.134
+            v 5 a 1 1 0 0 1 -1 1z"
         />
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M17 22L22 19L17 16V22Z"
-        />
+    <group
+        android:scaleX="0.67"
+        android:scaleY="0.67"
+        android:translateX="10"
+        android:translateY="10"
+        >
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="m8 17.175l0-10.35q0-0.425 0.3-0.7125q0.3-0.2875 0.7-0.2875q0.125 0 0.2625 0.0375q0.1375 0.0375 0.2625 0.1125l8.15 5.175q0.225 0.15 0.3375 0.375q0.1125 0.225 0.1125 0.475q0 0.25-0.1125 0.475q-0.1125 0.225-0.3375 0.375l-8.15 5.175q-0.125 0.075-0.2625 0.1125q-0.1375 0.0375-0.2625 0.0375q-0.4 0-0.7-0.2875q-0.3-0.2875-0.3-0.7125z"
+            />
+    </group>
 </vector>

@@ -34,6 +34,7 @@ object Alpha {
     fun visibleInt(value: Boolean) = if (value) VISIBLE_INT else INVISIBLE_INT
     fun enabled(value: Boolean) = if (value) VISIBLE else VODKA
     fun enabledInt(value: Boolean) = if (value) VISIBLE_INT else VODKA_INT
+    fun vodka(value: Boolean) = if (value) VODKA else VISIBLE
     fun vodkaInt(value: Boolean) = if (value) VODKA_INT else VISIBLE_INT
 
     fun halfVisible(alpha: Float) = max(alpha * 2, VISIBLE)

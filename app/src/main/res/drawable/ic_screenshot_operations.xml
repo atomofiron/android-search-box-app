@@ -15,14 +15,14 @@
         />
     <path
         android:fillColor="@color/white"
-        android:pathData="M 7 20 v -12 h -2 v 13 a 2 2 0 0 0 2 2 h 10 a 2 2 0 0 0 2 -2 v -13 h -2 v 12 z"
+        android:pathData="M 7 20 v -11 a 1 1 0 0 0 -2 0 v 12 a 2 2 0 0 0 2 2 h 10 a 2 2 0 0 0 2 -2 v -12 a 1 1 0 0 0 -2 0 v 11 z"
         />
     <path
         android:fillColor="@color/white"
-        android:pathData="M9,8V12H10.5V9.5H13V8H9Z"
+        android:pathData="M 12.25 8 a 0.75 0.75 0 0 1 0 1.5 h -1.75 v 1.75 a 0.75 0.75 0 0 1 -1.5 0 v -2.5 a 0.75 0.75 0 0 1 0.75 -0.75"
         />
     <path
         android:fillColor="@color/white"
-        android:pathData="M13.5,14V16.5H11V18H15V14H13.5Z"
+        android:pathData="M 11.75 18 a 0.75 0.75 0 0 1 0 -1.5 h 1.75 v -1.75 a 0.75 0.75 0 0 1 1.5 0 v 2.5 a 0.75 0.75 0 0 1 -0.75 0.75"
         />
 </vector>

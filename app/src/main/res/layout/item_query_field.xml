@@ -37,7 +37,7 @@
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/padding_mini"
         android:background="@drawable/query_button"
-        android:src="@drawable/ic_find"
+        android:src="@drawable/ic_search"
         android:tint="@color/query_button_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

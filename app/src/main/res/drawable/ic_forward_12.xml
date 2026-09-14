@@ -1,18 +1,18 @@
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:autoMirrored="true"
     android:width="8dp"
     android:height="12dp"
     android:viewportWidth="8"
     android:viewportHeight="12"
+    android:autoMirrored="true"
     >
     <group
         android:translateX="-8"
         android:translateY="-6"
         >
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
-        />
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="m12.6 12l-3.9-3.9q-0.275-0.275-0.275-0.7q0-0.425 0.275-0.7q0.275-0.275 0.7-0.275q0.425 0 0.7 0.275l4.6 4.6q0.15 0.15 0.2125 0.325q0.0625 0.175 0.0625 0.375q0 0.2-0.0625 0.375q-0.0625 0.175-0.2125 0.325l-4.6 4.6q-0.275 0.275-0.7 0.275q-0.425 0-0.7-0.275q-0.275-0.275-0.275-0.7q0-0.425 0.275-0.7l3.9-3.9z"
+            />
     </group>
 </vector>

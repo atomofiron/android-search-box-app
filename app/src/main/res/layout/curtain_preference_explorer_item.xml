@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -49,7 +50,7 @@
             android:layout_marginHorizontal="@dimen/padding_mini"
             android:checkable="true"
             android:text="@string/date"
-            app:chipIcon="@drawable/ic_calendar_range"
+            app:chipIcon="@drawable/ic_date_range"
             app:chipMinTouchTargetSize="@dimen/chip_area"
             />
         <com.google.android.material.chip.Chip
@@ -71,6 +72,7 @@
             android:text="drwxrwx---"
             app:chipIcon="@drawable/ic_security"
             app:chipMinTouchTargetSize="@dimen/chip_area"
+            tools:ignore="HardcodedText"
             />
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_owner"
@@ -79,7 +81,7 @@
             android:layout_marginHorizontal="@dimen/padding_mini"
             android:checkable="true"
             android:text="@string/owner"
-            app:chipIcon="@drawable/ic_account"
+            app:chipIcon="@drawable/ic_person"
             app:chipMinTouchTargetSize="@dimen/chip_area"
             />
         <com.google.android.material.chip.Chip

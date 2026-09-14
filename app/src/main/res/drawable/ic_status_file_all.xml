@@ -6,13 +6,8 @@
     android:viewportHeight="20"
     android:tint="?colorContent"
     >
-    <group
-        android:translateX="-4"
-        android:translateY="-2"
-        >
-        <path
-            android:fillColor="@android:color/white"
-            android:pathData="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"
-            />
-    </group>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="m2 20q-0.825 0-1.4125-0.5875q-0.5875-0.5875-0.5875-1.4125l0-16q0-0.825 0.5875-1.4125q0.5875-0.5875 1.4125-0.5875l7.175 0q0.4 0 0.7625 0.15q0.3625 0.15 0.6375 0.425l4.85 4.85q0.275 0.275 0.425 0.6375q0.15 0.3625 0.15 0.7625l0 11.175q0 0.825-0.5875 1.4125q-0.5875 0.5875-1.4125 0.5875l-12 0zm7-14q0 0.425 0.2875 0.7125q0.2875 0.2875 0.7125 0.2875l4 0l-5-5l0 4z"
+        />
 </vector>

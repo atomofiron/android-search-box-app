@@ -6,15 +6,11 @@
     android:viewportHeight="24"
     >
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="M 6 2 v 20 h 2 v -20 z"
+        android:fillColor="@color/white"
+        android:pathData="M 8 3 a 1 1 0 0 0 -2 0 v 18 a 1 1 0 0 0 2 0 v -15 h 6 a 4 4 0 0 1 4 4 v 11 a 1 1 0 0 1 -2 0 v -11 a 2 2 0 0 0 -2 -2 h -6 z"
         />
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="M 8 6 h 6 a 4 4 0 0 1 4 4 v 12 h -2 v -12 a 2 2 0 0 0 -2 -2 h -6"
-        />
-    <path
-        android:strokeColor="@android:color/white"
+        android:strokeColor="@color/white"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:pathData="M 12 12 v 4 M 10 14 h 4"
