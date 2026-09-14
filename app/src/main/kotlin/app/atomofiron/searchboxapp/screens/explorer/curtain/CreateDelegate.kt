@@ -1,5 +1,6 @@
 package app.atomofiron.searchboxapp.screens.explorer.curtain
 
+import android.graphics.Color
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -9,9 +10,11 @@ import android.widget.Button
 import android.widget.EditText
 import app.atomofiron.fileseeker.R
 import app.atomofiron.fileseeker.databinding.CurtainExplorerCreateBinding
+import app.atomofiron.searchboxapp.custom.drawable.colorSurfaceContainer
 import app.atomofiron.searchboxapp.custom.drawable.makeToned
 import app.atomofiron.searchboxapp.model.explorer.Node
 import app.atomofiron.searchboxapp.screens.explorer.presenter.ExplorerCurtainMenuDelegate
+import app.atomofiron.searchboxapp.utils.ColorStates
 import app.atomofiron.searchboxapp.utils.ExtType
 import app.atomofiron.searchboxapp.utils.PathNameCharacterFilter
 import lib.atomofiron.insets.insetsPadding
@@ -39,6 +42,7 @@ class CreateDelegate(
         val clickListener = ButtonClick(dir, textField)
         explorerCreateDirBtn.setOnClickListener(clickListener)
         explorerCreateFileBtn.setOnClickListener(clickListener)
+        explorerCreateFileBtn.strokeColor = ColorStates(root.context.colorSurfaceContainer())
     }
 
     private inner class ButtonClick(
