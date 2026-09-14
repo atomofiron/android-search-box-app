@@ -276,16 +276,48 @@ object ExplorerUtils {
         )
     }
 
-    fun getDirectoryType(name: String): DirectoryKind = when (name) {
-        "Alarms" -> DirectoryKind.Alarms
-        "Android" -> DirectoryKind.Android
-        "DCIM" -> DirectoryKind.Camera
-        "Download" -> DirectoryKind.Download
-        "Movies" -> DirectoryKind.Movies
-        "Music" -> DirectoryKind.Music
-        "Pictures" -> DirectoryKind.Pictures
-        "Ringtones" -> DirectoryKind.Ringtones
-        else -> DirectoryKind.Ordinary
+    fun getDirectoryKind(parent: String?, name: String): DirectoryKind = when (parent) {
+        null -> when (name) {
+            "Alarms" -> DirectoryKind.Alarms
+            "Android" -> DirectoryKind.Android
+            "Audiobooks" -> DirectoryKind.Audiobooks
+            "Bluetooth" -> DirectoryKind.Bluetooth
+            "DCIM" -> DirectoryKind.Camera
+            "Documents" -> DirectoryKind.Documents
+            "Download" -> DirectoryKind.Download
+            "Movies" -> DirectoryKind.Movies
+            "Music" -> DirectoryKind.Music
+            "Notifications" -> DirectoryKind.Notifications
+            "Recordings" -> DirectoryKind.Recordings
+            "Pictures" -> DirectoryKind.Pictures
+            "Podcasts" -> DirectoryKind.Podcasts
+            "Ringtones" -> DirectoryKind.Ringtones
+            else -> DirectoryKind.Ordinary
+        }
+        else -> when (parent) {
+            "DCIM" -> when (name) {
+                "Camera" -> DirectoryKind.Camera
+                "Screenshots" -> DirectoryKind.Screenshots
+                "ScreenRecorder",
+                "Screen recordings" -> DirectoryKind.Screencasts
+                else -> DirectoryKind.Ordinary
+            }
+            "Download" if (name == "Bluetooth") -> DirectoryKind.Bluetooth
+            "Movies" -> when (name) {
+                "Screen records",
+                "ScreenRecords",
+                "ScreenRecordings",
+                "ScreenRecorder",
+                "Captures" -> DirectoryKind.Screencasts
+                else -> DirectoryKind.Ordinary
+            }
+            "Pictures" -> when (name) {
+                "Screenshots" -> DirectoryKind.Screenshots
+                "ScreenRecords" -> DirectoryKind.Screencasts
+                else -> DirectoryKind.Ordinary
+            }
+            else -> DirectoryKind.Ordinary
+        }
     }
 
     fun NodeRef.check(asSu: Boolean): NodeError? {

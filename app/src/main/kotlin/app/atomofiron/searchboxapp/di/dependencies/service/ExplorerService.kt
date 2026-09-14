@@ -982,16 +982,18 @@ class ExplorerService @Inject constructor(
 
     private fun Node.defineDirKind(levelIndex: Int = -1): NodeContent {
         val mainStorageRef = mainStorageRef ?: return content
-        return when {
-            levelIndex > 0 -> content
-            content !is NodeContent.Directory -> content
-            mainStorageRef.length != (ref.length.dec() - name.length) -> content
-            !ref.isChildOf(mainStorageRef) -> content
-            content.kind != DirectoryKind.Ordinary -> content
-            else -> ExplorerUtils.getDirectoryType(name)
-                .takeIf { it != DirectoryKind.Ordinary }
-                ?.let { content.copy(kind = it) }
-                ?: content
+        when {
+            levelIndex > 1 -> return content
+            content !is NodeContent.Directory -> return content
+            content.kind != DirectoryKind.Ordinary -> return content
+            !ref.isChildOf(mainStorageRef) -> return content
+        }
+        val parent = parentRef.name.takeIf {
+            mainStorageRef.length == (ref.length.dec().dec() - name.length - it.length)
+        }
+        return when (val kind = ExplorerUtils.getDirectoryKind(parent, name)) {
+            DirectoryKind.Ordinary -> content
+            else -> content.copy(kind = kind)
         }
     }
 

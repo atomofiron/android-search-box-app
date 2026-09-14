@@ -109,4 +109,24 @@ fun DirectoryKind.getIcon(isEmpty: Boolean): Int = when (this) {
         isEmpty -> R.drawable.ic_folder_screencasts_empty
         else -> R.drawable.ic_folder_screencasts
     }
+    DirectoryKind.Audiobooks -> when {
+        isEmpty -> R.drawable.ic_folder_audiobooks_empty
+        else -> R.drawable.ic_folder_audiobooks
+    }
+    DirectoryKind.Documents -> when {
+        isEmpty -> R.drawable.ic_folder_documents_empty
+        else -> R.drawable.ic_folder_documents
+    }
+    DirectoryKind.Notifications -> when {
+        isEmpty -> R.drawable.ic_folder_bell_empty
+        else -> R.drawable.ic_folder_bell_empty
+    }
+    DirectoryKind.Recordings -> when {
+        isEmpty -> R.drawable.ic_folder_screencasts_empty
+        else -> R.drawable.ic_folder_screencasts
+    }
+    DirectoryKind.Podcasts -> when {
+        isEmpty -> R.drawable.ic_folder_podcasts_empty
+        else -> R.drawable.ic_folder_podcasts
+    }
 }
