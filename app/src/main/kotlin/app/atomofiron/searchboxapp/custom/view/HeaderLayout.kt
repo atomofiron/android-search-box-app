@@ -8,7 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.view.children
-import androidx.core.view.doOnNextLayout
+import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import app.atomofiron.common.util.extension.findAs
 import app.atomofiron.common.util.extension.hasBits
@@ -32,6 +32,7 @@ class HeaderLayout : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
     private val behavior = HeaderBehavior()
     private val collapsing: CollapsingToolbarLayout
     private var subBar: View? = null
+    private var underBar: View? = null
     private var toolbar: View? = null
 
     constructor(context: Context) : super(context)
@@ -88,25 +89,30 @@ class HeaderLayout : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
         if (child.id == R.id.collapsing) {
             return super.addView(child, index, params)
         }
-        val params = CollapsingToolbarLayout.LayoutParams(params)
         if (child is Toolbar) {
             if (toolbar != null) throw IllegalArgumentException()
             toolbar = child
+            val params = CollapsingToolbarLayout.LayoutParams(params)
             params.collapseMode = COLLAPSE_MODE_PIN
             collapsing.addView(child, collapsing.childCount, params)
-            child.doOnNextLayout {
+            child.doOnLayout {
                 subBar?.updateLayoutParams<MarginLayoutParams> {
                     topMargin = child.height
                 }
             }
-        } else {
-            if (subBar != null) throw IllegalArgumentException()
+        } else if (subBar == null) {
             subBar = child
+            val params = CollapsingToolbarLayout.LayoutParams(params)
             params.collapseMode = COLLAPSE_MODE_OFF
             collapsing.addView(child, 0, params)
-            child.doOnNextLayout {
+            child.doOnLayout {
                 behavior.limitOffset = -it.height
             }
+        } else if (underBar == null) {
+            underBar = child
+            super.addView(child, index - collapsing.childCount, params)
+        } else {
+            throw IllegalArgumentException()
         }
     }
 
