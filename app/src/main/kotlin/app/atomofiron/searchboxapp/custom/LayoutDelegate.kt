@@ -57,6 +57,7 @@ object LayoutDelegate {
             val size = getDimensionPixelSize(R.dimen.joystick_size) - 2 * getDimensionPixelSize(R.dimen.joystick_padding)
             DockNotch(size)
         }
+        val headerDelegate = header?.insetsPadding(ExtType { barsWithCutout + dock + joystickFlank }, start = true, top = true, end = true)
         val recycler = ExtType { barsWithCutout + ime + dock + joystickBottom + joystickFlank }
         val recyclerDelegate = recyclerView?.insetsPadding(recycler, start = true, top = header == null, end = true, bottom = true)
         if (dockView != null) insetsBackground?.transparent(ExtType.dock)
@@ -69,13 +70,13 @@ object LayoutDelegate {
             tabs?.isVisible = !layout.isWide
             dockView?.apply(layout, notch, dockDelegate!!, tappableBottom)
             recyclerDelegate?.combining(if (layout.isBottom) null else InsetsCombining(ExtType { displayCutout + dock }) )
+            headerDelegate?.updateInsets()
             /* нужно только когда есть табы
             explorerViews?.forEach {
                 it.systemUiView.update(statusBar = landscape)
             }*/
             insetsProvider.requestInsets()
         }
-        header?.insetsPadding(ExtType { barsWithCutout + dock + joystickFlank }, start = true, top = true, end = true)
         dockView?.dockView?.insetsSource { view ->
             val layout = layoutWas
             val insets = when {

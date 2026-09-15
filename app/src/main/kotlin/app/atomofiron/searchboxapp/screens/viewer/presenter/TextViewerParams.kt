@@ -9,17 +9,19 @@ import kotlin.uuid.Uuid
 
 class TextViewerParams(
     val ref: NodeRef,
+    val length: ULong,
     val initialTaskId: Uuid?,
 ) {
     companion object {
 
-        fun arguments(ref: NodeRef, taskId: Uuid? = null) = Bundle().apply {
+        fun arguments(ref: NodeRef, length: ULong, taskId: Uuid? = null) = Bundle().apply {
             put(ref)
+            put(length)
             if (taskId != null) put(taskId)
         }
 
         fun params(arguments: Bundle): TextViewerParams {
-            return TextViewerParams(arguments.get<NodeRef>()!!, arguments.getUuid())
+            return TextViewerParams(arguments.get<NodeRef>()!!, arguments.get<ULong>()!!, arguments.getUuid())
         }
     }
 }

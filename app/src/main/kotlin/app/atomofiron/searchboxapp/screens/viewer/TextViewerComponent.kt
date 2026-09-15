@@ -56,7 +56,7 @@ class TextViewerModule {
     fun textViewerSession(
         params: TextViewerParams,
         interactor: TextViewerInteractor,
-    ): TextViewerSessionResult = TextViewerSessionResult(interactor.fetchFileSession(params.ref))
+    ): TextViewerSessionResult = TextViewerSessionResult(interactor.fetchFileSession(params.ref, params.length))
 }
 
 interface TextViewerDependencies {

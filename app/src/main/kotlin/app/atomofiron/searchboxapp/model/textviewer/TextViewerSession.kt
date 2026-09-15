@@ -17,6 +17,7 @@ import uniffi.native_lib.ReadResult
 import java.io.Closeable
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
+import kotlin.toULong
 
 private const val BUFFER_SIZE = 8 * 1024
 private const val CR: Byte = 0x0D
@@ -24,13 +25,18 @@ private const val LF: Byte = 0x0A
 
 class TextViewerSession(
     private val input: FileReader,
+    private val length: ULong,
     ref: NodeRef,
 ) : Closeable {
 
     private var bytes = ByteArray(BUFFER_SIZE)
     private var byteBuf = ByteBuffer.wrap(bytes)
     private val lineBuilder = ByteArrayBuilder()
-    private var byteCount = 0
+    private var byteCount = 0uL
+        set(value) {
+            field = value
+            updateReading(value)
+        }
     private var afterCr = false
     var isFullyRead = false
         private set
@@ -44,6 +50,8 @@ class TextViewerSession(
     val lines: StateFlow<List<TextLine>>
         field = MutableStateFlow(listOf())
     val loading = MutableStateFlow(false)
+    val reading: StateFlow<Reading>
+        field = MutableStateFlow<Reading>(Reading.Stub)
     val tasks: StateFlow<List<LocalSearchTask>>
         field = MutableStateFlow(listOf())
 
@@ -130,7 +138,7 @@ class TextViewerSession(
             next == CR && afterNext == LF -> 2 // skip \r\n
             else -> 1 // skip \r or \n
         }
-        byteCount += skip
+        byteCount += skip.toULong()
         byteBuf.position(byteBuf.position() + skip)
         return skip
     }
@@ -145,9 +153,21 @@ class TextViewerSession(
         }
         val limit = byteBuf.limit()
         byteBuf.limit(end)
-        byteCount += lineBuilder.append(byteBuf)
+        byteCount += lineBuilder.append(byteBuf).toULong()
         byteBuf.limit(limit)
         return endOfLine >= 0
+    }
+
+    private fun updateReading(loaded: ULong) {
+        var loaded = loaded
+        var length = length
+        var denominator = 1
+        while (length > Int.MAX_VALUE.toULong()) {
+            length /= 2uL
+            loaded /= 2uL
+            denominator *= 2
+        }
+        reading.value = Reading(loaded.toInt(), length.toInt(), denominator)
     }
 
     private fun ByteBuffer.findEndOfLine(): Int {

@@ -60,7 +60,7 @@ class TextViewerHolder(private val textView: TextView) : GeneralHolder<TextLine>
         truePosition = position
         val spannable = SpannableString(item.text.decode())
         matches.forEachIndexed { index, match ->
-            val bytesStart = match.offset.toInt() - item.offset
+            val bytesStart = (match.offset - item.offset).toInt()
             val bytesEnd = (bytesStart + match.length.toInt())
             val start = item.text.countChars(charset, 0..<bytesStart)
             if (bytesStart < 0 || bytesEnd > item.text.size) {

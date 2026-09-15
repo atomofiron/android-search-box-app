@@ -3,7 +3,9 @@ package app.atomofiron.searchboxapp.screens.viewer
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import app.atomofiron.common.arch.BaseFragment
 import app.atomofiron.common.arch.BaseFragmentImpl
 import app.atomofiron.common.util.flow.viewCollect
@@ -28,6 +30,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     private lateinit var binding: FragmentTextViewerBinding
 
     private val textAdapter = TextViewerAdapter()
+    private var readingDenominator = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,7 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
                 itemAnimator = null
                 addItemDecoration(ItemSeparatorDecorator())
                 setupSpringOverscroll()
+                addOnScrollListener(OnScrollListenerImpl())
             }
             dockBar.submit(DefaultDockState)
             dockBar.setListener(::onBottomMenuItemClick)
@@ -73,6 +77,12 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
         viewCollect(matchingCursor, collector = ::onMatchCursorChanged)
         viewCollect(dock, collector = binding.dockBar::submit)
         viewCollect(alerts) { binding.snackbarContainer.showSnackbar(it) }
+        viewCollect(reading) {
+            binding.progress.isIndeterminate = it.length <= 0
+            binding.progress.max = it.length
+            binding.progress.secondaryProgress = it.loaded
+            readingDenominator = it.denominator
+        }
     }
 
     override fun FragmentTextViewerBinding.onApplyInsets() {
@@ -102,4 +112,27 @@ class TextViewerFragment : Fragment(R.layout.fragment_text_viewer),
     }
 
     private fun onMatchCursorChanged(cursor: MatchCursor?) = textAdapter.setCursor(cursor)
+
+    private inner class OnScrollListenerImpl : RecyclerView.OnScrollListener() {
+
+        private var view: View? = null
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            val view = recyclerView.getChildAt(recyclerView.childCount.dec())
+            if (view === this.view) {
+                return
+            }
+            this.view = view
+            if (recyclerView.childCount == viewState.textLines.value.size) {
+                binding.progress.isVisible = false
+                return
+            }
+            binding.progress.isVisible = true
+            val holder = recyclerView.getChildViewHolder(view)
+            val line = viewState.textLines.value
+                .getOrNull(holder.bindingAdapterPosition)
+                ?: return
+            binding.progress.progress = (line.end / readingDenominator.toULong()).toInt()
+        }
+    }
 }

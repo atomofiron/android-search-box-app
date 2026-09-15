@@ -13,6 +13,7 @@ import app.atomofiron.searchboxapp.model.explorer.NodeError
 import app.atomofiron.searchboxapp.model.explorer.NodeRef
 import app.atomofiron.searchboxapp.model.finder.LocalSearchResult
 import app.atomofiron.searchboxapp.model.finder.LocalSearchTask
+import app.atomofiron.searchboxapp.model.textviewer.Reading
 import app.atomofiron.searchboxapp.model.textviewer.TextLine
 import app.atomofiron.searchboxapp.model.textviewer.TextViewerSession
 import app.atomofiron.searchboxapp.screens.finder.viewmodel.FinderItemsState
@@ -57,6 +58,7 @@ class TextViewerViewState private constructor(
     val currentTask = MutableStateFlow<LocalSearchTask?>(null)
     val alerts: SharedFlow<Alert?>
         field = DataFlow<Alert?>((session?.error?.value ?: error)?.toAlert())
+    val reading = session?.reading ?: MutableStateFlow(Reading.Stub)
 
     val dock = status.map { state ->
         var index: Int? = null

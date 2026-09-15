@@ -39,7 +39,7 @@ class ExplorerRouter @Inject constructor(
 
     fun showFile(item: Node) {
         if (item.content is NodeContent.Text) {
-            val arguments = TextViewerParams.arguments(item.ref)
+            val arguments = TextViewerParams.arguments(item.ref, item.length)
             navigate(R.id.textViewerFragment, arguments)
         } else {
             sharing.openWith(item)

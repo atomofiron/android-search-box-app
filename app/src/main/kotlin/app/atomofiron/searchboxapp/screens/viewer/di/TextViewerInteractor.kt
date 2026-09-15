@@ -40,7 +40,7 @@ class TextViewerInteractor @Inject constructor(
         return item.update(asSu)
     }
 
-    fun fetchFileSession(ref: NodeRef): Rslt<TextViewerSession> = service.getFileSession(ref)
+    fun fetchFileSession(ref: NodeRef, length: ULong): Rslt<TextViewerSession> = service.getFileSession(ref, length)
 
     /** invoke the callback after success */
     fun readFileToLine(ref: NodeRef, index: Int, callback: (() -> Unit)? = null) {

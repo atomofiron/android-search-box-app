@@ -3,10 +3,11 @@ package app.atomofiron.searchboxapp.model.textviewer
 import app.atomofiron.common.util.extension.hash
 
 class TextLine(
-    val offset: Int,
+    val offset: ULong,
     val text: ByteArray,
 ) {
     val length get() = text.size
+    val end get() = offset + length.toULong()
 
     override fun equals(other: Any?): Boolean = when {
         this === other -> true

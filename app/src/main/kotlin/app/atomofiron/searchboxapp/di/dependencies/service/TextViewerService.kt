@@ -43,11 +43,11 @@ class TextViewerService @Inject constructor(
     private val asSu: Boolean get() = preferences.asSu.value
     private var localId = 1
 
-    fun getFileSession(ref: NodeRef): Rslt<TextViewerSession> {
+    fun getFileSession(ref: NodeRef, length: ULong): Rslt<TextViewerSession> {
         return findSession(ref)
             ?.let { Rslt.Ok(it) }
             ?: NativeBridge.readFile(ref, asSu)
-                .map { TextViewerSession(it, ref) }
+                .map { TextViewerSession(it, length, ref) }
                 .ifOk {
                     store.sessions[ref.uniqueId] = it
                     scope.launchOnIO { readFile(ref) }
