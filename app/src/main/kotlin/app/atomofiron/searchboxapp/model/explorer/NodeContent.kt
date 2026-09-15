@@ -181,6 +181,8 @@ sealed class NodeContent(
     data object Pdf : File("application/pdf")
     data object Torrent : File("application/x-bittorrent")
     data object Document : File()
+    data object Presentation : File()
+    data object Table : File()
     data object DB : File()
     data object DataImage : File()
     data object Elf : File()

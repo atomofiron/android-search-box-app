@@ -79,6 +79,14 @@ object ExplorerUtils {
     private const val FILE_TTF = "font/ttf"
     private const val FILE_XRIFF = "application/x-riff" // +webp
     private const val FILE_KEYSTORE = "application/x-java-keystore"
+    private const val FILE_MSWORD = "application/msword"
+    private const val FILE_MSWORDX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    private const val FILE_MSPP = "application/vnd.ms-powerpoint"
+    private const val FILE_MSPPX = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    private const val FILE_MSEXEL = "application/vnd.ms-excel"
+    private const val FILE_MSEXELX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    private const val FILE_KEYNOTE = "application/x-iwork-keynote-sfxkey"
+    private const val FILE_VND_KEYNOTE = "application/vnd.apple.keynote"
     // 'xml' unknown type: application/x-dia-shape
 
     private const val EXT_APNG = ".apng"
@@ -156,6 +164,14 @@ object ExplorerUtils {
     private const val EXT_OSR = ".osr" // osu replay
     private const val EXT_OSB = ".osb" // osu storyboard
     private const val EXT_KEYSTORE = ".keystore"
+    private const val EXT_ODT = ".odt"
+    private const val EXT_DOC = ".doc"
+    private const val EXT_DOCX = ".docx"
+    private const val EXT_PPT = ".ppt"
+    private const val EXT_PPTX = ".pptx"
+    private const val EXT_XLS = ".xls"
+    private const val EXT_XLSX = ".xlsx"
+    private const val EXT_KEY = ".key"
 
     suspend fun copy(from: Node, to: Node, move: Boolean, asSu: Boolean, collector: (CommonProgress) -> Unit): Node? {
         val result = NativeBridge.copy(from.ref, to.ref, move = move, asSu = asSu, collector)
@@ -439,6 +455,7 @@ object ExplorerUtils {
                 name.hasExt(EXT_OLZ) -> content.ifMismatches { NodeContent.Osu.LazerMap() }
                 name.hasExt(EXT_OSR) -> content.ifMismatches { NodeContent.Osu.Replay() }
                 name.hasExt(EXT_OSB) -> content.ifMismatches { NodeContent.Osu.Storyboard() }
+                name.hasExt(EXT_KEY) -> content.ifMismatches { NodeContent.Presentation }
                 else -> content.ifMismatches { NodeContent.Zip() }
             }
             (mimeType == FILE_BZIP2) -> when {
@@ -472,7 +489,15 @@ object ExplorerUtils {
             (mimeType == FILE_CERT),
             (mimeType == FILE_CA_CERT) -> content.ifMismatches { NodeContent.Cert }
             (mimeType == FILE_TORRENT) -> content.ifMismatches { NodeContent.Torrent }
+            (mimeType == FILE_MSWORD),
+            (mimeType == FILE_MSWORDX),
             (mimeType == FILE_ODT) -> content.ifMismatches { NodeContent.Document }
+            (mimeType == FILE_MSPP),
+            (mimeType == FILE_MSPPX),
+            (mimeType == FILE_KEYNOTE),
+            (mimeType == FILE_VND_KEYNOTE) -> content.ifMismatches { NodeContent.Presentation }
+            (mimeType == FILE_MSEXEL),
+            (mimeType == FILE_MSEXELX) -> content.ifMismatches { NodeContent.Table }
             (mimeType == FILE_TTF) -> content.ifMismatches { NodeContent.Font }
             (mimeType == FILE_ELF_SO) -> content.ifMismatches { NodeContent.ElfSo }
             (mimeType == FILE_MS_EXE) -> content.ifMismatches { NodeContent.ExeMs }
@@ -755,6 +780,14 @@ object ExplorerUtils {
         ref.name.hasExt(EXT_XPI) -> ifMismatches { NodeContent.Firefox }
         ref.name.hasExt(EXT_ASS) -> ifMismatches { NodeContent.Text.Subtitles }
         ref.name.hasExt(EXT_KEYSTORE) -> ifMismatches { NodeContent.Keystore }
+        ref.name.hasExt(EXT_DOC),
+        ref.name.hasExt(EXT_DOCX),
+        ref.name.hasExt(EXT_ODT) -> ifMismatches { NodeContent.Document }
+        ref.name.hasExt(EXT_XLS),
+        ref.name.hasExt(EXT_XLSX) -> ifMismatches { NodeContent.Table }
+        ref.name.hasExt(EXT_PPT),
+        ref.name.hasExt(EXT_PPTX),
+        ref.name.hasExt(EXT_KEY) -> ifMismatches { NodeContent.Presentation }
         else -> NodeContent.Unknown
     }
 

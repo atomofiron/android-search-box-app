@@ -32,7 +32,9 @@ fun NodeContent.File.getIcon(): Int = when (this) {
     is NodeContent.Text.Ino -> R.drawable.ic_infinity
     is NodeContent.Text.Subtitles -> R.drawable.ic_subtitles
     is NodeContent.Text,
-    is NodeContent.Document -> R.drawable.ic_text
+    is NodeContent.Document -> R.drawable.ic_document
+    is NodeContent.Presentation -> R.drawable.ic_presentation
+    is NodeContent.Table -> R.drawable.ic_table
     is NodeContent.Pdf -> R.drawable.ic_pdf
     is NodeContent.DataImage -> R.drawable.ic_dt
     is NodeContent.DB -> R.drawable.ic_db
